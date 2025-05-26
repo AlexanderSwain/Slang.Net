@@ -2,21 +2,22 @@
 #include "slang.h"
 #include "slang-com-ptr.h"
 #include "slang-com-helper.h"
-#include <string>
+
+using namespace System;
 
 namespace Slang
 {
-    struct ShaderModel
+    public ref class ShaderModel
     {
     private:
         SlangCompileTarget _Target;
-        std::string _Profile;
+        String^ _Profile;
 
     public:
-        ShaderModel(SlangCompileTarget target, const char* profile);
+        ShaderModel(SlangCompileTarget target, String^ profile);
 
         SlangCompileTarget getTarget();
 
-        const char* getProfile();
+        String^ getProfile();
     };
 }

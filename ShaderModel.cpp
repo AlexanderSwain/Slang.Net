@@ -1,9 +1,6 @@
 #include "ShaderModel.h"
 
-SlangCompileTarget _Target;
-std::string _Profile;
-
-Slang::ShaderModel::ShaderModel(SlangCompileTarget target, const char* profile)
+Slang::ShaderModel::ShaderModel(SlangCompileTarget target, String^ profile)
 	: _Target(target)
 	, _Profile(profile)
 {
@@ -14,7 +11,7 @@ SlangCompileTarget Slang::ShaderModel::getTarget()
 	return _Target;
 }
 
-const char* Slang::ShaderModel::getProfile()
+String^ Slang::ShaderModel::getProfile()
 {
-	return _Profile.c_str();
+	return _Profile;
 }
