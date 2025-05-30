@@ -59,7 +59,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Slang\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -70,7 +70,11 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CompileOptionValueKind.h" />
     <ClInclude Include="CompilerOption.h" />
+    <ClInclude Include="CompilerOptionName.h" />
+    <ClInclude Include="CompilerOptionValue.h" />
+    <ClInclude Include="CompileTarget.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CompilerOption.cpp" />
@@ -94,6 +98,8 @@
     <ClCompile Include="ParameterInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="PreprocessorMacroDesc.h" />
+    <ClInclude Include="ProfileID.h" />
     <ClInclude Include="Program.h" />
   </ItemGroup>
   <ItemGroup>
@@ -114,6 +120,11 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Native\SlangNative.vcxproj">
+      <Project>{c3d8f1a9-2e4f-4b5a-9d1e-8f7c9d0e1f3c}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="CompilerOption.cpp" />
+    <ClCompile Include="EntryPoint.cpp" />
+    <ClCompile Include="Module.cpp" />
+    <ClCompile Include="ParameterInfo.cpp" />
+    <ClCompile Include="Program.cpp" />
+    <ClCompile Include="Session.cpp" />
+    <ClCompile Include="ShaderModel.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CompilerOption.h" />
+    <ClInclude Include="EntryPoint.h" />
+    <ClInclude Include="Module.h" />
+    <ClInclude Include="ParameterInfo.h" />
+    <ClInclude Include="Program.h" />
+    <ClInclude Include="Session.h" />
+    <ClInclude Include="ShaderModel.h" />
+    <ClInclude Include="CompileTarget.h" />
+    <ClInclude Include="CompilerOptionValue.h">
+      <Filter>Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="CompilerOptionName.h">
+      <Filter>Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="CompileOptionValueKind.h">
+      <Filter>Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="PreprocessorMacroDesc.h" />
+    <ClInclude Include="ProfileID.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Enums">
+      <UniqueIdentifier>{cd1327af-bd96-4d8e-854d-5208fc9e02e1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
