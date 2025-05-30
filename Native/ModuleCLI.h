@@ -5,13 +5,19 @@
 #include "SessionCLI.h"
 #include "EntryPointCLI.h"
 
+#ifdef SLANGNATIVE_EXPORTS
+#define SLANGNATIVE_API __declspec(dllexport)
+#else
+#define SLANGNATIVE_API __declspec(dllimport)
+#endif
+
 namespace Native
 {
-	class ModuleCLI
+	class SLANGNATIVE_API ModuleCLI
 	{
 	public:
 		// Constructor with parameters (example)
-		ModuleCLI(slang::ISession* parent, const char* moduleName, const char* modulePath, const char* shaderSource);
+		ModuleCLI(SessionCLI* parent, const char* moduleName, const char* modulePath, const char* shaderSource);
 
 		// Destructor
 		~ModuleCLI();

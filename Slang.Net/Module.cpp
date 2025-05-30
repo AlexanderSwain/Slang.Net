@@ -1,71 +1,55 @@
-//#include "Module.h"
-//#include "EntryPoint.h"
-//#include <iostream>
-//
-//Slang::Module::Module(slang::ISession* parent, const char* moduleName, const char* modulePath, const char* shaderSource)
-//{
-//    m_parent = parent;
-//    Slang::ComPtr<slang::IModule> slangModule;
-//    {
-//        Slang::ComPtr<slang::IBlob> sourceBlob;
-//        Slang::ComPtr<slang::IBlob> diagnosticsBlob;
-//
-//        // Use moduleName instead of modulePath for loadModule
-//        slangModule = m_parent->loadModule(moduleName, diagnosticsBlob.writeRef());
-//        //slangModule = m_session->loadModuleFromSource(moduleName, modulePath, sourceBlob, diagnosticsBlob.writeRef());
-//        //slangModule = m_session->loadModuleFromSourceString(moduleName, modulePath, shaderSource, diagnosticsBlob.writeRef());
-//
-//        // Improved diagnostics output
-//        if (diagnosticsBlob != nullptr && diagnosticsBlob->getBufferSize() > 0)
-//        {
-//            std::cout << "Slang diagnostics: " << std::endl;
-//            std::cout << (const char*)diagnosticsBlob->getBufferPointer() << std::endl;
-//        }
-//        else {
-//            std::cout << "No diagnostics output from Slang." << std::endl;
-//        }
-//
-//        if (!slangModule)
-//        {
-//            std::cout << "Slang failed to create module from source string." << std::endl;
-//        }
-//    }
-//    
-//    m_slangModule = slangModule;
-//}
-//
-//Slang::Module::~Module()
-//{
-//    if (m_slangModule)
-//    {
-//        m_slangModule->Release();
-//        m_slangModule = nullptr;
-//	}
-//}
-//
-//slang::IModule* Slang::Module::getNative()
-//{
-//    return m_slangModule;
-//}
-//
-////extern "C" {
-////    __declspec(dllexport) void* CreateModule(void* session, char* moduleName, char* modulePath, char* shaderSource)
-////    {
-////        if (session)
-////        {
-////            Session* sessionPtr = static_cast<Session*>(session);
-////            Module* module = new Module(sessionPtr->getNative(), moduleName, modulePath, shaderSource);
-////            return static_cast<void*>(module);
-////        }
-////        return nullptr;
-////    }
-////
-////    __declspec(dllexport) void DestroyModule(void* modulePtr)
-////    {
-////        if (modulePtr)
-////        {
-////            Module* module = static_cast<Module*>(modulePtr);
-////            delete module;
-////        }
-////    }
-////}
+// Define this before including any Windows headers to avoid conflicts
+#define NOMINMAX
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+
+#include "Module.h"
+#include <msclr/marshal.h>
+
+namespace Slang
+{
+    static const char* FromString(System::String^ str)
+    {
+        if (str == nullptr)
+            return nullptr;
+        System::IntPtr strPtr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(str);
+        const char* nativeStr = static_cast<const char*>(strPtr.ToPointer());
+        return nativeStr;
+    }
+
+    // Constructor with parameters implementation
+    Slang::Module::Module(Session^ parent, System::String^ moduleName, System::String^ modulePath, System::String^ shaderSource)
+    {
+        void* nativeParent = parent->getNative();
+        const char* name = FromString(moduleName);
+        const char* path = FromString(modulePath);
+        const char* source = FromString(shaderSource);
+
+        m_NativeModule = SlangNative::CreateModule(nativeParent, name, path, source);
+    }
+
+    // Destructor implementation (this implements IDisposable::Dispose automatically in C++/CLI)
+    Slang::Module::~Module()
+    {
+        this->!Module();
+        System::GC::SuppressFinalize(this);
+    }
+
+    // Finalizer implementation
+    Slang::Module::!Module()
+    {
+        // Clean up resources if needed
+        if (m_NativeModule != nullptr)
+        {
+            // The native module should be cleaned up by the native library
+            // Don't delete the pointer directly as it's managed by the native code
+            m_NativeModule = nullptr;
+        }
+    }
+
+    void* Slang::Module::getNative()
+    {
+        return m_NativeModule;
+    }
+}

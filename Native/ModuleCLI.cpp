@@ -1,9 +1,9 @@
 #include "ModuleCLI.h"
 #include <iostream>
 
-Native::ModuleCLI::ModuleCLI(slang::ISession* parent, const char* moduleName, const char* modulePath, const char* shaderSource)
+Native::ModuleCLI::ModuleCLI(SessionCLI* parent, const char* moduleName, const char* modulePath, const char* shaderSource)
 {
-    m_parent = parent;
+    m_parent = parent->getNative();
     Slang::ComPtr<slang::IModule> slangModule;
     {
         Slang::ComPtr<slang::IBlob> sourceBlob;

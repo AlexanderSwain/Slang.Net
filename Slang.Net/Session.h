@@ -1,11 +1,17 @@
 #pragma once
+
+// Define this before including any Windows headers to avoid conflicts
+#define NOMINMAX
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+
 #include "CompilerOption.h"
 #include "PreprocessorMacroDesc.h"
 #include "ShaderModel.h"
 #include "../Native/SlangNative.h"
 
-using namespace System;
-using namespace System::Runtime::InteropServices;
+// Removed the "using namespace System::Runtime::InteropServices;" that was causing conflicts
 
 namespace Slang
 {
@@ -16,7 +22,7 @@ namespace Slang
         Session(array<Slang::CompilerOption^>^ options,
             array<Slang::PreprocessorMacroDesc^>^ macros,
             array<Slang::ShaderModel^>^ models,
-            array<String^>^ searchPaths);
+            array<System::String^>^ searchPaths);
 
         // Destructor
         ~Session();

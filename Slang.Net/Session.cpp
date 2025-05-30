@@ -1,12 +1,18 @@
+// Define this before including any Windows headers to avoid conflicts
+#define NOMINMAX
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+
 #include "Session.h"
 
 namespace Slang
 {
-    static const char* FromString(String^ str)
+    static const char* FromString(System::String^ str)
     {
         if (str == nullptr)
             return nullptr;
-        IntPtr strPtr = Marshal::StringToHGlobalAnsi(str);
+        System::IntPtr strPtr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(str);
         const char* nativeStr = static_cast<const char*>(strPtr.ToPointer());
         return nativeStr;
     }
@@ -15,7 +21,7 @@ namespace Slang
     Slang::Session::Session(array<Slang::CompilerOption^>^ options,
         array<Slang::PreprocessorMacroDesc^>^ macros,
         array<Slang::ShaderModel^>^ models,
-        array<String^>^ searchPaths)
+        array<System::String^>^ searchPaths)
     {
         // Marshal managed arrays to native arrays
         int optionsLength = options->Length;
@@ -40,8 +46,7 @@ namespace Slang
             
         int modelsLength = models->Length;
         Native::ShaderModelCLI* nativeModels = new Native::ShaderModelCLI[modelsLength];
-        for (int i = 0; i < modelsLength; ++i)
-        {
+        for (int i = 0; i < modelsLength; ++i)        {
 			const char* profile = FromString(models[i]->getProfile());
             nativeModels[i] = Native::ShaderModelCLI((Native::CompileTargetCLI)models[i]->getTarget(), profile); // or marshal as needed
         }
@@ -50,7 +55,7 @@ namespace Slang
         char** nativeSearchPaths = new char* [searchPathsLength];
         for (int i = 0; i < searchPathsLength; ++i)
         {
-            IntPtr strPtr = Marshal::StringToHGlobalAnsi(searchPaths[i]);
+            System::IntPtr strPtr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(searchPaths[i]);
             nativeSearchPaths[i] = static_cast<char*>(strPtr.ToPointer());
         }
         
@@ -66,7 +71,7 @@ namespace Slang
         delete[] nativeMacros;
         delete[] nativeModels;
         for (int i = 0; i < searchPathsLength; ++i)
-            Marshal::FreeHGlobal(IntPtr(nativeSearchPaths[i]));
+            System::Runtime::InteropServices::Marshal::FreeHGlobal(System::IntPtr(nativeSearchPaths[i]));
         delete[] nativeSearchPaths;
     }
 
