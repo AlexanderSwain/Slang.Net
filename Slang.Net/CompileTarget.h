@@ -1,7 +1,7 @@
 namespace Slang
 {
     typedef int SlangCompileTargetIntegral;
-    enum CompileTarget : SlangCompileTargetIntegral
+    public enum class CompileTarget : SlangCompileTargetIntegral
     {
         SLANG_TARGET_UNKNOWN,
         SLANG_TARGET_NONE,

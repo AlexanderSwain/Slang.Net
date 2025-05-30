@@ -1,6 +1,6 @@
 namespace Slang
 {
-    enum class CompilerOptionValueKind
+    public enum class CompilerOptionValueKind
     {
         Int,
         String

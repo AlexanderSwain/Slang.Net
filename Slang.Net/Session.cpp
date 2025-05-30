@@ -29,45 +29,45 @@ namespace Slang
             nativeOptions = new Native::CompilerOptionCLI(name, value);
         }
         
-        //int macrosLength = macros->Length;
-        //Native::PreprocessorMacroDescCLI* nativeMacros = new Native::PreprocessorMacroDescCLI[macrosLength];
-        //for (int i = 0; i < macrosLength; ++i)
-        //{
-		//	const char* name = FromString(macros[i]->name);
-		//	const char* value = FromString(macros[i]->value);
-        //    nativeMacros[i] = Native::PreprocessorMacroDescCLI(name, value); // or marshal as needed
-        //}
-        //    
-        //int modelsLength = models->Length;
-        //Native::ShaderModelCLI* nativeModels = new Native::ShaderModelCLI[modelsLength];
-        //for (int i = 0; i < modelsLength; ++i)
-        //{
-		//	const char* profile = FromString(models[i]->getProfile());
-        //    nativeModels[i] = Native::ShaderModelCLI((Native::CompileTargetCLI)models[i]->getTarget(), profile); // or marshal as needed
-        //}
-        //    
-        //int searchPathsLength = searchPaths->Length;
-        //char** nativeSearchPaths = new char* [searchPathsLength];
-        //for (int i = 0; i < searchPathsLength; ++i)
-        //{
-        //    IntPtr strPtr = Marshal::StringToHGlobalAnsi(searchPaths[i]);
-        //    nativeSearchPaths[i] = static_cast<char*>(strPtr.ToPointer());
-        //}
-        //
-        //// Call the native function
-        //m_NativeSession = SlangNative::CreateSession(
-        //    nativeOptions, optionsLength,
-        //    nativeMacros, macrosLength,
-        //    nativeModels, modelsLength,
-        //    nativeSearchPaths, searchPathsLength);
-        //
-        //// Clean up native arrays if needed (except m_NativeSession, which you own)
-        //delete[] nativeOptions;
-        //delete[] nativeMacros;
-        //delete[] nativeModels;
-        //for (int i = 0; i < searchPathsLength; ++i)
-        //    Marshal::FreeHGlobal(IntPtr(nativeSearchPaths[i]));
-        //delete[] nativeSearchPaths;
+        int macrosLength = macros->Length;
+        Native::PreprocessorMacroDescCLI* nativeMacros = new Native::PreprocessorMacroDescCLI[macrosLength];
+        for (int i = 0; i < macrosLength; ++i)
+        {
+			const char* name = FromString(macros[i]->GetName());
+			const char* value = FromString(macros[i]->GetValue());
+            nativeMacros[i] = Native::PreprocessorMacroDescCLI(name, value); // or marshal as needed
+        }
+            
+        int modelsLength = models->Length;
+        Native::ShaderModelCLI* nativeModels = new Native::ShaderModelCLI[modelsLength];
+        for (int i = 0; i < modelsLength; ++i)
+        {
+			const char* profile = FromString(models[i]->getProfile());
+            nativeModels[i] = Native::ShaderModelCLI((Native::CompileTargetCLI)models[i]->getTarget(), profile); // or marshal as needed
+        }
+            
+        int searchPathsLength = searchPaths->Length;
+        char** nativeSearchPaths = new char* [searchPathsLength];
+        for (int i = 0; i < searchPathsLength; ++i)
+        {
+            IntPtr strPtr = Marshal::StringToHGlobalAnsi(searchPaths[i]);
+            nativeSearchPaths[i] = static_cast<char*>(strPtr.ToPointer());
+        }
+        
+        // Call the native function
+        m_NativeSession = SlangNative::CreateSession(
+            nativeOptions, optionsLength,
+            nativeMacros, macrosLength,
+            nativeModels, modelsLength,
+            nativeSearchPaths, searchPathsLength);
+        
+        // Clean up native arrays if needed (except m_NativeSession, which you own)
+        delete[] nativeOptions;
+        delete[] nativeMacros;
+        delete[] nativeModels;
+        for (int i = 0; i < searchPathsLength; ++i)
+            Marshal::FreeHGlobal(IntPtr(nativeSearchPaths[i]));
+        delete[] nativeSearchPaths;
     }
 
     // Destructor implementation

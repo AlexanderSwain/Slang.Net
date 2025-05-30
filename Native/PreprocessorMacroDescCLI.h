@@ -1,8 +1,14 @@
 #pragma once
 
+#ifdef SLANGNATIVE_EXPORTS
+#define SLANGNATIVE_API __declspec(dllexport)
+#else
+#define SLANGNATIVE_API __declspec(dllimport)
+#endif
+
 namespace Native
 {
-    struct PreprocessorMacroDescCLI
+    struct SLANGNATIVE_API PreprocessorMacroDescCLI
     {
     private:
         const char* m_Name;

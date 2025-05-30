@@ -2,9 +2,15 @@
 #include <string>
 #include "CompileTargetCLI.h"
 
+#ifdef SLANGNATIVE_EXPORTS
+#define SLANGNATIVE_API __declspec(dllexport)
+#else
+#define SLANGNATIVE_API __declspec(dllimport)
+#endif
+
 namespace Native
 {
-	struct ShaderModelCLI
+	struct SLANGNATIVE_API ShaderModelCLI
 	{
 	private:
 		CompileTargetCLI _Target;

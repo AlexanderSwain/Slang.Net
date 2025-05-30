@@ -1,6 +1,6 @@
 namespace Slang
 {
-    enum class CompilerOptionName
+    public enum class CompilerOptionName
     {
         MacroDefine, // stringValue0: macro name;  stringValue1: macro value
         DepFile,

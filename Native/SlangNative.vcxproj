@@ -116,12 +116,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleCLI.cpp" />
-  </ItemGroup>
+  </ItemGroup>  
   <ItemGroup>
     <ClInclude Include="ParameterInfoCLI.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="PreprocessorMacroDescCLI.h" />
+    <ClInclude Include="PreprocessorMacroDescCLI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PreprocessorMacroDescCLI.cpp" />
