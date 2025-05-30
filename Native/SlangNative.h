@@ -27,4 +27,6 @@ namespace SlangNative
         Native::PreprocessorMacroDescCLI* macros, int macrosLength,
         Native::ShaderModelCLI* models, int modelsLength,
         char* searchPaths[], int searchPathsLength);
+
+    extern "C" SLANGNATIVE_API void* CreateModule(void* parentSession, const char* moduleName, const char* modulePath, const char* shaderSource);
 }

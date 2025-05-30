@@ -1,5 +1,7 @@
 #include "SlangNative.h"
 #include "SessionCLI.h"
+#include "ModuleCLI.h"
+
 
 namespace SlangNative
 {
@@ -37,5 +39,11 @@ namespace SlangNative
         // Create a new Session object on the heap
         SessionCLI* newSession = new SessionCLI(options, optionsLength, macros, macrosLength, models, modelsLength, searchPaths, searchPathsLength);
         return newSession;
+    }
+
+    extern "C" SLANGNATIVE_API void* CreateModule(void* parentSession, const char* moduleName, const char* modulePath, const char* shaderSource)
+    {
+        ModuleCLI* result = new ModuleCLI((SessionCLI*)parentSession, moduleName, modulePath, shaderSource);
+        return result;
     }
 }

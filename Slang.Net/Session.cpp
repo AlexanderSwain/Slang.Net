@@ -19,7 +19,7 @@ namespace Slang
     {
         // Marshal managed arrays to native arrays
         int optionsLength = options->Length;
-        Native::CompilerOptionCLI* nativeOptions = nullptr;// new Native::CompilerOptionCLI[optionsLength];
+        Native::CompilerOptionCLI* nativeOptions = new Native::CompilerOptionCLI[optionsLength];
         for (int i = 0; i < optionsLength; ++i)
         {
             Native::CompilerOptionNameCLI name = (Native::CompilerOptionNameCLI)options[i]->getName();
