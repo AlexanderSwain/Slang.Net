@@ -7,13 +7,20 @@
 #include <map>
 #include <string>
 
+#ifdef SLANGNATIVE_EXPORTS
+#define SLANGNATIVE_API __declspec(dllexport)
+#else
+#define SLANGNATIVE_API __declspec(dllimport)
+#endif
+
+
 namespace Native
 {
-	class EntryPointCLI
+	class SLANGNATIVE_API EntryPointCLI
 	{
 	public:
 		// Constructor with parameters (example)
-		EntryPointCLI(slang::IModule* parent, const char* entryPointName);
+		EntryPointCLI(ModuleCLI* parent, const char* entryPointName);
 
 		// Destructor
 		~EntryPointCLI();

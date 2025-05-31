@@ -3,7 +3,6 @@
 #include "slang-com-ptr.h"
 #include "slang-com-helper.h"
 #include "SessionCLI.h"
-#include "EntryPointCLI.h"
 
 #ifdef SLANGNATIVE_EXPORTS
 #define SLANGNATIVE_API __declspec(dllexport)

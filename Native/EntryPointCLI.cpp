@@ -3,9 +3,9 @@
 #include <string>
 #include <iostream>
 
-Native::EntryPointCLI::EntryPointCLI(slang::IModule* parent, const char* entryPointName)
+Native::EntryPointCLI::EntryPointCLI(ModuleCLI* parent, const char* entryPointName)
 {
-    m_parent = parent;
+    m_parent = parent->getNative();
     m_name = entryPointName;
 
     if (!m_parent) {

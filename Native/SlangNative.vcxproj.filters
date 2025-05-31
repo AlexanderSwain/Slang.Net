@@ -54,6 +54,9 @@
     <ClInclude Include="ShaderModelCLI.h">
       <Filter>Slang Structs</Filter>
     </ClInclude>
+    <ClInclude Include="CompileTargetCLI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SlangNative.cpp">
@@ -72,9 +75,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CompilerOptionCLI.cpp">
-      <Filter>Slang Structs</Filter>
-    </ClCompile>
-    <ClCompile Include="CompileTargetCLI.h">
       <Filter>Slang Structs</Filter>
     </ClCompile>
     <ClCompile Include="PreprocessorMacroDescCLI.cpp">

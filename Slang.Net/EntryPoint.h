@@ -1,40 +1,31 @@
-//#pragma once
-//#include "slang.h"
-//#include "slang-com-ptr.h"
-//#include "slang-com-helper.h"
-//#include "Module.h"
-//#include "ParameterInfo.h"
-//#include <string>
-//
-//using namespace System;
-//using namespace System::Collections::Generic;
-//
-//namespace Slang
-//{
-//    public ref class EntryPoint
-//    {
-//    public:
-//        // Constructor with parameters (example)
-//        EntryPoint(slang::IModule* parent, String^ entryPointName);
-//
-//        // Destructor
-//        ~EntryPoint();
-//
-//        bool getParameterInfo(String^ name, ParameterInfo% outInfo);
-//
-//        // Properties
-//        slang::IModule* getParent();
-//        String^ getName();
-//        int getIndex();
-//        SlangStage getStage();
-//        slang::IEntryPoint* getNative();
-//
-//    private:
-//        slang::IEntryPoint* m_entryPoint = nullptr;
-//        slang::IModule* m_parent = nullptr;
-//        String^ m_name;
-//        int m_index = -1;
-//        SlangStage m_stage = SLANG_STAGE_NONE;
-//        Dictionary<String^, ParameterInfo>^ m_parameterInfoMap;
-//    };
-//}
+#pragma once
+
+// Define this before including any Windows headers to avoid conflicts
+#define NOMINMAX
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+
+#include "Module.h"
+#include "../Native/SlangNative.h"
+
+namespace Slang
+{
+    public ref class EntryPoint : public System::IDisposable
+    {
+    public:
+        // Constructor with parameters (example)
+        EntryPoint(Module^ parent, System::String^ entryPointName);
+
+        // Destructor (this automatically implements IDisposable::Dispose in C++/CLI)
+        ~EntryPoint();
+
+        // Finalizer
+        !EntryPoint();
+
+        void* getNative();
+
+    private:
+        void* m_NativeEntryPoint;
+    };
+}

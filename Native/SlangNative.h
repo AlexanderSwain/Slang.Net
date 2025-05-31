@@ -29,4 +29,10 @@ namespace SlangNative
         char* searchPaths[], int searchPathsLength);
 
     extern "C" SLANGNATIVE_API void* CreateModule(void* parentSession, const char* moduleName, const char* modulePath, const char* shaderSource);
+
+    extern "C" SLANGNATIVE_API void* FindEntryPoint(void* parentModule, const char* entryPointName);
+
+    extern "C" SLANGNATIVE_API void* CreateProgram(void* parentEntryPoint);
+
+    extern "C" SLANGNATIVE_API int32_t Compile(void* program, const char** output);
 }

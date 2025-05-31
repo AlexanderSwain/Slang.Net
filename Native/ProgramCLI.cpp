@@ -96,15 +96,23 @@ SlangResult Native::ProgramCLI::GetCompiled(const char** output)
             stageIndex, // update this when implementing other graphics APIs
             bytecode.writeRef(),
             diagnosticsBlob.writeRef());
-        if (diagnosticsBlob != nullptr)
-        {
-            std::cout << (const char*)diagnosticsBlob->getBufferPointer() << std::endl;
-        }
 
         if (result < 0)
-            SLANG_RETURN_ON_FAIL(result);
-
-        *output = (const char*)bytecode->getBufferPointer();
+        {
+            std::string errorMsg = "Failed to get entry point code.";
+            if (diagnosticsBlob != nullptr)
+            {
+                errorMsg += " Diagnostics: ";
+                errorMsg += static_cast<const char*>(diagnosticsBlob->getBufferPointer());
+            }
+            *output = errorMsg.c_str();
+			return result;
+        }
+        else
+        {
+            *output = (const char*)bytecode->getBufferPointer();
+            return result;
+        }
     }
 }
 
@@ -131,38 +139,3 @@ Native::ProgramCLI::~ProgramCLI()
         m_program = nullptr;
     }
 }
-
-//extern "C" {
-//    __declspec(dllexport) void* CreateProgram(void* entryPoint, char* name)
-//    {
-//        if (entryPoint)
-//        {
-//            EntryPoint* entryPoint = static_cast<EntryPoint*>(entryPoint);
-//            Program* program = new Program(entryPoint);
-//            return static_cast<void*>(program);
-//        }
-//        return nullptr;
-//    }
-//
-//    __declspec(dllexport) bool GetCompiled(void* program, const char** output)
-//    {
-//        if (program)
-//        {
-//            Program* programPtr = static_cast<Program*>(program);
-//            return programPtr->GetCompiled(output) == SLANG_OK;
-//        }
-//
-//        return false;
-//    }
-//
-//    __declspec(dllexport) void* DestroyProgram(void* program)
-//    {
-//        if (program)
-//        {
-//            EntryPoint* programPtr = static_cast<EntryPoint*>(program);
-//            delete programPtr;
-//            return nullptr;
-//        }
-//        return nullptr;
-//    }
-//}

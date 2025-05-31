@@ -46,25 +46,3 @@ slang::IModule* Native::ModuleCLI::getNative()
 {
     return m_slangModule;
 }
-
-//extern "C" {
-//    __declspec(dllexport) void* CreateModule(void* session, char* moduleName, char* modulePath, char* shaderSource)
-//    {
-//        if (session)
-//        {
-//            Session* sessionPtr = static_cast<Session*>(session);
-//            Module* module = new Module(sessionPtr->getNative(), moduleName, modulePath, shaderSource);
-//            return static_cast<void*>(module);
-//        }
-//        return nullptr;
-//    }
-//
-//    __declspec(dllexport) void DestroyModule(void* modulePtr)
-//    {
-//        if (modulePtr)
-//        {
-//            Module* module = static_cast<Module*>(modulePtr);
-//            delete module;
-//        }
-//    }
-//}

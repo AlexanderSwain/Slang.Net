@@ -1,32 +1,33 @@
-//#pragma once
-//#include "slang.h"
-//#include "slang-com-ptr.h"
-//#include "slang-com-helper.h"
-//#include "EntryPoint.h"
-//#include <array>
-//#include <iostream>
-//
-//namespace Slang
-//{
-//    public ref class Program
-//    {
-//    public:
-//        // Constructor with parameters (example)
-//        Program(EntryPoint^ entryPoint);
-//
-//        // Destructor
-//        ~Program();
-//
-//        //Properties
-//        slang::IComponentType* getNative();
-//        slang::IComponentType* getLinked();
-//        EntryPoint^ getEntryPoint();
-//
-//        SlangResult GetCompiled(const char** output);
-//
-//    private:
-//        EntryPoint^ m_entryPoint = nullptr;
-//        slang::IComponentType* m_program = nullptr;
-//        slang::IComponentType* m_linkedProgram = nullptr;
-//    };
-//}
+#pragma once
+
+// Define this before including any Windows headers to avoid conflicts
+#define NOMINMAX
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+
+#include "EntryPoint.h"
+#include "../Native/SlangNative.h"
+
+namespace Slang
+{
+    public ref class Program : public System::IDisposable
+    {
+    public:
+        // Constructor with parameters (example)
+        Program(EntryPoint^ parent);
+
+        // Destructor (this automatically implements IDisposable::Dispose in C++/CLI)
+        ~Program();
+
+        // Finalizer
+        !Program();
+
+        void* getNative();
+
+        System::String^ Compile();
+
+    private:
+        void* m_NativeProgram;
+    };
+}

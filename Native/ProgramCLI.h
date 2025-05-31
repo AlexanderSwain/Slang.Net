@@ -6,13 +6,19 @@
 #include <array>
 #include <iostream>
 
+#ifdef SLANGNATIVE_EXPORTS
+#define SLANGNATIVE_API __declspec(dllexport)
+#else
+#define SLANGNATIVE_API __declspec(dllimport)
+#endif
+
 namespace Native
 {
-	class ProgramCLI
+	class SLANGNATIVE_API ProgramCLI
 	{
 	public:
 		// Constructor with parameters (example)
-		ProgramCLI(EntryPointCLI* entryPoint);
+		ProgramCLI(EntryPointCLI* parent);
 
 		// Destructor
 		~ProgramCLI();
