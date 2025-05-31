@@ -95,17 +95,16 @@ SlangResult Native::ProgramCLI::GetCompiled(const char** output)
             index,
             stageIndex, // update this when implementing other graphics APIs
             bytecode.writeRef(),
-            diagnosticsBlob.writeRef());
-
+            diagnosticsBlob.writeRef());        
         if (result < 0)
         {
-            std::string errorMsg = "Failed to get entry point code.";
+            m_errorBuffer = "Failed to get entry point code.";
             if (diagnosticsBlob != nullptr)
             {
-                errorMsg += " Diagnostics: ";
-                errorMsg += static_cast<const char*>(diagnosticsBlob->getBufferPointer());
+                m_errorBuffer += " Diagnostics: ";
+                m_errorBuffer += static_cast<const char*>(diagnosticsBlob->getBufferPointer());
             }
-            *output = errorMsg.c_str();
+            *output = m_errorBuffer.c_str();
 			return result;
         }
         else

@@ -5,6 +5,7 @@
 #include "EntryPointCLI.h"
 #include <array>
 #include <iostream>
+#include <string>
 
 #ifdef SLANGNATIVE_EXPORTS
 #define SLANGNATIVE_API __declspec(dllexport)
@@ -29,10 +30,10 @@ namespace Native
 		EntryPointCLI* getEntryPoint();
 
 		SlangResult GetCompiled(const char** output);
-
 	private:
 		EntryPointCLI* m_entryPoint = nullptr;
 		slang::IComponentType* m_program = nullptr;
 		slang::IComponentType* m_linkedProgram = nullptr;
+		std::string m_errorBuffer; // Buffer to store error messages
 	};
 }
