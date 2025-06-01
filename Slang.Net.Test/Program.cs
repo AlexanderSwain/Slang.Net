@@ -8,7 +8,7 @@ public class Program
         Console.WriteLine("sessioning...");
         Session session = new Session(
             [
-                new CompilerOption(Slang.CompilerOptionName.Optimization, new CompilerOptionValue(CompilerOptionValueKind.Int, 2, 0, null, null))
+                new CompilerOption(Slang.CompilerOptionName.Obfuscate, new CompilerOptionValue(CompilerOptionValueKind.Int, 1, 0, null, null))
             ],
             [
                 new PreprocessorMacroDesc("LIGHTING_SCALER", "12")
@@ -23,11 +23,10 @@ public class Program
             ],
             [
                 "C:\\Users\\lexxa\\Code\\Playground\\Slang.Net.Test\\Shaders\\"
-            ]);
-
-        Module module = new Module(session, "test", "test.slang", File.ReadAllText("Shaders/test.slang"));
+            ]);        Module module = new Module(session, "test", "test.slang", File.ReadAllText("Shaders/test.slang"));
 
         EntryPoint entryPoint = new EntryPoint(module, "computeMain");
+        var parameters = entryPoint.Parameters;
 
         Slang.Program program = new Slang.Program(entryPoint);
 

@@ -123,6 +123,9 @@
     <ClInclude Include="ParameterInfoCLI.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ParameterInfoCLI.cpp" />
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="PreprocessorMacroDescCLI.h" />
   </ItemGroup>
   <ItemGroup>

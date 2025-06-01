@@ -2,6 +2,7 @@
 #include "CompilerOptionCLI.h"
 #include "PreprocessorMacroDescCLI.h"
 #include "ShaderModelCLI.h"
+#include "ParameterInfoCLI.h"
 
 #ifdef SLANGNATIVE_EXPORTS
 #define SLANGNATIVE_API __declspec(dllexport)
@@ -13,16 +14,6 @@ using namespace Native;
 
 namespace SlangNative
 {
-
-    //// Export a simple function to test the DLL
-    //extern "C" SLANGNATIVE_API const char* GetVersion();
-    //
-    //// Export function to create a global session
-    //extern "C" SLANGNATIVE_API slang::IGlobalSession* CreateGlobalSession();
-    //
-    //// Export function to release a global session
-    //extern "C" SLANGNATIVE_API void ReleaseGlobalSession(slang::IGlobalSession* session);
-
     extern "C" SLANGNATIVE_API void* CreateSession(Native::CompilerOptionCLI* options, int optionsLength,
         Native::PreprocessorMacroDescCLI* macros, int macrosLength,
         Native::ShaderModelCLI* models, int modelsLength,
@@ -31,6 +22,8 @@ namespace SlangNative
     extern "C" SLANGNATIVE_API void* CreateModule(void* parentSession, const char* moduleName, const char* modulePath, const char* shaderSource);
 
     extern "C" SLANGNATIVE_API void* FindEntryPoint(void* parentModule, const char* entryPointName);
+
+    extern "C" SLANGNATIVE_API void GetParameterInfo(void* parentEntryPoint, Native::ParameterInfoCLI** outParameterInfo, int* outParameterCount);
 
     extern "C" SLANGNATIVE_API void* CreateProgram(void* parentEntryPoint);
 

@@ -25,7 +25,8 @@ namespace Native
 		// Destructor
 		~EntryPointCLI();
 
-		bool getParameterInfo(const char* name, ParameterInfoCLI& outInfo);
+		ParameterInfoCLI* getParameterInfoArray();
+		unsigned int getParameterCount();
 
 		// Properties
 		slang::IModule* getParent() const;
@@ -40,7 +41,8 @@ namespace Native
 		std::string m_name;
 		int m_index = -1;
 		SlangStage m_stage = SLANG_STAGE_NONE;
-		std::map<std::string, ParameterInfoCLI> m_parameterInfoMap;
+		ParameterInfoCLI* m_parameterInfoArray;
+		unsigned int m_parameterCount = 0;
 	};
 }
 

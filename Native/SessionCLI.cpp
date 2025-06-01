@@ -72,7 +72,7 @@ Native::SessionCLI::SessionCLI(CompilerOptionCLI* options, int optionsLength,
     
     for (int i = 0; i < macrosLength; i++)
     {
-        slang::PreprocessorMacroDesc macroDesc = { macros[i].getName2(), macros[i].getValue2() };
+        slang::PreprocessorMacroDesc macroDesc = { macros[i].getName(), macros[i].getValue() };
 
         std::cout << macroDesc.name << std::endl;
         std::cout << macroDesc.value << std::endl;

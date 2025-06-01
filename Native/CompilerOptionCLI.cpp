@@ -6,9 +6,9 @@ Native::CompilerOptionCLI::CompilerOptionCLI()
 {
 }
 
-Native::CompilerOptionCLI::CompilerOptionCLI(Native::CompilerOptionNameCLI name2, Native::CompilerOptionValueCLI value2)
-	: _Name(name2)
-	, _Value(value2)
+Native::CompilerOptionCLI::CompilerOptionCLI(Native::CompilerOptionNameCLI name, Native::CompilerOptionValueCLI value)
+	: _Name(name)
+	, _Value(value)
 {
 }
 

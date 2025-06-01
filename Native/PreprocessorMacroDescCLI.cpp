@@ -12,12 +12,12 @@ Native::PreprocessorMacroDescCLI::PreprocessorMacroDescCLI(const char* name, con
 {
 }
 
-const char* Native::PreprocessorMacroDescCLI::getName2()
+const char* Native::PreprocessorMacroDescCLI::getName()
 {
 	return m_Name;
 }
 
-const char* Native::PreprocessorMacroDescCLI::getValue2()
+const char* Native::PreprocessorMacroDescCLI::getValue()
 {
 	return m_Value;
 }

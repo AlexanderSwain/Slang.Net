@@ -28,6 +28,13 @@ namespace SlangNative
         return result;
     }
 
+    extern "C" SLANGNATIVE_API void GetParameterInfo(void* parentEntryPoint, Native::ParameterInfoCLI** outParameterInfoArray, int* outParameterCount)
+    {
+        EntryPointCLI* entryPoint = (EntryPointCLI*)parentEntryPoint;
+		*outParameterInfoArray = entryPoint->getParameterInfoArray();
+        *outParameterCount = entryPoint->getParameterCount();
+    }
+
     extern "C" SLANGNATIVE_API void* CreateProgram(void* parentEntryPoint)
     {
         ProgramCLI* result = new ProgramCLI((EntryPointCLI*)parentEntryPoint);

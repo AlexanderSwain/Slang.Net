@@ -18,7 +18,7 @@ namespace Native
 		PreprocessorMacroDescCLI();
         PreprocessorMacroDescCLI(const char* name, const char* value);
 
-        const char* getName2();
-        const char* getValue2();
+        const char* getName();
+        const char* getValue();
     };
 }

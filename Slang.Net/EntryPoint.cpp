@@ -6,6 +6,7 @@
 
 #include "EntryPoint.h"
 #include <msclr/marshal.h>
+#include <stdexcept>
 
 namespace Slang
 {
@@ -21,10 +22,30 @@ namespace Slang
     // Constructor with parameters implementation
     Slang::EntryPoint::EntryPoint(Module^ parent, System::String^ entryPointName)
     {
+        if (parent == nullptr)
+        {
+            throw gcnew System::ArgumentNullException("parent", "Parent module cannot be null.");
+		}
+        if (entryPointName == nullptr)
+        {
+            throw gcnew System::ArgumentNullException("entryPointName", "Entry point name cannot be null.");
+		}
+
         void* nativeParent = parent->getNative();
         const char* searchName = FromString(entryPointName);
 
-        m_NativeEntryPoint = SlangNative::FindEntryPoint(nativeParent, searchName);
+        try
+        {
+            m_NativeEntryPoint = SlangNative::FindEntryPoint(nativeParent, searchName);
+        }
+        catch (const std::exception& e)
+        {
+            throw gcnew System::ArgumentException(gcnew System::String(e.what()));
+        }
+        catch (...)
+        {
+            throw gcnew System::Exception("Unknown native exception occurred in EntryPoint constructor.");
+        }
     }
 
     // Destructor implementation (this implements IDisposable::Dispose automatically in C++/CLI)
@@ -44,6 +65,19 @@ namespace Slang
             // Don't delete the pointer directly as it's managed by the native code
             m_NativeEntryPoint = nullptr;
         }
+    }
+
+    array<ParameterInfo^>^ Slang::EntryPoint::getParameters()
+    {
+        ParameterInfoCLI* params = nullptr;
+        int paramCount = 0;
+        SlangNative::GetParameterInfo(getNative(), &params, &paramCount);
+        array<ParameterInfo^>^ parameterArray = gcnew array<ParameterInfo^>(paramCount);
+        for (int i = 0; i < paramCount; ++i)
+        {
+            parameterArray[i] = gcnew ParameterInfo(gcnew String(params[i].getName()), params[i].getCategory(), params[i].getBindingIndex(), params[i].getBindingSpace());
+        }
+        return parameterArray;
     }
 
     void* Slang::EntryPoint::getNative()

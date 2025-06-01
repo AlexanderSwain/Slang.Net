@@ -2,22 +2,22 @@ namespace Slang
 {
     public ref class PreprocessorMacroDesc
     {
-        String^ name;
-        String^ value;
+        System::String^ name;
+        System::String^ value;
 
     public:
-        PreprocessorMacroDesc(String^ name, String^ value)
+        PreprocessorMacroDesc(System::String^ name, System::String^ value)
         {
             this->name = name;
             this->value = value;
         }
 
-        String^ GetName()
+        System::String^ GetName()
         {
             return name;
         }
 
-        String^ GetValue()
+        System::String^ GetValue()
         {
             return value;
         }

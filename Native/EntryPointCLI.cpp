@@ -41,8 +41,12 @@ Native::EntryPointCLI::EntryPointCLI(ModuleCLI* parent, const char* entryPointNa
         }
     }
 
+	// Initialize the parameter info array
+	m_parameterCount = typeLayout->getParameterCount();
+	m_parameterInfoArray = new ParameterInfoCLI[m_parameterCount];
+
     // Get binding information for each parameter
-    for (unsigned int i = 0; i < typeLayout->getParameterCount(); i++)
+    for (unsigned int i = 0; i < m_parameterCount; i++)
     {
         slang::VariableLayoutReflection* param = typeLayout->getParameterByIndex(i);
         if (!param) {
@@ -53,22 +57,18 @@ Native::EntryPointCLI::EntryPointCLI(ModuleCLI* parent, const char* entryPointNa
         unsigned int bindingIndex = param->getBindingIndex();
         unsigned int bindingSpace = param->getBindingSpace();
 
-        m_parameterInfoMap[name] = { category, bindingIndex, bindingSpace };
+        m_parameterInfoArray[i] = ParameterInfoCLI(name, category, bindingIndex, bindingSpace);
     }
 }
 
-bool Native::EntryPointCLI::getParameterInfo(const char* name, ParameterInfoCLI& outInfo)
+Native::ParameterInfoCLI* Native::EntryPointCLI::getParameterInfoArray()
 {
-    auto it = m_parameterInfoMap.find(name);
-    if (it != m_parameterInfoMap.end())
-    {
-        outInfo = it->second;
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return m_parameterInfoArray;
+}
+
+unsigned int Native::EntryPointCLI::getParameterCount()
+{
+    return m_parameterCount;
 }
 
 slang::IModule* Native::EntryPointCLI::getParent() const
@@ -104,37 +104,3 @@ Native::EntryPointCLI::~EntryPointCLI()
         m_entryPoint = nullptr;
     }
 }
-
-//extern "C" {
-//    __declspec(dllexport) void* CreateEntryPoint(void* module, char* name)
-//    {
-//        if (module)
-//        {
-//            Module* modulePtr = static_cast<Module*>(module);
-//            EntryPoint* entryPoint = new EntryPoint(modulePtr->getNative(), name);
-//            return static_cast<void*>(entryPoint);
-//        }
-//        return nullptr;
-//    }
-//
-//    __declspec(dllexport) bool TryGetParameter(void* entryPoint, char* name, ParameterInfo& outInfo)
-//    {
-//        if (entryPoint)
-//        {
-//            EntryPoint* entryPointPtr = static_cast<EntryPoint*>(entryPoint);
-//            return entryPointPtr->getParameterInfo(name, outInfo);
-//        }
-//        return false;
-//    }
-//
-//    __declspec(dllexport) void* DestroyEntryPoint(void* entryPoint)
-//    {
-//        if (entryPoint)
-//        {
-//            EntryPoint* entryPointPtr = static_cast<EntryPoint*>(entryPoint);
-//            delete entryPointPtr;
-//            return nullptr;
-//        }
-//        return nullptr;
-//    }
-//}

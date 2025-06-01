@@ -8,6 +8,7 @@
 
 #include "Module.h"
 #include "../Native/SlangNative.h"
+#include "ParameterInfo.h"
 
 namespace Slang
 {
@@ -23,9 +24,15 @@ namespace Slang
         // Finalizer
         !EntryPoint();
 
+        property array<ParameterInfo^>^ Parameters
+        {
+            array<ParameterInfo^>^ get() { return getParameters(); }
+		}
+
         void* getNative();
 
     private:
         void* m_NativeEntryPoint;
+        array<ParameterInfo^>^ Slang::EntryPoint::getParameters();
     };
 }

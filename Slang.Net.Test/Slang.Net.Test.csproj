@@ -7,9 +7,13 @@
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Shaders\ParameterInfo.slang" />
     <None Remove="Shaders\Test.slang" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Shaders\ParameterInfo.slang">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Shaders\Test.slang">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
