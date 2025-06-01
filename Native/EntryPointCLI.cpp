@@ -20,19 +20,31 @@ Native::EntryPointCLI::EntryPointCLI(ModuleCLI* parent, const char* entryPointNa
     }
     m_entryPoint = entryPoint;
 
-    slang::ProgramLayout* typeLayout = m_entryPoint->getLayout();
-    if (!typeLayout) {
+    slang::ProgramLayout* programLayout = m_entryPoint->getLayout();
+    if (!programLayout) {
         throw std::runtime_error("m_entryPoint->getLayout() returned null!");
     }
 
     // Get the index of the entry point in the module
-    int entryPointCount = typeLayout->getEntryPointCount();
+    int entryPointCount = programLayout->getEntryPointCount();
+    std::cout << "typeLayout->getEntryPointCount(): " << programLayout->getEntryPointCount() << std::endl;
     for (int i = 0; i < entryPointCount; i++)
     {
-        slang::EntryPointLayout* epLayout = typeLayout->getEntryPointByIndex(i);
+        slang::EntryPointLayout* epLayout = programLayout->getEntryPointByIndex(i);
         if (!epLayout) {
             throw std::runtime_error("typeLayout->getEntryPointByIndex(" + std::to_string(i) + ") returned null!");
         }
+        std::cout << "epLayout[" << i << "]->getParameterCount: " << epLayout->getParameterCount() << std::endl;
+
+        for (int j = 0; j < epLayout->getParameterCount(); j++)
+        {
+            slang::VariableLayoutReflection* param = epLayout->getParameterByIndex(j);
+            if (!param) {
+                throw std::runtime_error("epLayout->getParameterByIndex(" + std::to_string(j) + ") returned null!");
+            }
+            std::cout << "epLayout[" << i << "]->getParameterByIndex(" << j << ")->getName(): " << param->getName() << std::endl;
+		}
+
         if (strcmp(epLayout->getName(), entryPointName) == 0) 
         {
             m_index = i;
@@ -42,13 +54,14 @@ Native::EntryPointCLI::EntryPointCLI(ModuleCLI* parent, const char* entryPointNa
     }
 
 	// Initialize the parameter info array
-	m_parameterCount = typeLayout->getParameterCount();
+	m_parameterCount = programLayout->getParameterCount();
+    std::cout << "typeLayout->getParameterCount: " << programLayout->getParameterCount() << std::endl;
 	m_parameterInfoArray = new ParameterInfoCLI[m_parameterCount];
 
     // Get binding information for each parameter
     for (unsigned int i = 0; i < m_parameterCount; i++)
     {
-        slang::VariableLayoutReflection* param = typeLayout->getParameterByIndex(i);
+        slang::VariableLayoutReflection* param = programLayout->getParameterByIndex(i);
         if (!param) {
             throw std::runtime_error("typeLayout->getParameterByIndex(" + std::to_string(i) + ") returned null!");
         }

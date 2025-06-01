@@ -1,4 +1,5 @@
 #include "SlangNative.h"
+#include <string>
 #include "SessionCLI.h"
 #include "ModuleCLI.h"
 #include "EntryPointCLI.h"
@@ -7,25 +8,58 @@
 
 namespace SlangNative
 {
+    static thread_local std::string g_lastError;
+
     extern "C" SLANGNATIVE_API void* CreateSession(CompilerOptionCLI* options, int optionsLength,
         PreprocessorMacroDescCLI* macros, int macrosLength,
         ShaderModelCLI* models, int modelsLength,
-        char* searchPaths[], int searchPathsLength)
+        char* searchPaths[], int searchPathsLength,
+        const char** error)
     {
-        SessionCLI* result = new SessionCLI(options, optionsLength, macros, macrosLength, models, modelsLength, searchPaths, searchPathsLength);
-        return result;
+        try
+        {
+            SessionCLI* result = new SessionCLI(options, optionsLength, macros, macrosLength, models, modelsLength, searchPaths, searchPathsLength);
+            *error = nullptr;
+            return result;
+        }
+        catch (const std::exception& e)
+        {
+            g_lastError = e.what();
+            *error = g_lastError.c_str();
+			return nullptr;
+        }
     }
 
-    extern "C" SLANGNATIVE_API void* CreateModule(void* parentSession, const char* moduleName, const char* modulePath, const char* shaderSource)
+    extern "C" SLANGNATIVE_API void* CreateModule(void* parentSession, const char* moduleName, const char* modulePath, const char* shaderSource, const char** error)
     {
-        ModuleCLI* result = new ModuleCLI((SessionCLI*)parentSession, moduleName, modulePath, shaderSource);
-        return result;
+        try
+        {
+            ModuleCLI* result = new ModuleCLI((SessionCLI*)parentSession, moduleName, modulePath, shaderSource);
+            *error = nullptr;
+            return result;
+        }
+        catch (const std::exception& e)
+        {
+            g_lastError = e.what();
+            *error = g_lastError.c_str();
+            return nullptr;
+        }
     }
 
-    extern "C" SLANGNATIVE_API void* FindEntryPoint(void* parentModule, const char* entryPointName)
+    extern "C" SLANGNATIVE_API void* FindEntryPoint(void* parentModule, const char* entryPointName, const char** error)
     {
-        EntryPointCLI* result = new EntryPointCLI((ModuleCLI*)parentModule, entryPointName);
-        return result;
+        try 
+        {
+            EntryPointCLI* result = new EntryPointCLI((ModuleCLI*)parentModule, entryPointName);
+            *error = nullptr;
+            return result;
+        }
+        catch (const std::exception& e)
+        {
+            g_lastError = e.what();
+            *error = g_lastError.c_str();
+			return nullptr;
+        }
     }
 
     extern "C" SLANGNATIVE_API void GetParameterInfo(void* parentEntryPoint, Native::ParameterInfoCLI** outParameterInfoArray, int* outParameterCount)

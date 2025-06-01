@@ -18,6 +18,20 @@ namespace Slang
         return nativeStr;
     }
 
+    static void ThrowErrorMessage(const char* errorMessage)
+    {
+        // If an error message is provided, throw an exception with that message
+        if (errorMessage != nullptr)
+        {
+            System::String^ errorStr = gcnew System::String(errorMessage);
+            throw gcnew System::ArgumentException(errorStr);
+        }
+        else
+        {
+            throw gcnew System::Exception("There was a problem generating an error message.");
+        }
+    }
+
     // Constructor with parameters implementation
     Slang::Module::Module(Session^ parent, System::String^ moduleName, System::String^ modulePath, System::String^ shaderSource)
     {
@@ -25,8 +39,12 @@ namespace Slang
         const char* name = FromString(moduleName);
         const char* path = FromString(modulePath);
         const char* source = FromString(shaderSource);
+		const char* errorMessage = nullptr;
 
-        m_NativeModule = SlangNative::CreateModule(nativeParent, name, path, source);
+        m_NativeModule = SlangNative::CreateModule(nativeParent, name, path, source, &errorMessage);
+
+        if (!m_NativeModule)
+            ThrowErrorMessage(errorMessage);
     }
 
     // Destructor implementation (this implements IDisposable::Dispose automatically in C++/CLI)

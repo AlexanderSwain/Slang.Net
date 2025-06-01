@@ -17,6 +17,20 @@ namespace Slang
         return nativeStr;
     }
 
+    static void ThrowErrorMessage(const char* errorMessage)
+    {
+        // If an error message is provided, throw an exception with that message
+        if (errorMessage != nullptr)
+        {
+            System::String^ errorStr = gcnew System::String(errorMessage);
+            throw gcnew System::ArgumentException(errorStr);
+        }
+        else
+        {
+            throw gcnew System::Exception("There was a problem generating an error message.");
+        }
+    }
+
     // Constructor with parameters implementation
     Slang::Session::Session(array<Slang::CompilerOption^>^ options,
         array<Slang::PreprocessorMacroDesc^>^ macros,
@@ -58,13 +72,19 @@ namespace Slang
             System::IntPtr strPtr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(searchPaths[i]);
             nativeSearchPaths[i] = static_cast<char*>(strPtr.ToPointer());
         }
+
+		const char* errorMessage = nullptr;
         
         // Call the native function
         m_NativeSession = SlangNative::CreateSession(
             nativeOptions, optionsLength,
             nativeMacros, macrosLength,
             nativeModels, modelsLength,
-            nativeSearchPaths, searchPathsLength);
+            nativeSearchPaths, searchPathsLength,
+            &errorMessage);
+
+        if (!m_NativeSession)
+            ThrowErrorMessage(errorMessage);
         
         // Clean up native arrays if needed (except m_NativeSession, which you own)
         delete[] nativeOptions;

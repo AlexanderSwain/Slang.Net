@@ -11,22 +11,19 @@ Native::ModuleCLI::ModuleCLI(SessionCLI* parent, const char* moduleName, const c
 
         // Use moduleName instead of modulePath for loadModule
         slangModule = m_parent->loadModule(moduleName, diagnosticsBlob.writeRef());
-        //slangModule = m_session->loadModuleFromSource(moduleName, modulePath, sourceBlob, diagnosticsBlob.writeRef());
+        //slangModule = m_parent->loadModuleFromSource(moduleName, modulePath, sourceBlob, diagnosticsBlob.writeRef());
         //slangModule = m_session->loadModuleFromSourceString(moduleName, modulePath, shaderSource, diagnosticsBlob.writeRef());
 
         // Improved diagnostics output
         if (diagnosticsBlob != nullptr && diagnosticsBlob->getBufferSize() > 0)
         {
-            std::cout << "Slang diagnostics: " << std::endl;
-            std::cout << (const char*)diagnosticsBlob->getBufferPointer() << std::endl;
+            std::string diagnosticsText = std::string((const char*)diagnosticsBlob->getBufferPointer());
+			std::string errorMessage = "There are errors present in the shader source: " + diagnosticsText;
+            throw std::runtime_error(errorMessage);
         }
-        else {
-            std::cout << "No diagnostics output from Slang." << std::endl;
-        }
-
-        if (!slangModule)
+        else if (!slangModule)
         {
-            std::cout << "Slang failed to create module from source string." << std::endl;
+            throw std::runtime_error("Unknown failure: Failed to create the Slang module.");
         }
     }
     

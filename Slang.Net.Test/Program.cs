@@ -1,5 +1,6 @@
 ﻿using System;
 using Slang;
+using System.IO;
 
 public class Program
 {
@@ -14,18 +15,14 @@ public class Program
                 new PreprocessorMacroDesc("LIGHTING_SCALER", "12")
             ],
             [
-                new ShaderModel(Slang.CompileTarget.SLANG_HLSL, "vs_5_0"),
-                new ShaderModel(Slang.CompileTarget.SLANG_HLSL, "gs_5_0"),
-                new ShaderModel(Slang.CompileTarget.SLANG_HLSL, "ps_5_0"),
-                new ShaderModel(Slang.CompileTarget.SLANG_HLSL, "ds_5_0"),
-                new ShaderModel(Slang.CompileTarget.SLANG_HLSL, "hs_5_0"),
                 new ShaderModel(Slang.CompileTarget.SLANG_HLSL, "cs_5_0"),
             ],
             [
-                "C:\\Users\\lexxa\\Code\\Playground\\Slang.Net.Test\\Shaders\\"
-            ]);        Module module = new Module(session, "test", "test.slang", File.ReadAllText("Shaders/test.slang"));
+                @"C:\Users\lexxa\Code\Playground\Slang.Net\Slang.Net.Test\Shaders\"
+            ]);
+        Module module = new Module(session, "ParameterInfo", "ParameterInfo.slang", File.ReadAllText("Shaders/ParameterInfo.slang"));
 
-        EntryPoint entryPoint = new EntryPoint(module, "computeMain");
+        EntryPoint entryPoint = new EntryPoint(module, "CS");
         var parameters = entryPoint.Parameters;
 
         Slang.Program program = new Slang.Program(entryPoint);

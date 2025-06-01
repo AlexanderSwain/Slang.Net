@@ -17,11 +17,12 @@ namespace SlangNative
     extern "C" SLANGNATIVE_API void* CreateSession(Native::CompilerOptionCLI* options, int optionsLength,
         Native::PreprocessorMacroDescCLI* macros, int macrosLength,
         Native::ShaderModelCLI* models, int modelsLength,
-        char* searchPaths[], int searchPathsLength);
+        char* searchPaths[], int searchPathsLength,
+        const char** error);
 
-    extern "C" SLANGNATIVE_API void* CreateModule(void* parentSession, const char* moduleName, const char* modulePath, const char* shaderSource);
+    extern "C" SLANGNATIVE_API void* CreateModule(void* parentSession, const char* moduleName, const char* modulePath, const char* shaderSource, const char** error);
 
-    extern "C" SLANGNATIVE_API void* FindEntryPoint(void* parentModule, const char* entryPointName);
+    extern "C" SLANGNATIVE_API void* FindEntryPoint(void* parentModule, const char* entryPointName, const char** error);
 
     extern "C" SLANGNATIVE_API void GetParameterInfo(void* parentEntryPoint, Native::ParameterInfoCLI** outParameterInfo, int* outParameterCount);
 

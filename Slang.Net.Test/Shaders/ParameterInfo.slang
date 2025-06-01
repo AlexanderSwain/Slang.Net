@@ -1,13 +1,30 @@
-[format("rgba8")]
-Texture2D<float4> myImage;
+// The texture to sample
+Texture2D<float4> inputImage : register(t0);
 
-SamplerState sampler;
+// The output buffer
+RWStructuredBuffer<uint4> outputInt : register(u0);
+//RWStructuredBuffer<float4> outputFloat : register(u1);
 
-float4 imageMain(uint2 dispatchThreadID, int2 screenSize)
+[shader("compute")]
+[numthreads(32, 32, 1)]
+void CS(uint3 dispatchThreadID : SV_DispatchThreadID, uint3 groupThreadID : SV_GroupThreadID, uint3 groupID : SV_GroupID)
 {
-    float2 scaled = float2(dispatchThreadID.xy) / screenSize.y;
-    float2 flipped = float2(scaled.x, 1 - scaled.y);
+    // Get the dimensions of the image
+    uint width, height;
+    inputImage.GetDimensions(width, height);
 
-    float4 imageColor = myImage.SampleLevel(sampler, flipped, 0);
-    return imageColor;
+    // Calculate the total number of pixels
+    uint totalPixels = width * height;
+
+    // Sample the color at the current pixel
+    float4 color = inputImage.Load(int3(dispatchThreadID.xy, 0));
+
+    // Convert the color to integers in the range 0-255
+    uint4 colorInt = uint4(color * 255);
+
+    // Add the color to the output buffer using atomic operations
+    InterlockedAdd(outputInt[0].x, colorInt.r);
+    InterlockedAdd(outputInt[0].y, colorInt.g);
+    InterlockedAdd(outputInt[0].z, colorInt.b);
+    InterlockedAdd(outputInt[0].w, colorInt.a);
 }

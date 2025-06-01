@@ -50,9 +50,6 @@ Native::SessionCLI::SessionCLI(CompilerOptionCLI* options, int optionsLength,
                 (slang::CompilerOptionName)option.getName(),
                 {(slang::CompilerOptionValueKind)value.kind, value.intValue0, value.intValue1, value.stringValue0, value.stringValue1 }
         };
-
-        std::cout << (int)option.getName() << std::endl;
-        std::cout << option.getValue().intValue1 << std::endl;
     
         // Add to our collection
         compilerOptions.push_back(entry);
@@ -73,9 +70,6 @@ Native::SessionCLI::SessionCLI(CompilerOptionCLI* options, int optionsLength,
     for (int i = 0; i < macrosLength; i++)
     {
         slang::PreprocessorMacroDesc macroDesc = { macros[i].getName(), macros[i].getValue() };
-
-        std::cout << macroDesc.name << std::endl;
-        std::cout << macroDesc.value << std::endl;
     
         // Add to our collection
         preprocessorMacroDesc.push_back(macroDesc);
@@ -92,10 +86,11 @@ Native::SessionCLI::SessionCLI(CompilerOptionCLI* options, int optionsLength,
     sessionDesc.searchPathCount = searchPathsLength; // Update the count to reflect the number of paths
 
     Slang::ComPtr<slang::ISession> session;
-    s_context->createSession(sessionDesc, session.writeRef());
+    SlangResult createResult = s_context->createSession(sessionDesc, session.writeRef());
     m_session = session;
-
-    std::cout << sessionDesc.searchPaths[0] << std::endl;
+    
+    if (SLANG_FAILED(createResult))
+        throw std::runtime_error("Failed to create session: ErrorCode = " + std::to_string(createResult));
 }
 
 // Destructor implementation
@@ -119,25 +114,3 @@ slang::ISession* Native::SessionCLI::getNative()
 {
     return m_session;
 }
-
-//extern "C" {
-//    __declspec(dllexport) void* CreateSession(
-//        CompilerOption* options, int optionsLength,
-//        slang::PreprocessorMacroDesc* macros, int macrosLength,
-//        ShaderModel* models, int modelsLength,
-//        char* searchPaths[], int searchPathsLength)
-//    {
-//        // Create a new Session object on the heap
-//        Session* newSession = new Session(options, optionsLength, macros, macrosLength, models, modelsLength, searchPaths, searchPathsLength);
-//        return static_cast<void*>(newSession);
-//    }
-//    
-//    __declspec(dllexport) void DestroySession(void* sessionPtr) 
-//    {
-//        if (sessionPtr) 
-//        {
-//            Session* session = static_cast<Session*>(sessionPtr);
-//            delete session;
-//        }
-//    }
-//}
