@@ -6,10 +6,9 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        Console.WriteLine("sessioning...");
         Session session = new Session(
             [
-                new CompilerOption(Slang.CompilerOptionName.Obfuscate, new CompilerOptionValue(CompilerOptionValueKind.Int, 1, 0, null, null))
+                //new CompilerOption(Slang.CompilerOptionName.Obfuscate, new CompilerOptionValue(CompilerOptionValueKind.Int, 1, 0, null, null))
             ],
             [
                 new PreprocessorMacroDesc("LIGHTING_SCALER", "12")
@@ -22,11 +21,11 @@ public class Program
             ]);
         Module module = new Module(session, "ParameterInfo", "ParameterInfo.slang", File.ReadAllText("Shaders/ParameterInfo.slang"));
 
-        EntryPoint entryPoint = new EntryPoint(module, "CS");
-        var parameters = entryPoint.Parameters;
+        //EntryPoint entryPoint = new EntryPoint(module, "CS");
+        //var parameters = entryPoint.Parameters;
 
-        Slang.Program program = new Slang.Program(entryPoint);
+        Slang.Program program = new Slang.Program(module);
 
-        var source = program.Compile();
+        var source = program.Compile(0, 0);
     }
 }

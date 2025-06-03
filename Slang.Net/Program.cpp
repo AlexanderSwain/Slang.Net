@@ -9,7 +9,7 @@
 namespace Slang
 {
     // Constructor with parameters implementation
-    Slang::Program::Program(EntryPoint^ parent)
+    Slang::Program::Program(Module^ parent)
     {
         void* nativeParent = parent->getNative();
 
@@ -40,10 +40,10 @@ namespace Slang
         return m_NativeProgram;
     }
 
-    System::String^ Slang::Program::Compile()
+    System::String^ Slang::Program::Compile(unsigned int entryPointIndex, unsigned int targetIndex)
     {
         const char* result = nullptr;
-        int32_t compileResult = SlangNative::Compile(m_NativeProgram, &result);
+        int32_t compileResult = SlangNative::Compile(m_NativeProgram, entryPointIndex, targetIndex, &result);
 
         if (compileResult < 0)
         {

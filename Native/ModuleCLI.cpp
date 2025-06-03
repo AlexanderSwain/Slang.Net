@@ -28,6 +28,21 @@ Native::ModuleCLI::ModuleCLI(SessionCLI* parent, const char* moduleName, const c
     }
     
     m_slangModule = slangModule;
+
+    setEntryPoints();
+}
+
+void Native::ModuleCLI::setEntryPoints()
+{
+    unsigned int entryPointCount = m_slangModule->getDefinedEntryPointCount();
+	m_entryPointCount = entryPointCount;
+
+	m_entryPoints = new slang::IEntryPoint*[m_entryPointCount];
+
+    for (unsigned int i = 0; i < entryPointCount; i++)
+    {
+        m_slangModule->getDefinedEntryPoint(i, &m_entryPoints[i]);
+	}
 }
 
 Native::ModuleCLI::~ModuleCLI()
@@ -39,7 +54,22 @@ Native::ModuleCLI::~ModuleCLI()
 	}
 }
 
+slang::ISession* Native::ModuleCLI::getParent()
+{
+    return m_parent;
+}
+
 slang::IModule* Native::ModuleCLI::getNative()
 {
     return m_slangModule;
+}
+
+slang::IEntryPoint** Native::ModuleCLI::getEntryPoints()
+{
+    return m_entryPoints;
+}
+
+unsigned int Native::ModuleCLI::getEntryPointCount()
+{
+    return m_entryPointCount;
 }

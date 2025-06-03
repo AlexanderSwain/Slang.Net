@@ -23,4 +23,8 @@
     <ProjectReference Include="..\Slang.Net\Slang.Net.vcxproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Output Source\" />
+  </ItemGroup>
+
 </Project>

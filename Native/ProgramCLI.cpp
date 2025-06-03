@@ -1,21 +1,17 @@
 #include "ProgramCLI.h"
 
-Native::ProgramCLI::ProgramCLI(EntryPointCLI* entryPoint)
+Native::ProgramCLI::ProgramCLI(ModuleCLI* parent)
 {
-    m_entryPoint = entryPoint;
+    m_module = parent;
 
-    std::array<slang::IComponentType*, 2> componentTypes =
-    {
-        entryPoint->getParent(),
-        entryPoint->getNative()
-    };
+	slang::IComponentType** programComponents = getProgramComponents();
 
     slang::IComponentType* composedProgram;
     {
         Slang::ComPtr<slang::IBlob> diagnosticsBlob;
-        SlangResult result = entryPoint->getParent()->getSession()->createCompositeComponentType(
-            componentTypes.data(),
-            componentTypes.size(),
+        SlangResult result = m_module->getParent()->createCompositeComponentType(
+            programComponents,
+            m_module->getEntryPointCount() + 1,
             &composedProgram,
             diagnosticsBlob.writeRef());
 
@@ -29,6 +25,15 @@ Native::ProgramCLI::ProgramCLI(EntryPointCLI* entryPoint)
             std::cerr << "Failed to create composite component type." << std::endl;
             return;
         }
+    }
+
+    slang::ProgramLayout* pl = composedProgram->getLayout();
+	ISlangBlob* layoutBlob = nullptr;
+    pl->toJson(&layoutBlob);
+
+    if (layoutBlob != nullptr)
+    {
+        std::cout << (const char*)layoutBlob->getBufferPointer() << std::endl;
     }
 
     if (composedProgram == nullptr)
@@ -55,45 +60,16 @@ Native::ProgramCLI::ProgramCLI(EntryPointCLI* entryPoint)
     m_linkedProgram = linkedProgram;
 }
 
-SlangResult Native::ProgramCLI::GetCompiled(const char** output)
+SlangResult Native::ProgramCLI::GetCompiled(unsigned int entryPointIndex, unsigned int targetIndex, const char** output)
 {
-    SlangInt index = m_entryPoint->getIndex();
-	SlangStage stage = m_entryPoint->getStage();
-
-    SlangInt stageIndex = -1;
-    switch (stage)
-    {
-        case SLANG_STAGE_VERTEX:
-            stageIndex = 0;
-            break;
-        case SLANG_STAGE_GEOMETRY:
-            stageIndex = 1;
-            break;
-        case SLANG_STAGE_PIXEL:
-            stageIndex = 2;
-            break;
-        case SLANG_STAGE_DOMAIN:
-            stageIndex = 3;
-            break;
-        case SLANG_STAGE_HULL:
-            stageIndex = 4;
-			break;
-        case SLANG_STAGE_COMPUTE:
-            stageIndex = 5;
-            break;
-        default:
-            std::cerr << "Unsupported stage." << std::endl;
-			return SLANG_FAIL;
-    }
-
     Slang::ComPtr<slang::IBlob> bytecode;
     {
         Slang::ComPtr<slang::IBlob> diagnosticsBlob;
         bytecode.writeRef();
         diagnosticsBlob.writeRef();
         SlangResult result = m_linkedProgram->getEntryPointCode(
-            index,
-            stageIndex, // update this when implementing other graphics APIs
+            entryPointIndex,
+            targetIndex,
             bytecode.writeRef(),
             diagnosticsBlob.writeRef());        
         if (result < 0)
@@ -125,9 +101,9 @@ slang::IComponentType* Native::ProgramCLI::getLinked()
     return m_linkedProgram;
 }
 
-Native::EntryPointCLI* Native::ProgramCLI::getEntryPoint()
+Native::ModuleCLI* Native::ProgramCLI::getModule()
 {
-    return m_entryPoint;
+    return m_module;
 }
 
 Native::ProgramCLI::~ProgramCLI()
@@ -137,4 +113,25 @@ Native::ProgramCLI::~ProgramCLI()
         m_program->Release();
         m_program = nullptr;
     }
+}
+
+// Helpers
+slang::IComponentType** Native::ProgramCLI::getProgramComponents()
+{
+    unsigned int entryPointCount = m_module->getEntryPointCount();
+    unsigned int componentCount = entryPointCount + 1;
+
+    slang::IComponentType** programComponents = new slang::IComponentType * [componentCount];
+
+	// Fill the program components with entry points
+    slang::IEntryPoint** entryPoints = m_module->getEntryPoints();
+    for (int i = 0; i < entryPointCount; i++)
+    {
+        programComponents[i] = entryPoints[i];
+    }
+
+	// Add the native module as the last component
+    programComponents[m_module->getEntryPointCount()] = m_module->getNative();
+
+	return programComponents;
 }

@@ -21,11 +21,17 @@ namespace Native
 		// Destructor
 		~ModuleCLI();
 
+		slang::ISession* getParent();
 		slang::IModule* getNative();
+		slang::IEntryPoint** getEntryPoints();
+		unsigned int getEntryPointCount();
 
 	private:
+		void setEntryPoints();
 		slang::ISession* m_parent;
 		slang::IModule* m_slangModule;
+		slang::IEntryPoint** m_entryPoints;
+		unsigned int m_entryPointCount;
 	};
 }
 

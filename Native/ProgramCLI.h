@@ -2,6 +2,7 @@
 #include "slang.h"
 #include "slang-com-ptr.h"
 #include "slang-com-helper.h"
+#include "ModuleCLI.h"
 #include "EntryPointCLI.h"
 #include <array>
 #include <iostream>
@@ -19,7 +20,7 @@ namespace Native
 	{
 	public:
 		// Constructor with parameters (example)
-		ProgramCLI(EntryPointCLI* parent);
+		ProgramCLI(ModuleCLI* parent);
 
 		// Destructor
 		~ProgramCLI();
@@ -27,13 +28,14 @@ namespace Native
 		//Properties
 		slang::IComponentType* getNative();
 		slang::IComponentType* getLinked();
-		EntryPointCLI* getEntryPoint();
+		ModuleCLI* getModule();
 
-		SlangResult GetCompiled(const char** output);
+		SlangResult GetCompiled(unsigned int entryPointIndex, unsigned int targetIndex, const char** output);
 	private:
-		EntryPointCLI* m_entryPoint = nullptr;
+		ModuleCLI* m_module = nullptr;
 		slang::IComponentType* m_program = nullptr;
 		slang::IComponentType* m_linkedProgram = nullptr;
 		std::string m_errorBuffer; // Buffer to store error messages
+		slang::IComponentType** getProgramComponents();
 	};
 }

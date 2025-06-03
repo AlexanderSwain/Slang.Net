@@ -6,7 +6,7 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 
-#include "EntryPoint.h"
+#include "Module.h"
 #include "../Native/SlangNative.h"
 
 namespace Slang
@@ -15,7 +15,7 @@ namespace Slang
     {
     public:
         // Constructor with parameters (example)
-        Program(EntryPoint^ parent);
+        Program(Module^ parent);
 
         // Destructor (this automatically implements IDisposable::Dispose in C++/CLI)
         ~Program();
@@ -25,7 +25,7 @@ namespace Slang
 
         void* getNative();
 
-        System::String^ Compile();
+        System::String^ Compile(unsigned int entryPointIndex, unsigned int targetIndex);
 
     private:
         void* m_NativeProgram;

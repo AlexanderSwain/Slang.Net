@@ -69,15 +69,15 @@ namespace SlangNative
         *outParameterCount = entryPoint->getParameterCount();
     }
 
-    extern "C" SLANGNATIVE_API void* CreateProgram(void* parentEntryPoint)
+    extern "C" SLANGNATIVE_API void* CreateProgram(void* parentModule)
     {
-        ProgramCLI* result = new ProgramCLI((EntryPointCLI*)parentEntryPoint);
+        ProgramCLI* result = new ProgramCLI((ModuleCLI*)parentModule);
         return result;
     }
 
-    extern "C" SLANGNATIVE_API int32_t Compile(void* program, const char** output)
+    extern "C" SLANGNATIVE_API int32_t Compile(void* program, unsigned int entryPointIndex, unsigned int targetIndex, const char** output)
     {
-        int32_t result = ((ProgramCLI*)program)->GetCompiled(output);
+        int32_t result = ((ProgramCLI*)program)->GetCompiled(entryPointIndex, targetIndex, output);
         return result;
     }
 }
