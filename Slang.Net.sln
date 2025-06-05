@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SlangNative", "Native\SlangNative.vcxproj", "{C3D8F1A9-2E4F-4B5A-9D1E-8F7C9D0E1F3C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Slang.Net", "Slang.Net\Slang.Net.vcxproj", "{B2C5F9A2-9D4E-4F3A-8E1B-7F6C8D9E0F2C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C3D8F1A9-2E4F-4B5A-9D1E-8F7C9D0E1F3C} = {C3D8F1A9-2E4F-4B5A-9D1E-8F7C9D0E1F3C}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slang.Net.Test", "Slang.Net.Test\Slang.Net.Test.csproj", "{93ED428D-DF84-2311-DA04-BB0ADB48A9E3}"
 EndProject

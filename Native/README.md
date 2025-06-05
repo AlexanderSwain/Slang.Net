@@ -2,6 +2,12 @@
 
 This is a native C++ wrapper library for the Slang shader compiler. Unlike the parent Slang.Net project which uses C++/CLI for .NET interoperability, this project provides a pure native C++ interface.
 
+## Platform Support
+
+This project currently supports:
+- **x64 (64-bit)**: Full support for Debug and Release configurations
+- **x86 (32-bit)**: Not supported due to x64-only Slang libraries
+
 ## Project Structure
 
 - `SlangNative.h` - Main header file with API declarations

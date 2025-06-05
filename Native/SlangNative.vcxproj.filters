@@ -16,6 +16,9 @@
     <Filter Include="Slang Structs">
       <UniqueIdentifier>{557b0268-d259-45bc-924a-a8557eb7661c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Reflection">
+      <UniqueIdentifier>{a6cb5de4-5f6a-4a42-8bd7-26381bc7f2a3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SlangNative.h">
