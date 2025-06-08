@@ -52,24 +52,20 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)Slang.Net.Test\bin\$(Configuration)\net9.0\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-  </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  </PropertyGroup>  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;SLANGNATIVE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ClCompile>
-    <Link>
+      <AdditionalIncludeDirectories>..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>    </ClCompile>    <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>C:\Slang\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>slang.lib;gfx.lib;slang-rt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+  </ItemDefinitionGroup>  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -77,22 +73,22 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;SLANGNATIVE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Slang\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ClCompile>
-    <Link>
+      <AdditionalIncludeDirectories>..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>    </ClCompile>    <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>C:\Slang\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>slang.lib;gfx.lib;slang-rt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-  </ItemDefinitionGroup>
-  <ItemGroup>
+  </ItemDefinitionGroup>  <ItemGroup>
     <ClInclude Include="Attribute.h" />
     <ClInclude Include="BindingType.h" />
+    <ClInclude Include="BufferReflection.h" />
+    <ClInclude Include="CLIWrapperMacros.h" />
     <ClInclude Include="CompilerOptionCLI.h" />
+    <ClInclude Include="DeclReflection.h" />
     <ClInclude Include="ImageFormat.h" />
     <ClInclude Include="Modifier.h" />
     <ClInclude Include="ParameterCategory.h" />
@@ -104,20 +100,20 @@
     <ClInclude Include="TypeReflection.h" />
     <ClInclude Include="VariableLayoutReflection.h" />
     <ClInclude Include="VariableReflection.h" />
-  </ItemGroup>
-  <ItemGroup>
+  </ItemGroup>  <ItemGroup>
     <ClCompile Include="Attribute.cpp" />
+    <ClCompile Include="BufferReflection.cpp" />
     <ClCompile Include="CompilerOptionCLI.cpp" />
-    <ClCompile Include="DeclKind.h" />
-    <ClCompile Include="MatrixLayoutMode.h" />
+    <ClCompile Include="DeclReflection.cpp" />
     <ClCompile Include="TypeLayoutReflection.cpp" />
     <ClCompile Include="TypeParameterReflection.cpp" />
     <ClCompile Include="TypeReflection.cpp" />
     <ClCompile Include="VariableLayoutReflection.cpp" />
     <ClCompile Include="VariableReflection.cpp" />
-  </ItemGroup>
-  <ItemGroup>
+  </ItemGroup>  <ItemGroup>
     <ClInclude Include="CompilerOptionNameCLI.h" />
+    <ClInclude Include="DeclKind.h" />
+    <ClInclude Include="MatrixLayoutMode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CompilerOptionValueCLI.h" />

@@ -3,10 +3,14 @@
 #include "slang-com-ptr.h"
 #include "slang-com-helper.h"
 #include <map>
-#include "VariableReflection.h"
-#include "TypeReflection.h"
 #include "DeclKind.h"
-#include "GenericReflection.h"
+
+// Forward declarations
+namespace Native
+{
+    struct VariableReflection;
+    struct TypeReflection;
+}
 
 
 #ifdef SLANGNATIVE_EXPORTS

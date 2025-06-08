@@ -1,6 +1,7 @@
 #include "TypeReflection.h"
 #include "Attribute.h"
 #include "VariableReflection.h"
+#include "GenericReflection.h"
 
 Native::TypeReflection::TypeReflection(void* native)
 {
@@ -74,14 +75,14 @@ Native::TypeReflection* Native::TypeReflection::getResourceResultType()
     return new TypeReflection(m_native->getResourceResultType());
 }
 
-SlangResourceShape Native::TypeReflection::getResourceShape()
+Native::ResourceShape Native::TypeReflection::getResourceShape()
 {
-    return m_native->getResourceShape();
+    return (Native::ResourceShape)m_native->getResourceShape();
 }
 
-SlangResourceAccess Native::TypeReflection::getResourceAccess()
+Native::ResourceAccess Native::TypeReflection::getResourceAccess()
 {
-    return m_native->getResourceAccess();
+    return (Native::ResourceAccess)m_native->getResourceAccess();
 }
 
 char const* Native::TypeReflection::getName() 

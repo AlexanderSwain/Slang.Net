@@ -2,12 +2,16 @@
 #include "slang.h"
 #include "slang-com-ptr.h"
 #include "slang-com-helper.h"
-#include "VariableReflection.h"
-#include "TypeReflection.h"
 #include "ResourceShape.h"
 #include "ResourceAccess.h"
-#include "Attribute.h"
-#include "GenericReflection.h"
+
+// Forward declarations
+namespace Native
+{
+    struct VariableReflection;
+    struct Attribute;
+    struct GenericReflection;
+}
 
 #ifdef SLANGNATIVE_EXPORTS
 #define SLANGNATIVE_API __declspec(dllexport)
@@ -83,7 +87,7 @@ namespace Native
 
         TypeReflection* getElementType();
 
-        unsigned getRowCount() { return spReflectionType_GetRowCount((SlangReflectionType*)this); }
+        unsigned getRowCount();
 
         unsigned getColumnCount();
 
@@ -105,7 +109,7 @@ namespace Native
 
         Attribute* findAttributeByName(char const* name);
 
-        Attribute* findUserAttributeByName(char const* name) { return findAttributeByName(name); }
+        Attribute* findUserAttributeByName(char const* name);
 
         TypeReflection* applySpecializations(GenericReflection* generic);
 

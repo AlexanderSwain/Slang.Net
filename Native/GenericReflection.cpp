@@ -1,4 +1,6 @@
 #include "GenericReflection.h"
+#include "VariableReflection.h"
+#include "TypeReflection.h"
 #include <stdexcept>
 
 Native::GenericReflection::GenericReflection(void* native)

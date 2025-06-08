@@ -45,7 +45,7 @@ size_t Native::VariableLayoutReflection::getOffset(SlangParameterCategory catego
 {
     return m_native->getOffset(category);
 }
-size_t Native::VariableLayoutReflection::getOffset(slang::ParameterCategory category = slang::ParameterCategory::Uniform)
+size_t Native::VariableLayoutReflection::getOffset(slang::ParameterCategory category)
 {
     return m_native->getOffset(category);
 }
@@ -75,9 +75,9 @@ size_t Native::VariableLayoutReflection::getBindingSpace(slang::ParameterCategor
     return m_native->getBindingSpace(category);
 }
 
-SlangImageFormat Native::VariableLayoutReflection::getImageFormat()
+Native::ImageFormat Native::VariableLayoutReflection::getImageFormat()
 {
-    return m_native->getImageFormat();
+    return (Native::ImageFormat)m_native->getImageFormat();
 }
 
 char const* Native::VariableLayoutReflection::getSemanticName()

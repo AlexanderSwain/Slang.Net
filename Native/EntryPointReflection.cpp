@@ -38,12 +38,12 @@ SlangStage Native::EntryPointReflection::getStage()
 
 void Native::EntryPointReflection::getComputeThreadGroupSize(SlangUInt axisCount, SlangUInt* outSizeAlongAxis)
 {
-    return m_native->getComputeThreadGroupSize(axisCount, outSizeAlongAxis);
+    m_native->getComputeThreadGroupSize(axisCount, outSizeAlongAxis);
 }
 
 void Native::EntryPointReflection::getComputeWaveSize(SlangUInt* outWaveSize)
 {
-    return m_native->getComputeWaveSize(outWaveSize);
+    m_native->getComputeWaveSize(outWaveSize);
 }
 
 bool Native::EntryPointReflection::usesAnySampleRateInput()

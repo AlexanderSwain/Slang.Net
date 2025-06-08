@@ -30,17 +30,17 @@ int32_t Native::TypeLayoutReflection::getAlignment(ParameterCategory category)
     return m_native->getAlignment((SlangParameterCategory)category);
 }
 
-size_t Native::TypeLayoutReflection::getSize(slang::ParameterCategory category = slang::ParameterCategory::Uniform)
+size_t Native::TypeLayoutReflection::getSize(slang::ParameterCategory category)
 {
     return m_native->getSize(category);
 }
 
-size_t Native::TypeLayoutReflection::getStride(slang::ParameterCategory category = slang::ParameterCategory::Uniform)
+size_t Native::TypeLayoutReflection::getStride(slang::ParameterCategory category)
 {
     return m_native->getStride(category);
 }
 
-int32_t Native::TypeLayoutReflection::getAlignment(slang::ParameterCategory category = slang::ParameterCategory::Uniform)
+int32_t Native::TypeLayoutReflection::getAlignment(slang::ParameterCategory category)
 {
     return m_native->getAlignment(category);
 }
@@ -56,7 +56,7 @@ Native::VariableLayoutReflection* Native::TypeLayoutReflection::getFieldByIndex(
     return new VariableLayoutReflection(m_native->getFieldByIndex(index));
 }
 
-SlangInt Native::TypeLayoutReflection::findFieldIndexByName(char const* nameBegin, char const* nameEnd = nullptr)
+SlangInt Native::TypeLayoutReflection::findFieldIndexByName(char const* nameBegin, char const* nameEnd)
 {
     return m_native->findFieldIndexByName(nameBegin, nameEnd);
 }
