@@ -60,7 +60,8 @@ namespace Slang
             
         int modelsLength = models->Length;
         Native::ShaderModelCLI* nativeModels = new Native::ShaderModelCLI[modelsLength];
-        for (int i = 0; i < modelsLength; ++i)        {
+        for (int i = 0; i < modelsLength; ++i)        
+        {
 			const char* profile = FromString(models[i]->getProfile());
             nativeModels[i] = Native::ShaderModelCLI((Native::CompileTargetCLI)models[i]->getTarget(), profile); // or marshal as needed
         }

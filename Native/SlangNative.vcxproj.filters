@@ -60,6 +60,42 @@
     <ClInclude Include="ParameterInfoCLI.h">
       <Filter>Slang Structs</Filter>
     </ClInclude>
+    <ClInclude Include="EntryPointReflection.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionReflection.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="GenericReflection.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="TypeLayoutReflection.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="TypeParameterReflection.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="TypeReflection.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="VariableLayoutReflection.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="VariableReflection.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="Attribute.h">
+      <Filter>Reflection</Filter>
+    </ClInclude>
+    <ClInclude Include="Modifier.h">
+      <Filter>Slang Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="ParameterCategory.h">
+      <Filter>Slang Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="BindingType.h">
+      <Filter>Slang Structs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SlangNative.cpp">
@@ -88,6 +124,33 @@
     </ClCompile>
     <ClCompile Include="ParameterInfoCLI.cpp">
       <Filter>Slang Structs</Filter>
+    </ClCompile>
+    <ClCompile Include="EntryPointReflection.cpp">
+      <Filter>Reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="FunctionReflection.cpp">
+      <Filter>Reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="GenericReflection.cpp">
+      <Filter>Reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="TypeLayoutReflection.cpp">
+      <Filter>Reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="TypeParameterReflection.cpp">
+      <Filter>Reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="TypeReflection.cpp">
+      <Filter>Reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="VariableLayoutReflection.cpp">
+      <Filter>Reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="VariableReflection.cpp">
+      <Filter>Reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="Attribute.cpp">
+      <Filter>Reflection</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
