@@ -96,6 +96,18 @@
     <ClInclude Include="BindingType.h">
       <Filter>Slang Structs</Filter>
     </ClInclude>
+    <ClInclude Include="ResourceShape.h">
+      <Filter>Slang Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceAccess.h">
+      <Filter>Slang Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageFormat.h">
+      <Filter>Slang Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="TypeDef.h">
+      <Filter>Slang Structs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SlangNative.cpp">
@@ -151,6 +163,12 @@
     </ClCompile>
     <ClCompile Include="Attribute.cpp">
       <Filter>Reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="DeclKind.h">
+      <Filter>Slang Structs</Filter>
+    </ClCompile>
+    <ClCompile Include="MatrixLayoutMode.h">
+      <Filter>Slang Structs</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

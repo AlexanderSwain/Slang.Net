@@ -1,4 +1,13 @@
 #pragma once
+#include "slang.h"
+#include "slang-com-ptr.h"
+#include "slang-com-helper.h"
+#include "VariableReflection.h"
+#include "TypeReflection.h"
+#include "ResourceShape.h"
+#include "ResourceAccess.h"
+#include "Attribute.h"
+#include "GenericReflection.h"
 
 #ifdef SLANGNATIVE_EXPORTS
 #define SLANGNATIVE_API __declspec(dllexport)
@@ -82,9 +91,9 @@ namespace Native
 
         TypeReflection* getResourceResultType();
 
-        SlangResourceShape getResourceShape();
+        ResourceShape getResourceShape();
 
-        SlangResourceAccess getResourceAccess();
+        ResourceAccess getResourceAccess();
 
         char const* getName();
 

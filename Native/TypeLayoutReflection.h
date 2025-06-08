@@ -1,9 +1,17 @@
 #pragma once
+#include "slang.h"
+#include "slang-com-ptr.h"
+#include "slang-com-helper.h"
 #include "TypeReflection.h"
 #include "VariableReflection.h"
 #include "VariableLayoutReflection.h"
 #include "ParameterCategory.h"
+#include "ResourceShape.h"
 #include "BindingType.h"
+#include "ResourceAccess.h"
+#include "MatrixLayoutMode.h"
+#include "ImageFormat.h"
+#include "TypeDef.h"
 
 #ifdef SLANGNATIVE_EXPORTS
 #define SLANGNATIVE_API __declspec(dllexport)
@@ -21,9 +29,9 @@ namespace Native
 		TypeLayoutReflection(void* native);
         TypeReflection* getType();
         TypeReflection::Kind getKind();
-        size_t getSize(SlangParameterCategory category);
-        size_t getStride(SlangParameterCategory category);
-        int32_t getAlignment(SlangParameterCategory category);
+        size_t getSize(ParameterCategory category);
+        size_t getStride(ParameterCategory category);
+        int32_t getAlignment(ParameterCategory category);
         size_t getSize(slang::ParameterCategory category = slang::ParameterCategory::Uniform);
         size_t getStride(slang::ParameterCategory category = slang::ParameterCategory::Uniform);
         int32_t getAlignment(slang::ParameterCategory category = slang::ParameterCategory::Uniform);
@@ -36,7 +44,7 @@ namespace Native
         // only useful if `getKind() == Kind::Array`
         size_t getElementCount();
         size_t getTotalArrayElementCount();
-        size_t getElementStride(SlangParameterCategory category);
+        size_t getElementStride(ParameterCategory category);
         TypeLayoutReflection* getElementTypeLayout();
         VariableLayoutReflection* getElementVarLayout();
         VariableLayoutReflection* getContainerVarLayout();
@@ -48,10 +56,10 @@ namespace Native
         unsigned int getColumnCount();
         TypeReflection::ScalarType getScalarType();
         TypeReflection* getResourceResultType();
-        SlangResourceShape getResourceShape();
-        SlangResourceAccess getResourceAccess();
+        ResourceShape getResourceShape();
+        ResourceAccess getResourceAccess();
         char const* getName();
-        SlangMatrixLayoutMode getMatrixLayoutMode();
+        MatrixLayoutMode getMatrixLayoutMode();
         int getGenericParamIndex();
         TypeLayoutReflection* getPendingDataTypeLayout();
         VariableLayoutReflection* getSpecializedTypePendingDataVarLayout();
@@ -67,7 +75,7 @@ namespace Native
         SlangInt getExplicitCounterBindingRangeOffset();
         TypeLayoutReflection* getBindingRangeLeafTypeLayout(SlangInt index);
         VariableReflection* getBindingRangeLeafVariable(SlangInt index);
-        SlangImageFormat getBindingRangeImageFormat(SlangInt index);
+        ImageFormat getBindingRangeImageFormat(SlangInt index);
         SlangInt getBindingRangeDescriptorSetIndex(SlangInt index);
         SlangInt getBindingRangeFirstDescriptorRangeIndex(SlangInt index);
         SlangInt getBindingRangeDescriptorRangeCount(SlangInt index);

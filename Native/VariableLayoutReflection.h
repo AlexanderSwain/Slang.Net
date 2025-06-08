@@ -1,7 +1,13 @@
 #pragma once
-#include "VariableReflection.h"
-#include "TypeLayoutReflection.h"
+#include "slang.h"
+#include "slang-com-ptr.h"
+#include "slang-com-helper.h"
 #include "Modifier.h"
+#include "VariableReflection.h"
+#include "VariableLayoutReflection.h"
+#include "TypeLayoutReflection.h"
+#include "ParameterCategory.h"
+#include "ImageFormat.h"
 
 #ifdef SLANGNATIVE_EXPORTS
 #define SLANGNATIVE_API __declspec(dllexport)
@@ -11,7 +17,6 @@
 
 namespace Native
 {
-	// This type is empty in slang.h for some reason
 	struct SLANGNATIVE_API VariableLayoutReflection
 	{
 
@@ -32,7 +37,7 @@ namespace Native
         unsigned int getBindingSpace();
         size_t getBindingSpace(SlangParameterCategory category);
         size_t getBindingSpace(slang::ParameterCategory category);
-        SlangImageFormat getImageFormat();
+        ImageFormat getImageFormat();
         char const* getSemanticName();
         size_t getSemanticIndex();
         SlangStage getStage();

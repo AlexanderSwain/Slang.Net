@@ -1,6 +1,3 @@
-#include "slang.h"
-#include "slang-com-ptr.h"
-#include "slang-com-helper.h"
 #include "TypeLayoutReflection.h"
 
 Native::TypeLayoutReflection::TypeLayoutReflection(void* native)
@@ -18,19 +15,19 @@ Native::TypeReflection::Kind Native::TypeLayoutReflection::getKind()
     return (Native::TypeReflection::Kind)m_native->getKind();
 }
 
-size_t Native::TypeLayoutReflection::getSize(SlangParameterCategory category)
+size_t Native::TypeLayoutReflection::getSize(ParameterCategory category)
 {
-    return m_native->getSize(category);
+    return m_native->getSize((SlangParameterCategory)category);
 }
 
-size_t Native::TypeLayoutReflection::getStride(SlangParameterCategory category)
+size_t Native::TypeLayoutReflection::getStride(ParameterCategory category)
 {
-    return m_native->getStride(category);
+    return m_native->getStride((SlangParameterCategory)category);
 }
 
-int32_t Native::TypeLayoutReflection::getAlignment(SlangParameterCategory category)
+int32_t Native::TypeLayoutReflection::getAlignment(ParameterCategory category)
 {
-    return m_native->getAlignment(category);
+    return m_native->getAlignment((SlangParameterCategory)category);
 }
 
 size_t Native::TypeLayoutReflection::getSize(slang::ParameterCategory category = slang::ParameterCategory::Uniform)
@@ -90,9 +87,9 @@ size_t Native::TypeLayoutReflection::getTotalArrayElementCount()
     return m_native->getTotalArrayElementCount();
 }
 
-size_t Native::TypeLayoutReflection::getElementStride(SlangParameterCategory category)
+size_t Native::TypeLayoutReflection::getElementStride(ParameterCategory category)
 {
-    return m_native->getElementStride(category);
+    return m_native->getElementStride((SlangParameterCategory)category);
 }
 
 Native::TypeLayoutReflection* Native::TypeLayoutReflection::getElementTypeLayout()
@@ -146,14 +143,14 @@ Native::TypeReflection* Native::TypeLayoutReflection::getResourceResultType()
     return new TypeReflection(m_native->getResourceResultType());
 }
 
-SlangResourceShape Native::TypeLayoutReflection::getResourceShape() 
+Native::ResourceShape Native::TypeLayoutReflection::getResourceShape() 
 {
-    return m_native->getResourceShape();
+    return (Native::ResourceShape)(int)m_native->getResourceShape();
 }
 
-SlangResourceAccess Native::TypeLayoutReflection::getResourceAccess() 
+Native::ResourceAccess Native::TypeLayoutReflection::getResourceAccess() 
 {
-    return m_native->getResourceAccess();
+    return (Native::ResourceAccess)(int)m_native->getResourceAccess();
 }
 
 char const* Native::TypeLayoutReflection::getName() 
@@ -161,9 +158,9 @@ char const* Native::TypeLayoutReflection::getName()
     return m_native->getName();
 }
 
-SlangMatrixLayoutMode Native::TypeLayoutReflection::getMatrixLayoutMode()
+Native::MatrixLayoutMode Native::TypeLayoutReflection::getMatrixLayoutMode()
 {
-    return m_native->getMatrixLayoutMode();
+    return (Native::MatrixLayoutMode)(int)m_native->getMatrixLayoutMode();
 }
 
 int Native::TypeLayoutReflection::getGenericParamIndex()
@@ -237,9 +234,9 @@ Native::VariableReflection* Native::TypeLayoutReflection::getBindingRangeLeafVar
     return new VariableReflection(m_native->getBindingRangeLeafVariable(index));
 }
 
-SlangImageFormat Native::TypeLayoutReflection::getBindingRangeImageFormat(SlangInt index)
+Native::ImageFormat Native::TypeLayoutReflection::getBindingRangeImageFormat(SlangInt index)
 {
-    return m_native->getBindingRangeImageFormat(index);
+    return (Native::ImageFormat)(int)m_native->getBindingRangeImageFormat(index);
 }
 
 SlangInt Native::TypeLayoutReflection::getBindingRangeDescriptorSetIndex(SlangInt index)

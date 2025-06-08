@@ -1,6 +1,3 @@
-#include "slang.h"
-#include "slang-com-ptr.h"
-#include "slang-com-helper.h"
 #include "TypeReflection.h"
 #include "Attribute.h"
 #include "VariableReflection.h"

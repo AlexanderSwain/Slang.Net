@@ -1,7 +1,13 @@
 #pragma once
+#include "slang.h"
+#include "slang-com-ptr.h"
+#include "slang-com-helper.h"
+#include <map>
 #include "VariableReflection.h"
 #include "TypeReflection.h"
-#include <map>
+#include "DeclKind.h"
+#include "GenericReflection.h"
+
 
 #ifdef SLANGNATIVE_EXPORTS
 #define SLANGNATIVE_API __declspec(dllexport)
@@ -11,7 +17,7 @@
 
 namespace Native
 {
-	// This type is empty in slang.h for some reason
+
 	struct SLANGNATIVE_API GenericReflection
 	{
 
@@ -28,7 +34,7 @@ namespace Native
         unsigned int getTypeParameterConstraintCount(VariableReflection* typeParam);
         TypeReflection* getTypeParameterConstraintType(VariableReflection* typeParam, unsigned index);
         //DeclReflection* getInnerDecl();
-        SlangDeclKind getInnerKind();
+        DeclKind getInnerKind();
         GenericReflection* getOuterGenericContainer();
         TypeReflection* getConcreteType(VariableReflection* typeParam);
         int64_t getConcreteIntVal(VariableReflection* valueParam);

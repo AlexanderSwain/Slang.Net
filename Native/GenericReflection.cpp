@@ -1,6 +1,3 @@
-#include "slang.h"
-#include "slang-com-ptr.h"
-#include "slang-com-helper.h"
 #include "GenericReflection.h"
 #include <stdexcept>
 
@@ -58,9 +55,9 @@ Native::TypeReflection* Native::GenericReflection::getTypeParameterConstraintTyp
 //    return (DeclReflection*)spReflectionGeneric_GetInnerDecl((SlangReflectionGeneric*)this);
 //}
 
-SlangDeclKind Native::GenericReflection::getInnerKind()
+Native::DeclKind Native::GenericReflection::getInnerKind()
 {
-    return m_native->getInnerKind();
+    return (Native::DeclKind)m_native->getInnerKind();
 }
 
 Native::GenericReflection* Native::GenericReflection::getOuterGenericContainer()

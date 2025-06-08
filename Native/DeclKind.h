@@ -1,0 +1,15 @@
+#pragma once
+
+namespace Native
+{
+    enum DeclKind
+    {
+        SLANG_DECL_KIND_UNSUPPORTED_FOR_REFLECTION,
+        SLANG_DECL_KIND_STRUCT,
+        SLANG_DECL_KIND_FUNC,
+        SLANG_DECL_KIND_MODULE,
+        SLANG_DECL_KIND_GENERIC,
+        SLANG_DECL_KIND_VARIABLE,
+        SLANG_DECL_KIND_NAMESPACE
+    };
+}

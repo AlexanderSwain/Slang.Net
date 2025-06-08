@@ -59,7 +59,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;SLANGNATIVE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Slang\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -93,8 +93,12 @@
     <ClInclude Include="Attribute.h" />
     <ClInclude Include="BindingType.h" />
     <ClInclude Include="CompilerOptionCLI.h" />
+    <ClInclude Include="ImageFormat.h" />
     <ClInclude Include="Modifier.h" />
     <ClInclude Include="ParameterCategory.h" />
+    <ClInclude Include="ResourceAccess.h" />
+    <ClInclude Include="ResourceShape.h" />
+    <ClInclude Include="TypeDef.h" />
     <ClInclude Include="TypeLayoutReflection.h" />
     <ClInclude Include="TypeParameterReflection.h" />
     <ClInclude Include="TypeReflection.h" />
@@ -104,6 +108,8 @@
   <ItemGroup>
     <ClCompile Include="Attribute.cpp" />
     <ClCompile Include="CompilerOptionCLI.cpp" />
+    <ClCompile Include="DeclKind.h" />
+    <ClCompile Include="MatrixLayoutMode.h" />
     <ClCompile Include="TypeLayoutReflection.cpp" />
     <ClCompile Include="TypeParameterReflection.cpp" />
     <ClCompile Include="TypeReflection.cpp" />

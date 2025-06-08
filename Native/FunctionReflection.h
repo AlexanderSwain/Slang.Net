@@ -1,9 +1,13 @@
 #pragma once
+#include "slang.h"
+#include "slang-com-ptr.h"
+#include "slang-com-helper.h"
 #include "TypeReflection.h"
 #include "VariableReflection.h"
 #include "Attribute.h"
 #include "GenericReflection.h"
 #include "Modifier.h"
+#include "FunctionReflection.h"
 #include <map>
 
 #ifdef SLANGNATIVE_EXPORTS

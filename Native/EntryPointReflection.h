@@ -1,6 +1,11 @@
 #pragma once
+#include "slang.h"
+#include "slang-com-ptr.h"
+#include "slang-com-helper.h"
 #include "FunctionReflection.h"
 #include "VariableLayoutReflection.h"
+#include "TypeLayoutReflection.h"
+
 
 #ifdef SLANGNATIVE_EXPORTS
 #define SLANGNATIVE_API __declspec(dllexport)

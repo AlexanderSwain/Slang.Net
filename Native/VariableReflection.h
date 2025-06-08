@@ -1,8 +1,12 @@
 #pragma once
-#include "Attribute.h"
-#include "TypeReflection.h"
-#include "GenericReflection.h"
+#include "slang.h"
+#include "slang-com-ptr.h"
+#include "slang-com-helper.h"
 #include "Modifier.h"
+#include "TypeReflection.h"
+#include "Attribute.h"
+#include "GenericReflection.h"
+#include "VariableReflection.h"
 
 #ifdef SLANGNATIVE_EXPORTS
 #define SLANGNATIVE_API __declspec(dllexport)
@@ -12,7 +16,6 @@
 
 namespace Native
 {
-	// This type is empty in slang.h for some reason
 	struct SLANGNATIVE_API VariableReflection
 	{
 
