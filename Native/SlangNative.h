@@ -20,13 +20,13 @@ namespace SlangNative
         char* searchPaths[], int searchPathsLength,
         const char** error);
 
+    // Compilation API
     extern "C" SLANGNATIVE_API void* CreateModule(void* parentSession, const char* moduleName, const char* modulePath, const char* shaderSource, const char** error);
-
     extern "C" SLANGNATIVE_API void* FindEntryPoint(void* parentModule, const char* entryPointName, const char** error);
-
     extern "C" SLANGNATIVE_API void GetParameterInfo(void* parentEntryPoint, Native::ParameterInfoCLI** outParameterInfo, int* outParameterCount);
-
     extern "C" SLANGNATIVE_API void* CreateProgram(void* parentModule);
-
     extern "C" SLANGNATIVE_API int32_t Compile(void* program, unsigned int entryPointIndex, unsigned int targetIndex, const char** output);
+
+    // Reflection API
+
 }

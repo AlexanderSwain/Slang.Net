@@ -108,6 +108,30 @@
     <ClInclude Include="TypeDef.h">
       <Filter>Slang Structs</Filter>
     </ClInclude>
+    <ClInclude Include="BufferReflection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CLIWrapperMacros.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DeclReflection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DeclKind.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MatrixLayoutMode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LayoutRules.h">
+      <Filter>Slang Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="GenericArgType.h">
+      <Filter>Slang Structs</Filter>
+    </ClInclude>
+    <ClInclude Include="GenericArgReflection.h">
+      <Filter>Slang Structs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SlangNative.cpp">
@@ -164,11 +188,11 @@
     <ClCompile Include="Attribute.cpp">
       <Filter>Reflection</Filter>
     </ClCompile>
-    <ClCompile Include="DeclKind.h">
-      <Filter>Slang Structs</Filter>
+    <ClCompile Include="BufferReflection.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MatrixLayoutMode.h">
-      <Filter>Slang Structs</Filter>
+    <ClCompile Include="DeclReflection.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
