@@ -4,6 +4,7 @@
 Native::Attribute::Attribute(void* native)
 {
 	m_native = (slang::Attribute*)native;
+	m_argumentType = nullptr;
 }
 
 char const* Native::Attribute::getName()
