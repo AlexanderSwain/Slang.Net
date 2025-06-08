@@ -2,12 +2,17 @@
 #include "slang.h"
 #include "slang-com-ptr.h"
 #include "slang-com-helper.h"
-#include "Modifier.h"
-#include "VariableReflection.h"
-#include "VariableLayoutReflection.h"
-#include "TypeLayoutReflection.h"
 #include "ParameterCategory.h"
 #include "ImageFormat.h"
+#include "Modifier.h"
+
+// Forward declarations
+namespace Native
+{
+    struct VariableReflection;
+    struct TypeLayoutReflection;
+    struct TypeReflection;
+}
 
 #ifdef SLANGNATIVE_EXPORTS
 #define SLANGNATIVE_API __declspec(dllexport)

@@ -1,4 +1,8 @@
 #include "VariableLayoutReflection.h"
+#include "VariableReflection.h"
+#include "TypeLayoutReflection.h"
+#include "TypeReflection.h"
+#include "Modifier.h"
 
 Native::VariableLayoutReflection::VariableLayoutReflection(void* native)
 {
