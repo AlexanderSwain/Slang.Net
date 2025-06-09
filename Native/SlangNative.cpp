@@ -11,16 +11,21 @@
 namespace SlangNative
 {
     static thread_local std::string g_lastError;
+    static void ThrowNotImplemented(const char* functionName)
+    {
+        throw std::runtime_error(std::string("Function not implemented: ") + functionName);
+    }
 
-    extern "C" SLANGNATIVE_API void* CreateSession(CompilerOptionCLI* options, int optionsLength,
-        PreprocessorMacroDescCLI* macros, int macrosLength,
-        ShaderModelCLI* models, int modelsLength,
+    // Session API
+    extern "C" SLANGNATIVE_API void* CreateSession(void* options, int optionsLength,
+        void* macros, int macrosLength,
+        void* models, int modelsLength,
         char* searchPaths[], int searchPathsLength,
         const char** error)
     {
         try
         {
-            SessionCLI* result = new SessionCLI(options, optionsLength, macros, macrosLength, models, modelsLength, searchPaths, searchPathsLength);
+            SessionCLI* result = new SessionCLI((CompilerOptionCLI*)options, optionsLength, (PreprocessorMacroDescCLI*)macros, macrosLength, (ShaderModelCLI*)models, modelsLength, searchPaths, searchPathsLength);
             *error = nullptr;
             return result;
         }
@@ -28,10 +33,11 @@ namespace SlangNative
         {
             g_lastError = e.what();
             *error = g_lastError.c_str();
-			return nullptr;
+            return nullptr;
         }
     }
 
+    // Module API
     extern "C" SLANGNATIVE_API void* CreateModule(void* parentSession, const char* moduleName, const char* modulePath, const char* shaderSource, const char** error)
     {
         try
@@ -64,13 +70,14 @@ namespace SlangNative
         }
     }
 
-    extern "C" SLANGNATIVE_API void GetParameterInfo(void* parentEntryPoint, Native::ParameterInfoCLI** outParameterInfoArray, int* outParameterCount)
+    extern "C" SLANGNATIVE_API void GetParameterInfo(void* parentEntryPoint, void** outParameterInfo, int* outParameterCount)
     {
         EntryPointCLI* entryPoint = (EntryPointCLI*)parentEntryPoint;
-		*outParameterInfoArray = entryPoint->getParameterInfoArray();
+		*outParameterInfo = entryPoint->getParameterInfoArray();
         *outParameterCount = entryPoint->getParameterCount();
     }
 
+    // Program API
     extern "C" SLANGNATIVE_API void* CreateProgram(void* parentModule)
     {
         ProgramCLI* result = new ProgramCLI((ModuleCLI*)parentModule);
@@ -81,7 +88,9 @@ namespace SlangNative
     {
         int32_t result = ((ProgramCLI*)program)->GetCompiled(entryPointIndex, targetIndex, output);
         return result;
-    }    extern "C" SLANGNATIVE_API void* GetProgramReflection(void* program)
+    }
+
+    extern "C" SLANGNATIVE_API void* GetProgramReflection(void* program)
     {
         if (!program) return nullptr;
         try 
@@ -101,7 +110,7 @@ namespace SlangNative
         }
     }
 
-    // ShaderReflection API implementations
+    // ShaderReflection API
     extern "C" SLANGNATIVE_API unsigned int ShaderReflection_GetParameterCount(void* shaderReflection)
     {
         if (!shaderReflection) return 0;
@@ -136,7 +145,8 @@ namespace SlangNative
     {
         if (!shaderReflection) return 0;
         return ((Native::ShaderReflection*)shaderReflection)->getEntryPointCount();
-    }    extern "C" SLANGNATIVE_API void* ShaderReflection_GetEntryPointByIndex(void* shaderReflection, unsigned int index)
+    }
+    extern "C" SLANGNATIVE_API void* ShaderReflection_GetEntryPointByIndex(void* shaderReflection, unsigned int index)
     {
         if (!shaderReflection) return nullptr;
         return ((Native::ShaderReflection*)shaderReflection)->getEntryPointByIndex(index);
@@ -174,7 +184,7 @@ namespace SlangNative
 
     extern "C" SLANGNATIVE_API void* ShaderReflection_FindFunctionByNameInType(void* shaderReflection, void* type, const char* name)
     {
-        if (!shaderReflection || !type) return nullptr;
+                if (!shaderReflection || !type) return nullptr;
         return ((Native::ShaderReflection*)shaderReflection)->findFunctionByNameInType((Native::TypeReflection*)type, name);
     }
 
@@ -221,13 +231,13 @@ namespace SlangNative
         return ((Native::ShaderReflection*)shaderReflection)->getGlobalParamsTypeLayout();
     }
 
-    extern "C"    SLANGNATIVE_API void* ShaderReflection_GetGlobalParamsVarLayout(void* shaderReflection)
+    extern "C" SLANGNATIVE_API void* ShaderReflection_GetGlobalParamsVarLayout(void* shaderReflection)
     {
         if (!shaderReflection) return nullptr;
         return ((Native::ShaderReflection*)shaderReflection)->getGlobalParamsVarLayout();
     }
 
-    SLANGNATIVE_API int ShaderReflection_ToJson(void* shaderReflection, const char** output)
+    extern "C" SLANGNATIVE_API int ShaderReflection_ToJson(void* shaderReflection, const char** output)
     {
         if (!shaderReflection || !output) return SLANG_FAIL;
 		ISlangBlob* blob = nullptr;
@@ -240,7 +250,7 @@ namespace SlangNative
         return SLANG_OK;
     }
 
-    // TypeReflection API implementations
+    // TypeReflection API
     extern "C" SLANGNATIVE_API int TypeReflection_GetKind(void* typeReflection)
     {
         if (!typeReflection) return 0;
@@ -301,22 +311,22 @@ namespace SlangNative
         return (int)((Native::TypeReflection*)typeReflection)->getScalarType();
     }
 
-    extern "C" SLANGNATIVE_API int TypeReflection_GetResourceShape(void* typeReflection)
+    extern "C" SLANGNATIVE_API void* TypeReflection_GetResourceResultType(void* typeReflection)
     {
-        if (!typeReflection) return 0;
-        return (int)((Native::TypeReflection*)typeReflection)->getResourceShape();
+        if (!typeReflection) return nullptr;
+        return ((Native::TypeReflection*)typeReflection)->getResourceResultType();
     }
 
-    extern "C" SLANGNATIVE_API int TypeReflection_GetResourceAccess(void* typeReflection)
+    extern "C" SLANGNATIVE_API int TypeReflection_GetResourceShape(void* typeReflection)
     {
         if (!typeReflection) return 0;
         return (int)((Native::TypeReflection*)typeReflection)->getResourceAccess();
     }
 
-    extern "C" SLANGNATIVE_API void* TypeReflection_GetResourceResultType(void* typeReflection)
+    extern "C" SLANGNATIVE_API int TypeReflection_GetResourceAccess(void* typeReflection)
     {
-        if (!typeReflection) return nullptr;
-        return ((Native::TypeReflection*)typeReflection)->getResourceResultType();
+        if (!typeReflection) return 0;
+        return (int)((Native::TypeReflection*)typeReflection)->getResourceShape();
     }
 
     extern "C" SLANGNATIVE_API const char* TypeReflection_GetName(void* typeReflection)
@@ -335,14 +345,27 @@ namespace SlangNative
     {
         if (!typeReflection) return nullptr;
         return ((Native::TypeReflection*)typeReflection)->getUserAttributeByIndex(index);
-    }    
+    }
+
     extern "C" SLANGNATIVE_API void* TypeReflection_FindAttributeByName(void* typeReflection, const char* name)
     {
         if (!typeReflection) return nullptr;
         return ((Native::TypeReflection*)typeReflection)->findAttributeByName(name);
     }
 
-    // TypeLayoutReflection API implementations
+    extern "C" SLANGNATIVE_API void* TypeReflection_ApplySpecializations(void* typeReflection, void* genRef)
+    {
+        ThrowNotImplemented("TypeReflection_ApplySpecializations");
+        return nullptr;
+    }
+
+    extern "C" SLANGNATIVE_API void* TypeReflection_GetGenericContainer(void* typeReflection)
+    {
+        ThrowNotImplemented("TypeReflection_GetGenericContainer");
+        return nullptr;
+    }
+
+    // TypeLayoutReflection API
     extern "C" SLANGNATIVE_API void* TypeLayoutReflection_GetType(void* typeLayoutReflection)
     {
         if (!typeLayoutReflection) return nullptr;
@@ -445,7 +468,7 @@ namespace SlangNative
         return ((Native::TypeLayoutReflection*)typeLayoutReflection)->getContainerVarLayout();
     }
 
-    // VariableReflection API implementations
+    // VariableReflection API
     extern "C" SLANGNATIVE_API const char* VariableReflection_GetName(void* variableReflection)
     {
         if (!variableReflection) return nullptr;
@@ -482,7 +505,37 @@ namespace SlangNative
         return ((Native::VariableReflection*)variableReflection)->findAttributeByName(name);
     }
 
-    // VariableLayoutReflection API implementations
+    extern "C" SLANGNATIVE_API void* VariableReflection_FindUserAttributeByName(void* variableReflection, const char* name)
+    {
+        ThrowNotImplemented("VariableReflection_FindUserAttributeByName");
+        return nullptr;
+    }
+
+    extern "C" SLANGNATIVE_API bool VariableReflection_HasDefaultValue(void* variableReflection)
+    {
+        ThrowNotImplemented("VariableReflection_HasDefaultValue");
+        return false;
+    }
+
+    extern "C" SLANGNATIVE_API SlangResult VariableReflection_GetDefaultValueInt(void* variableReflection, int64_t* value)
+    {
+        ThrowNotImplemented("VariableReflection_GetDefaultValueInt");
+        return SLANG_FAIL;
+    }
+
+    extern "C" SLANGNATIVE_API void* VariableReflection_GetGenericContainer(void* variableReflection)
+    {
+        ThrowNotImplemented("VariableReflection_GetGenericContainer");
+        return nullptr;
+    }
+
+    extern "C" SLANGNATIVE_API void* VariableReflection_ApplySpecializations(void* variableReflection, void** specializations, int count)
+    {
+        ThrowNotImplemented("VariableReflection_ApplySpecializations");
+        return nullptr;
+    }
+
+    // VariableLayoutReflection API
     extern "C" SLANGNATIVE_API void* VariableLayoutReflection_GetVariable(void* variableLayoutReflection)
     {
         if (!variableLayoutReflection) return nullptr;
@@ -511,27 +564,6 @@ namespace SlangNative
     {
         if (!variableLayoutReflection) return 0;
         return (int)((Native::VariableLayoutReflection*)variableLayoutReflection)->getCategory();
-    }    extern "C" SLANGNATIVE_API size_t VariableLayoutReflection_GetOffset(void* variableLayoutReflection, int category)
-    {
-        if (!variableLayoutReflection) return 0;
-        return ((Native::VariableLayoutReflection*)variableLayoutReflection)->getOffset((SlangParameterCategory)category);
-    }    extern "C" SLANGNATIVE_API void* VariableLayoutReflection_GetSpace(void* variableLayoutReflection, int category)
-    {
-        if (!variableLayoutReflection) return nullptr;
-        size_t space = ((Native::VariableLayoutReflection*)variableLayoutReflection)->getBindingSpace((SlangParameterCategory)category);
-        return (void*)space;
-    }
-
-    extern "C" SLANGNATIVE_API const char* VariableLayoutReflection_GetSemanticName(void* variableLayoutReflection)
-    {
-        if (!variableLayoutReflection) return nullptr;
-        return ((Native::VariableLayoutReflection*)variableLayoutReflection)->getSemanticName();
-    }
-
-    extern "C" SLANGNATIVE_API size_t VariableLayoutReflection_GetSemanticIndex(void* variableLayoutReflection)
-    {
-        if (!variableLayoutReflection) return 0;
-        return ((Native::VariableLayoutReflection*)variableLayoutReflection)->getSemanticIndex();
     }
 
     extern "C" SLANGNATIVE_API unsigned int VariableLayoutReflection_GetCategoryCount(void* variableLayoutReflection)
@@ -544,6 +576,12 @@ namespace SlangNative
     {
         if (!variableLayoutReflection) return 0;
         return static_cast<int>(((Native::VariableLayoutReflection*)variableLayoutReflection)->getCategoryByIndex(index));
+    }
+
+    extern "C" SLANGNATIVE_API size_t VariableLayoutReflection_GetOffset(void* variableLayoutReflection, int category)
+    {
+        if (!variableLayoutReflection) return 0;
+        return ((Native::VariableLayoutReflection*)variableLayoutReflection)->getOffset((SlangParameterCategory)category);
     }
 
     extern "C" SLANGNATIVE_API void* VariableLayoutReflection_GetType(void* variableLayoutReflection)
@@ -564,10 +602,29 @@ namespace SlangNative
         return ((Native::VariableLayoutReflection*)variableLayoutReflection)->getBindingSpace();
     }
 
+    extern "C" SLANGNATIVE_API void* VariableLayoutReflection_GetSpace(void* variableLayoutReflection, int category)
+    {
+        if (!variableLayoutReflection) return nullptr;
+        size_t space = ((Native::VariableLayoutReflection*)variableLayoutReflection)->getBindingSpace((SlangParameterCategory)category);
+        return (void*)space;
+    }
+
     extern "C" SLANGNATIVE_API int VariableLayoutReflection_GetImageFormat(void* variableLayoutReflection)
     {
         if (!variableLayoutReflection) return 0;
         return static_cast<int>(((Native::VariableLayoutReflection*)variableLayoutReflection)->getImageFormat());
+    }
+
+    extern "C" SLANGNATIVE_API const char* VariableLayoutReflection_GetSemanticName(void* variableLayoutReflection)
+    {
+        if (!variableLayoutReflection) return nullptr;
+        return ((Native::VariableLayoutReflection*)variableLayoutReflection)->getSemanticName();
+    }
+
+    extern "C" SLANGNATIVE_API size_t VariableLayoutReflection_GetSemanticIndex(void* variableLayoutReflection)
+    {
+        if (!variableLayoutReflection) return 0;
+        return ((Native::VariableLayoutReflection*)variableLayoutReflection)->getSemanticIndex();
     }
 
     extern "C" SLANGNATIVE_API unsigned int VariableLayoutReflection_GetStage(void* variableLayoutReflection)
@@ -582,7 +639,7 @@ namespace SlangNative
         return ((Native::VariableLayoutReflection*)variableLayoutReflection)->getPendingDataLayout();
     }
 
-    // FunctionReflection API implementations
+    // FunctionReflection API
     extern "C" SLANGNATIVE_API const char* FunctionReflection_GetName(void* functionReflection)
     {
         if (!functionReflection) return nullptr;
@@ -631,13 +688,43 @@ namespace SlangNative
         return ((Native::FunctionReflection*)functionReflection)->findAttributeByName(name);
     }
 
-    // EntryPointReflection API implementations
-    extern "C" SLANGNATIVE_API void* EntryPointReflection_AsFunction(void* entryPointReflection)
+    extern "C" SLANGNATIVE_API void* FunctionReflection_GetGenericContainer(void* functionReflection)
     {
-        if (!entryPointReflection) return nullptr;
-        return ((Native::EntryPointReflection*)entryPointReflection)->getFunction();
+        ThrowNotImplemented("FunctionReflection_GetGenericContainer");
+        return nullptr;
     }
 
+    extern "C" SLANGNATIVE_API void* FunctionReflection_ApplySpecializations(void* functionReflection, void* genRef)
+    {
+        ThrowNotImplemented("FunctionReflection_ApplySpecializations");
+        return nullptr;
+    }
+
+    extern "C" SLANGNATIVE_API void* FunctionReflection_SpecializeWithArgTypes(void* functionReflection, unsigned int typeCount, void** types)
+    {
+        ThrowNotImplemented("FunctionReflection_SpecializeWithArgTypes");
+        return nullptr;
+    }
+
+    extern "C" SLANGNATIVE_API bool FunctionReflection_IsOverloaded(void* functionReflection)
+    {
+        ThrowNotImplemented("FunctionReflection_IsOverloaded");
+        return false;
+    }
+
+    extern "C" SLANGNATIVE_API unsigned int FunctionReflection_GetOverloadCount(void* functionReflection)
+    {
+        ThrowNotImplemented("FunctionReflection_GetOverloadCount");
+        return 0;
+    }
+
+    extern "C" SLANGNATIVE_API void* FunctionReflection_GetOverload(void* functionReflection, unsigned int index)
+    {
+        ThrowNotImplemented("FunctionReflection_GetOverload");
+        return nullptr;
+    }
+
+    // EntryPointReflection API
     extern "C" SLANGNATIVE_API const char* EntryPointReflection_GetName(void* entryPointReflection)
     {
         if (!entryPointReflection) return nullptr;
@@ -662,14 +749,28 @@ namespace SlangNative
         return ((Native::EntryPointReflection*)entryPointReflection)->getParameterByIndex(index);
     }
 
+    extern "C" SLANGNATIVE_API void* EntryPointReflection_GetFunction(void* entryPointReflection)
+    {
+        ThrowNotImplemented("EntryPointReflection_GetFunction");
+        return nullptr;
+    }
+
     extern "C" SLANGNATIVE_API int EntryPointReflection_GetStage(void* entryPointReflection)
     {
         if (!entryPointReflection) return 0;
         return (int)((Native::EntryPointReflection*)entryPointReflection)->getStage();
-    }    extern "C" SLANGNATIVE_API void EntryPointReflection_GetComputeThreadGroupSize(void* entryPointReflection, unsigned int outSizeAlongAxis[3])
+    }
+
+    extern "C" SLANGNATIVE_API void EntryPointReflection_GetComputeThreadGroupSize(void* entryPointReflection, unsigned int axisCount, SlangUInt* outSizeAlongAxis)
     {
         if (!entryPointReflection) return;
         ((Native::EntryPointReflection*)entryPointReflection)->getComputeThreadGroupSize(3, (Native::SlangUInt*)outSizeAlongAxis);
+    }
+
+    extern "C" SLANGNATIVE_API SlangResult EntryPointReflection_GetComputeWaveSize(void* entryPointReflection, SlangUInt* outWaveSize)
+    {
+        ThrowNotImplemented("EntryPointReflection_GetComputeWaveSize");
+        return SLANG_FAIL;
     }
 
     extern "C" SLANGNATIVE_API bool EntryPointReflection_UsesAnySampleRateInput(void* entryPointReflection)
@@ -684,7 +785,25 @@ namespace SlangNative
         return ((Native::EntryPointReflection*)entryPointReflection)->getVarLayout();
     }
 
-    // GenericReflection API implementations
+    extern "C" SLANGNATIVE_API void* EntryPointReflection_GetTypeLayout(void* entryPointReflection)
+    {
+        ThrowNotImplemented("EntryPointReflection_GetTypeLayout");
+        return nullptr;
+    }
+
+    extern "C" SLANGNATIVE_API void* EntryPointReflection_GetResultVarLayout(void* entryPointReflection)
+    {
+        ThrowNotImplemented("EntryPointReflection_GetResultVarLayout");
+        return nullptr;
+    }
+
+    extern "C" SLANGNATIVE_API bool EntryPointReflection_HasDefaultConstantBuffer(void* entryPointReflection)
+    {
+        ThrowNotImplemented("EntryPointReflection_HasDefaultConstantBuffer");
+        return false;
+    }
+
+    // GenericReflection API
     extern "C" SLANGNATIVE_API const char* GenericReflection_GetName(void* genRefReflection)
     {
         if (!genRefReflection) return nullptr;
@@ -703,7 +822,61 @@ namespace SlangNative
         return ((Native::GenericReflection*)genRefReflection)->getTypeParameter(index);
     }
 
-    // TypeParameterReflection API implementations
+    extern "C" SLANGNATIVE_API unsigned int GenericReflection_GetValueParameterCount(void* genRefReflection)
+    {
+        ThrowNotImplemented("GenericReflection_GetValueParameterCount");
+        return 0;
+    }
+
+    extern "C" SLANGNATIVE_API void* GenericReflection_GetValueParameter(void* genRefReflection, unsigned int index)
+    {
+        ThrowNotImplemented("GenericReflection_GetValueParameter");
+        return nullptr;
+    }
+
+    extern "C" SLANGNATIVE_API unsigned int GenericReflection_GetTypeParameterConstraintCount(void* genRefReflection, void* typeParam)
+    {
+        ThrowNotImplemented("GenericReflection_GetTypeParameterConstraintCount");
+        return 0;
+    }
+
+    extern "C" SLANGNATIVE_API void* GenericReflection_GetTypeParameterConstraintType(void* genRefReflection, void* typeParam, unsigned int index)
+    {
+        ThrowNotImplemented("GenericReflection_GetTypeParameterConstraintType");
+        return nullptr;
+    }
+
+    extern "C" SLANGNATIVE_API int GenericReflection_GetInnerKind(void* genRefReflection)
+    {
+        ThrowNotImplemented("GenericReflection_GetInnerKind");
+        return 0;
+    }
+
+    extern "C" SLANGNATIVE_API void* GenericReflection_GetOuterGenericContainer(void* genRefReflection)
+    {
+        ThrowNotImplemented("GenericReflection_GetOuterGenericContainer");
+        return nullptr;
+    }
+
+    extern "C" SLANGNATIVE_API void* GenericReflection_GetConcreteType(void* genRefReflection, void* typeParam)
+    {
+        ThrowNotImplemented("GenericReflection_GetConcreteType");
+        return nullptr;
+    }
+
+    extern "C" SLANGNATIVE_API SlangResult GenericReflection_GetConcreteIntVal(void* genRefReflection, void* valueParam, int64_t* value)
+    {
+        ThrowNotImplemented("GenericReflection_GetConcreteIntVal");
+        return SLANG_FAIL;
+    }
+
+    extern "C" SLANGNATIVE_API void* GenericReflection_ApplySpecializations(void* genRefReflection, void* genRef)
+    {
+        ThrowNotImplemented("GenericReflection_ApplySpecializations");
+        return nullptr;
+    }
+
+    // TypeParameterReflection API
     extern "C" SLANGNATIVE_API const char* TypeParameterReflection_GetName(void* typeParameterReflection)
     {
         if (!typeParameterReflection) return nullptr;
@@ -728,7 +901,7 @@ namespace SlangNative
         return ((Native::TypeParameterReflection*)typeParameterReflection)->getConstraintByIndex(index);
     }
 
-    // Attribute API implementations
+    // Attribute API
     extern "C" SLANGNATIVE_API const char* Attribute_GetName(void* attributeReflection)
     {
         if (!attributeReflection) return nullptr;
@@ -758,5 +931,18 @@ namespace SlangNative
         if (!attributeReflection) return nullptr;
         size_t outSize;
         return ((Native::Attribute*)attributeReflection)->getArgumentValueString(index, &outSize);
+    }
+
+    // Modifier API
+    extern "C" SLANGNATIVE_API int Modifier_GetID(void* modifier)
+    {
+        ThrowNotImplemented("Modifier_GetID");
+        return 0;
+    }
+
+    extern "C" SLANGNATIVE_API const char* Modifier_GetName(void* modifier)
+    {
+        ThrowNotImplemented("Modifier_GetName");
+        return nullptr;
     }
 }

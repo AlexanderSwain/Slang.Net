@@ -15,20 +15,23 @@ using namespace Native;
 
 namespace SlangNative
 {
-    extern "C" SLANGNATIVE_API void* CreateSession(Native::CompilerOptionCLI* options, int optionsLength,
-        Native::PreprocessorMacroDescCLI* macros, int macrosLength,
-        Native::ShaderModelCLI* models, int modelsLength,
+    // Session API
+    extern "C" SLANGNATIVE_API void* CreateSession(void* options, int optionsLength,
+        void* macros, int macrosLength,
+        void* models, int modelsLength,
         char* searchPaths[], int searchPathsLength,
-        const char** error);    // Compilation API
+        const char** error);
+
+    // Module API
     extern "C" SLANGNATIVE_API void* CreateModule(void* parentSession, const char* moduleName, const char* modulePath, const char* shaderSource, const char** error);
     extern "C" SLANGNATIVE_API void* FindEntryPoint(void* parentModule, const char* entryPointName, const char** error);
-    extern "C" SLANGNATIVE_API void GetParameterInfo(void* parentEntryPoint, Native::ParameterInfoCLI** outParameterInfo, int* outParameterCount);
+    extern "C" SLANGNATIVE_API void GetParameterInfo(void* parentEntryPoint, void** outParameterInfo, int* outParameterCount);
+
+    // Program API
     extern "C" SLANGNATIVE_API void* CreateProgram(void* parentModule);
     extern "C" SLANGNATIVE_API int32_t Compile(void* program, unsigned int entryPointIndex, unsigned int targetIndex, const char** output);
-
-    // Reflection API
     extern "C" SLANGNATIVE_API void* GetProgramReflection(void* program);
-    
+
     // ShaderReflection API
     extern "C" SLANGNATIVE_API unsigned int ShaderReflection_GetParameterCount(void* shaderReflection);
     extern "C" SLANGNATIVE_API unsigned int ShaderReflection_GetTypeParameterCount(void* shaderReflection);
@@ -40,7 +43,7 @@ namespace SlangNative
     extern "C" SLANGNATIVE_API void* ShaderReflection_FindEntryPointByName(void* shaderReflection, const char* name);
     extern "C" SLANGNATIVE_API unsigned int ShaderReflection_GetGlobalConstantBufferBinding(void* shaderReflection);
     extern "C" SLANGNATIVE_API size_t ShaderReflection_GetGlobalConstantBufferSize(void* shaderReflection);
-    extern "C" SLANGNATIVE_API void* ShaderReflection_FindTypeByName(void* shaderReflection, const char* name);
+    extern "C" SLANGNATIVE_API void* ShaderReflection_FindTypeByName(void* shaderReflection, const char* name);    
     extern "C" SLANGNATIVE_API void* ShaderReflection_FindFunctionByName(void* shaderReflection, const char* name);
     extern "C" SLANGNATIVE_API void* ShaderReflection_FindFunctionByNameInType(void* shaderReflection, void* type, const char* name);
     extern "C" SLANGNATIVE_API void* ShaderReflection_FindVarByNameInType(void* shaderReflection, void* type, const char* name);
@@ -64,13 +67,15 @@ namespace SlangNative
     extern "C" SLANGNATIVE_API unsigned int TypeReflection_GetRowCount(void* typeReflection);
     extern "C" SLANGNATIVE_API unsigned int TypeReflection_GetColumnCount(void* typeReflection);
     extern "C" SLANGNATIVE_API int TypeReflection_GetScalarType(void* typeReflection);
+    extern "C" SLANGNATIVE_API void* TypeReflection_GetResourceResultType(void* typeReflection);
     extern "C" SLANGNATIVE_API int TypeReflection_GetResourceShape(void* typeReflection);
     extern "C" SLANGNATIVE_API int TypeReflection_GetResourceAccess(void* typeReflection);
-    extern "C" SLANGNATIVE_API void* TypeReflection_GetResourceResultType(void* typeReflection);
     extern "C" SLANGNATIVE_API const char* TypeReflection_GetName(void* typeReflection);
     extern "C" SLANGNATIVE_API unsigned int TypeReflection_GetUserAttributeCount(void* typeReflection);
     extern "C" SLANGNATIVE_API void* TypeReflection_GetUserAttributeByIndex(void* typeReflection, unsigned int index);
     extern "C" SLANGNATIVE_API void* TypeReflection_FindAttributeByName(void* typeReflection, const char* name);
+    extern "C" SLANGNATIVE_API void* TypeReflection_ApplySpecializations(void* typeReflection, void* genRef);
+    extern "C" SLANGNATIVE_API void* TypeReflection_GetGenericContainer(void* typeReflection);
 
     // TypeLayoutReflection API
     extern "C" SLANGNATIVE_API void* TypeLayoutReflection_GetType(void* typeLayoutReflection);
@@ -96,8 +101,13 @@ namespace SlangNative
     extern "C" SLANGNATIVE_API void* VariableReflection_GetType(void* variableReflection);
     extern "C" SLANGNATIVE_API void* VariableReflection_FindModifier(void* variableReflection, int modifierId);
     extern "C" SLANGNATIVE_API unsigned int VariableReflection_GetUserAttributeCount(void* variableReflection);
-    extern "C" SLANGNATIVE_API void* VariableReflection_GetUserAttributeByIndex(void* variableReflection, unsigned int index);
+    extern "C" SLANGNATIVE_API void* VariableReflection_GetUserAttributeByIndex(void* variableReflection, unsigned int index);    
     extern "C" SLANGNATIVE_API void* VariableReflection_FindAttributeByName(void* variableReflection, const char* name);
+    extern "C" SLANGNATIVE_API void* VariableReflection_FindUserAttributeByName(void* variableReflection, const char* name);
+    extern "C" SLANGNATIVE_API bool VariableReflection_HasDefaultValue(void* variableReflection);
+    extern "C" SLANGNATIVE_API SlangResult VariableReflection_GetDefaultValueInt(void* variableReflection, int64_t* value);
+    extern "C" SLANGNATIVE_API void* VariableReflection_GetGenericContainer(void* variableReflection);
+    extern "C" SLANGNATIVE_API void* VariableReflection_ApplySpecializations(void* variableReflection, void** specializations, int count);
 
     // VariableLayoutReflection API
     extern "C" SLANGNATIVE_API void* VariableLayoutReflection_GetVariable(void* variableLayoutReflection);
@@ -105,16 +115,16 @@ namespace SlangNative
     extern "C" SLANGNATIVE_API void* VariableLayoutReflection_FindModifier(void* variableLayoutReflection, int modifierId);
     extern "C" SLANGNATIVE_API void* VariableLayoutReflection_GetTypeLayout(void* variableLayoutReflection);
     extern "C" SLANGNATIVE_API int VariableLayoutReflection_GetCategory(void* variableLayoutReflection);
-    extern "C" SLANGNATIVE_API size_t VariableLayoutReflection_GetOffset(void* variableLayoutReflection, int category);
-    extern "C" SLANGNATIVE_API void* VariableLayoutReflection_GetSpace(void* variableLayoutReflection, int category);
-    extern "C" SLANGNATIVE_API const char* VariableLayoutReflection_GetSemanticName(void* variableLayoutReflection);
-    extern "C" SLANGNATIVE_API size_t VariableLayoutReflection_GetSemanticIndex(void* variableLayoutReflection);
     extern "C" SLANGNATIVE_API unsigned int VariableLayoutReflection_GetCategoryCount(void* variableLayoutReflection);
     extern "C" SLANGNATIVE_API int VariableLayoutReflection_GetCategoryByIndex(void* variableLayoutReflection, unsigned int index);
+    extern "C" SLANGNATIVE_API size_t VariableLayoutReflection_GetOffset(void* variableLayoutReflection, int category);
     extern "C" SLANGNATIVE_API void* VariableLayoutReflection_GetType(void* variableLayoutReflection);
     extern "C" SLANGNATIVE_API unsigned int VariableLayoutReflection_GetBindingIndex(void* variableLayoutReflection);
     extern "C" SLANGNATIVE_API unsigned int VariableLayoutReflection_GetBindingSpace(void* variableLayoutReflection);
+    extern "C" SLANGNATIVE_API void* VariableLayoutReflection_GetSpace(void* variableLayoutReflection, int category);
     extern "C" SLANGNATIVE_API int VariableLayoutReflection_GetImageFormat(void* variableLayoutReflection);
+    extern "C" SLANGNATIVE_API const char* VariableLayoutReflection_GetSemanticName(void* variableLayoutReflection);
+    extern "C" SLANGNATIVE_API size_t VariableLayoutReflection_GetSemanticIndex(void* variableLayoutReflection);
     extern "C" SLANGNATIVE_API unsigned int VariableLayoutReflection_GetStage(void* variableLayoutReflection);
     extern "C" SLANGNATIVE_API void* VariableLayoutReflection_GetPendingDataLayout(void* variableLayoutReflection);
 
@@ -125,24 +135,44 @@ namespace SlangNative
     extern "C" SLANGNATIVE_API void* FunctionReflection_GetParameterByIndex(void* functionReflection, unsigned int index);
     extern "C" SLANGNATIVE_API void* FunctionReflection_FindModifier(void* functionReflection, int modifierId);
     extern "C" SLANGNATIVE_API unsigned int FunctionReflection_GetUserAttributeCount(void* functionReflection);
-    extern "C" SLANGNATIVE_API void* FunctionReflection_GetUserAttributeByIndex(void* functionReflection, unsigned int index);
+    extern "C" SLANGNATIVE_API void* FunctionReflection_GetUserAttributeByIndex(void* functionReflection, unsigned int index);    
     extern "C" SLANGNATIVE_API void* FunctionReflection_FindAttributeByName(void* functionReflection, const char* name);
-
+    extern "C" SLANGNATIVE_API void* FunctionReflection_GetGenericContainer(void* functionReflection);
+    extern "C" SLANGNATIVE_API void* FunctionReflection_ApplySpecializations(void* functionReflection, void* genRef);
+    extern "C" SLANGNATIVE_API void* FunctionReflection_SpecializeWithArgTypes(void* functionReflection, unsigned int typeCount, void** types);
+    extern "C" SLANGNATIVE_API bool FunctionReflection_IsOverloaded(void* functionReflection);
+    extern "C" SLANGNATIVE_API unsigned int FunctionReflection_GetOverloadCount(void* functionReflection);
+    extern "C" SLANGNATIVE_API void* FunctionReflection_GetOverload(void* functionReflection, unsigned int index);    
+    
     // EntryPointReflection API
     extern "C" SLANGNATIVE_API void* EntryPointReflection_AsFunction(void* entryPointReflection);
     extern "C" SLANGNATIVE_API const char* EntryPointReflection_GetName(void* entryPointReflection);
     extern "C" SLANGNATIVE_API const char* EntryPointReflection_GetNameOverride(void* entryPointReflection);
     extern "C" SLANGNATIVE_API unsigned int EntryPointReflection_GetParameterCount(void* entryPointReflection);
     extern "C" SLANGNATIVE_API void* EntryPointReflection_GetParameterByIndex(void* entryPointReflection, unsigned int index);
-    extern "C" SLANGNATIVE_API int EntryPointReflection_GetStage(void* entryPointReflection);
-    extern "C" SLANGNATIVE_API void EntryPointReflection_GetComputeThreadGroupSize(void* entryPointReflection, unsigned int outSizeAlongAxis[3]);
+    extern "C" SLANGNATIVE_API void* EntryPointReflection_GetFunction(void* entryPointReflection);
+    extern "C" SLANGNATIVE_API int EntryPointReflection_GetStage(void* entryPointReflection);    
+    extern "C" SLANGNATIVE_API void EntryPointReflection_GetComputeThreadGroupSize(void* entryPointReflection, unsigned int axisCount, SlangUInt* outSizeAlongAxis);
+    extern "C" SLANGNATIVE_API SlangResult EntryPointReflection_GetComputeWaveSize(void* entryPointReflection, SlangUInt* outWaveSize);
     extern "C" SLANGNATIVE_API bool EntryPointReflection_UsesAnySampleRateInput(void* entryPointReflection);
     extern "C" SLANGNATIVE_API void* EntryPointReflection_GetVarLayout(void* entryPointReflection);
-
+    extern "C" SLANGNATIVE_API void* EntryPointReflection_GetTypeLayout(void* entryPointReflection);
+    extern "C" SLANGNATIVE_API void* EntryPointReflection_GetResultVarLayout(void* entryPointReflection);
+    extern "C" SLANGNATIVE_API bool EntryPointReflection_HasDefaultConstantBuffer(void* entryPointReflection);    
+    
     // GenericReflection API
     extern "C" SLANGNATIVE_API const char* GenericReflection_GetName(void* genRefReflection);
     extern "C" SLANGNATIVE_API unsigned int GenericReflection_GetTypeParameterCount(void* genRefReflection);
     extern "C" SLANGNATIVE_API void* GenericReflection_GetTypeParameter(void* genRefReflection, unsigned int index);
+    extern "C" SLANGNATIVE_API unsigned int GenericReflection_GetValueParameterCount(void* genRefReflection);
+    extern "C" SLANGNATIVE_API void* GenericReflection_GetValueParameter(void* genRefReflection, unsigned int index);
+    extern "C" SLANGNATIVE_API unsigned int GenericReflection_GetTypeParameterConstraintCount(void* genRefReflection, void* typeParam);
+    extern "C" SLANGNATIVE_API void* GenericReflection_GetTypeParameterConstraintType(void* genRefReflection, void* typeParam, unsigned int index);
+    extern "C" SLANGNATIVE_API int GenericReflection_GetInnerKind(void* genRefReflection);
+    extern "C" SLANGNATIVE_API void* GenericReflection_GetOuterGenericContainer(void* genRefReflection);
+    extern "C" SLANGNATIVE_API void* GenericReflection_GetConcreteType(void* genRefReflection, void* typeParam);
+    extern "C" SLANGNATIVE_API SlangResult GenericReflection_GetConcreteIntVal(void* genRefReflection, void* valueParam, int64_t* value);
+    extern "C" SLANGNATIVE_API void* GenericReflection_ApplySpecializations(void* genRefReflection, void* genRef);
 
     // TypeParameterReflection API
     extern "C" SLANGNATIVE_API const char* TypeParameterReflection_GetName(void* typeParameterReflection);
@@ -155,6 +185,9 @@ namespace SlangNative
     extern "C" SLANGNATIVE_API unsigned int Attribute_GetArgumentCount(void* attributeReflection);
     extern "C" SLANGNATIVE_API SlangResult Attribute_GetArgumentValueInt(void* attributeReflection, unsigned int index, int* value);
     extern "C" SLANGNATIVE_API SlangResult Attribute_GetArgumentValueFloat(void* attributeReflection, unsigned int index, float* value);
-    extern "C" SLANGNATIVE_API const char* Attribute_GetArgumentValueString(void* attributeReflection, unsigned int index);
-
+    extern "C" SLANGNATIVE_API const char* Attribute_GetArgumentValueString(void* attributeReflection, unsigned int index);    
+    
+    // Modifier API
+    extern "C" SLANGNATIVE_API int Modifier_GetID(void* modifier);
+    extern "C" SLANGNATIVE_API const char* Modifier_GetName(void* modifier);
 }

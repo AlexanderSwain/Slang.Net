@@ -29,5 +29,11 @@ public class Program
 
         // Maybe change this to entryPoint.Compile(). The user must get the entry point from Program.
         var source = program.Compile(0, 0);
+
+        var reflection = program.GetReflection();
+
+        var param1 = reflection.GetParameterByIndex(0);
+
+        Console.WriteLine(reflection.ToJson());
     }
 }

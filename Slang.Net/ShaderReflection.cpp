@@ -19,6 +19,9 @@
 #include <vector>
 #include <TypeDef.h>
 
+//Debug: delete these
+#include <iostream>
+
 using namespace System;
 using namespace System::Runtime::InteropServices;
 using namespace SlangNative;
@@ -208,7 +211,7 @@ namespace Slang
             return nullptr;//throw exception here
 
         String^ result = StringUtilities::ToString(jsonStr);
-		delete[] jsonStr; // Free the allocated string if needed
+		//free((void*)jsonStr);
 
 		return result;
     }

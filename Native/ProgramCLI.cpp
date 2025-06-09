@@ -113,12 +113,12 @@ Native::ProgramCLI::~ProgramCLI()
     }
 }
 
-// Reflection API
 void* Native::ProgramCLI::GetReflection()
 {
     return m_layout;
 }
 
+// Reflection API: Delete these, moved to ShaderReflection
 unsigned Native::ProgramCLI::getParameterCount()
 {
 	return m_layout->getParameterCount();

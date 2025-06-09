@@ -97,7 +97,8 @@ namespace Slang
     {
         if (!m_NativeTypeReflection) return Slang::ScalarType::None;
         return static_cast<Slang::ScalarType>(SlangNative::TypeReflection_GetScalarType(m_NativeTypeReflection));
-    }    TypeReflection^ TypeReflection::ResourceResultType::get()
+    }    
+    TypeReflection^ TypeReflection::ResourceResultType::get()
     {
         if (!m_NativeTypeReflection) return nullptr;
         void* resultType = SlangNative::TypeReflection_GetResourceResultType(m_NativeTypeReflection);
@@ -114,16 +115,19 @@ namespace Slang
     {
         if (!m_NativeTypeReflection) return Slang::ResourceAccess::None;
         return static_cast<Slang::ResourceAccess>(SlangNative::TypeReflection_GetResourceAccess(m_NativeTypeReflection));
-    }    System::String^ TypeReflection::Name::get()
+    }    
+    System::String^ TypeReflection::Name::get()
     {
         if (!m_NativeTypeReflection) return nullptr;
         return StringUtilities::ToString(SlangNative::TypeReflection_GetName(m_NativeTypeReflection));
-    }    System::String^ TypeReflection::FullName::get()
+    }    
+    System::String^ TypeReflection::FullName::get()
     {
         if (!m_NativeTypeReflection) return nullptr;
         // TODO: Add FullName support to DLL exports, for now use Name
         return StringUtilities::ToString(SlangNative::TypeReflection_GetName(m_NativeTypeReflection));
-    }unsigned int TypeReflection::UserAttributeCount::get()
+    }
+    unsigned int TypeReflection::UserAttributeCount::get()
     {
         if (!m_NativeTypeReflection) return 0;
         return SlangNative::TypeReflection_GetUserAttributeCount(m_NativeTypeReflection);

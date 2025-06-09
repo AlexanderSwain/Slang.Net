@@ -21,9 +21,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SlangNative.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="EntryPointCLI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -134,6 +131,9 @@
     </ClInclude>
     <ClInclude Include="ShaderReflection.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SlangNative.h">
+      <Filter>Reflection</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
