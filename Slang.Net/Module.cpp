@@ -5,18 +5,11 @@
 #endif
 
 #include "Module.h"
+#include "StringUtils.h"
 #include <msclr/marshal.h>
 
 namespace Slang
 {
-    static const char* FromString(System::String^ str)
-    {
-        if (str == nullptr)
-            return nullptr;
-        System::IntPtr strPtr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(str);
-        const char* nativeStr = static_cast<const char*>(strPtr.ToPointer());
-        return nativeStr;
-    }
 
     static void ThrowErrorMessage(const char* errorMessage)
     {
@@ -35,10 +28,9 @@ namespace Slang
     // Constructor with parameters implementation
     Slang::Module::Module(Session^ parent, System::String^ moduleName, System::String^ modulePath, System::String^ shaderSource)
     {
-        void* nativeParent = parent->getNative();
-        const char* name = FromString(moduleName);
-        const char* path = FromString(modulePath);
-        const char* source = FromString(shaderSource);
+        void* nativeParent = parent->getNative();        const char* name = StringUtilities::FromString(moduleName);
+        const char* path = StringUtilities::FromString(modulePath);
+        const char* source = StringUtilities::FromString(shaderSource);
 		const char* errorMessage = nullptr;
 
         m_NativeModule = SlangNative::CreateModule(nativeParent, name, path, source, &errorMessage);

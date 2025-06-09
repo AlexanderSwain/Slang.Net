@@ -44,7 +44,8 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <PropertyGroup Label="UserMacros" />  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)Slang.Net.Test\bin\$(Configuration)\net9.0\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
@@ -53,7 +54,8 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)\Slang.Net.Test\bin\$(Configuration)\net9.0\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-  </PropertyGroup>  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -62,7 +64,8 @@
     <Link>
       <AdditionalDependencies>$(SolutionDir)Slang.Net.Test\bin\$(Configuration)\net9.0\SlangNative.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-  </ItemDefinitionGroup>  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -73,14 +76,41 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Attribute.h" />
     <ClInclude Include="CompileOptionValueKind.h" />
     <ClInclude Include="CompilerOption.h" />
     <ClInclude Include="CompilerOptionName.h" />
     <ClInclude Include="CompilerOptionValue.h" />
     <ClInclude Include="CompileTarget.h" />
+    <ClInclude Include="DeclKind.h" />
+    <ClInclude Include="EntryPointReflection.h" />
+    <ClInclude Include="FunctionReflection.h" />
+    <ClInclude Include="GenericReflection.h" />
+    <ClInclude Include="LayoutRules.h" />
+    <ClInclude Include="Modifier.h" />
+    <ClInclude Include="ShaderReflection.h" />
+    <ClInclude Include="StringUtils.h" />
+    <ClInclude Include="TypeDef.h" />
+    <ClInclude Include="TypeLayoutReflection.h" />
+    <ClInclude Include="TypeParameterReflection.h" />
+    <ClInclude Include="TypeReflection.h" />
+    <ClInclude Include="VariableLayoutReflection.h" />
+    <ClInclude Include="VariableReflection.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Attribute.cpp" />
     <ClCompile Include="CompilerOption.cpp" />
+    <ClCompile Include="EntryPointReflection.cpp" />
+    <ClCompile Include="FunctionReflection.cpp" />
+    <ClCompile Include="GenericReflection.cpp" />
+    <ClCompile Include="Modifier.cpp" />
+    <ClCompile Include="ShaderReflection.cpp" />
+    <ClCompile Include="StringUtils.cpp" />
+    <ClCompile Include="TypeLayoutReflection.cpp" />
+    <ClCompile Include="TypeParameterReflection.cpp" />
+    <ClCompile Include="TypeReflection.cpp" />
+    <ClCompile Include="VariableLayoutReflection.cpp" />
+    <ClCompile Include="VariableReflection.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EntryPoint.h" />

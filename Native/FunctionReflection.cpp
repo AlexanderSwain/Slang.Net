@@ -34,13 +34,13 @@ Native::Attribute* Native::FunctionReflection::getUserAttributeByIndex(unsigned 
 {
     return new Native::Attribute(m_native->getUserAttributeByIndex(index));
 }
-Native::Attribute* Native::FunctionReflection::findAttributeByName(SlangSession* globalSession, char const* name)
+Native::Attribute* Native::FunctionReflection::findAttributeByName(char const* name)
 {
-    return new Native::Attribute(m_native->findAttributeByName(globalSession, name));
+    return new Native::Attribute(m_native->findAttributeByName(SessionCLI::GetGlobalSession(), name));
 }
-Native::Attribute* Native::FunctionReflection::findUserAttributeByName(SlangSession* globalSession, char const* name)
+Native::Attribute* Native::FunctionReflection::findUserAttributeByName(char const* name)
 {
-    return new Native::Attribute(m_native->findUserAttributeByName(globalSession, name));
+    return new Native::Attribute(m_native->findUserAttributeByName(SessionCLI::GetGlobalSession(), name));
 }
 
 Native::Modifier* Native::FunctionReflection::findModifier(Modifier::ID id)
@@ -53,9 +53,9 @@ Native::GenericReflection* Native::FunctionReflection::getGenericContainer()
     return new Native::GenericReflection(m_native->getGenericContainer());
 }
 
-Native::FunctionReflection* Native::FunctionReflection::applySpecializations(GenericReflection* generic)
+Native::FunctionReflection* Native::FunctionReflection::applySpecializations(GenericReflection* genRef)
 {
-    return new Native::FunctionReflection(m_native->applySpecializations((slang::GenericReflection*)generic->getNative()));
+    return new Native::FunctionReflection(m_native->applySpecializations((slang::GenericReflection*)genRef->getNative()));
 }
 
 Native::FunctionReflection* Native::FunctionReflection::specializeWithArgTypes(unsigned int argCount, TypeReflection* const* types)

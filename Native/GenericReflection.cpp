@@ -77,7 +77,7 @@ int64_t Native::GenericReflection::getConcreteIntVal(VariableReflection* valuePa
 	return m_native->getConcreteIntVal((slang::VariableReflection*)valueParam->getNative());
 }
 
-Native::GenericReflection* Native::GenericReflection::applySpecializations(GenericReflection* generic)
+Native::GenericReflection* Native::GenericReflection::applySpecializations(GenericReflection* genRef)
 {
-	return new Native::GenericReflection(m_native->applySpecializations((slang::GenericReflection*)generic->getNative()));
+	return new Native::GenericReflection(m_native->applySpecializations((slang::GenericReflection*)genRef->getNative()));
 }

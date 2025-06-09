@@ -115,9 +115,9 @@ Native::Attribute* Native::TypeReflection::findUserAttributeByName(char const* n
     return new Attribute(m_native->findUserAttributeByName(name));
 }
 
-Native::TypeReflection* Native::TypeReflection::applySpecializations(GenericReflection* generic)
+Native::TypeReflection* Native::TypeReflection::applySpecializations(GenericReflection* genRef)
 {
-    return new TypeReflection(m_native->applySpecializations((slang::GenericReflection*)generic->getNative()));
+    return new TypeReflection(m_native->applySpecializations((slang::GenericReflection*)genRef->getNative()));
 }
 
 Native::GenericReflection* Native::TypeReflection::getGenericContainer()

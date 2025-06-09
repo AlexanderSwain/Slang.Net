@@ -1,0 +1,123 @@
+// Define this before including any Windows headers to avoid conflicts
+#define NOMINMAX
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+
+#include "VariableReflection.h"
+#include "StringUtilities.h"
+#include "TypeReflection.h"
+#include "Modifier.h"
+#include "Attribute.h"
+#include "GenericReflection.h"
+#include <msclr/marshal.h>
+
+namespace Slang
+{
+    // Constructor
+    VariableReflection::VariableReflection(void* native)
+    {
+        m_NativeVariableReflection = native;
+        m_bOwnsNative = false; // We don't own the native pointer in this case
+    }
+
+    // Destructor
+    VariableReflection::~VariableReflection()
+    {
+        this->!VariableReflection();
+    }
+
+    // Finalizer
+    VariableReflection::!VariableReflection()
+    {
+        // Note: We typically don't delete the native pointer as it's managed by Slang
+        m_NativeVariableReflection = nullptr;
+    }
+
+    // Properties and methods
+    System::String^ VariableReflection::Name::get()
+    {
+        if (!m_NativeVariableReflection) return nullptr;
+        return StringUtilities::ToString(SlangNative::VariableReflection_GetName(m_NativeVariableReflection));
+    }
+
+    TypeReflection^ VariableReflection::Type::get()
+    {
+        if (!m_NativeVariableReflection) return nullptr;
+        void* type = SlangNative::VariableReflection_GetType(m_NativeVariableReflection);
+        return type ? gcnew TypeReflection(type) : nullptr;
+    }
+
+    Modifier^ VariableReflection::FindModifier(int id)
+    {
+        if (!m_NativeVariableReflection) return nullptr;
+        void* modifier = SlangNative::VariableReflection_FindModifier(m_NativeVariableReflection, id);
+        return modifier ? gcnew Modifier(modifier) : nullptr;
+    }
+
+    unsigned int VariableReflection::UserAttributeCount::get()
+    {
+        if (!m_NativeVariableReflection) return 0;
+        return SlangNative::VariableReflection_GetUserAttributeCount(m_NativeVariableReflection);
+    }
+
+    Attribute^ VariableReflection::GetUserAttributeByIndex(unsigned int index)
+    {
+        if (!m_NativeVariableReflection) return nullptr;
+        void* attribute = SlangNative::VariableReflection_GetUserAttributeByIndex(m_NativeVariableReflection, index);
+        return attribute ? gcnew Attribute(attribute) : nullptr;
+    }
+
+    Attribute^ VariableReflection::FindAttributeByName(System::String^ name)
+    {
+        if (!m_NativeVariableReflection) return nullptr;
+        const char* nativeName = StringUtilities::FromString(name);
+        void* attribute = SlangNative::VariableReflection_FindAttributeByName(m_NativeVariableReflection, nullptr, nativeName);
+        return attribute ? gcnew Attribute(attribute) : nullptr;
+    }
+
+    Attribute^ VariableReflection::FindUserAttributeByName(System::String^ name)
+    {
+        if (!m_NativeVariableReflection) return nullptr;
+        const char* nativeName = StringUtilities::FromString(name);
+        void* attribute = SlangNative::VariableReflection_FindAttributeByName(m_NativeVariableReflection, nullptr, nativeName);
+        return attribute ? gcnew Attribute(attribute) : nullptr;
+    }
+
+    bool VariableReflection::HasDefaultValue::get()
+    {
+        if (!m_NativeVariableReflection) return false;
+        return SlangNative::VariableReflection_HasDefaultValue(m_NativeVariableReflection);
+    }
+
+    System::Nullable<System::Int64> VariableReflection::GetDefaultValueInt()
+    {
+        if (!m_NativeVariableReflection) return System::Nullable<System::Int64>();
+        int64_t value;
+        SlangResult result = SlangNative::VariableReflection_GetDefaultValueInt(m_NativeVariableReflection, &value);
+        if (SLANG_SUCCEEDED(result))
+            return System::Nullable<System::Int64>(value);
+        return System::Nullable<System::Int64>();
+    }
+
+    GenericReflection^ VariableReflection::GenericContainer::get()
+    {
+        if (!m_NativeVariableReflection) return nullptr;
+        void* container = SlangNative::VariableReflection_GetGenericContainer(m_NativeVariableReflection);
+        return container ? gcnew GenericReflection(container) : nullptr;
+    }
+
+    VariableReflection^ VariableReflection::ApplySpecializations(GenericReflection^ genRef)
+    {
+        if (!m_NativeVariableReflection || !genRef) return nullptr;
+        void* nativeGeneric = genRef->getNative();
+        void* specializations[] = { nativeGeneric };
+        void* specialized = SlangNative::VariableReflection_ApplySpecializations(m_NativeVariableReflection, 1, specializations);
+        return specialized ? gcnew VariableReflection(specialized) : nullptr;
+    }
+
+    void* VariableReflection::getNative()
+    {
+        return m_NativeVariableReflection;
+    }
+}

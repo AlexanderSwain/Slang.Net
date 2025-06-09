@@ -11,6 +11,9 @@
 
 namespace Slang
 {
+    // Forward declarations
+    ref class ShaderReflection;
+
     public ref class Program : public System::IDisposable
     {
     public:
@@ -26,6 +29,9 @@ namespace Slang
         void* getNative();
 
         System::String^ Compile(unsigned int entryPointIndex, unsigned int targetIndex);
+        
+        // Reflection
+        ShaderReflection^ GetReflection();
 
     private:
         void* m_NativeProgram;

@@ -43,10 +43,10 @@ namespace Native
 		slang::IComponentType* getNative();
 		slang::IComponentType* getLinked();
 		ModuleCLI* getModule();
-
 		SlangResult GetCompiled(unsigned int entryPointIndex, unsigned int targetIndex, const char** output);
 
 		// Reflection API
+		void* GetReflection();
         unsigned int getParameterCount();
         unsigned int getTypeParameterCount();
         TypeParameterReflection* getTypeParameterByIndex(unsigned int index);
@@ -64,7 +64,7 @@ namespace Native
         TypeLayoutReflection* getTypeLayout(TypeReflection* type, LayoutRules rules = LayoutRules::Default);
         EntryPointReflection* findEntryPointByName(const char* name);
         TypeReflection* specializeType(TypeReflection* type, SlangInt specializationArgCount, TypeReflection* const* specializationArgs, ISlangBlob** outDiagnostics);
-        GenericReflection* specializeGeneric(GenericReflection* generic, SlangInt specializationArgCount, GenericArgType const* specializationArgTypes, GenericArgReflection const* specializationArgVals, ISlangBlob** outDiagnostics);
+        GenericReflection* specializeGeneric(GenericReflection* genRef, SlangInt specializationArgCount, GenericArgType const* specializationArgTypes, GenericArgReflection const* specializationArgVals, ISlangBlob** outDiagnostics);
         bool isSubType(TypeReflection* subType, TypeReflection* superType);
         SlangUInt getHashedStringCount() const;
         const char* getHashedString(SlangUInt index, size_t* outCount) const;

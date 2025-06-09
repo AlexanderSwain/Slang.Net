@@ -5,6 +5,7 @@
 #endif
 
 #include "Program.h"
+#include "ShaderReflection.h"
 
 namespace Slang
 {
@@ -52,5 +53,14 @@ namespace Slang
         }
 
         return gcnew System::String(result);
+    }
+
+    ShaderReflection^ Slang::Program::GetReflection()
+    {
+        if (!m_NativeProgram) return nullptr;
+        
+        // Get reflection from the native program
+        void* nativeReflection = SlangNative::GetProgramReflection(m_NativeProgram);
+        return nativeReflection ? gcnew ShaderReflection(nativeReflection) : nullptr;
     }
 }

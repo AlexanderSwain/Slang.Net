@@ -23,6 +23,11 @@ size_t Native::TypeLayoutReflection::getSize(ParameterCategory category)
     return m_native->getSize((SlangParameterCategory)category);
 }
 
+//size_t Native::TypeLayoutReflection::getSize(slang::ParameterCategory category)
+//{
+//    return m_native->getSize(category);
+//}
+
 size_t Native::TypeLayoutReflection::getStride(ParameterCategory category)
 {
     return m_native->getStride((SlangParameterCategory)category);
@@ -31,21 +36,6 @@ size_t Native::TypeLayoutReflection::getStride(ParameterCategory category)
 int32_t Native::TypeLayoutReflection::getAlignment(ParameterCategory category)
 {
     return m_native->getAlignment((SlangParameterCategory)category);
-}
-
-size_t Native::TypeLayoutReflection::getSize(slang::ParameterCategory category)
-{
-    return m_native->getSize(category);
-}
-
-size_t Native::TypeLayoutReflection::getStride(slang::ParameterCategory category)
-{
-    return m_native->getStride(category);
-}
-
-int32_t Native::TypeLayoutReflection::getAlignment(slang::ParameterCategory category)
-{
-    return m_native->getAlignment(category);
 }
 
 

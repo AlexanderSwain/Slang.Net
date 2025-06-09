@@ -35,14 +35,14 @@ Native::Attribute* Native::VariableReflection::getUserAttributeByIndex(unsigned 
     return new Attribute(m_native->getUserAttributeByIndex(index));
 }
 
-Native::Attribute* Native::VariableReflection::findAttributeByName(SlangSession* globalSession, char const* name)
+Native::Attribute* Native::VariableReflection::findAttributeByName(char const* name)
 {
-    return new Attribute(m_native->findAttributeByName(globalSession, name));
+    return new Attribute(m_native->findAttributeByName(SessionCLI::GetGlobalSession(), name));
 }
 
-Native::Attribute* Native::VariableReflection::findUserAttributeByName(SlangSession* globalSession, char const* name)
+Native::Attribute* Native::VariableReflection::findUserAttributeByName(char const* name)
 {
-    return new Attribute(m_native->findUserAttributeByName(globalSession, name));
+    return new Attribute(m_native->findUserAttributeByName(SessionCLI::GetGlobalSession(), name));
 }
 
 bool Native::VariableReflection::hasDefaultValue()
@@ -60,7 +60,7 @@ Native::GenericReflection* Native::VariableReflection::getGenericContainer()
     return new GenericReflection(m_native->getGenericContainer());
 }
 
-Native::VariableReflection* Native::VariableReflection::applySpecializations(GenericReflection* generic)
+Native::VariableReflection* Native::VariableReflection::applySpecializations(GenericReflection* genRef)
 {
-    return new VariableReflection(m_native->applySpecializations((slang::GenericReflection*)generic->getNative()));
+    return new VariableReflection(m_native->applySpecializations((slang::GenericReflection*)genRef->getNative()));
 }

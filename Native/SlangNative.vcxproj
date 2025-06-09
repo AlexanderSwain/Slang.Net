@@ -59,7 +59,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;SLANGNATIVE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Slang\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -147,12 +147,14 @@
     <ClInclude Include="FunctionReflection.h" />
     <ClInclude Include="GenericReflection.h" />
     <ClInclude Include="ModuleCLI.h" />
+    <ClInclude Include="ShaderReflection.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EntryPointReflection.cpp" />
     <ClCompile Include="FunctionReflection.cpp" />
     <ClCompile Include="GenericReflection.cpp" />
     <ClCompile Include="ModuleCLI.cpp" />
+    <ClCompile Include="ShaderReflection.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ParameterInfoCLI.h" />
@@ -192,7 +194,7 @@
   </ItemGroup>
   <ItemDefinitionGroup>
     <PostBuildEvent>
-      <Command>copy "$(SolutionDir)lib\*.dll" "$(TargetDir)"</Command>
+      <Command>copy "$(ProjectDir)..\lib\*.dll" "$(TargetDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

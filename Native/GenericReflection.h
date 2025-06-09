@@ -42,7 +42,7 @@ namespace Native
         GenericReflection* getOuterGenericContainer();
         TypeReflection* getConcreteType(VariableReflection* typeParam);
         int64_t getConcreteIntVal(VariableReflection* valueParam);
-        GenericReflection* applySpecializations(GenericReflection* generic);
+        GenericReflection* applySpecializations(GenericReflection* genRef);
 
 
 	private:

@@ -114,6 +114,11 @@ Native::ProgramCLI::~ProgramCLI()
 }
 
 // Reflection API
+void* Native::ProgramCLI::GetReflection()
+{
+    return m_layout;
+}
+
 unsigned Native::ProgramCLI::getParameterCount()
 {
 	return m_layout->getParameterCount();
@@ -208,7 +213,7 @@ Native::TypeReflection* Native::ProgramCLI::specializeType(
 }
 
 Native::GenericReflection* Native::ProgramCLI::specializeGeneric(  
-    GenericReflection* generic,  
+    GenericReflection* genRef,  
     SlangInt specializationArgCount,  
     GenericArgType const* specializationArgTypes,  
     GenericArgReflection const* specializationArgVals,  
@@ -247,7 +252,7 @@ Native::GenericReflection* Native::ProgramCLI::specializeGeneric(
 
     // Call the underlying function with converted arguments  
     auto result = m_layout->specializeGeneric(  
-        static_cast<slang::GenericReflection*>(generic->getNative()),  
+        static_cast<slang::GenericReflection*>(genRef->getNative()),  
         specializationArgCount,  
         slangSpecializationArgTypes,  
         slangSpecializationArgVals,  

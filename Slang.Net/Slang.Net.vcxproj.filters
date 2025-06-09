@@ -8,6 +8,18 @@
     <ClCompile Include="Program.cpp" />
     <ClCompile Include="Session.cpp" />
     <ClCompile Include="ShaderModel.cpp" />
+    <ClCompile Include="Attribute.cpp" />
+    <ClCompile Include="EntryPointReflection.cpp" />
+    <ClCompile Include="FunctionReflection.cpp" />
+    <ClCompile Include="GenericReflection.cpp" />
+    <ClCompile Include="Modifier.cpp" />
+    <ClCompile Include="ShaderReflection.cpp" />
+    <ClCompile Include="TypeLayoutReflection.cpp" />
+    <ClCompile Include="TypeParameterReflection.cpp" />
+    <ClCompile Include="TypeReflection.cpp" />
+    <ClCompile Include="VariableLayoutReflection.cpp" />
+    <ClCompile Include="VariableReflection.cpp" />
+    <ClCompile Include="StringUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CompilerOption.h" />
@@ -29,6 +41,21 @@
     </ClInclude>
     <ClInclude Include="PreprocessorMacroDesc.h" />
     <ClInclude Include="ProfileID.h" />
+    <ClInclude Include="Attribute.h" />
+    <ClInclude Include="DeclKind.h" />
+    <ClInclude Include="EntryPointReflection.h" />
+    <ClInclude Include="FunctionReflection.h" />
+    <ClInclude Include="GenericReflection.h" />
+    <ClInclude Include="LayoutRules.h" />
+    <ClInclude Include="Modifier.h" />
+    <ClInclude Include="ShaderReflection.h" />
+    <ClInclude Include="TypeLayoutReflection.h" />
+    <ClInclude Include="TypeParameterReflection.h" />
+    <ClInclude Include="TypeReflection.h" />
+    <ClInclude Include="VariableLayoutReflection.h" />
+    <ClInclude Include="VariableReflection.h" />
+    <ClInclude Include="TypeDef.h" />
+    <ClInclude Include="StringUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Enums">

@@ -111,7 +111,7 @@ namespace Native
 
         Attribute* findUserAttributeByName(char const* name);
 
-        TypeReflection* applySpecializations(GenericReflection* generic);
+        TypeReflection* applySpecializations(GenericReflection* genRef);
 
         GenericReflection* getGenericContainer();
 

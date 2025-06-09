@@ -1,4 +1,5 @@
 #pragma once
+#include "slang.h"
 
 namespace Native
 {

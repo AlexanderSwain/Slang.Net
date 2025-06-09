@@ -2,6 +2,7 @@
 #include "slang.h"
 #include "slang-com-ptr.h"
 #include "slang-com-helper.h"
+#include "SessionCLI.h"
 #include "TypeReflection.h"
 #include "VariableReflection.h"
 #include "Attribute.h"
@@ -31,11 +32,11 @@ namespace Native
         VariableReflection* getParameterByIndex(unsigned int index);
         unsigned int getUserAttributeCount();
         Attribute* getUserAttributeByIndex(unsigned int index);
-        Attribute* findAttributeByName(SlangSession* globalSession, char const* name);
-        Attribute* findUserAttributeByName(SlangSession* globalSession, char const* name);
+        Attribute* findAttributeByName(char const* name);
+        Attribute* findUserAttributeByName(char const* name);
         Modifier* findModifier(Modifier::ID id);
         GenericReflection* getGenericContainer();
-        FunctionReflection* applySpecializations(GenericReflection* generic);
+        FunctionReflection* applySpecializations(GenericReflection* genRef);
         FunctionReflection* specializeWithArgTypes(unsigned int argCount, TypeReflection* const* types);
         bool isOverloaded();
         unsigned int getOverloadCount();

@@ -132,6 +132,9 @@
     <ClInclude Include="GenericArgReflection.h">
       <Filter>Slang Structs</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderReflection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SlangNative.cpp">
@@ -192,6 +195,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DeclReflection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderReflection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -30,16 +30,13 @@ namespace Native
 	struct SLANGNATIVE_API TypeLayoutReflection
 	{
 
-	public:
-		TypeLayoutReflection(void* native);
+	public:		
+        TypeLayoutReflection(void* native);
         TypeReflection* getType();
         TypeReflection::Kind getKind();
-        size_t getSize(ParameterCategory category);
-        size_t getStride(ParameterCategory category);
-        int32_t getAlignment(ParameterCategory category);
-        size_t getSize(slang::ParameterCategory category = slang::ParameterCategory::Uniform);
-        size_t getStride(slang::ParameterCategory category = slang::ParameterCategory::Uniform);
-        int32_t getAlignment(slang::ParameterCategory category = slang::ParameterCategory::Uniform);
+        size_t getSize(ParameterCategory category = ParameterCategory::Uniform);
+        size_t getStride(ParameterCategory category = ParameterCategory::Uniform);
+        int32_t getAlignment(ParameterCategory category = ParameterCategory::Uniform);
         unsigned int getFieldCount();
         VariableLayoutReflection* getFieldByIndex(unsigned int index);
         SlangInt findFieldIndexByName(char const* nameBegin, char const* nameEnd = nullptr);

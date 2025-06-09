@@ -5,19 +5,12 @@
 #endif
 
 #include "EntryPoint.h"
+#include "StringUtils.h"
 #include <msclr/marshal.h>
 #include <stdexcept>
 
 namespace Slang
 {
-    static const char* FromString(System::String^ str)
-    {
-        if (str == nullptr)
-            return nullptr;
-        System::IntPtr strPtr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(str);
-        const char* nativeStr = static_cast<const char*>(strPtr.ToPointer());
-        return nativeStr;
-    }
 
     static void ThrowErrorMessage(const char* errorMessage)
     {
@@ -41,7 +34,7 @@ namespace Slang
             throw gcnew System::ArgumentNullException("entryPointName", "Entry point name cannot be null.");
 
         void* nativeParent = parent->getNative();
-        const char* searchName = FromString(entryPointName);
+        const char* searchName = StringUtilities::FromString(entryPointName);
 		const char* errorMessage = nullptr;
 
         m_NativeEntryPoint = SlangNative::FindEntryPoint(nativeParent, searchName, &errorMessage);

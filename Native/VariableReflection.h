@@ -2,6 +2,7 @@
 #include "slang.h"
 #include "slang-com-ptr.h"
 #include "slang-com-helper.h"
+#include "SessionCLI.h"
 #include "Modifier.h"
 #include "TypeReflection.h"
 #include "Attribute.h"
@@ -28,12 +29,12 @@ namespace Native
         Modifier* findModifier(Modifier::ID id);
         unsigned int getUserAttributeCount();
         Attribute* getUserAttributeByIndex(unsigned int index);
-        Attribute* findAttributeByName(SlangSession* globalSession, char const* name);
-        Attribute* findUserAttributeByName(SlangSession* globalSession, char const* name);
+        Attribute* findAttributeByName(char const* name);
+        Attribute* findUserAttributeByName(char const* name);
         bool hasDefaultValue();
         SlangResult getDefaultValueInt(int64_t* value);
         GenericReflection* getGenericContainer();
-        VariableReflection* applySpecializations(GenericReflection* generic);
+        VariableReflection* applySpecializations(GenericReflection* genRef);
 
 	private:
 		slang::VariableReflection* m_native;

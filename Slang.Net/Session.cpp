@@ -5,17 +5,10 @@
 #endif
 
 #include "Session.h"
+#include "StringUtils.h"
 
 namespace Slang
 {
-    static const char* FromString(System::String^ str)
-    {
-        if (str == nullptr)
-            return nullptr;
-        System::IntPtr strPtr = System::Runtime::InteropServices::Marshal::StringToHGlobalAnsi(str);
-        const char* nativeStr = static_cast<const char*>(strPtr.ToPointer());
-        return nativeStr;
-    }
 
     static void ThrowErrorMessage(const char* errorMessage)
     {
@@ -36,25 +29,22 @@ namespace Slang
         array<Slang::PreprocessorMacroDesc^>^ macros,
         array<Slang::ShaderModel^>^ models,
         array<System::String^>^ searchPaths)
-    {
-        // Marshal managed arrays to native arrays
+    {        // Marshal managed arrays to native arrays
         int optionsLength = options->Length;
         Native::CompilerOptionCLI* nativeOptions = new Native::CompilerOptionCLI[optionsLength];
         for (int i = 0; i < optionsLength; ++i)
         {
-            Native::CompilerOptionNameCLI name = (Native::CompilerOptionNameCLI)options[i]->getName();
-			const char* sv0 = FromString(options[i]->getValue()->m_stringValue0);
-			const char* sv1 = FromString(options[i]->getValue()->m_stringValue1);
+            Native::CompilerOptionNameCLI name = (Native::CompilerOptionNameCLI)options[i]->getName();			const char* sv0 = StringUtilities::FromString(options[i]->getValue()->m_stringValue0);
+			const char* sv1 = StringUtilities::FromString(options[i]->getValue()->m_stringValue1);
             Native::CompilerOptionValueCLI value = { (Native::CompilerOptionValueKindCLI)options[i]->getValue()->m_kind, options[i]->getValue()->m_intValue0, options[i]->getValue()->m_intValue1, sv0, sv1 };
-            nativeOptions = new Native::CompilerOptionCLI(name, value);
+            nativeOptions[i] = Native::CompilerOptionCLI(name, value);
         }
         
         int macrosLength = macros->Length;
         Native::PreprocessorMacroDescCLI* nativeMacros = new Native::PreprocessorMacroDescCLI[macrosLength];
         for (int i = 0; i < macrosLength; ++i)
-        {
-			const char* name = FromString(macros[i]->GetName());
-			const char* value = FromString(macros[i]->GetValue());
+        {			const char* name = StringUtilities::FromString(macros[i]->GetName());
+			const char* value = StringUtilities::FromString(macros[i]->GetValue());
             nativeMacros[i] = Native::PreprocessorMacroDescCLI(name, value); // or marshal as needed
         }
             
@@ -62,7 +52,7 @@ namespace Slang
         Native::ShaderModelCLI* nativeModels = new Native::ShaderModelCLI[modelsLength];
         for (int i = 0; i < modelsLength; ++i)        
         {
-			const char* profile = FromString(models[i]->getProfile());
+			const char* profile = StringUtilities::FromString(models[i]->getProfile());
             nativeModels[i] = Native::ShaderModelCLI((Native::CompileTargetCLI)models[i]->getTarget(), profile); // or marshal as needed
         }
             
