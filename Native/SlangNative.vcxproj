@@ -110,12 +110,12 @@
     <ClInclude Include="TypeReflection.h" />
     <ClInclude Include="VariableLayoutReflection.h" />
     <ClInclude Include="VariableReflection.h" />
-  </ItemGroup>
-  <ItemGroup>
+  </ItemGroup>  <ItemGroup>
     <ClCompile Include="Attribute.cpp" />
     <ClCompile Include="BufferReflection.cpp" />
     <ClCompile Include="CompilerOptionCLI.cpp" />
     <ClCompile Include="DeclReflection.cpp" />
+    <ClCompile Include="Modifier.cpp" />
     <ClCompile Include="TypeLayoutReflection.cpp" />
     <ClCompile Include="TypeParameterReflection.cpp" />
     <ClCompile Include="TypeReflection.cpp" />

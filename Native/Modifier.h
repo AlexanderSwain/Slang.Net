@@ -20,7 +20,18 @@ namespace Native
             InOut = SLANG_MODIFIER_INOUT
         };
 
+    private:
+        slang::Modifier* m_native;
+
     public:
-        Modifier(slang::Modifier* modifier) { }
+        Modifier(slang::Modifier* modifier) : m_native(modifier) { }
+        
+        void* getNative() { return m_native; }
+        
+        // Get the modifier ID
+        ID getID();
+        
+        // Get the modifier name as string
+        const char* getName();
     };
 }
