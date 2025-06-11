@@ -5,6 +5,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PlatformTarget>x64</PlatformTarget>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+	<LangVersion>preview</LangVersion>
+	<EnablePreviewFeatures>true</EnablePreviewFeatures>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Shaders\ParameterInfo.slang" />

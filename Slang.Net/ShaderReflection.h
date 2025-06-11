@@ -19,6 +19,7 @@ namespace Slang
     ref class EntryPointReflection;
     ref class GenericReflection;
     ref class TypeParameterReflection;
+	ref class LayoutRules;
 
     public ref class ShaderReflection : public System::IDisposable
     {
@@ -43,14 +44,14 @@ namespace Slang
         EntryPointReflection^ FindEntryPointByName(System::String^ name);
         
         property unsigned int GlobalConstantBufferBinding { unsigned int get(); }
-        property System::UIntPtr GlobalConstantBufferSize { System::UIntPtr get(); }
+        property unsigned long GlobalConstantBufferSize { unsigned long get(); }
         
         TypeReflection^ FindTypeByName(System::String^ name);
         FunctionReflection^ FindFunctionByName(System::String^ name);
         FunctionReflection^ FindFunctionByNameInType(TypeReflection^ type, System::String^ name);
         VariableReflection^ FindVarByNameInType(TypeReflection^ type, System::String^ name);
         
-        TypeLayoutReflection^ GetTypeLayout(TypeReflection^ type, int layoutRules);
+        TypeLayoutReflection^ ShaderReflection::GetTypeLayout(TypeReflection^ type, int layoutRules);
         
         TypeReflection^ SpecializeType(TypeReflection^ type, array<TypeReflection^>^ specializationArgs);
         

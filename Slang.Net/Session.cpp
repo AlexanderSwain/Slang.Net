@@ -6,6 +6,7 @@
 
 #include "Session.h"
 #include "StringUtils.h"
+#include <iostream>
 
 namespace Slang
 {
@@ -34,7 +35,8 @@ namespace Slang
         Native::CompilerOptionCLI* nativeOptions = new Native::CompilerOptionCLI[optionsLength];
         for (int i = 0; i < optionsLength; ++i)
         {
-            Native::CompilerOptionNameCLI name = (Native::CompilerOptionNameCLI)options[i]->getName();			const char* sv0 = StringUtilities::FromString(options[i]->getValue()->m_stringValue0);
+            Native::CompilerOptionNameCLI name = (Native::CompilerOptionNameCLI)options[i]->getName();			
+            const char* sv0 = StringUtilities::FromString(options[i]->getValue()->m_stringValue0);
 			const char* sv1 = StringUtilities::FromString(options[i]->getValue()->m_stringValue1);
             Native::CompilerOptionValueCLI value = { (Native::CompilerOptionValueKindCLI)options[i]->getValue()->m_kind, options[i]->getValue()->m_intValue0, options[i]->getValue()->m_intValue1, sv0, sv1 };
             nativeOptions[i] = Native::CompilerOptionCLI(name, value);
@@ -43,7 +45,7 @@ namespace Slang
         int macrosLength = macros->Length;
         Native::PreprocessorMacroDescCLI* nativeMacros = new Native::PreprocessorMacroDescCLI[macrosLength];
         for (int i = 0; i < macrosLength; ++i)
-        {			const char* name = StringUtilities::FromString(macros[i]->GetName());
+        {	const char* name = StringUtilities::FromString(macros[i]->GetName());
 			const char* value = StringUtilities::FromString(macros[i]->GetValue());
             nativeMacros[i] = Native::PreprocessorMacroDescCLI(name, value); // or marshal as needed
         }

@@ -46,7 +46,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)Slang.Net.Test\bin\$(Configuration)\net9.0\</OutDir>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(SolutionDir)Slang.Net.Test\bin\$(Configuration)\net9.0\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -59,7 +59,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;SLANGNATIVE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Slang\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\EmbeddedLLVM\slang-2025.6.3-windows-x86_64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -110,7 +110,8 @@
     <ClInclude Include="TypeReflection.h" />
     <ClInclude Include="VariableLayoutReflection.h" />
     <ClInclude Include="VariableReflection.h" />
-  </ItemGroup>  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="Attribute.cpp" />
     <ClCompile Include="BufferReflection.cpp" />
     <ClCompile Include="CompilerOptionCLI.cpp" />

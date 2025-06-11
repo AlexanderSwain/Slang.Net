@@ -15,11 +15,15 @@ Native::ModuleCLI::ModuleCLI(SessionCLI* parent, const char* moduleName, const c
         //slangModule = m_session->loadModuleFromSourceString(moduleName, modulePath, shaderSource, diagnosticsBlob.writeRef());
 
         // Improved diagnostics output
-        if (diagnosticsBlob != nullptr && diagnosticsBlob->getBufferSize() > 0)
+        if (!diagnosticsBlob && diagnosticsBlob->getBufferSize() > 0)
         {
             std::string diagnosticsText = std::string((const char*)diagnosticsBlob->getBufferPointer());
-			std::string errorMessage = "There are errors present in the shader source: " + diagnosticsText;
-            throw std::runtime_error(errorMessage);
+			std::string errorMessage = "There are issues in the shader source: " + diagnosticsText;
+
+            // Change this to:
+            // if (WarningsAsErrors are on)
+            if (!slangModule)
+                throw std::runtime_error(errorMessage);
         }
         else if (!slangModule)
         {

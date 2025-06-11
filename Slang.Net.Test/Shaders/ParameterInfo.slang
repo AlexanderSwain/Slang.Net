@@ -1,4 +1,5 @@
 // The texture to sample
+[deprecated("Removing this")]
 Texture2D<float4> inputImage : register(t0);
 
 // The output buffer

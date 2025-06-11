@@ -6,34 +6,36 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        Session session = new Session(
-            [
-                new CompilerOption(Slang.CompilerOptionName.Obfuscate, new CompilerOptionValue(CompilerOptionValueKind.Int, 1, 0, null, null))
-            ],
-            [
-                new PreprocessorMacroDesc("LIGHTING_SCALER", "12")
-            ],
-            [
-                new ShaderModel(Slang.CompileTarget.SLANG_HLSL, "cs_5_0"),
-            ],
-            [
-                @"C:\Users\lexxa\Code\Playground\Slang.Net\Slang.Net.Test\Shaders\"
-            ]);
-        Module module = new Module(session, "ParameterInfo", "ParameterInfo.slang", File.ReadAllText("Shaders/ParameterInfo.slang"));
+        SessionBuilder builder = new SessionBuilder()
+            .AddCompilerOption(CompilerOptionName.WarningsAsErrors, new CompilerOptionValue(CompilerOptionValueKind.Int, 0, 0, "all", null))
+            .AddCompilerOption(CompilerOptionName.Obfuscate, new CompilerOptionValue(CompilerOptionValueKind.Int, 1, 0, null, null))
+            .AddPreprocessorMacro("LIGHTING_SCALER", "12")
+            //.AddShaderModel(CompileTarget.SLANG_HLSL, "vs_5_0")
+            //.AddShaderModel(CompileTarget.SLANG_HLSL, "gs_5_0")
+            //.AddShaderModel(CompileTarget.SLANG_HLSL, "hs_5_0")
+            //.AddShaderModel(CompileTarget.SLANG_HLSL, "ds_5_0")
+            //.AddShaderModel(CompileTarget.SLANG_HLSL, "ps_5_0")
+            .AddShaderModel(CompileTarget.SLANG_HLSL, "cs_5_0")
+            .AddSearchPath(@"C:\Users\lexxa\Code\Playground\Slang.Net\Slang.Net.Test\Shaders\");
+        
+        Session session = builder.Create();
 
-        //EntryPoint entryPoint = new EntryPoint(module, "CS");
-        //var parameters = entryPoint.Parameters;
+        Module module = session.LoadModule("ParameterInfo");
 
-        // Maybe rename Slang.Program to something more descriptive like Slang.ShaderProgram.
-        Slang.Program program = new Slang.Program(module);
+        ShaderProgram program = module.Program;
 
-        // Maybe change this to entryPoint.Compile(). The user must get the entry point from Program.
-        var source = program.Compile(0, 0);
+        var entryPoint = program.EntryPoints.Where(x => x.Name == "CS").First();
 
-        var reflection = program.GetReflection();
+        program.CppObj.Compile(0, 0);
 
-        var param1 = reflection.GetParameterByIndex(0);
-
-        Console.WriteLine(reflection.ToJson());
+        //// Maybe change this to entryPoint.Compile(). The user must get the entry point from Program.
+        //var source = program.Compile(0, 0);
+        //
+        //var reflection = program.GetReflection();
+        //
+        //var param1 = reflection.GetParameterByIndex(0);
+        //var usrAttCount = new VariableReflection(param1.Variable);
+        //
+        //Console.WriteLine(reflection.ToJson());
     }
 }

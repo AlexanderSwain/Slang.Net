@@ -27,13 +27,6 @@ Native::ProgramCLI::ProgramCLI(ModuleCLI* parent)
     }
 
     m_layout = composedProgram->getLayout();
-	ISlangBlob* layoutBlob = nullptr;
-    m_layout->toJson(&layoutBlob);
-
-    if (layoutBlob != nullptr)
-    {
-        std::cout << (const char*)layoutBlob->getBufferPointer() << std::endl;
-    }
 
     if (composedProgram == nullptr)
     {

@@ -46,7 +46,6 @@
     <ClInclude Include="EntryPointReflection.h" />
     <ClInclude Include="FunctionReflection.h" />
     <ClInclude Include="GenericReflection.h" />
-    <ClInclude Include="LayoutRules.h" />
     <ClInclude Include="Modifier.h" />
     <ClInclude Include="ShaderReflection.h" />
     <ClInclude Include="TypeLayoutReflection.h" />

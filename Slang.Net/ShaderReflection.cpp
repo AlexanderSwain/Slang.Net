@@ -99,25 +99,29 @@ namespace Slang
     {
         if (!m_NativeShaderReflection) return 0;
         return ShaderReflection_GetGlobalConstantBufferBinding(m_NativeShaderReflection);
-    }    System::UIntPtr ShaderReflection::GlobalConstantBufferSize::get()
+    }    
+    unsigned long ShaderReflection::GlobalConstantBufferSize::get()
     {
-        if (!m_NativeShaderReflection) return System::UIntPtr::Zero;
-        return System::UIntPtr(ShaderReflection_GetGlobalConstantBufferSize(m_NativeShaderReflection));
-    }      TypeReflection^ ShaderReflection::FindTypeByName(System::String^ name)
+        if (!m_NativeShaderReflection) return 0;
+        return ShaderReflection_GetGlobalConstantBufferSize(m_NativeShaderReflection);
+    }      
+    TypeReflection^ ShaderReflection::FindTypeByName(System::String^ name)
     {
         if (!m_NativeShaderReflection || !name) return nullptr;
         const char* nativeName = StringUtilities::FromString(name);
         void* type = ShaderReflection_FindTypeByName(m_NativeShaderReflection, nativeName);
         Marshal::FreeHGlobal(System::IntPtr((void*)nativeName));
         return type ? gcnew TypeReflection(type) : nullptr;
-    }      FunctionReflection^ ShaderReflection::FindFunctionByName(System::String^ name)
+    }      
+    FunctionReflection^ ShaderReflection::FindFunctionByName(System::String^ name)
     {
         if (!m_NativeShaderReflection || !name) return nullptr;
         const char* nativeName = StringUtilities::FromString(name);
         void* function = ShaderReflection_FindFunctionByName(m_NativeShaderReflection, nativeName);
         Marshal::FreeHGlobal(System::IntPtr((void*)nativeName));
         return function ? gcnew FunctionReflection(function) : nullptr;
-    }      FunctionReflection^ ShaderReflection::FindFunctionByNameInType(TypeReflection^ type, System::String^ name)
+    }      
+    FunctionReflection^ ShaderReflection::FindFunctionByNameInType(TypeReflection^ type, System::String^ name)
     {
         if (!m_NativeShaderReflection || !type || !name) return nullptr;
         void* nativeType = type->getNative();
@@ -126,7 +130,7 @@ namespace Slang
         Marshal::FreeHGlobal(System::IntPtr((void*)nativeName));
         return function ? gcnew FunctionReflection(function) : nullptr;
     }
-      VariableReflection^ ShaderReflection::FindVarByNameInType(TypeReflection^ type, System::String^ name)
+    VariableReflection^ ShaderReflection::FindVarByNameInType(TypeReflection^ type, System::String^ name)
     {
         if (!m_NativeShaderReflection || !type || !name) return nullptr;
         void* nativeType = type->getNative();
