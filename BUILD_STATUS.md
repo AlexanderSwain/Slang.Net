@@ -36,7 +36,7 @@ MSBuild.exe "Slang.Net.sln" /p:Configuration=Release /p:Platform=x64
 - `Native/SlangNative.vcxproj` - Native C++ project
 - `Slang.Net/Slang.Net.vcxproj` - Managed C++/CLI project
 - `Slang.Net.Test/Slang.Net.Test.csproj` - C# test project
-- `Native/EmbeddedLLVM/slang-2025.6.3-windows-x86_64/` - Contains embedded x64-only Slang SDK
+- `Native/EmbeddedLLVM/slang-2025.10.3-windows-x86_64/` - Contains embedded x64-only Slang SDK
 
 ## Future x86 Support
 To add x86 support in the future, the following would be required:

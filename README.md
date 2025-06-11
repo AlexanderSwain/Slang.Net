@@ -18,9 +18,9 @@ This project consists of three main components:
 
 ### Required Dependencies
 - **Slang SDK** - Embedded LLVM version included in the project
-  - The project uses headers from `Native\EmbeddedLLVM\slang-2025.6.3-windows-x86_64\include\`
-  - Slang libraries are located in `Native\EmbeddedLLVM\slang-2025.6.3-windows-x86_64\lib\`
-  - Slang DLLs are located in `Native\EmbeddedLLVM\slang-2025.6.3-windows-x86_64\bin\`
+  - The project uses headers from `Native\EmbeddedLLVM\slang-2025.10.3-windows-x86_64\include\`
+  - Slang libraries are located in `Native\EmbeddedLLVM\slang-2025.10.3-windows-x86_64\lib\`
+  - Slang DLLs are located in `Native\EmbeddedLLVM\slang-2025.10.3-windows-x86_64\bin\`
 
 ### Platform Support
 - ✅ **x64 (64-bit)**: Fully supported for Debug and Release configurations
@@ -41,7 +41,7 @@ Slang.Net/
 │   ├── SlangNative.vcxproj
 │   ├── README.md
 │   └── EmbeddedLLVM/       # Embedded Slang SDK
-│       └── slang-2025.6.3-windows-x86_64/
+│       └── slang-2025.10.3-windows-x86_64/
 │           ├── bin/        # Slang DLLs
 │           ├── include/    # Slang headers
 │           └── lib/        # Slang libraries
@@ -168,7 +168,7 @@ Or run it through Visual Studio by setting `Slang.Net.Test` as the startup proje
    - Verify the embedded headers exist at `Native\EmbeddedLLVM\slang-2025.6.3-windows-x86_64\include\slang.h`
 
 2. **"Cannot find slang.lib"**
-   - Check that libraries exist in `Native\EmbeddedLLVM\slang-2025.6.3-windows-x86_64\lib\`
+   - Check that libraries exist in `Native\EmbeddedLLVM\slang-2025.10.3-windows-x86_64\lib\`
    - Verify the library is for x64 architecture
 
 3. **"Platform 'Win32' not supported"**
@@ -185,13 +185,233 @@ Or run it through Visual Studio by setting `Slang.Net.Test` as the startup proje
    - ✅ **Resolved** - All unimplemented methods have been completed
    - The current version has full API coverage with no remaining stubs
 
-### Build Verification
+## Updating the Slang Compiler Version
 
-To verify your build is working correctly:
+This section provides comprehensive step-by-step instructions for updating the project to use a newer version of the Slang compiler. The process involves updating file paths, building, and testing. These instructions assume you want to update from the current version **2025.10.3** to a newer version.
 
-1. Check that all DLL files are generated
-2. Run the test project
-3. Verify no missing dependency errors occur
+### Overview
+
+The project currently uses Slang compiler version **2025.10.3**. To update to a newer version, you need to:
+1. Download and extract the new Slang SDK (✅ you've already done this!)
+2. Update project configuration files 
+3. Update documentation and scripts
+4. Build and test the project
+
+### Step-by-Step Update Process
+
+#### Step 1: Download and Extract New Slang SDK ✅ (Already Completed)
+
+You've already completed this step by adding `slang-2025.10.3-windows-x86_64` to the `EmbeddedLLVM` directory. When updating to a future version, you would:
+
+1. **Download a newer Slang release**:
+   - Go to the [Slang releases page](https://github.com/shader-slang/slang/releases)
+   - Download the Windows x64 version (e.g., `slang-2025.11.0-windows-x86_64.zip`)
+
+2. **Extract to the EmbeddedLLVM directory**:
+   ```powershell
+   # Navigate to the project directory
+   cd "c:\Users\[YourUsername]\Code\Playground\Slang.Net"
+   
+   # Extract the downloaded ZIP file to Native\EmbeddedLLVM\
+   # This should create a folder like: Native\EmbeddedLLVM\slang-2025.11.0-windows-x86_64\
+   ```
+
+3. **Verify the extracted folder structure**:
+   ```
+   Native\EmbeddedLLVM\slang-YYYY.MM.V-windows-x86_64\
+   ├── bin\            # Contains DLL files (slang.dll, gfx.dll, etc.)
+   ├── include\        # Contains header files (slang.h, etc.)
+   ├── lib\            # Contains library files (slang.lib, gfx.lib, etc.)
+   └── ...
+   ```
+
+#### Step 2: Update Project Configuration Files
+
+**Update the Native C++ Project** (`Native\SlangNative.vcxproj`):
+
+⚠️ **Important**: You need to update this file in **3 specific locations**. Use Find & Replace in your text editor to make this easier.
+
+1. **Find and replace the include paths** (appears **twice** - once for Debug, once for Release):
+   
+   **Find this:**
+   ```xml
+   <AdditionalIncludeDirectories>$(ProjectDir)\EmbeddedLLVM\slang-2025.10.3-windows-x86_64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+   ```
+   
+   **Replace with:** (using your new version number)
+   ```xml
+   <AdditionalIncludeDirectories>$(ProjectDir)\EmbeddedLLVM\slang-YYYY.MM.V-windows-x86_64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+   ```
+
+2. **Find and replace the library paths** (appears **twice** - once for Debug, once for Release):
+   
+   **Find this:**
+   ```xml
+   <AdditionalLibraryDirectories>$(ProjectDir)EmbeddedLLVM\slang-2025.10.3-windows-x86_64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+   ```
+   
+   **Replace with:**
+   ```xml
+   <AdditionalLibraryDirectories>$(ProjectDir)EmbeddedLLVM\slang-YYYY.MM.V-windows-x86_64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+   ```
+
+3. **Find and replace the post-build copy command** (appears **once**):
+   
+   **Find this:**
+   ```xml
+   <Command>copy "$(ProjectDir)EmbeddedLLVM\slang-2025.10.3-windows-x86_64\bin\*.dll" "$(TargetDir)"</Command>
+   ```
+   
+   **Replace with:**
+   ```xml
+   <Command>copy "$(ProjectDir)EmbeddedLLVM\slang-YYYY.MM.V-windows-x86_64\bin\*.dll" "$(TargetDir)"</Command>
+   ```
+
+#### Step 3: Update Scripts and Documentation
+
+**Update the verification script** (`verify-build.ps1`):
+
+1. **Find and replace the library and binary paths** (2 lines to update):
+   
+   **Find these lines:**
+   ```powershell
+   $libDir = "Native\EmbeddedLLVM\slang-2025.10.3-windows-x86_64\lib"
+   $binDir = "Native\EmbeddedLLVM\slang-2025.10.3-windows-x86_64\bin"
+   ```
+   
+   **Replace with:**
+   ```powershell
+   $libDir = "Native\EmbeddedLLVM\slang-YYYY.MM.V-windows-x86_64\lib"
+   $binDir = "Native\EmbeddedLLVM\slang-YYYY.MM.V-windows-x86_64\bin"
+   ```
+
+**Update documentation files**:
+
+1. **Update `README.md`** (this file):
+   - Update the version number in the "Required Dependencies" section
+   - Update the "Overview" section in "Updating the Slang Compiler Version"
+   - Update any example paths that reference the old version
+
+2. **Update `BUILD_STATUS.md`**:
+   - Update the Slang SDK path reference (search for the old version number)
+
+#### Step 4: Build and Test
+
+1. **Clean and build the project**:
+   ```powershell
+   # Using the build script (easiest method)
+   .\build.ps1 -Configuration Debug -Clean
+   
+   # OR using MSBuild directly (replace path with your VS version)
+   & "${env:ProgramFiles}\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe" "Slang.Net.sln" /p:Configuration=Debug /p:Platform=x64 /t:Clean
+   & "${env:ProgramFiles}\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe" "Slang.Net.sln" /p:Configuration=Debug /p:Platform=x64
+   ```
+
+2. **Verify the build completed successfully**:
+   ```powershell
+   # Check that all required files are generated
+   Get-ChildItem "Slang.Net.Test\bin\Debug\net9.0\*.dll"
+   
+   # Should show files like:
+   # - SlangNative.dll
+   # - Slang.Net.dll  
+   # - slang.dll, gfx.dll, slang-rt.dll (from the new Slang version)
+   ```
+
+3. **Test the application runs correctly**:
+   ```powershell
+   # Run the test application
+   Set-Location "Slang.Net.Test\bin\Debug\net9.0"
+   .\Slang.Net.Test.exe
+   
+   # Should run without errors and show test output
+   ```
+
+4. **Run the verification script**:
+   ```powershell
+   # Go back to project root
+   Set-Location "c:\Users\[YourUsername]\Code\Playground\Slang.Net"
+   
+   # Run verification
+   .\verify-build.ps1
+   
+   # Should show "All checks passed!"
+   ```
+
+#### Step 5: Optional Cleanup
+
+**Remove the old Slang version** (only after confirming everything works perfectly):
+```powershell
+# Delete the old directory
+Remove-Item "Native\EmbeddedLLVM\slang-2025.10.3-windows-x86_64" -Recurse -Force
+```
+
+### Update Checklist
+
+Use this checklist to ensure you don't miss any steps:
+
+**Preparation:**
+- [ ] ✅ **Step 1**: Downloaded and extracted new Slang SDK to `Native\EmbeddedLLVM\` (already done)
+
+**File Updates:**
+- [ ] **Step 2**: Updated `Native\SlangNative.vcxproj`:
+  - [ ] Updated include paths (2 locations: Debug and Release configurations)
+  - [ ] Updated library paths (2 locations: Debug and Release configurations) 
+  - [ ] Updated post-build copy command (1 location)
+- [ ] **Step 3**: Updated `verify-build.ps1`:
+  - [ ] Updated `$libDir` path
+  - [ ] Updated `$binDir` path
+- [ ] **Step 3**: Updated documentation:
+  - [ ] Updated version number in `README.md` overview and dependencies section
+  - [ ] Updated `BUILD_STATUS.md` if needed
+
+**Testing:**
+- [ ] **Step 4**: Successfully built project:
+  - [ ] Debug build completed without errors
+  - [ ] All required DLLs generated in output directory
+  - [ ] Test application runs without errors
+  - [ ] Verification script passes
+- [ ] **Step 5**: Cleaned up old version (optional)
+
+### Troubleshooting
+
+**Common issues and solutions**:
+
+1. **Build fails with "file not found" errors**:
+   - ❌ **Problem**: New Slang SDK not extracted correctly or file paths not updated
+   - ✅ **Solution**: 
+     - Verify the new Slang SDK folder exists in `Native\EmbeddedLLVM\`
+     - Double-check that all file paths in `SlangNative.vcxproj` were updated correctly
+     - Ensure you updated all 5 path references (not just some of them)
+
+2. **Linker errors about missing libraries (LNK1104)**:
+   - ❌ **Problem**: Library paths incorrect or new Slang version missing required files
+   - ✅ **Solution**:
+     - Verify the new Slang SDK contains all required `.lib` files in the `lib\` folder
+     - Check that library paths in `SlangNative.vcxproj` point to the correct new directory
+     - Ensure the new Slang version is compatible with your project
+
+3. **Runtime errors when running the test (DLL not found)**:
+   - ❌ **Problem**: Slang DLLs not copied to output directory or wrong versions
+   - ✅ **Solution**:
+     - Check that the post-build copy command was updated in `SlangNative.vcxproj`
+     - Verify all Slang DLLs exist in `Slang.Net.Test\bin\Debug\net9.0\`
+     - Ensure DLL versions match the library versions you're linking against
+
+4. **Application crashes on startup**:
+   - ❌ **Problem**: Incompatible Slang version or API breaking changes
+   - ✅ **Solution**:
+     - Check the [Slang release notes](https://github.com/shader-slang/slang/releases) for breaking changes
+     - Try building in Release mode instead of Debug
+     - Consider reverting to the previous version if issues persist
+     - Check that your project code is compatible with the new Slang API version
+
+5. **Verification script fails**:
+   - ❌ **Problem**: Path references in script not updated
+   - ✅ **Solution**:
+     - Ensure you updated both `$libDir` and `$binDir` variables in `verify-build.ps1`
+     - Check that the paths point to existing directories
+     - Run the script with `-Verbose` flag for more detailed output
 
 ## Usage Examples
 

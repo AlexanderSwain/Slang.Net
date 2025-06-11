@@ -52,10 +52,10 @@ function Test-FileExists {
     
     if (Test-Path $FilePath) {
         $size = (Get-Item $FilePath).Length
-        Write-Success "  ✓ $Description ($([math]::Round($size/1KB, 2)) KB)"
+        Write-Success "  [OK] $Description ($([math]::Round($size/1KB, 2)) KB)"
         return $true
     } else {
-        Write-Error "  ✗ $Description - MISSING"
+        Write-Error "  [MISSING] $Description - MISSING"
         return $false
     }
 }
@@ -64,7 +64,7 @@ Write-Header "Slang.Net Build Verification"
 Write-Info "Configuration: $Configuration"
 Write-Info "Platform: x64"
 
-$outputDir = "x64\$Configuration"
+$outputDir = "Slang.Net.Test\bin\$Configuration\net9.0"
 $allFilesPresent = $true
 
 Write-Info ""
@@ -106,8 +106,8 @@ Write-Info ""
 Write-Info "Checking Slang dependencies..."
 
 # Check new embedded LLVM directories
-$libDir = "Native\EmbeddedLLVM\slang-2025.6.3-windows-x86_64\lib"
-$binDir = "Native\EmbeddedLLVM\slang-2025.6.3-windows-x86_64\bin"
+$libDir = "Native\EmbeddedLLVM\slang-2025.10.3-windows-x86_64\lib"
+$binDir = "Native\EmbeddedLLVM\slang-2025.10.3-windows-x86_64\bin"
 
 if (Test-Path $libDir) {
     Write-Success "  ✓ Slang lib directory found"
@@ -126,22 +126,21 @@ if (Test-Path $binDir) {
     foreach ($dll in $requiredDlls) {
         Test-FileExists "$binDir\$dll" $dll | Out-Null
     }
-} else {
-    Write-Error "  ✗ Slang bin directory not found: $binDir"
+} else {    Write-Error "  [MISSING] Slang bin directory not found: $binDir"
     $allFilesPresent = $false
 }
 
 Write-Info ""
 if ($allFilesPresent) {
-    Write-Header "✓ BUILD VERIFICATION PASSED"
+    Write-Header "[OK] BUILD VERIFICATION PASSED"
     Write-Success "All required files are present and the build appears successful!"
     Write-Info ""
     Write-Info "You can now:"
-    Write-Info "  1. Run the test: cd $outputDir && .\Slang.Net.Test.exe"
+    Write-Info "  1. Run the test: cd $outputDir; .\Slang.Net.Test.exe"
     Write-Info "  2. Use the libraries in your own projects"
     Write-Info "  3. Debug using Visual Studio"
 } else {
-    Write-Header "✗ BUILD VERIFICATION FAILED"
+    Write-Header "[FAILED] BUILD VERIFICATION FAILED"
     Write-Error "Some required files are missing. Please rebuild the project."
     Write-Info ""
     Write-Info "To rebuild:"
