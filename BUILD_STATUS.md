@@ -36,11 +36,11 @@ MSBuild.exe "Slang.Net.sln" /p:Configuration=Release /p:Platform=x64
 - `Native/SlangNative.vcxproj` - Native C++ project
 - `Slang.Net/Slang.Net.vcxproj` - Managed C++/CLI project
 - `Slang.Net.Test/Slang.Net.Test.csproj` - C# test project
-- `lib/` - Contains x64-only Slang libraries
+- `Native/EmbeddedLLVM/slang-2025.6.3-windows-x86_64/` - Contains embedded x64-only Slang SDK
 
 ## Future x86 Support
 To add x86 support in the future, the following would be required:
 1. Obtain x86-compatible versions of Slang libraries
-2. Place them in an appropriate directory (e.g., `lib/x86/`)
+2. Place them in an appropriate directory (e.g., `Native/EmbeddedLLVM/slang-2025.6.3-windows-x86/`)
 3. Update project configurations to reference the correct architecture-specific libraries
 4. Re-add Win32 configurations to the solution and project files

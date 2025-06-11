@@ -102,16 +102,32 @@ if ($Configuration -eq "Debug") {
 Write-Info ""
 Write-Info "Checking Slang dependencies..."
 
-# Check lib directory
-$libDir = "lib"
+Write-Info ""
+Write-Info "Checking Slang dependencies..."
+
+# Check new embedded LLVM directories
+$libDir = "Native\EmbeddedLLVM\slang-2025.6.3-windows-x86_64\lib"
+$binDir = "Native\EmbeddedLLVM\slang-2025.6.3-windows-x86_64\bin"
+
 if (Test-Path $libDir) {
-    Write-Success "  ✓ lib directory found"
-    $requiredLibs = @("slang.dll", "slang.lib", "gfx.dll", "gfx.lib", "slang-rt.dll", "slang-rt.lib")
+    Write-Success "  ✓ Slang lib directory found"
+    $requiredLibs = @("slang.lib", "gfx.lib", "slang-rt.lib")
     foreach ($lib in $requiredLibs) {
         Test-FileExists "$libDir\$lib" $lib | Out-Null
     }
 } else {
-    Write-Error "  ✗ lib directory not found"
+    Write-Error "  ✗ Slang lib directory not found: $libDir"
+    $allFilesPresent = $false
+}
+
+if (Test-Path $binDir) {
+    Write-Success "  ✓ Slang bin directory found"
+    $requiredDlls = @("slang.dll", "gfx.dll", "slang-rt.dll")
+    foreach ($dll in $requiredDlls) {
+        Test-FileExists "$binDir\$dll" $dll | Out-Null
+    }
+} else {
+    Write-Error "  ✗ Slang bin directory not found: $binDir"
     $allFilesPresent = $false
 }
 

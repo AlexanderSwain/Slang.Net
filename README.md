@@ -17,9 +17,10 @@ This project consists of three main components:
 - **.NET Framework 4.7.2 or later** (for the test project)
 
 ### Required Dependencies
-- **Slang SDK** - Must be installed at `C:\Slang\`
-  - The project expects Slang headers at `C:\Slang\include\`
-  - Slang libraries should be in the `lib/` directory of this project
+- **Slang SDK** - Embedded LLVM version included in the project
+  - The project uses headers from `Native\EmbeddedLLVM\slang-2025.6.3-windows-x86_64\include\`
+  - Slang libraries are located in `Native\EmbeddedLLVM\slang-2025.6.3-windows-x86_64\lib\`
+  - Slang DLLs are located in `Native\EmbeddedLLVM\slang-2025.6.3-windows-x86_64\bin\`
 
 ### Platform Support
 - ✅ **x64 (64-bit)**: Fully supported for Debug and Release configurations
@@ -34,18 +35,16 @@ Slang.Net/
 ├── build.ps1               # PowerShell build script
 ├── verify-build.ps1        # Build verification script
 ├── Slang.Net.sln           # Main Visual Studio solution
-├── lib/                    # Slang libraries (x64 only)
-│   ├── slang.dll
-│   ├── slang.lib
-│   ├── gfx.dll
-│   ├── gfx.lib
-│   ├── slang-rt.dll
-│   └── slang-rt.lib
 ├── Native/                 # Native C++ wrapper
 │   ├── SlangNative.h
 │   ├── SlangNative.cpp
 │   ├── SlangNative.vcxproj
-│   └── README.md
+│   ├── README.md
+│   └── EmbeddedLLVM/       # Embedded Slang SDK
+│       └── slang-2025.6.3-windows-x86_64/
+│           ├── bin/        # Slang DLLs
+│           ├── include/    # Slang headers
+│           └── lib/        # Slang libraries
 ├── Slang.Net/             # Managed C++/CLI wrapper
 ├── Slang.Net.Test/        # C# test project
 └── Shaders/               # Sample shader files
@@ -165,11 +164,11 @@ Or run it through Visual Studio by setting `Slang.Net.Test` as the startup proje
 ### Common Issues
 
 1. **"Slang SDK not found"**
-   - Ensure Slang SDK is installed at `C:\Slang\`
-   - Verify `C:\Slang\include\slang.h` exists
+   - The project uses an embedded Slang SDK in `Native\EmbeddedLLVM\slang-2025.6.3-windows-x86_64\`
+   - Verify the embedded headers exist at `Native\EmbeddedLLVM\slang-2025.6.3-windows-x86_64\include\slang.h`
 
 2. **"Cannot find slang.lib"**
-   - Check that `lib/slang.lib` exists in the project directory
+   - Check that libraries exist in `Native\EmbeddedLLVM\slang-2025.6.3-windows-x86_64\lib\`
    - Verify the library is for x64 architecture
 
 3. **"Platform 'Win32' not supported"**
