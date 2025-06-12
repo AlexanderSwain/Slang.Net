@@ -80,3 +80,8 @@ bool Native::EntryPointReflection::hasDefaultConstantBuffer()
 {
     return m_native->hasDefaultConstantBuffer();
 }
+
+void* Native::EntryPointReflection::getNative()
+{
+    return m_native;
+}

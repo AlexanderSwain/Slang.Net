@@ -70,10 +70,15 @@ namespace Slang
         // Layout information
         property VariableLayoutReflection^ VarLayout { VariableLayoutReflection^ get(); }
         property TypeLayoutReflection^ TypeLayout { TypeLayoutReflection^ get(); }
-        property VariableLayoutReflection^ ResultVarLayout { VariableLayoutReflection^ get(); }
-
-        // Buffer information
+        property VariableLayoutReflection^ ResultVarLayout { VariableLayoutReflection^ get(); }        // Buffer information
         property bool HasDefaultConstantBuffer { bool get(); }
+
+        // Equality operators
+        virtual bool Equals(System::Object^ obj) override;
+        virtual bool Equals(EntryPointReflection^ other);
+        static bool operator==(EntryPointReflection^ left, EntryPointReflection^ right);
+        static bool operator!=(EntryPointReflection^ left, EntryPointReflection^ right);
+        virtual int GetHashCode() override;
 
         // Internal
         void* getNative();

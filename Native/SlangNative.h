@@ -157,9 +157,10 @@ namespace SlangNative
     extern "C" SLANGNATIVE_API SlangResult EntryPointReflection_GetComputeWaveSize(void* entryPointReflection, SlangUInt* outWaveSize);
     extern "C" SLANGNATIVE_API bool EntryPointReflection_UsesAnySampleRateInput(void* entryPointReflection);
     extern "C" SLANGNATIVE_API void* EntryPointReflection_GetVarLayout(void* entryPointReflection);
-    extern "C" SLANGNATIVE_API void* EntryPointReflection_GetTypeLayout(void* entryPointReflection);
+    extern "C" SLANGNATIVE_API void* EntryPointReflection_GetTypeLayout(void* entryPointReflection);    
     extern "C" SLANGNATIVE_API void* EntryPointReflection_GetResultVarLayout(void* entryPointReflection);
-    extern "C" SLANGNATIVE_API bool EntryPointReflection_HasDefaultConstantBuffer(void* entryPointReflection);    
+    extern "C" SLANGNATIVE_API bool EntryPointReflection_HasDefaultConstantBuffer(void* entryPointReflection);
+    extern "C" SLANGNATIVE_API void* EntryPointReflection_GetNative(void* entryPointReflection);
     
     // GenericReflection API
     extern "C" SLANGNATIVE_API const char* GenericReflection_GetName(void* genRefReflection);

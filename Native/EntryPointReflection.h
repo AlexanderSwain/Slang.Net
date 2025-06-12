@@ -38,9 +38,9 @@ namespace Native
         void getComputeWaveSize(SlangUInt* outWaveSize);
         bool usesAnySampleRateInput();
         VariableLayoutReflection* getVarLayout();
-        TypeLayoutReflection* getTypeLayout();
-        VariableLayoutReflection* getResultVarLayout();
+        TypeLayoutReflection* getTypeLayout();        VariableLayoutReflection* getResultVarLayout();
         bool hasDefaultConstantBuffer();
+        void* getNative();
 
 	private:
         slang::ShaderReflection* m_parent;

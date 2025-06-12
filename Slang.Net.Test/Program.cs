@@ -1,6 +1,7 @@
 ﻿using System;
 using Slang;
 using System.IO;
+using System.Linq;
 
 public class Program
 {
@@ -19,23 +20,14 @@ public class Program
             .AddSearchPath(@"C:\Users\lexxa\Code\Playground\Slang.Net\Slang.Net.Test\Shaders\");
         
         Session session = all_hlsl_targets.Create();
-
         Module module = session.LoadModule("ParameterInfo");
-
         ShaderProgram program = module.Program;
-
         var entryPoint = program.EntryPoints.Where(x => x.Name == "CS").First();
 
-        var source = entryPoint.Compile();
+        // This works
+        var source = program.CppObj.Compile(0, 0);
 
-        //// Maybe change this to entryPoint.Compile(). The user must get the entry point from Program.
-        //var source = program.Compile(0, 0);
-        //
-        //var reflection = program.GetReflection();
-        //
-        //var param1 = reflection.GetParameterByIndex(0);
-        //var usrAttCount = new VariableReflection(param1.Variable);
-        //
-        //Console.WriteLine(reflection.ToJson());
+        // This doesn't work
+        source = entryPoint.Compile();
     }
 }

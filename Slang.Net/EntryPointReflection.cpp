@@ -139,6 +139,53 @@ namespace Slang
         return SlangNative::EntryPointReflection_HasDefaultConstantBuffer(m_NativeEntryPointReflection);
     }
 
+    // Equality operators
+    bool EntryPointReflection::Equals(System::Object^ obj)
+    {
+        EntryPointReflection^ other = dynamic_cast<EntryPointReflection^>(obj);
+        return Equals(other);
+    }    bool EntryPointReflection::Equals(EntryPointReflection^ other)
+    {
+        if (System::Object::ReferenceEquals(other, nullptr))
+            return false;
+        
+        if (System::Object::ReferenceEquals(this, other))
+            return true;
+
+        // Compare the underlying native slang::EntryPointReflection* pointers
+        void* thisNative = nullptr;
+        void* otherNative = nullptr;
+        
+        if (m_NativeEntryPointReflection)
+            thisNative = SlangNative::EntryPointReflection_GetNative(m_NativeEntryPointReflection);
+        
+        if (other->m_NativeEntryPointReflection)
+            otherNative = SlangNative::EntryPointReflection_GetNative(other->m_NativeEntryPointReflection);
+
+        return thisNative == otherNative;
+    }bool EntryPointReflection::operator==(EntryPointReflection^ left, EntryPointReflection^ right)
+    {
+        if (System::Object::ReferenceEquals(left, nullptr) && System::Object::ReferenceEquals(right, nullptr))
+            return true;
+        
+        if (System::Object::ReferenceEquals(left, nullptr) || System::Object::ReferenceEquals(right, nullptr))
+            return false;
+        
+        return left->Equals(right);
+    }
+
+    bool EntryPointReflection::operator!=(EntryPointReflection^ left, EntryPointReflection^ right)
+    {
+        return !(operator==(left, right));
+    }int EntryPointReflection::GetHashCode()
+    {
+        if (!m_NativeEntryPointReflection)
+            return 0;
+        
+        void* native = SlangNative::EntryPointReflection_GetNative(m_NativeEntryPointReflection);
+        return System::IntPtr(native).GetHashCode();
+    }
+
     void* EntryPointReflection::getNative()
     {
         return m_NativeEntryPointReflection;

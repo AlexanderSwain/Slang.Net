@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "utility": "cpp",
-        "stdexcept": "cpp"
+        "stdexcept": "cpp",
+        "ios": "cpp",
+        "xiosbase": "cpp"
     }
 }

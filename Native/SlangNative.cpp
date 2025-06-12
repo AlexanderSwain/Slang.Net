@@ -788,11 +788,16 @@ namespace SlangNative
     }    extern "C" SLANGNATIVE_API void* EntryPointReflection_GetResultVarLayout(void* entryPointReflection)
     {
         if (!entryPointReflection) return nullptr;
-        return ((Native::EntryPointReflection*)entryPointReflection)->getResultVarLayout();
-    }    extern "C" SLANGNATIVE_API bool EntryPointReflection_HasDefaultConstantBuffer(void* entryPointReflection)
+        return ((Native::EntryPointReflection*)entryPointReflection)->getResultVarLayout();    }    extern "C" SLANGNATIVE_API bool EntryPointReflection_HasDefaultConstantBuffer(void* entryPointReflection)
     {
         if (!entryPointReflection) return false;
         return ((Native::EntryPointReflection*)entryPointReflection)->hasDefaultConstantBuffer();
+    }
+
+    extern "C" SLANGNATIVE_API void* EntryPointReflection_GetNative(void* entryPointReflection)
+    {
+        if (!entryPointReflection) return nullptr;
+        return ((Native::EntryPointReflection*)entryPointReflection)->getNative();
     }
 
     // GenericReflection API
