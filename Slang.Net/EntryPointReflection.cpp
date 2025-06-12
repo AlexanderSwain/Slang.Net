@@ -9,6 +9,7 @@
 #include "FunctionReflection.h"
 #include "VariableLayoutReflection.h"
 #include "TypeLayoutReflection.h"
+#include "ShaderReflection.h"
 #include <msclr/marshal.h>
 
 namespace Slang
@@ -32,7 +33,18 @@ namespace Slang
     {
         // Note: We typically don't delete the native pointer as it's managed by Slang
         m_NativeEntryPointReflection = nullptr;
-    }    System::String^ EntryPointReflection::Name::get()
+    }
+
+	// Properties
+
+    ShaderReflection^ EntryPointReflection::Parent::get()
+    {
+        if (!m_NativeEntryPointReflection) return nullptr;
+        void* parent = SlangNative::EntryPointReflection_GetFunction(m_NativeEntryPointReflection);
+        return parent ? gcnew ShaderReflection(parent) : nullptr;
+    }
+
+    System::String^ EntryPointReflection::Name::get()
     {
         if (!m_NativeEntryPointReflection) return nullptr;
         return StringUtilities::ToString(SlangNative::EntryPointReflection_GetName(m_NativeEntryPointReflection));

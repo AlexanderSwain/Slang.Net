@@ -1,9 +1,16 @@
 #include "EntryPointReflection.h"
-#include <stdexcept>
+#include "ShaderReflection.h"
 
-Native::EntryPointReflection::EntryPointReflection(void* native)
+
+Native::EntryPointReflection::EntryPointReflection(void* parent, void* native)
 {
+    m_parent = (slang::ShaderReflection*)parent;
 	m_native = (slang::EntryPointReflection*)native;
+}
+
+Native::ShaderReflection*  Native::EntryPointReflection::getParent()
+{
+    return new Native::ShaderReflection(m_parent);
 }
 
 char const* Native::EntryPointReflection::getName()

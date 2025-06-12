@@ -12,7 +12,7 @@ namespace Slang.Net.Test.Slexx
 
     public class SlangCollection<T> : IEnumerable<T>
     {
-        public IComposedOf<T> Parent { get; set; }
+        internal IComposedOf<T> Parent { get; set; }
 
         public SlangCollection(IComposedOf<T> parent)
         {

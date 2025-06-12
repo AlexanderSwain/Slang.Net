@@ -705,6 +705,12 @@ namespace SlangNative
         return ((Native::FunctionReflection*)functionReflection)->getOverload(index);
     }
 
+    extern "C" SLANGNATIVE_API void* EntryPointReflection_GetParent(void* entryPointReflection)
+    {
+        if (!entryPointReflection) return nullptr;
+        return ((Native::EntryPointReflection*)entryPointReflection)->getParent();
+    }
+
     // EntryPointReflection API
     extern "C" SLANGNATIVE_API const char* EntryPointReflection_GetName(void* entryPointReflection)
     {
@@ -728,7 +734,8 @@ namespace SlangNative
     {
         if (!entryPointReflection) return nullptr;
         return ((Native::EntryPointReflection*)entryPointReflection)->getParameterByIndex(index);
-    }    extern "C" SLANGNATIVE_API void* EntryPointReflection_GetFunction(void* entryPointReflection)
+    }   
+    extern "C" SLANGNATIVE_API void* EntryPointReflection_GetFunction(void* entryPointReflection)
     {
         if (!entryPointReflection) return nullptr;
         return ((Native::EntryPointReflection*)entryPointReflection)->getFunction();

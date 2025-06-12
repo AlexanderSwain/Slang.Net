@@ -5,7 +5,12 @@
 #include "FunctionReflection.h"
 #include "VariableLayoutReflection.h"
 #include "TypeLayoutReflection.h"
+#include <stdexcept>
 
+namespace Native
+{
+    struct ShaderReflection;
+}
 
 #ifdef SLANGNATIVE_EXPORTS
 #define SLANGNATIVE_API __declspec(dllexport)
@@ -18,10 +23,10 @@ namespace Native
 	// This type is empty in slang.h for some reason
 	struct SLANGNATIVE_API EntryPointReflection
 	{
-
 	public:
-		EntryPointReflection(void* native);
+        EntryPointReflection(void* parent, void* native);
 
+        ShaderReflection* getParent();
         char const* getName();
         char const* getNameOverride();
         unsigned getParameterCount();
@@ -37,6 +42,7 @@ namespace Native
         bool hasDefaultConstantBuffer();
 
 	private:
+        slang::ShaderReflection* m_parent;
 		slang::EntryPointReflection* m_native;
 	};
 }

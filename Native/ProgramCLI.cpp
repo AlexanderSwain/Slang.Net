@@ -144,7 +144,7 @@ SlangUInt Native::ProgramCLI::getEntryPointCount()
 
 Native::EntryPointReflection* Native::ProgramCLI::getEntryPointByIndex(SlangUInt index)
 {
-    return new EntryPointReflection(m_layout->getEntryPointByIndex(index));
+    return new EntryPointReflection(m_layout, m_layout->getEntryPointByIndex(index));
 }
 
 SlangUInt Native::ProgramCLI::getGlobalConstantBufferBinding()
@@ -186,7 +186,7 @@ Native::TypeLayoutReflection* Native::ProgramCLI::getTypeLayout(
 
 Native::EntryPointReflection* Native::ProgramCLI::findEntryPointByName(const char* name)
 {
-    return new EntryPointReflection(m_layout->findEntryPointByName(name));
+    return new EntryPointReflection(m_layout, m_layout->findEntryPointByName(name));
 }
 
 Native::TypeReflection* Native::ProgramCLI::specializeType(

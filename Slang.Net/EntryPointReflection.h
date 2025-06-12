@@ -14,6 +14,7 @@ namespace Slang
     ref class FunctionReflection;
     ref class VariableLayoutReflection;
     ref class TypeLayoutReflection;
+    ref class ShaderReflection;
 
     public enum class SlangStage
     {
@@ -45,7 +46,11 @@ namespace Slang
         ~EntryPointReflection();
 
         // Finalizer
-        !EntryPointReflection();        // Properties and Methods
+        !EntryPointReflection();
+
+        // Properties and Methods
+        property ShaderReflection^ Parent { ShaderReflection^ get(); }
+
         property System::String^ Name { System::String^ get(); }
         property System::String^ NameOverride { System::String^ get(); }
         

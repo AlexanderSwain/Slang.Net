@@ -37,12 +37,12 @@ SlangUInt Native::ShaderReflection::getEntryPointCount()
 
 Native::EntryPointReflection* Native::ShaderReflection::getEntryPointByIndex(SlangUInt index)
 {
-    return new EntryPointReflection(m_native->getEntryPointByIndex(index));
+    return new EntryPointReflection(this, m_native->getEntryPointByIndex(index));
 }
 
 Native::EntryPointReflection* Native::ShaderReflection::findEntryPointByName(const char* name)
 {
-    return new EntryPointReflection(m_native->findEntryPointByName(name));
+    return new EntryPointReflection(this, m_native->findEntryPointByName(name));
 }
 
 SlangUInt Native::ShaderReflection::getGlobalConstantBufferBinding()
