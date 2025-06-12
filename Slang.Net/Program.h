@@ -20,6 +20,9 @@ namespace Slang
         // Constructor with parameters (example)
         Program(Module^ parent);
 
+		// Constructor with native pointer (for internal use)
+		Program(void* nativeProgram);
+
         // Destructor (this automatically implements IDisposable::Dispose in C++/CLI)
         ~Program();
 

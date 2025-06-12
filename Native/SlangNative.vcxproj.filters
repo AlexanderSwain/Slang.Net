@@ -133,7 +133,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SlangNative.h">
-      <Filter>Reflection</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

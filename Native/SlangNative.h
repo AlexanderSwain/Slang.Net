@@ -33,6 +33,7 @@ namespace SlangNative
     extern "C" SLANGNATIVE_API void* GetProgramReflection(void* program);
 
     // ShaderReflection API
+    extern "C" SLANGNATIVE_API void* ShaderReflection_GetParent(void* shaderReflection);
     extern "C" SLANGNATIVE_API unsigned int ShaderReflection_GetParameterCount(void* shaderReflection);
     extern "C" SLANGNATIVE_API unsigned int ShaderReflection_GetTypeParameterCount(void* shaderReflection);
     extern "C" SLANGNATIVE_API void* ShaderReflection_GetTypeParameterByIndex(void* shaderReflection, unsigned int index);
@@ -143,8 +144,8 @@ namespace SlangNative
     extern "C" SLANGNATIVE_API bool FunctionReflection_IsOverloaded(void* functionReflection);
     extern "C" SLANGNATIVE_API unsigned int FunctionReflection_GetOverloadCount(void* functionReflection);
     extern "C" SLANGNATIVE_API void* FunctionReflection_GetOverload(void* functionReflection, unsigned int index);    
-    
-    // EntryPointReflection API
+      // EntryPointReflection API
+    extern "C" SLANGNATIVE_API void* EntryPointReflection_GetParent(void* entryPointReflection);
     extern "C" SLANGNATIVE_API void* EntryPointReflection_AsFunction(void* entryPointReflection);
     extern "C" SLANGNATIVE_API const char* EntryPointReflection_GetName(void* entryPointReflection);
     extern "C" SLANGNATIVE_API const char* EntryPointReflection_GetNameOverride(void* entryPointReflection);

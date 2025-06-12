@@ -1,4 +1,9 @@
 #include "FunctionReflection.h"
+#include "TypeReflection.h"
+#include "VariableReflection.h"
+#include "Attribute.h"
+#include "GenericReflection.h"
+#include "Modifier.h"
 #include <stdexcept>
 
 Native::FunctionReflection::FunctionReflection(void* native)

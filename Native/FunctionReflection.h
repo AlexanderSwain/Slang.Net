@@ -3,13 +3,18 @@
 #include "slang-com-ptr.h"
 #include "slang-com-helper.h"
 #include "SessionCLI.h"
-#include "TypeReflection.h"
-#include "VariableReflection.h"
-#include "Attribute.h"
-#include "GenericReflection.h"
 #include "Modifier.h"
-#include "FunctionReflection.h"
 #include <map>
+
+namespace Native
+{
+    // Forward declarations
+    struct TypeReflection;
+    struct VariableReflection;
+    struct Attribute;
+    struct GenericReflection;
+    struct Modifier;
+}
 
 #ifdef SLANGNATIVE_EXPORTS
 #define SLANGNATIVE_API __declspec(dllexport)

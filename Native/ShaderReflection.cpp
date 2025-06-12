@@ -1,8 +1,23 @@
 #include "ShaderReflection.h"
+#include "TypeReflection.h"
+#include "TypeLayoutReflection.h"
+#include "VariableLayoutReflection.h"
+#include "VariableReflection.h"
+#include "FunctionReflection.h"
+#include "EntryPointReflection.h"
+#include "GenericReflection.h"
+#include "TypeParameterReflection.h"
+#include "LayoutRules.h"
+#include "ProgramCLI.h"
 
 Native::ShaderReflection::ShaderReflection(void* native)
 {
     m_native = (slang::ShaderReflection*)native;
+}
+
+Native::ProgramCLI* Native::ShaderReflection::getParent()
+{
+    return m_parent;
 }
 
 unsigned Native::ShaderReflection::getParameterCount()

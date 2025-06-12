@@ -2,15 +2,21 @@
 #include "slang.h"
 #include "slang-com-ptr.h"
 #include "slang-com-helper.h"
-#include "TypeReflection.h"
-#include "TypeLayoutReflection.h"
-#include "VariableLayoutReflection.h"
-#include "VariableReflection.h"
-#include "FunctionReflection.h"
-#include "EntryPointReflection.h"
-#include "GenericReflection.h"
-#include "TypeParameterReflection.h"
-#include "LayoutRules.h"
+
+namespace Native
+{
+    // Forward declarations
+    struct TypeReflection;
+    struct TypeLayoutReflection;
+    struct VariableLayoutReflection;
+    struct VariableReflection;
+    struct FunctionReflection;
+    struct EntryPointReflection;
+    struct GenericReflection;
+    struct TypeParameterReflection;
+    struct ProgramCLI;
+    enum class LayoutRules;
+}
 
 #ifdef SLANGNATIVE_EXPORTS
 #define SLANGNATIVE_API __declspec(dllexport)
@@ -24,6 +30,8 @@ namespace Native
 	{
 	public:
 		ShaderReflection(void* native);
+
+        ProgramCLI* getParent();
 
         unsigned getParameterCount();
         unsigned getTypeParameterCount();
@@ -63,6 +71,7 @@ namespace Native
         SlangResult toJson(ISlangBlob** outBlob);
 
 	private:
+        ProgramCLI* m_parent;
 		slang::ShaderReflection* m_native;
 	};
 }

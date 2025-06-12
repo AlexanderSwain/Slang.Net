@@ -2,14 +2,15 @@
 #include "slang.h"
 #include "slang-com-ptr.h"
 #include "slang-com-helper.h"
-#include "FunctionReflection.h"
-#include "VariableLayoutReflection.h"
-#include "TypeLayoutReflection.h"
 #include <stdexcept>
 
 namespace Native
 {
+    // Forward declarations
     struct ShaderReflection;
+    struct FunctionReflection;
+    struct VariableLayoutReflection;
+    struct TypeLayoutReflection;
 }
 
 #ifdef SLANGNATIVE_EXPORTS
@@ -46,4 +47,3 @@ namespace Native
 		slang::EntryPointReflection* m_native;
 	};
 }
-

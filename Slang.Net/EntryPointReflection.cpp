@@ -40,7 +40,7 @@ namespace Slang
     ShaderReflection^ EntryPointReflection::Parent::get()
     {
         if (!m_NativeEntryPointReflection) return nullptr;
-        void* parent = SlangNative::EntryPointReflection_GetFunction(m_NativeEntryPointReflection);
+        void* parent = SlangNative::EntryPointReflection_GetParent(m_NativeEntryPointReflection);
         return parent ? gcnew ShaderReflection(parent) : nullptr;
     }
 

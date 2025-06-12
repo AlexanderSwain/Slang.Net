@@ -17,6 +17,16 @@ namespace Slang
         m_NativeProgram = SlangNative::CreateProgram(nativeParent);
     }
 
+	// Constructor with native pointer implementation
+    Slang::Program::Program(void* nativeProgram)
+    {
+        if (nativeProgram == nullptr)
+        {
+            throw gcnew System::ArgumentNullException("nativeProgram", "Native program pointer cannot be null.");
+        }
+        m_NativeProgram = nativeProgram;
+	}
+
     // Destructor implementation (this implements IDisposable::Dispose automatically in C++/CLI)
     Slang::Program::~Program()
     {

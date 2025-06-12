@@ -13,6 +13,7 @@
 #include "EntryPointReflection.h"
 #include "GenericReflection.h"
 #include "TypeParameterReflection.h"
+#include "Program.h"
 #include "StringUtils.h"
 #include <msclr/marshal.h>
 #include <vcclr.h>
@@ -46,7 +47,15 @@ namespace Slang
         // Note: We typically don't delete the native pointer as it's managed by Slang
         m_NativeShaderReflection = nullptr;
     }
-      unsigned int ShaderReflection::ParameterCount::get()
+
+    Program^ ShaderReflection::Parent::get()
+    {
+        if (!m_NativeShaderReflection) return nullptr;
+        void* parent = SlangNative::ShaderReflection_GetParent(m_NativeShaderReflection);
+        return parent ? gcnew Program(parent) : nullptr;
+    }
+
+    unsigned int ShaderReflection::ParameterCount::get()
     {
         if (!m_NativeShaderReflection) return 0;
         return ShaderReflection_GetParameterCount(m_NativeShaderReflection);

@@ -26,6 +26,8 @@ public class Program
 
         var entryPoint = program.EntryPoints.Where(x => x.Name == "CS").First();
 
+        var source = entryPoint.Compile();
+
         //// Maybe change this to entryPoint.Compile(). The user must get the entry point from Program.
         //var source = program.Compile(0, 0);
         //

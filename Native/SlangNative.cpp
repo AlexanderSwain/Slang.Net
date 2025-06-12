@@ -112,6 +112,12 @@ namespace SlangNative
     }
 
     // ShaderReflection API
+    extern "C" SLANGNATIVE_API void* ShaderReflection_GetParent(void* shaderReflection)
+    {
+        if (!shaderReflection) return nullptr;
+        return ((Native::ShaderReflection*)shaderReflection)->getParent();
+    }
+
     extern "C" SLANGNATIVE_API unsigned int ShaderReflection_GetParameterCount(void* shaderReflection)
     {
         if (!shaderReflection) return 0;

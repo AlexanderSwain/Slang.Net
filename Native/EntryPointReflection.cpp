@@ -1,5 +1,8 @@
 #include "EntryPointReflection.h"
 #include "ShaderReflection.h"
+#include "FunctionReflection.h"
+#include "VariableLayoutReflection.h"
+#include "TypeLayoutReflection.h"
 
 
 Native::EntryPointReflection::EntryPointReflection(void* parent, void* native)

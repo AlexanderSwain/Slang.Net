@@ -20,6 +20,7 @@ namespace Slang
     ref class GenericReflection;
     ref class TypeParameterReflection;
 	ref class LayoutRules;
+	ref class Program;
 
     public ref class ShaderReflection : public System::IDisposable
     {
@@ -30,6 +31,8 @@ namespace Slang
         // Destructor
         ~ShaderReflection();        // Finalizer
         !ShaderReflection();
+
+        property Program^ Parent{ Program ^ get(); }
 
         // Properties and Methods
         property unsigned int ParameterCount { unsigned int get(); }
