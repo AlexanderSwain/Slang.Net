@@ -1,33 +1,45 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
+﻿<Project Sdk="Microsoft.NET.Sdk">  <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PlatformTarget>x64</PlatformTarget>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-	<LangVersion>preview</LangVersion>
-	<EnablePreviewFeatures>true</EnablePreviewFeatures>
+    <LangVersion>preview</LangVersion>
+    <EnablePreviewFeatures>true</EnablePreviewFeatures>
+    <Platforms>AnyCPU;x86;x64;ARM64</Platforms>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>Slang.Net</PackageId>
+    <PackageVersion>1.0.0</PackageVersion>
+    <Title>Slang.Net - .NET Bindings for the Slang Shader Language</Title>
+    <Description>A .NET class library providing bindings for the Slang shader language compiler, supporting cross-platform shader development.</Description>
+    <Authors>Slang.Net Contributors</Authors>
+    <Copyright>Copyright (c) 2025 Slang.Net Contributors</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>slang;shader;graphics;hlsl;glsl;cross-platform</PackageTags>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Shaders\ParameterInfo.slang" />
-    <None Remove="Shaders\Test.slang" />
+    <None Remove="Deprecated\Shaders\ParameterInfo.slang" />
+    <None Remove="Deprecated\Shaders\Test.slang" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Shaders\ParameterInfo.slang">
+    <Content Include="Deprecated\Shaders\ParameterInfo.slang">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Shaders\Test.slang">
+    <Content Include="Deprecated\Shaders\Test.slang">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
+  </ItemGroup>  <ItemGroup>
     <ProjectReference Include="..\Slang.Net.CPP\Slang.Net.CPP.vcxproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Extensions\" />
-    <Folder Include="Output Source\" />
+    <Folder Include="Deprecated\Output Source\" />
   </ItemGroup>
 
 </Project>
