@@ -9,7 +9,7 @@
 #include "ParameterCategory.h"
 #include "../Native/SlangNative.h"
 
-namespace Slang
+namespace Slang::Cpp
 {
     // Forward declarations
     ref class VariableReflection;
@@ -107,7 +107,7 @@ namespace Slang
         System::UIntPtr GetBindingSpace(ParameterCategory category);
 
         // Image format
-        property ImageFormat ImageFormat { Slang::ImageFormat get(); }
+        property ImageFormat ImageFormat { Slang::Cpp::ImageFormat get(); }
 
         // Semantics
         property System::String^ SemanticName { System::String^ get(); }

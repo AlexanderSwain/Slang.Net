@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Slang
+namespace Slang::Cpp
 {
     public enum class ParameterCategory
     {

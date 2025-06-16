@@ -1,5 +1,5 @@
 using System;
-using Slang;
+// Using global using directive
 
 public class EqualityTest
 {

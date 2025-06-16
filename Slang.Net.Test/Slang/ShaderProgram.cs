@@ -7,11 +7,11 @@ public unsafe class ShaderProgram :
     IComposedOf<VariableLayoutReflection>,
     IComposedOf<EntryPointReflection>
 {
-    internal Slang.Program CppObj { get; }
+    internal Slang.Cpp.Program CppObj { get; }
 
     internal ShaderProgram(Module module)
     {
-        CppObj = new Slang.Program(module);
+        CppObj = new Slang.Cpp.Program(module);
     }
 
     #region Composed Of

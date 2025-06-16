@@ -12,7 +12,7 @@
 #include "ResourceAccess.h"
 #include "../Native/SlangNative.h"
 
-namespace Slang
+namespace Slang::Cpp
 {
     // Forward declarations
     ref class VariableReflection;
@@ -51,12 +51,12 @@ namespace Slang
         property unsigned int ColumnCount { unsigned int get(); }
 
         // Scalar properties
-        property ScalarType ScalarType { Slang::ScalarType get(); }
+        property ScalarType ScalarType { Slang::Cpp::ScalarType get(); }
 
         // Resource properties
         property TypeReflection^ ResourceResultType { TypeReflection^ get(); }
-        property ResourceShape ResourceShape { Slang::ResourceShape get(); }
-        property ResourceAccess ResourceAccess { Slang::ResourceAccess get(); }
+        property ResourceShape ResourceShape { Slang::Cpp::ResourceShape get(); }
+        property ResourceAccess ResourceAccess { Slang::Cpp::ResourceAccess get(); }
 
         // Name properties
         property System::String^ Name { System::String^ get(); }

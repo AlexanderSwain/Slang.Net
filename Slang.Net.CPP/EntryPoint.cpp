@@ -34,7 +34,7 @@
 //            throw gcnew System::ArgumentNullException("entryPointName", "Entry point name cannot be null.");
 //
 //        void* nativeParent = parent->getNative();
-//        const char* searchName = StringUtilities::FromString(entryPointName);
+//        const char* searchName = Slang::Cpp::StringUtilities::FromString(entryPointName);
 //		const char* errorMessage = nullptr;
 //
 //        m_NativeEntryPoint = SlangNative::FindEntryPoint(nativeParent, searchName, &errorMessage);

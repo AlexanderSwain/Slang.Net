@@ -1,6 +1,6 @@
-#include "StringUtilities.h"
+#include "StringUtils.h"
 
-namespace Slang
+namespace Slang::Cpp
 {
     namespace StringUtilities
     {

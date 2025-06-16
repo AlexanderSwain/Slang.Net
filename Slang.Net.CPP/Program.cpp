@@ -7,10 +7,10 @@
 #include "Program.h"
 #include "ShaderReflection.h"
 
-namespace Slang
+namespace Slang::Cpp
 {
     // Constructor with parameters implementation
-    Slang::Program::Program(Module^ parent)
+    Slang::Cpp::Program::Program(Module^ parent)
     {
         void* nativeParent = parent->getNative();
 
@@ -18,7 +18,7 @@ namespace Slang
     }
 
 	// Constructor with native pointer implementation
-    Slang::Program::Program(void* nativeProgram)
+    Slang::Cpp::Program::Program(void* nativeProgram)
     {
         if (nativeProgram == nullptr)
         {
@@ -28,14 +28,14 @@ namespace Slang
 	}
 
     // Destructor implementation (this implements IDisposable::Dispose automatically in C++/CLI)
-    Slang::Program::~Program()
+    Slang::Cpp::Program::~Program()
     {
         this->!Program();
         System::GC::SuppressFinalize(this);
     }
 
     // Finalizer implementation
-    Slang::Program::!Program()
+    Slang::Cpp::Program::!Program()
     {
         // Clean up resources if needed
         if (m_NativeProgram != nullptr)
@@ -46,12 +46,12 @@ namespace Slang
         }
     }
 
-    void* Slang::Program::getNative()
+    void* Slang::Cpp::Program::getNative()
     {
         return m_NativeProgram;
     }
 
-    System::String^ Slang::Program::Compile(unsigned int entryPointIndex, unsigned int targetIndex)
+    System::String^ Slang::Cpp::Program::Compile(unsigned int entryPointIndex, unsigned int targetIndex)
     {
         const char* result = nullptr;
         int32_t compileResult = SlangNative::Compile(m_NativeProgram, entryPointIndex, targetIndex, &result);
@@ -65,7 +65,7 @@ namespace Slang
         return gcnew System::String(result);
     }
 
-    ShaderReflection^ Slang::Program::GetReflection()
+    ShaderReflection^ Slang::Cpp::Program::GetReflection()
     {
         if (!m_NativeProgram) return nullptr;
         

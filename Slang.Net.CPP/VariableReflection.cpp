@@ -6,7 +6,7 @@
 
 #include "VariableReflection.h"
 
-namespace Slang
+namespace Slang::Cpp
 {
     // Constructor
     VariableReflection::VariableReflection(void* native)
@@ -32,7 +32,7 @@ namespace Slang
     System::String^ VariableReflection::Name::get()
     {
         if (!m_NativeVariableReflection) return nullptr;
-        return StringUtilities::ToString(SlangNative::VariableReflection_GetName(m_NativeVariableReflection));
+        return Slang::Cpp::StringUtilities::ToString(SlangNative::VariableReflection_GetName(m_NativeVariableReflection));
     }
 
     TypeReflection^ VariableReflection::Type::get()
@@ -65,7 +65,7 @@ namespace Slang
     Attribute^ VariableReflection::FindAttributeByName(System::String^ name)
     {
         if (!m_NativeVariableReflection || !name) return nullptr;
-        const char* nameStr = StringUtilities::FromString(name);
+        const char* nameStr = Slang::Cpp::StringUtilities::FromString(name);
         void* attribute = SlangNative::VariableReflection_FindAttributeByName(m_NativeVariableReflection, nameStr);
         return attribute ? gcnew Attribute(attribute) : nullptr;
     }

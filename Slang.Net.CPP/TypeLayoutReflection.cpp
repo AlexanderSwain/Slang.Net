@@ -10,7 +10,7 @@
 #include "VariableLayoutReflection.h"
 #include <msclr/marshal.h>
 
-namespace Slang
+namespace Slang::Cpp
 {
     // Constructor
     TypeLayoutReflection::TypeLayoutReflection(void* native)
@@ -74,7 +74,7 @@ namespace Slang
     int TypeLayoutReflection::FindFieldIndexByName(System::String^ name)
     {
         if (!m_NativeTypeLayoutReflection) return -1;
-        const char* nativeName = StringUtilities::FromString(name);
+        const char* nativeName = Slang::Cpp::StringUtilities::FromString(name);
         return SlangNative::TypeLayoutReflection_FindFieldIndexByName(m_NativeTypeLayoutReflection, nativeName);
     }
     VariableLayoutReflection^ TypeLayoutReflection::ExplicitCounter::get()

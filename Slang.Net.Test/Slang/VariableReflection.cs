@@ -1,6 +1,6 @@
 ﻿using Slang.Net.Test.Slexx;
 
-public unsafe class VariableReflection : Slang.VariableReflection, IComposedOf<Attribute>
+public unsafe class VariableReflection : Slang.Cpp.VariableReflection, IComposedOf<Attribute>
 {
     #region Composite
     uint IComposedOf<Attribute>.Count => base.UserAttributeCount;
@@ -9,7 +9,7 @@ public unsafe class VariableReflection : Slang.VariableReflection, IComposedOf<A
 
     public SlangCollection<Attribute> UserAttributes { get; }
 
-    public VariableReflection(Slang.VariableReflection comObj) : base(comObj.getNative())
+    public VariableReflection(Slang.Cpp.VariableReflection comObj) : base(comObj.getNative())
     {
         UserAttributes = new SlangCollection<Attribute>(this);
     }

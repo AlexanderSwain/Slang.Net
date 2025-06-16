@@ -9,7 +9,7 @@
 #include "Session.h"
 #include "../Native/SlangNative.h"
 
-namespace Slang
+namespace Slang::Cpp
 {
     public ref class Module : public System::IDisposable
     {

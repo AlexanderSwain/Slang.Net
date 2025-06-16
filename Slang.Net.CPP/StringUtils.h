@@ -2,7 +2,7 @@
 
 #include <msclr/marshal.h>
 
-namespace Slang
+namespace Slang::Cpp
 {
     public ref class StringUtilities
     {

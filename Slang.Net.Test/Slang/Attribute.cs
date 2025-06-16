@@ -1,6 +1,6 @@
-﻿public unsafe class Attribute : Slang.Attribute
+﻿public unsafe class Attribute : Slang.Cpp.Attribute
 {
-    public Attribute(Slang.Attribute comObj) : base(comObj.getNative()) 
+    public Attribute(Slang.Cpp.Attribute comObj) : base(comObj.getNative()) 
     {
     }
 }

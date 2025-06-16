@@ -8,7 +8,7 @@
 
 #include "../Native/SlangNative.h"
 
-namespace Slang
+namespace Slang::Cpp
 {
     public ref class Modifier : public System::IDisposable
     {

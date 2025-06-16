@@ -1,6 +1,6 @@
-﻿public unsafe class FunctionReflection : Slang.FunctionReflection
+﻿public unsafe class FunctionReflection : Slang.Cpp.FunctionReflection
 {
-    public FunctionReflection(Slang.FunctionReflection comObj) : base(comObj.getNative())
+    public FunctionReflection(Slang.Cpp.FunctionReflection comObj) : base(comObj.getNative())
     {
     }
 }

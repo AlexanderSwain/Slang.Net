@@ -27,7 +27,7 @@ using namespace System;
 using namespace System::Runtime::InteropServices;
 using namespace SlangNative;
 
-namespace Slang
+namespace Slang::Cpp
 {
 
     // Constructor
@@ -73,7 +73,7 @@ namespace Slang
     }      TypeParameterReflection^ ShaderReflection::FindTypeParameter(System::String^ name)
     {
         if (!m_NativeShaderReflection || !name) return nullptr;
-        const char* nativeName = StringUtilities::FromString(name);
+        const char* nativeName = Slang::Cpp::StringUtilities::FromString(name);
         void* param = ShaderReflection_FindTypeParameter(m_NativeShaderReflection, nativeName);
         Marshal::FreeHGlobal(System::IntPtr((void*)nativeName));
         return param ? gcnew TypeParameterReflection(param) : nullptr;
@@ -98,7 +98,7 @@ namespace Slang
     }      EntryPointReflection^ ShaderReflection::FindEntryPointByName(System::String^ name)
     {
         if (!m_NativeShaderReflection || !name) return nullptr;
-        const char* nativeName = StringUtilities::FromString(name);
+        const char* nativeName = Slang::Cpp::StringUtilities::FromString(name);
         void* entryPoint = ShaderReflection_FindEntryPointByName(m_NativeShaderReflection, nativeName);
         Marshal::FreeHGlobal(System::IntPtr((void*)nativeName));
         return entryPoint ? gcnew EntryPointReflection(entryPoint) : nullptr;
@@ -117,7 +117,7 @@ namespace Slang
     TypeReflection^ ShaderReflection::FindTypeByName(System::String^ name)
     {
         if (!m_NativeShaderReflection || !name) return nullptr;
-        const char* nativeName = StringUtilities::FromString(name);
+        const char* nativeName = Slang::Cpp::StringUtilities::FromString(name);
         void* type = ShaderReflection_FindTypeByName(m_NativeShaderReflection, nativeName);
         Marshal::FreeHGlobal(System::IntPtr((void*)nativeName));
         return type ? gcnew TypeReflection(type) : nullptr;
@@ -125,7 +125,7 @@ namespace Slang
     FunctionReflection^ ShaderReflection::FindFunctionByName(System::String^ name)
     {
         if (!m_NativeShaderReflection || !name) return nullptr;
-        const char* nativeName = StringUtilities::FromString(name);
+        const char* nativeName = Slang::Cpp::StringUtilities::FromString(name);
         void* function = ShaderReflection_FindFunctionByName(m_NativeShaderReflection, nativeName);
         Marshal::FreeHGlobal(System::IntPtr((void*)nativeName));
         return function ? gcnew FunctionReflection(function) : nullptr;
@@ -134,7 +134,7 @@ namespace Slang
     {
         if (!m_NativeShaderReflection || !type || !name) return nullptr;
         void* nativeType = type->getNative();
-        const char* nativeName = StringUtilities::FromString(name);
+        const char* nativeName = Slang::Cpp::StringUtilities::FromString(name);
         void* function = ShaderReflection_FindFunctionByNameInType(m_NativeShaderReflection, nativeType, nativeName);
         Marshal::FreeHGlobal(System::IntPtr((void*)nativeName));
         return function ? gcnew FunctionReflection(function) : nullptr;
@@ -143,7 +143,7 @@ namespace Slang
     {
         if (!m_NativeShaderReflection || !type || !name) return nullptr;
         void* nativeType = type->getNative();
-        const char* nativeName = StringUtilities::FromString(name);
+        const char* nativeName = Slang::Cpp::StringUtilities::FromString(name);
         void* variable = ShaderReflection_FindVarByNameInType(m_NativeShaderReflection, nativeType, nativeName);
         Marshal::FreeHGlobal(System::IntPtr((void*)nativeName));        return variable ? gcnew VariableReflection(variable) : nullptr;
     }
@@ -195,7 +195,7 @@ namespace Slang
     {
         if (!m_NativeShaderReflection) return nullptr;
         const char* str = ShaderReflection_GetHashedString(m_NativeShaderReflection, index);
-        return str ? StringUtilities::ToString(str) : nullptr;
+        return str ? Slang::Cpp::StringUtilities::ToString(str) : nullptr;
     }
     
     TypeLayoutReflection^ ShaderReflection::GlobalParamsTypeLayout::get()
@@ -223,7 +223,7 @@ namespace Slang
         if (toJsonResult < 0)
             return nullptr;//throw exception here
 
-        String^ result = StringUtilities::ToString(jsonStr);
+        String^ result = Slang::Cpp::StringUtilities::ToString(jsonStr);
 		//free((void*)jsonStr);
 
 		return result;

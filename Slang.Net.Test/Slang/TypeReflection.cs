@@ -1,6 +1,6 @@
-﻿public unsafe class TypeReflection : Slang.TypeReflection
+﻿public unsafe class TypeReflection : Slang.Cpp.TypeReflection
 {
-    public TypeReflection(Slang.TypeReflection comObj) : base(comObj.getNative())
+    public TypeReflection(Slang.Cpp.TypeReflection comObj) : base(comObj.getNative())
     {
     }
 }

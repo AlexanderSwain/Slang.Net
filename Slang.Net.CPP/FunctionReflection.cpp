@@ -13,7 +13,7 @@
 #include "Modifier.h"
 #include <msclr/marshal.h>
 
-namespace Slang
+namespace Slang::Cpp
 {
 
     // Constructor
@@ -37,7 +37,7 @@ namespace Slang
     }    System::String^ FunctionReflection::Name::get()
     {
         if (!m_NativeFunctionReflection) return nullptr;
-        return StringUtilities::ToString(SlangNative::FunctionReflection_GetName(m_NativeFunctionReflection));
+        return Slang::Cpp::StringUtilities::ToString(SlangNative::FunctionReflection_GetName(m_NativeFunctionReflection));
     }
 
     TypeReflection^ FunctionReflection::ReturnType::get()
@@ -74,13 +74,13 @@ namespace Slang
     }    Attribute^ FunctionReflection::FindAttributeByName(System::String^ name)
     {
         if (!m_NativeFunctionReflection) return nullptr;
-        const char* nativeName = StringUtilities::FromString(name);
+        const char* nativeName = Slang::Cpp::StringUtilities::FromString(name);
         void* attribute = SlangNative::FunctionReflection_FindAttributeByName(m_NativeFunctionReflection, nativeName);
         return attribute ? gcnew Attribute(attribute) : nullptr;
     }    Attribute^ FunctionReflection::FindUserAttributeByName(System::String^ name)
     {
         if (!m_NativeFunctionReflection) return nullptr;
-        const char* nativeName = StringUtilities::FromString(name);
+        const char* nativeName = Slang::Cpp::StringUtilities::FromString(name);
         void* attribute = SlangNative::FunctionReflection_FindAttributeByName(m_NativeFunctionReflection, nativeName);
         return attribute ? gcnew Attribute(attribute) : nullptr;
     }

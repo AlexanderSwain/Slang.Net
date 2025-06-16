@@ -1,6 +1,6 @@
-﻿public unsafe class VariableLayoutReflection : Slang.VariableLayoutReflection
+﻿public unsafe class VariableLayoutReflection : Slang.Cpp.VariableLayoutReflection
 {
-    public VariableLayoutReflection(Slang.VariableLayoutReflection comObj) : base(comObj.getNative())
+    public VariableLayoutReflection(Slang.Cpp.VariableLayoutReflection comObj) : base(comObj.getNative())
     {
     }
 }

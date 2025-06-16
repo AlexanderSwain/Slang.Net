@@ -1,4 +1,4 @@
-namespace Slang
+namespace Slang::Cpp
 {
     public ref class PreprocessorMacroDesc
     {

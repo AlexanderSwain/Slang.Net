@@ -1,13 +1,13 @@
 ﻿using Slang.Net.Test.Extensions;
 using System.Diagnostics;
 
-public unsafe class EntryPointReflection : Slang.EntryPointReflection
+public unsafe class EntryPointReflection : Slang.Cpp.EntryPointReflection
 {
-    public EntryPointReflection(Slang.EntryPointReflection comObj) : base(comObj.getNative())
+    public EntryPointReflection(Slang.Cpp.EntryPointReflection comObj) : base(comObj.getNative())
     {
     }
 
-    public string Compile(Slang.Program cpp)
+    public string Compile(Slang.Cpp.Program cpp)
     {
         // [Fix] This is a bit hacky, but it works for now.
         ShaderReflection parent = new ShaderReflection(Parent);

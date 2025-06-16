@@ -1,6 +1,6 @@
 #include "StringUtils.h"
 
-const char* Slang::StringUtilities::FromString(System::String^ str)
+const char* Slang::Cpp::StringUtilities::FromString(System::String^ str)
 {
     if (str == nullptr)
         return nullptr;
@@ -9,7 +9,7 @@ const char* Slang::StringUtilities::FromString(System::String^ str)
     return nativeStr;
 }
 
-System::String^ Slang::StringUtilities::ToString(const char* str)
+System::String^ Slang::Cpp::StringUtilities::ToString(const char* str)
 {
     if (str == nullptr)
         return nullptr;

@@ -11,7 +11,7 @@
 
 using namespace SlangNative;
 
-namespace Slang
+namespace Slang::Cpp
 {
 
     // Constructor
@@ -34,7 +34,7 @@ namespace Slang
         m_NativeTypeParameterReflection = nullptr;
     }    System::String^ TypeParameterReflection::Name::get()
     {
-        if (!m_NativeTypeParameterReflection) return nullptr;        return StringUtilities::ToString(TypeParameterReflection_GetName(m_NativeTypeParameterReflection));
+        if (!m_NativeTypeParameterReflection) return nullptr;        return Slang::Cpp::StringUtilities::ToString(TypeParameterReflection_GetName(m_NativeTypeParameterReflection));
     }
     
     unsigned int TypeParameterReflection::Index::get()

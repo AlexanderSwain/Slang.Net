@@ -13,15 +13,14 @@
 
 // Removed the "using namespace System::Runtime::InteropServices;" that was causing conflicts
 
-namespace Slang
+namespace Slang::Cpp
 {
     public ref class Session
-    {
-    public:
+    {    public:
         // Constructor with parameters (example)
-        Session(array<Slang::CompilerOption^>^ options,
-            array<Slang::PreprocessorMacroDesc^>^ macros,
-            array<Slang::ShaderModel^>^ models,
+        Session(array<Slang::Cpp::CompilerOption^>^ options,
+            array<Slang::Cpp::PreprocessorMacroDesc^>^ macros,
+            array<Slang::Cpp::ShaderModel^>^ models,
             array<System::String^>^ searchPaths);
 
         // Destructor

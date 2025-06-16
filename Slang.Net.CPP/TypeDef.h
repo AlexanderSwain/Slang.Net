@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 
-namespace Slang
+namespace Slang::Cpp
 {
     typedef int32_t SlangResult;
     typedef int64_t SlangInt;

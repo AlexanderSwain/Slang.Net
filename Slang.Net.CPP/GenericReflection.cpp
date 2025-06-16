@@ -10,7 +10,7 @@
 #include "TypeReflection.h"
 #include <msclr/marshal.h>
 
-namespace Slang
+namespace Slang::Cpp
 {
     // Constructor
     GenericReflection::GenericReflection(void* native)
@@ -35,7 +35,7 @@ namespace Slang
     System::String^ GenericReflection::Name::get()
     {
         if (!m_NativeGenericReflection) return nullptr;
-        return StringUtilities::ToString(SlangNative::GenericReflection_GetName(m_NativeGenericReflection));
+        return Slang::Cpp::StringUtilities::ToString(SlangNative::GenericReflection_GetName(m_NativeGenericReflection));
     }
 
     unsigned int GenericReflection::TypeParameterCount::get()

@@ -9,7 +9,7 @@
 #include "Module.h"
 #include "../Native/SlangNative.h"
 
-namespace Slang
+namespace Slang::Cpp
 {
     // Forward declarations
     ref class ShaderReflection;

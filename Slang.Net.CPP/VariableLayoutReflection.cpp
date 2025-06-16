@@ -12,7 +12,7 @@
 #include "Modifier.h"
 #include <msclr/marshal.h>
 
-namespace Slang
+namespace Slang::Cpp
 {
     // Constructor
     VariableLayoutReflection::VariableLayoutReflection(void* native)
@@ -44,7 +44,7 @@ namespace Slang
     System::String^ VariableLayoutReflection::Name::get()
     {
         if (!m_NativeVariableLayoutReflection) return nullptr;
-        return StringUtilities::ToString(SlangNative::VariableLayoutReflection_GetName(m_NativeVariableLayoutReflection));
+        return Slang::Cpp::StringUtilities::ToString(SlangNative::VariableLayoutReflection_GetName(m_NativeVariableLayoutReflection));
     }Modifier^ VariableLayoutReflection::FindModifier(int id)
     {
         if (!m_NativeVariableLayoutReflection) return nullptr;
@@ -99,15 +99,15 @@ namespace Slang
         void* space = SlangNative::VariableLayoutReflection_GetSpace(m_NativeVariableLayoutReflection, static_cast<int>(category));
         return System::UIntPtr(space);
     }    
-    Slang::ImageFormat VariableLayoutReflection::ImageFormat::get()
+    Slang::Cpp::ImageFormat VariableLayoutReflection::ImageFormat::get()
     {
-        if (!m_NativeVariableLayoutReflection) return Slang::ImageFormat::Unknown;
-        return static_cast<Slang::ImageFormat>(SlangNative::VariableLayoutReflection_GetImageFormat(m_NativeVariableLayoutReflection));
+        if (!m_NativeVariableLayoutReflection) return Slang::Cpp::ImageFormat::Unknown;
+        return static_cast<Slang::Cpp::ImageFormat>(SlangNative::VariableLayoutReflection_GetImageFormat(m_NativeVariableLayoutReflection));
     }
     System::String^ VariableLayoutReflection::SemanticName::get()
     {
         if (!m_NativeVariableLayoutReflection) return nullptr;
-        return StringUtilities::ToString(SlangNative::VariableLayoutReflection_GetSemanticName(m_NativeVariableLayoutReflection));
+        return Slang::Cpp::StringUtilities::ToString(SlangNative::VariableLayoutReflection_GetSemanticName(m_NativeVariableLayoutReflection));
     }
     System::UIntPtr VariableLayoutReflection::SemanticIndex::get()
     {

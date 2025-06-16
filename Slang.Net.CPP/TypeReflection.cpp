@@ -13,7 +13,7 @@
 
 using namespace SlangNative;
 
-namespace Slang
+namespace Slang::Cpp
 {
     // Constructor
     TypeReflection::TypeReflection(void* native)
@@ -93,10 +93,10 @@ namespace Slang
         return SlangNative::TypeReflection_GetColumnCount(m_NativeTypeReflection);
     }
 
-    Slang::ScalarType TypeReflection::ScalarType::get()
+    Slang::Cpp::ScalarType TypeReflection::ScalarType::get()
     {
-        if (!m_NativeTypeReflection) return Slang::ScalarType::None;
-        return static_cast<Slang::ScalarType>(SlangNative::TypeReflection_GetScalarType(m_NativeTypeReflection));
+        if (!m_NativeTypeReflection) return Slang::Cpp::ScalarType::None;
+        return static_cast<Slang::Cpp::ScalarType>(SlangNative::TypeReflection_GetScalarType(m_NativeTypeReflection));
     }    
     TypeReflection^ TypeReflection::ResourceResultType::get()
     {
@@ -105,27 +105,27 @@ namespace Slang
         return resultType ? gcnew TypeReflection(resultType) : nullptr;
     }
 
-    Slang::ResourceShape TypeReflection::ResourceShape::get()
+    Slang::Cpp::ResourceShape TypeReflection::ResourceShape::get()
     {
-        if (!m_NativeTypeReflection) return Slang::ResourceShape::None;
-        return static_cast<Slang::ResourceShape>(SlangNative::TypeReflection_GetResourceShape(m_NativeTypeReflection));
+        if (!m_NativeTypeReflection) return Slang::Cpp::ResourceShape::None;
+        return static_cast<Slang::Cpp::ResourceShape>(SlangNative::TypeReflection_GetResourceShape(m_NativeTypeReflection));
     }
 
-    Slang::ResourceAccess TypeReflection::ResourceAccess::get()
+    Slang::Cpp::ResourceAccess TypeReflection::ResourceAccess::get()
     {
-        if (!m_NativeTypeReflection) return Slang::ResourceAccess::None;
-        return static_cast<Slang::ResourceAccess>(SlangNative::TypeReflection_GetResourceAccess(m_NativeTypeReflection));
+        if (!m_NativeTypeReflection) return Slang::Cpp::ResourceAccess::None;
+        return static_cast<Slang::Cpp::ResourceAccess>(SlangNative::TypeReflection_GetResourceAccess(m_NativeTypeReflection));
     }    
     System::String^ TypeReflection::Name::get()
     {
         if (!m_NativeTypeReflection) return nullptr;
-        return StringUtilities::ToString(SlangNative::TypeReflection_GetName(m_NativeTypeReflection));
+        return Slang::Cpp::StringUtilities::ToString(SlangNative::TypeReflection_GetName(m_NativeTypeReflection));
     }    
     System::String^ TypeReflection::FullName::get()
     {
         if (!m_NativeTypeReflection) return nullptr;
         // TODO: Add FullName support to DLL exports, for now use Name
-        return StringUtilities::ToString(SlangNative::TypeReflection_GetName(m_NativeTypeReflection));
+        return Slang::Cpp::StringUtilities::ToString(SlangNative::TypeReflection_GetName(m_NativeTypeReflection));
     }
     unsigned int TypeReflection::UserAttributeCount::get()
     {
@@ -141,13 +141,13 @@ namespace Slang
     }    Attribute^ TypeReflection::FindAttributeByName(System::String^ name)
     {
         if (!m_NativeTypeReflection) return nullptr;
-        const char* nativeName = StringUtilities::FromString(name);
+        const char* nativeName = Slang::Cpp::StringUtilities::FromString(name);
         void* attribute = SlangNative::TypeReflection_FindAttributeByName(m_NativeTypeReflection, nativeName);
         return attribute ? gcnew Attribute(attribute) : nullptr;
     }    Attribute^ TypeReflection::FindUserAttributeByName(System::String^ name)
     {
         if (!m_NativeTypeReflection) return nullptr;
-        const char* nativeName = StringUtilities::FromString(name);
+        const char* nativeName = Slang::Cpp::StringUtilities::FromString(name);
         void* attribute = SlangNative::TypeReflection_FindAttributeByName(m_NativeTypeReflection, nativeName);
         return attribute ? gcnew Attribute(attribute) : nullptr;
     }

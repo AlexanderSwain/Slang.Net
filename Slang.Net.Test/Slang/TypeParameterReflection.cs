@@ -1,6 +1,6 @@
-﻿public unsafe class TypeParameterReflection : Slang.TypeParameterReflection
+﻿public unsafe class TypeParameterReflection : Slang.Cpp.TypeParameterReflection
 {
-    public TypeParameterReflection(Slang.TypeParameterReflection comObj) : base(comObj.getNative())
+    public TypeParameterReflection(Slang.Cpp.TypeParameterReflection comObj) : base(comObj.getNative())
     {
     }
 }

@@ -16,8 +16,8 @@
 #include "TypeDef.h"
 #include <msclr/marshal.h>
 
-namespace Slang
-{    // Forward declarations
+namespace Slang::Cpp
+{// Forward declarations
     ref class TypeReflection;
     ref class Attribute;
     ref class GenericReflection;

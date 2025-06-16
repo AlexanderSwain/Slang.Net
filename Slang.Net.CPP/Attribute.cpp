@@ -6,7 +6,7 @@
 
 #include "Attribute.h"
 
-namespace Slang
+namespace Slang::Cpp
 {
 
     // Constructor
@@ -30,7 +30,7 @@ namespace Slang
     }    System::String^ Attribute::Name::get()
     {
         if (!m_NativeAttribute) return nullptr;
-        return StringUtilities::ToString(SlangNative::Attribute_GetName(m_NativeAttribute));
+        return Slang::Cpp::StringUtilities::ToString(SlangNative::Attribute_GetName(m_NativeAttribute));
     }
 
     unsigned int Attribute::ArgumentCount::get()
@@ -41,7 +41,7 @@ namespace Slang
     {
         if (!m_NativeAttribute) return nullptr;
         const char* value = SlangNative::Attribute_GetArgumentValueString(m_NativeAttribute, index);
-        return StringUtilities::ToString(value);
+        return Slang::Cpp::StringUtilities::ToString(value);
     }
 
     System::Nullable<System::Int32> Attribute::GetArgumentValueInt(unsigned int index)

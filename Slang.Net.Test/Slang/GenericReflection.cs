@@ -1,6 +1,6 @@
-﻿public unsafe class GenericReflection : Slang.GenericReflection
+﻿public unsafe class GenericReflection : Slang.Cpp.GenericReflection
 {
-    public GenericReflection(Slang.GenericReflection comObj) : base(comObj.getNative())
+    public GenericReflection(Slang.Cpp.GenericReflection comObj) : base(comObj.getNative())
     {
     }
 }

@@ -12,7 +12,7 @@
 #include "ShaderReflection.h"
 #include <msclr/marshal.h>
 
-namespace Slang
+namespace Slang::Cpp
 {
 
     // Constructor
@@ -47,13 +47,13 @@ namespace Slang
     System::String^ EntryPointReflection::Name::get()
     {
         if (!m_NativeEntryPointReflection) return nullptr;
-        return StringUtilities::ToString(SlangNative::EntryPointReflection_GetName(m_NativeEntryPointReflection));
+        return Slang::Cpp::StringUtilities::ToString(SlangNative::EntryPointReflection_GetName(m_NativeEntryPointReflection));
     }
 
     System::String^ EntryPointReflection::NameOverride::get()
     {
         if (!m_NativeEntryPointReflection) return nullptr;
-        return StringUtilities::ToString(SlangNative::EntryPointReflection_GetNameOverride(m_NativeEntryPointReflection));
+        return Slang::Cpp::StringUtilities::ToString(SlangNative::EntryPointReflection_GetNameOverride(m_NativeEntryPointReflection));
     }
 
     unsigned int EntryPointReflection::ParameterCount::get()

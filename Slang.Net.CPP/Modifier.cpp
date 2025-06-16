@@ -6,7 +6,7 @@
 
 #include "Modifier.h"
 
-namespace Slang
+namespace Slang::Cpp
 {
     // Constructor
     Modifier::Modifier(void* native)

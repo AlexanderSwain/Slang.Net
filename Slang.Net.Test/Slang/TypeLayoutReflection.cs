@@ -1,6 +1,6 @@
-﻿public unsafe class TypeLayoutReflection : Slang.TypeLayoutReflection
+﻿public unsafe class TypeLayoutReflection : Slang.Cpp.TypeLayoutReflection
 {
-    public TypeLayoutReflection(Slang.TypeLayoutReflection comObj) : base(comObj.getNative())
+    public TypeLayoutReflection(Slang.Cpp.TypeLayoutReflection comObj) : base(comObj.getNative())
     {
     }
 }
