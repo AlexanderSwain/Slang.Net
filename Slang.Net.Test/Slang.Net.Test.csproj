@@ -21,9 +21,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-
   <ItemGroup>
-    <ProjectReference Include="..\Slang.Net\Slang.Net.vcxproj" />
+    <ProjectReference Include="..\Slang.Net.CPP\Slang.Net.CPP.vcxproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -10,11 +10,10 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <PropertyGroup Label="Globals">
-    <VCProjectVersion>17.0</VCProjectVersion>
+  <PropertyGroup Label="Globals">    <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>ManagedCProj</Keyword>
     <ProjectGuid>{B2C5F9A2-9D4E-4F3A-8E1B-7F6C8D9E0F2C}</ProjectGuid>
-    <RootNamespace>Slang.Net</RootNamespace>
+    <RootNamespace>Slang.Net.CPP</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
   </PropertyGroup>
@@ -44,34 +43,29 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  <PropertyGroup Label="UserMacros" />  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)Slang.Net.Test\bin\$(Configuration)\net9.0\</OutDir>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)\Slang.Net.Test\bin\$(Configuration)\net9.0\</OutDir>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)Native;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ClCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>      <AdditionalIncludeDirectories>$(SolutionDir)Native;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>    </ClCompile>
     <Link>
-      <AdditionalDependencies>$(SolutionDir)Slang.Net.Test\bin\$(Configuration)\net9.0\SlangNative.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\Slang.Net.Test\bin\$(Configuration)\net9.0\SlangNative.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)Native;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>      <AdditionalIncludeDirectories>$(SolutionDir)Native;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>    </ClCompile>
     <Link>
-      <AdditionalDependencies>$(SolutionDir)Slang.Net.Test\bin\$(Configuration)\net9.0\SlangNative.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\Slang.Net.Test\bin\$(Configuration)\net9.0\SlangNative.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

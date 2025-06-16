@@ -18,7 +18,7 @@
 #include <msclr/marshal.h>
 #include <vcclr.h>
 #include <vector>
-#include <TypeDef.h>
+#include "TypeDef.h"
 
 //Debug: delete these
 #include <iostream>

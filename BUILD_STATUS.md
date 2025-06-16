@@ -18,7 +18,7 @@ During development, we attempted to add x86 (Win32) support but encountered the 
 Both x64 configurations build successfully and generate:
 - `SlangNative.dll` - Native C++ wrapper library
 - `SlangNative.lib` - Import library for the native wrapper
-- `Slang.Net.dll` - Managed C++/CLI wrapper
+- `Slang.Net.CPP.dll` - Managed C++/CLI wrapper
 - `Slang.Net.Test.dll` - Test project assembly
 
 ## Build Commands
@@ -34,7 +34,7 @@ MSBuild.exe "Slang.Net.sln" /p:Configuration=Release /p:Platform=x64
 
 ## Project Structure
 - `Native/SlangNative.vcxproj` - Native C++ project
-- `Slang.Net/Slang.Net.vcxproj` - Managed C++/CLI project
+- `Slang.Net.CPP/Slang.Net.CPP.vcxproj` - Managed C++/CLI project
 - `Slang.Net.Test/Slang.Net.Test.csproj` - C# test project
 - `Native/EmbeddedLLVM/slang-2025.10.3-windows-x86_64/` - Contains embedded x64-only Slang SDK
 
