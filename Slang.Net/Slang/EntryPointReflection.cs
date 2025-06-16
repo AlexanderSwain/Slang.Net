@@ -7,7 +7,7 @@ public unsafe class EntryPointReflection : Slang.Cpp.EntryPointReflection
     {
     }
 
-    public string Compile(Slang.Cpp.Program cpp)
+    public string Compile()
     {
         // [Fix] This is a bit hacky, but it works for now.
         ShaderReflection parent = new ShaderReflection(Parent);
