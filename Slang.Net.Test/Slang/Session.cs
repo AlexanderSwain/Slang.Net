@@ -2,7 +2,7 @@
 
 public unsafe class Session : Slang.Cpp.Session
 {
-    internal Session(Slang.Cpp.CompilerOption[] compilerOptions, Slang.Cpp.PreprocessorMacroDesc[] macros, Slang.Cpp.ShaderModel[] models, string[] searchPaths) : base(compilerOptions, macros, models, searchPaths)
+    internal Session(Slang.CompilerOption[] compilerOptions, Slang.Cpp.PreprocessorMacroDesc[] macros, Slang.Cpp.ShaderModel[] models, string[] searchPaths) : base(compilerOptions, macros, models, searchPaths)
     {
     }
 
@@ -19,14 +19,14 @@ public unsafe class Session : Slang.Cpp.Session
 
 public class SessionBuilder
 {
-    public List<Slang.Cpp.CompilerOption> CompilerOptions { get; } = new();
+    public List<Slang.CompilerOption> CompilerOptions { get; } = new();
     public List<Slang.Cpp.PreprocessorMacroDesc> PreprocessorMacroDesc { get; } = new();
     public List<Slang.Cpp.ShaderModel> ShaderModel { get; } = new();
     public List<string> SearchPaths { get; } = new ();
 
-    public SessionBuilder AddCompilerOption(Slang.Cpp.CompilerOptionName name, Slang.Cpp.CompilerOptionValue value)
+    public SessionBuilder AddCompilerOption(Slang.CompilerOptionName name, Slang.CompilerOptionValue value)
     {
-        CompilerOptions.Add(new Slang.Cpp.CompilerOption(name, value));
+        CompilerOptions.Add(new Slang.CompilerOption(name, value));
         return this;
     }
 
@@ -36,7 +36,7 @@ public class SessionBuilder
         return this;
     }
 
-    public SessionBuilder AddShaderModel(Slang.Cpp.CompileTarget target, string profile)
+    public SessionBuilder AddShaderModel(Slang.CompileTarget target, string profile)
     {
         ShaderModel.Add(new Slang.Cpp.ShaderModel(target, profile));
         return this;

@@ -16,9 +16,10 @@
 namespace Slang::Cpp
 {
     public ref class Session
-    {    public:
+    {
+    public:
         // Constructor with parameters (example)
-        Session(array<Slang::Cpp::CompilerOption^>^ options,
+        Session(array<Slang::CompilerOption^>^ options,
             array<Slang::Cpp::PreprocessorMacroDesc^>^ macros,
             array<Slang::Cpp::ShaderModel^>^ models,
             array<System::String^>^ searchPaths);

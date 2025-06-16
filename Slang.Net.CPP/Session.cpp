@@ -21,10 +21,11 @@ namespace Slang::Cpp
         }
         else
         {
-            throw gcnew System::Exception("There was a problem generating an error message.");
-        }
-    }    // Constructor with parameters implementation
-    Slang::Cpp::Session::Session(array<Slang::Cpp::CompilerOption^>^ options,
+            throw gcnew System::Exception("There was a problem generating an error message.");        }
+    }
+
+    // Constructor with parameters implementation
+    Slang::Cpp::Session::Session(array<Slang::CompilerOption^>^ options,
         array<Slang::Cpp::PreprocessorMacroDesc^>^ macros,
         array<Slang::Cpp::ShaderModel^>^ models,
         array<System::String^>^ searchPaths)

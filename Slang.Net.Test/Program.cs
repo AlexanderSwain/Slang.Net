@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Slang;
+using System;
 // Using global using directive
 using System.IO;
 using System.Linq;

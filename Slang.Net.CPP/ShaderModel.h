@@ -2,7 +2,7 @@
 #include "CompileTarget.h"
 
 using namespace System;
-using namespace Slang::Cpp;
+using namespace Slang;
 
 namespace Slang::Cpp
 {

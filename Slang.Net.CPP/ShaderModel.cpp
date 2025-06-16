@@ -1,17 +1,17 @@
 #include "ShaderModel.h"
 
-ShaderModel::ShaderModel(CompileTarget target, String^ profile)
+Slang::Cpp::ShaderModel::ShaderModel(CompileTarget target, String^ profile)
 	: _Target(target)
 	, _Profile(profile)
 {
 }
 
-CompileTarget ShaderModel::getTarget()
+CompileTarget Slang::Cpp::ShaderModel::getTarget()
 {
 	return _Target;
 }
 
-String^ ShaderModel::getProfile()
+String^ Slang::Cpp::ShaderModel::getProfile()
 {
 	return _Profile;
 }
