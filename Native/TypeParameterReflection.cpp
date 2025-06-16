@@ -5,6 +5,11 @@ Native::TypeParameterReflection::TypeParameterReflection(void* native)
 	m_native = (slang::TypeParameterReflection*)native;
 }
 
+slang::TypeParameterReflection* Native::TypeParameterReflection::getNative()
+{
+    return m_native;
+}
+
 char const* Native::TypeParameterReflection::getName()
 {
     return m_native->getName();

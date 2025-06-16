@@ -28,6 +28,8 @@ namespace Native
 	public:
 		VariableLayoutReflection(void* native);
 
+        slang::VariableLayoutReflection* getNative();
+
         VariableReflection* getVariable();
         char const* getName();
         Modifier* findModifier(Modifier::ID id);

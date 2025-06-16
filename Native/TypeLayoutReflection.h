@@ -32,6 +32,9 @@ namespace Native
 
 	public:		
         TypeLayoutReflection(void* native);
+
+        slang::TypeLayoutReflection* getNative();
+
         TypeReflection* getType();
         TypeReflection::Kind getKind();
         size_t getSize(ParameterCategory category = ParameterCategory::Uniform);

@@ -9,18 +9,23 @@
 #include <string>
 
 // Reflection Includes
-#include "TypeParameterReflection.h"
-#include "TypeReflection.h"
-#include "TypeLayoutReflection.h"
-#include "FunctionReflection.h"
-#include "VariableLayoutReflection.h"
-#include "VariableReflection.h"
-#include "EntryPointReflection.h"
-#include "GenericReflection.h"
 #include "LayoutRules.h"
 #include "TypeDef.h"
 #include "GenericArgType.h"
 #include "GenericArgReflection.h"
+
+namespace Native
+{
+    // Forward declarations
+    struct TypeParameterReflection;
+    struct TypeReflection;
+    struct TypeLayoutReflection;
+    struct FunctionReflection;
+    struct VariableLayoutReflection;
+    struct VariableReflection;
+    struct EntryPointReflection;
+    struct GenericReflection;
+}
 
 #ifdef SLANGNATIVE_EXPORTS
 #define SLANGNATIVE_API __declspec(dllexport)

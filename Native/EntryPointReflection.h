@@ -25,9 +25,10 @@ namespace Native
 	struct SLANGNATIVE_API EntryPointReflection
 	{
 	public:
-        EntryPointReflection(void* parent, void* native);
+        EntryPointReflection(ShaderReflection* parent, void* native);
 
         ShaderReflection* getParent();
+        slang::EntryPointReflection* getNative();
         char const* getName();
         char const* getNameOverride();
         unsigned getParameterCount();
@@ -38,12 +39,12 @@ namespace Native
         void getComputeWaveSize(SlangUInt* outWaveSize);
         bool usesAnySampleRateInput();
         VariableLayoutReflection* getVarLayout();
-        TypeLayoutReflection* getTypeLayout();        VariableLayoutReflection* getResultVarLayout();
+        TypeLayoutReflection* getTypeLayout();        
+        VariableLayoutReflection* getResultVarLayout();
         bool hasDefaultConstantBuffer();
-        void* getNative();
 
 	private:
-        slang::ShaderReflection* m_parent;
+        ShaderReflection* m_parent;
 		slang::EntryPointReflection* m_native;
 	};
 }

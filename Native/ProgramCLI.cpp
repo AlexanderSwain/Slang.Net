@@ -1,5 +1,16 @@
 #include "ProgramCLI.h"
 
+#include "TypeParameterReflection.h"
+#include "TypeReflection.h"
+#include "TypeLayoutReflection.h"
+#include "FunctionReflection.h"
+#include "VariableLayoutReflection.h"
+#include "VariableReflection.h"
+#include "EntryPointReflection.h"
+#include "GenericReflection.h"
+#include "GenericArgReflection.h"
+#include "ShaderReflection.h"
+
 Native::ProgramCLI::ProgramCLI(ModuleCLI* parent)
 {
     m_module = parent;
@@ -53,6 +64,13 @@ Native::ProgramCLI::ProgramCLI(ModuleCLI* parent)
 
 SlangResult Native::ProgramCLI::GetCompiled(unsigned int entryPointIndex, unsigned int targetIndex, const char** output)
 {
+    if (!m_linkedProgram)
+    {
+        m_errorBuffer = "Program is not linked.";
+        *output = m_errorBuffer.c_str();
+        return SLANG_FAIL;
+    }
+
     Slang::ComPtr<slang::IBlob> bytecode;
     {
         Slang::ComPtr<slang::IBlob> diagnosticsBlob;
@@ -144,7 +162,8 @@ SlangUInt Native::ProgramCLI::getEntryPointCount()
 
 Native::EntryPointReflection* Native::ProgramCLI::getEntryPointByIndex(SlangUInt index)
 {
-    return new EntryPointReflection(m_layout, m_layout->getEntryPointByIndex(index));
+    Native::ShaderReflection* sr = new Native::ShaderReflection(this, m_layout);
+    return new EntryPointReflection(sr, m_layout->getEntryPointByIndex(index));
 }
 
 SlangUInt Native::ProgramCLI::getGlobalConstantBufferBinding()
@@ -186,7 +205,8 @@ Native::TypeLayoutReflection* Native::ProgramCLI::getTypeLayout(
 
 Native::EntryPointReflection* Native::ProgramCLI::findEntryPointByName(const char* name)
 {
-    return new EntryPointReflection(m_layout, m_layout->findEntryPointByName(name));
+    Native::ShaderReflection* sr = new Native::ShaderReflection(this, m_layout);
+    return new EntryPointReflection(sr, m_layout->findEntryPointByName(name));
 }
 
 Native::TypeReflection* Native::ProgramCLI::specializeType(
@@ -206,10 +226,10 @@ Native::TypeReflection* Native::ProgramCLI::specializeType(
 }
 
 Native::GenericReflection* Native::ProgramCLI::specializeGeneric(  
-    GenericReflection* genRef,  
+    Native::GenericReflection* genRef,  
     SlangInt specializationArgCount,  
     GenericArgType const* specializationArgTypes,  
-    GenericArgReflection const* specializationArgVals,  
+    Native::GenericArgReflection const* specializationArgVals,  
     ISlangBlob** outDiagnostics)  
 {  
     // Convert Native::GenericArgType to slang::GenericArgType  

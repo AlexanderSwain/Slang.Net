@@ -29,9 +29,10 @@ namespace Native
 	struct SLANGNATIVE_API ShaderReflection
 	{
 	public:
-		ShaderReflection(void* native);
+		ShaderReflection(ProgramCLI* parent, void* native);
 
         ProgramCLI* getParent();
+        slang::ShaderReflection* getNative();
 
         unsigned getParameterCount();
         unsigned getTypeParameterCount();

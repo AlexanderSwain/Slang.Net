@@ -7,9 +7,10 @@ Native::GenericReflection::GenericReflection(void* native)
 {
 	m_native = (slang::GenericReflection*)native;
 }
-void* Native::GenericReflection::getNative()
+
+slang::GenericReflection* Native::GenericReflection::getNative()
 {
-	return m_native;
+    return m_native;
 }
 
 //Native::DeclReflection* Native::GenericReflection::asDecl()

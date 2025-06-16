@@ -10,14 +10,19 @@
 #include "LayoutRules.h"
 #include "ProgramCLI.h"
 
-Native::ShaderReflection::ShaderReflection(void* native)
+Native::ShaderReflection::ShaderReflection(ProgramCLI* parent, void* native)
 {
+    m_parent = parent;
     m_native = (slang::ShaderReflection*)native;
 }
 
 Native::ProgramCLI* Native::ShaderReflection::getParent()
 {
     return m_parent;
+}
+slang::ShaderReflection* Native::ShaderReflection::getNative()
+{
+    return m_native;
 }
 
 unsigned Native::ShaderReflection::getParameterCount()

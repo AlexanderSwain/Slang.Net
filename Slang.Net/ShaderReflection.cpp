@@ -233,4 +233,8 @@ namespace Slang
     {
         return m_NativeShaderReflection;
     }
+    void* ShaderReflection::slangPtr()
+    {
+        return SlangNative::ShaderReflection_GetNative(m_NativeShaderReflection);
+    }
 }

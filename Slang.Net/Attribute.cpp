@@ -70,4 +70,9 @@ namespace Slang
     {
         return m_NativeAttribute;
     }
+
+    void* Attribute::slangPtr()
+    {
+        return SlangNative::Attribute_GetNative(m_NativeAttribute);
+    }
 }

@@ -146,4 +146,8 @@ namespace Slang
     {
         return m_NativeFunctionReflection;
     }
+    void* FunctionReflection::slangPtr()
+    {
+        return SlangNative::FunctionReflection_GetNative(m_NativeFunctionReflection);
+    }
 }

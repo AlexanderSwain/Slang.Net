@@ -5,15 +5,20 @@
 #include "TypeLayoutReflection.h"
 
 
-Native::EntryPointReflection::EntryPointReflection(void* parent, void* native)
+Native::EntryPointReflection::EntryPointReflection(Native::ShaderReflection* parent, void* native)
 {
-    m_parent = (slang::ShaderReflection*)parent;
+    m_parent = parent;
 	m_native = (slang::EntryPointReflection*)native;
 }
 
 Native::ShaderReflection*  Native::EntryPointReflection::getParent()
 {
-    return new Native::ShaderReflection(m_parent);
+    return m_parent;
+}
+
+slang::EntryPointReflection* Native::EntryPointReflection::getNative()
+{
+    return m_native;
 }
 
 char const* Native::EntryPointReflection::getName()
@@ -79,9 +84,4 @@ Native::VariableLayoutReflection* Native::EntryPointReflection::getResultVarLayo
 bool Native::EntryPointReflection::hasDefaultConstantBuffer()
 {
     return m_native->hasDefaultConstantBuffer();
-}
-
-void* Native::EntryPointReflection::getNative()
-{
-    return m_native;
 }

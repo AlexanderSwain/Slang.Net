@@ -24,6 +24,7 @@ namespace Slang
 
         // Internal
         void* getNative();
+        void* slangPtr();
 
     private:
         void* m_NativeModifier;

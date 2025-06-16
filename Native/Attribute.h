@@ -20,6 +20,7 @@ namespace Native
 	public:
 		Attribute(void* native);
 
+		slang::Attribute* getNative();
 		char const* getName();
 		uint32_t getArgumentCount();
 		TypeReflection* getArgumentType(uint32_t index);

@@ -6,9 +6,14 @@ public unsafe class Session : Slang.Session
     {
     }
 
-    public Module LoadModule(string moduleName)
+    public Module LoadModule(string fileName)
     {
-        return new Module(this, moduleName, null, null);
+        var extension = Path.GetExtension(fileName)?.ToLowerInvariant();
+
+        if (extension != ".slang")
+            throw new ArgumentException($"{(string.IsNullOrEmpty(extension) ? "<no extension>" : extension)} files are not supported. Only .slang files are supported.", nameof(fileName));
+
+        return new Module(this, fileName);
     }
 }
 

@@ -12,16 +12,14 @@ Native::ModuleCLI::ModuleCLI(SessionCLI* parent, const char* moduleName, const c
         // Use moduleName instead of modulePath for loadModule
         slangModule = m_parent->loadModule(moduleName, diagnosticsBlob.writeRef());
         //slangModule = m_parent->loadModuleFromSource(moduleName, modulePath, sourceBlob, diagnosticsBlob.writeRef());
-        //slangModule = m_session->loadModuleFromSourceString(moduleName, modulePath, shaderSource, diagnosticsBlob.writeRef());
+        //slangModule = m_parent->loadModuleFromSourceString(moduleName, modulePath, shaderSource, diagnosticsBlob.writeRef());
 
         // Improved diagnostics output
-        if (!diagnosticsBlob && diagnosticsBlob->getBufferSize() > 0)
+        if (diagnosticsBlob && diagnosticsBlob->getBufferSize() > 0)
         {
             std::string diagnosticsText = std::string((const char*)diagnosticsBlob->getBufferPointer());
 			std::string errorMessage = "There are issues in the shader source: " + diagnosticsText;
 
-            // Change this to:
-            // if (WarningsAsErrors are on)
             if (!slangModule)
                 throw std::runtime_error(errorMessage);
         }
@@ -39,6 +37,7 @@ Native::ModuleCLI::ModuleCLI(SessionCLI* parent, const char* moduleName, const c
 void Native::ModuleCLI::setEntryPoints()
 {
     unsigned int entryPointCount = m_slangModule->getDefinedEntryPointCount();
+    std::cout << "Entry Point Count: " << entryPointCount << std::endl;
 	m_entryPointCount = entryPointCount;
 
 	m_entryPoints = new slang::IEntryPoint*[m_entryPointCount];

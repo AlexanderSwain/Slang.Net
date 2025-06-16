@@ -170,4 +170,8 @@ namespace Slang
     {
         return m_NativeTypeReflection;
     }
+    void* TypeReflection::slangPtr()
+    {
+        return SlangNative::TypeReflection_GetNative(m_NativeTypeReflection);
+    }
 }

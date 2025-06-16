@@ -67,7 +67,8 @@ namespace Native
         };
 
 		TypeReflection(void* native);
-        void* getNative();
+
+        slang::TypeReflection* getNative();
 
         Kind getKind();
 

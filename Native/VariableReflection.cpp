@@ -5,9 +5,9 @@ Native::VariableReflection::VariableReflection(void* native)
 	m_native = (slang::VariableReflection*)native;
 }
 
-void* Native::VariableReflection::getNative()
+slang::VariableReflection* Native::VariableReflection::getNative()
 {
-	return m_native;
+    return m_native;
 }
 
 char const* Native::VariableReflection::getName()

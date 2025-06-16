@@ -19,6 +19,8 @@ namespace Native
 	public:
 		TypeParameterReflection(void* native);
 
+		slang::TypeParameterReflection* getNative();
+
         char const* getName();
         unsigned getIndex();
         unsigned getConstraintCount();

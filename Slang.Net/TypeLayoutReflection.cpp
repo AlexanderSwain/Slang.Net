@@ -132,4 +132,8 @@ namespace Slang
     {
         return m_NativeTypeLayoutReflection;
     }
+    void* TypeLayoutReflection::slangPtr()
+    {
+        return SlangNative::TypeLayoutReflection_GetNative(m_NativeTypeLayoutReflection);
+    }
 }

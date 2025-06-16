@@ -11,6 +11,11 @@ Native::FunctionReflection::FunctionReflection(void* native)
 	m_native = (slang::FunctionReflection*)native;
 }
 
+slang::FunctionReflection* Native::FunctionReflection::getNative()
+{
+    return m_native;
+}
+
 char const* Native::FunctionReflection::getName()
 {
     return m_native->getName();

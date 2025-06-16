@@ -130,4 +130,8 @@ namespace Slang
     {
         return m_NativeVariableLayoutReflection;
     }
+    void* VariableLayoutReflection::slangPtr()
+    {
+        return SlangNative::VariableLayoutReflection_GetNative(m_NativeVariableLayoutReflection);
+    }
 }

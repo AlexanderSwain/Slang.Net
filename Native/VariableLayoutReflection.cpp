@@ -9,6 +9,11 @@ Native::VariableLayoutReflection::VariableLayoutReflection(void* native)
 	m_native = (slang::VariableLayoutReflection*)native;
 }
 
+slang::VariableLayoutReflection* Native::VariableLayoutReflection::getNative()
+{
+    return m_native;
+}
+
 Native::VariableReflection* Native::VariableLayoutReflection::getVariable()
 {
     return new Native::VariableReflection(m_native->getVariable());

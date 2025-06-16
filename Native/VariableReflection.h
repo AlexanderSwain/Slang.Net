@@ -22,7 +22,8 @@ namespace Native
 
 	public:
 		VariableReflection(void* native);
-        void* getNative();
+        
+        slang::VariableReflection* getNative();
 
         char const* getName();
         TypeReflection* getType();

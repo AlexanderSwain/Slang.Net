@@ -32,4 +32,8 @@ namespace Slang
     {
         return m_NativeModifier;
     }
+    void* Modifier::slangPtr()
+    {
+        return SlangNative::GenericReflection_GetNative(m_NativeModifier);
+    }
 }

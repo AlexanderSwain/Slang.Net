@@ -27,7 +27,8 @@ namespace Native
 
 	public:
 		GenericReflection(void* native);
-        void* getNative();
+        
+        slang::GenericReflection* getNative();
 
         //DeclReflection* asDecl();
         char const* getName();

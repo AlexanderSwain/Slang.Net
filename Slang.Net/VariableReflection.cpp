@@ -115,4 +115,8 @@ namespace Slang
     {
         return m_NativeVariableReflection;
     }
+    void* VariableReflection::slangPtr()
+    {
+        return SlangNative::VariableReflection_GetNative(m_NativeVariableReflection);
+    }
 }

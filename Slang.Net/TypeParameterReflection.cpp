@@ -58,4 +58,8 @@ namespace Slang
     {
         return m_NativeTypeParameterReflection;
     }
+    void* TypeParameterReflection::slangPtr()
+    {
+        return SlangNative::TypeParameterReflection_GetNative(m_NativeTypeParameterReflection);
+    }
 }

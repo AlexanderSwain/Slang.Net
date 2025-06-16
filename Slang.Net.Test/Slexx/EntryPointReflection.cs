@@ -1,4 +1,5 @@
 ﻿using Slang.Net.Test.Extensions;
+using System.Diagnostics;
 
 public unsafe class EntryPointReflection : Slang.EntryPointReflection
 {
@@ -6,11 +7,13 @@ public unsafe class EntryPointReflection : Slang.EntryPointReflection
     {
     }
 
-    public string Compile()
+    public string Compile(Slang.Program cpp)
     {
         // [Fix] This is a bit hacky, but it works for now.
-        var entryPointIndex = new ShaderReflection(Parent).EntryPoints.IndexOf(this);
-        var source = Parent.Parent.Compile((uint)entryPointIndex, 0);
+        ShaderReflection parent = new ShaderReflection(Parent);
+        var entryPointIndex = parent.EntryPoints.IndexOf(this);
+
+        var source = parent.Parent.Compile((uint)entryPointIndex, 0);
         return source;
     }
 }

@@ -8,9 +8,9 @@ Native::TypeReflection::TypeReflection(void* native)
 	m_native = (slang::TypeReflection*)native;
 }
 
-void* Native::TypeReflection::getNative()
+slang::TypeReflection* Native::TypeReflection::getNative()
 {
-	return m_native;
+    return m_native;
 }
 
 Native::TypeReflection::Kind Native::TypeReflection::getKind() 

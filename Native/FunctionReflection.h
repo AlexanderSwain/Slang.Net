@@ -31,6 +31,7 @@ namespace Native
 	public:
 		FunctionReflection(void* native);
 
+        slang::FunctionReflection* getNative();
         char const* getName();
         TypeReflection* getReturnType();
         unsigned int getParameterCount();

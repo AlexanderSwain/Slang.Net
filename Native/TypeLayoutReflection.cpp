@@ -8,6 +8,11 @@ Native::TypeLayoutReflection::TypeLayoutReflection(void* native)
 	m_native = (slang::TypeLayoutReflection*)native;
 }
 
+slang::TypeLayoutReflection* Native::TypeLayoutReflection::getNative()
+{
+    return m_native;
+}
+
 Native::TypeReflection* Native::TypeLayoutReflection::getType()
 {
     return new TypeReflection(m_native->getType());

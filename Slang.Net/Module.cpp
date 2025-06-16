@@ -28,7 +28,7 @@ namespace Slang
     // Constructor with parameters implementation
     Slang::Module::Module(Session^ parent, System::String^ moduleName, System::String^ modulePath, System::String^ shaderSource)
     {
-        void* nativeParent = parent->getNative();        
+        void* nativeParent = parent->getNative();
         const char* name = StringUtilities::FromString(moduleName);
         const char* path = StringUtilities::FromString(modulePath);
         const char* source = StringUtilities::FromString(shaderSource);

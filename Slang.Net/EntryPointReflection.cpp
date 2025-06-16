@@ -190,4 +190,8 @@ namespace Slang
     {
         return m_NativeEntryPointReflection;
     }
+    void* EntryPointReflection::slangPtr()
+    {
+        return SlangNative::EntryPointReflection_GetNative(m_NativeEntryPointReflection);
+    }
 }

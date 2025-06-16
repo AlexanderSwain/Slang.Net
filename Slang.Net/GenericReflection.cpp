@@ -123,4 +123,8 @@ namespace Slang
     {
         return m_NativeGenericReflection;
     }
+    void* GenericReflection::slangPtr()
+    {
+        return SlangNative::GenericReflection_GetNative(m_NativeGenericReflection);
+    }
 }
