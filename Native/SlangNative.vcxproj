@@ -44,13 +44,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)Slang.Net.Test\bin\$(Configuration)\net9.0\</OutDir>
-    <IntDir>$(SolutionDir)Slang.Net.Test\bin\$(Configuration)\net9.0\</IntDir>
+    <LinkIncremental>true</LinkIncremental>    <OutDir>$(SolutionDir)Slang.Net\bin\$(Configuration)\net9.0\</OutDir>
+    <IntDir>$(SolutionDir)Slang.Net\bin\$(Configuration)\net9.0\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)Slang.Net.Test\bin\$(Configuration)\net9.0\</OutDir>
+    <OutDir>$(SolutionDir)Slang.Net\bin\$(Configuration)\net9.0\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

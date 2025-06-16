@@ -1,4 +1,4 @@
-﻿using Slang.Net.Test.Slexx;
+﻿using Slang.Net.Slexx;
 using System;
 using System.Xml.Linq;
 

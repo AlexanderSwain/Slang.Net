@@ -10,7 +10,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Slang.Net.CPP", "Slang.Net.
 		{C3D8F1A9-2E4F-4B5A-9D1E-8F7C9D0E1F3C} = {C3D8F1A9-2E4F-4B5A-9D1E-8F7C9D0E1F3C}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slang.Net.Test", "Slang.Net.Test\Slang.Net.Test.csproj", "{93ED428D-DF84-2311-DA04-BB0ADB48A9E3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slang.Net", "Slang.Net\Slang.Net.csproj", "{93ED428D-DF84-2311-DA04-BB0ADB48A9E3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

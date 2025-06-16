@@ -1,4 +1,4 @@
-﻿using Slang.Net.Test.Extensions;
+﻿using Slang.Net.Extensions;
 using System.Diagnostics;
 
 public unsafe class EntryPointReflection : Slang.Cpp.EntryPointReflection

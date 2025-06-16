@@ -1,4 +1,4 @@
-﻿using Slang.Net.Test.Slexx;
+﻿using Slang.Net.Slexx;
 
 public unsafe class VariableReflection : Slang.Cpp.VariableReflection, IComposedOf<Attribute>
 {

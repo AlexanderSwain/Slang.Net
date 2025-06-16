@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 
 // Delete this
-namespace Slang.Net.Test.Slexx
+namespace Slang.Net.Slexx
 {
     public interface IComposedOf<T>
     {

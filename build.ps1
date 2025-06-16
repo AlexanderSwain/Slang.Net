@@ -140,8 +140,8 @@ try {
         
         Write-Info ""
         Write-Info "Next steps:"
-        Write-Info "  1. Run tests: cd $outputDir && dotnet Slang.Net.Test.dll"
-        Write-Info "  2. Or open in Visual Studio and set Slang.Net.Test as startup project"
+        Write-Info "  1. Run tests: cd $outputDir && dotnet Slang.Net.dll"
+        Write-Info "  2. Or open in Visual Studio and set Slang.Net as startup project"
         
     } else {
         Write-Error "Build failed with exit code $LASTEXITCODE"

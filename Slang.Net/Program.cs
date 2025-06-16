@@ -18,7 +18,7 @@ public class Program
             //.AddShaderModel(CompileTarget.SLANG_HLSL, "ds_5_0")
             //.AddShaderModel(CompileTarget.SLANG_HLSL, "ps_5_0")
             .AddShaderModel(CompileTarget.SLANG_HLSL, "cs_5_0")
-            .AddSearchPath(@"C:\Users\lexxa\Code\Playground\Slang.Net\Slang.Net.Test\Shaders\");
+            .AddSearchPath(@"C:\Users\lexxa\Code\Playground\Slang.Net\Slang.Net\Shaders\");
         
         Session session = all_hlsl_targets.Create();
         Module module = session.LoadModule("ParameterInfo.slang");

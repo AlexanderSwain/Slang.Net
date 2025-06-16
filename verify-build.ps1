@@ -64,7 +64,7 @@ Write-Header "Slang.Net Build Verification"
 Write-Info "Configuration: $Configuration"
 Write-Info "Platform: x64"
 
-$outputDir = "Slang.Net.Test\bin\$Configuration\net9.0"
+$outputDir = "Slang.Net\bin\$Configuration\net9.0"
 $allFilesPresent = $true
 
 Write-Info ""
@@ -89,7 +89,7 @@ $allFilesPresent = (Test-FileExists "$outputDir\SlangNative.lib" "SlangNative.li
 $allFilesPresent = (Test-FileExists "$outputDir\Slang.Net.dll" "Slang.Net.dll (Managed C++/CLI wrapper)") -and $allFilesPresent
 
 # Check test files
-$allFilesPresent = (Test-FileExists "$outputDir\Slang.Net.Test.exe" "Slang.Net.Test.exe (Test executable)") -and $allFilesPresent
+$allFilesPresent = (Test-FileExists "$outputDir\Slang.Net.exe" "Slang.Net.exe (Test executable)") -and $allFilesPresent
 
 # Check debug symbols for Debug builds
 if ($Configuration -eq "Debug") {
@@ -136,7 +136,7 @@ if ($allFilesPresent) {
     Write-Success "All required files are present and the build appears successful!"
     Write-Info ""
     Write-Info "You can now:"
-    Write-Info "  1. Run the test: cd $outputDir; .\Slang.Net.Test.exe"
+    Write-Info "  1. Run the test: cd $outputDir; .\Slang.Net.exe"
     Write-Info "  2. Use the libraries in your own projects"
     Write-Info "  3. Debug using Visual Studio"
 } else {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Slang.Net.Test.Extensions
+namespace Slang.Net.Extensions
 {
     public static class EnumerableExtensions
     {

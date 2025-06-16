@@ -1,4 +1,4 @@
-# Slang.Net
+# Slang.Net Early Alpha
 
 A .NET wrapper for the Slang Shader Language compiler, which includes the Compilation API, and Reflection API. providing both native C++ and managed C++/CLI interfaces for integrating Slang into .NET applications.
 
@@ -7,7 +7,7 @@ A .NET wrapper for the Slang Shader Language compiler, which includes the Compil
 This project consists of three main components:
 - **SlangNative** - Pure native C++ wrapper library
 - **Slang.Net** - Managed C++/CLI wrapper for .NET interoperability
-- **Slang.Net.Test** - C# test project demonstrating usage
+- **Slang.Net** - C# test project demonstrating usage
 
 ## Prerequisites
 
@@ -46,7 +46,7 @@ Slang.Net/
 │           ├── include/    # Slang headers
 │           └── lib/        # Slang libraries
 ├── Slang.Net/             # Managed C++/CLI wrapper
-├── Slang.Net.Test/        # C# test project
+├── Slang.Net/        # C# test project
 └── Shaders/               # Sample shader files
     └── test.slang
 ```
@@ -126,7 +126,7 @@ x64/Debug/
 ├── SlangNative.pdb         # Debug symbols
 ├── Slang.Net.dll          # Managed C++/CLI wrapper
 ├── Slang.Net.pdb          # Debug symbols
-└── Slang.Net.Test.dll     # Test project assembly
+└── Slang.Net.dll     # Test project assembly
 ```
 
 ### Release Configuration
@@ -135,7 +135,7 @@ x64/Release/
 ├── SlangNative.dll         # Native C++ wrapper library (optimized)
 ├── SlangNative.lib         # Import library
 ├── Slang.Net.dll          # Managed C++/CLI wrapper (optimized)
-└── Slang.Net.Test.dll     # Test project assembly (optimized)
+└── Slang.Net.dll     # Test project assembly (optimized)
 ```
 
 ## Testing the Build
@@ -154,10 +154,10 @@ You can also run the test project manually to verify everything works:
 
 ```cmd
 cd x64\Debug
-.\Slang.Net.Test.exe
+.\Slang.Net.exe
 ```
 
-Or run it through Visual Studio by setting `Slang.Net.Test` as the startup project and pressing F5.
+Or run it through Visual Studio by setting `Slang.Net` as the startup project and pressing F5.
 
 ## Troubleshooting
 
@@ -310,7 +310,7 @@ You've already completed this step by adding `slang-2025.10.3-windows-x86_64` to
 2. **Verify the build completed successfully**:
    ```powershell
    # Check that all required files are generated
-   Get-ChildItem "Slang.Net.Test\bin\Debug\net9.0\*.dll"
+   Get-ChildItem "Slang.Net\bin\Debug\net9.0\*.dll"
    
    # Should show files like:
    # - SlangNative.dll
@@ -318,11 +318,10 @@ You've already completed this step by adding `slang-2025.10.3-windows-x86_64` to
    # - slang.dll, gfx.dll, slang-rt.dll (from the new Slang version)
    ```
 
-3. **Test the application runs correctly**:
-   ```powershell
+3. **Test the application runs correctly**:   ```powershell
    # Run the test application
-   Set-Location "Slang.Net.Test\bin\Debug\net9.0"
-   .\Slang.Net.Test.exe
+   Set-Location "Slang.Net\bin\Debug\net9.0"
+   .\Slang.Net.exe
    
    # Should run without errors and show test output
    ```
@@ -395,7 +394,7 @@ Use this checklist to ensure you don't miss any steps:
    - ❌ **Problem**: Slang DLLs not copied to output directory or wrong versions
    - ✅ **Solution**:
      - Check that the post-build copy command was updated in `SlangNative.vcxproj`
-     - Verify all Slang DLLs exist in `Slang.Net.Test\bin\Debug\net9.0\`
+     - Verify all Slang DLLs exist in `Slang.Net\bin\Debug\net9.0\`
      - Ensure DLL versions match the library versions you're linking against
 
 4. **Application crashes on startup**:

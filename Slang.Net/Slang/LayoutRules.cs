@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Slang.Net.Test.Slexx
+namespace Slang.Net.Slexx
 {
     public enum LayoutRules
     {

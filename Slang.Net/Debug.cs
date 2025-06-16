@@ -14,7 +14,7 @@
 //                .AddCompilerOption(CompilerOptionName.Obfuscate, new CompilerOptionValue(CompilerOptionValueKind.Int, 1, 0, null, null))
 //                .AddPreprocessorMacro("LIGHTING_SCALER", "12")
 //                .AddShaderModel(CompileTarget.SLANG_HLSL, "cs_5_0")
-//                .AddSearchPath(@"C:\Users\lexxa\Code\Playground\Slang.Net\Slang.Net.Test\Shaders\");
+//                .AddSearchPath(@"C:\Users\lexxa\Code\Playground\Slang.Net\Slang.Net\Shaders\");
             
 //            Session session = all_hlsl_targets.Create();
 //            Module module = session.LoadModule("ParameterInfo");

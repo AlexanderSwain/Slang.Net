@@ -1,4 +1,4 @@
-﻿using Slang.Net.Test.Slexx;
+﻿using Slang.Net.Slexx;
 
 public unsafe class ShaderReflection : Slang.Cpp.ShaderReflection, IComposedOf<EntryPointReflection>
 {
