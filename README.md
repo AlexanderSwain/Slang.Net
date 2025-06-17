@@ -1,4 +1,4 @@
-# Slang.Net Class Library
+# Slang.Net Early Alpha
 
 A .NET class library wrapper for the Slang Shader Language compiler, providing multi-platform support and comprehensive APIs for shader compilation and reflection.
 
