@@ -17,11 +17,16 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
     <PackageTags>slang;shader;graphics;hlsl;glsl;cross-platform</PackageTags>
-  </PropertyGroup>
-  <ItemGroup>
+  </PropertyGroup>  <ItemGroup>
     <None Remove="Deprecated\Shaders\ParameterInfo.slang" />
     <None Remove="Deprecated\Shaders\Test.slang" />
   </ItemGroup>
+  
+  <!-- Exclude deprecated C# files from compilation -->
+  <ItemGroup>
+    <Compile Remove="Deprecated\**\*.cs" />
+  </ItemGroup>
+  
   <ItemGroup>
     <Content Include="Deprecated\Shaders\ParameterInfo.slang">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -29,7 +34,7 @@
     <Content Include="Deprecated\Shaders\Test.slang">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>  <ItemGroup>
+  </ItemGroup><ItemGroup>
     <ProjectReference Include="..\Slang.Net.CPP\Slang.Net.CPP.vcxproj" />
   </ItemGroup>
 

@@ -37,7 +37,6 @@ Native::ModuleCLI::ModuleCLI(SessionCLI* parent, const char* moduleName, const c
 void Native::ModuleCLI::setEntryPoints()
 {
     unsigned int entryPointCount = m_slangModule->getDefinedEntryPointCount();
-    std::cout << "Entry Point Count: " << entryPointCount << std::endl;
 	m_entryPointCount = entryPointCount;
 
 	m_entryPoints = new slang::IEntryPoint*[m_entryPointCount];

@@ -11,8 +11,39 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="AverageColor.slang">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>  <ItemGroup>
     <ProjectReference Include="..\..\Slang.Net\Slang.Net.csproj" />
     <ProjectReference Include="..\..\Slang.Net.CPP\Slang.Net.CPP.vcxproj" />
   </ItemGroup>
+  <!-- Post-build target to copy all required dependencies -->  <Target Name="CopyDependencies" AfterTargets="Build">
+    <PropertyGroup>
+      <SlangNetOutputDir>..\..\Slang.Net\bin\$(Configuration)\net9.0</SlangNetOutputDir>
+      <SlangNetCppOutputDir>..\..\Slang.Net\bin\$(Configuration)\net9.0</SlangNetCppOutputDir>
+      <SlangNativeOutputDir>..\..\Slang.Net\bin\$(Configuration)\net9.0</SlangNativeOutputDir>
+      <SlangNativeLibDir>..\..\Native\EmbeddedLLVM\slang-2025.10.3-windows-x86_64\bin</SlangNativeLibDir>
+    </PropertyGroup>
+    
+    <Message Text="Copying dependencies to $(OutputPath)" Importance="high" />
+    
+    <!-- Copy Slang.Net.dll -->
+    <Copy SourceFiles="$(SlangNetOutputDir)\Slang.Net.dll" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" ContinueOnError="false" />
+    
+    <!-- Copy Slang.Net.CPP.dll -->
+    <Copy SourceFiles="$(SlangNetCppOutputDir)\Slang.Net.CPP.dll" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" ContinueOnError="false" />
+    
+    <!-- Copy SlangNative.dll -->
+    <Copy SourceFiles="$(SlangNativeOutputDir)\SlangNative.dll" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" ContinueOnError="false" />
+    
+    <!-- Copy native Slang DLLs -->
+    <ItemGroup>
+      <SlangNativeDlls Include="$(SlangNativeLibDir)\*.dll" />
+    </ItemGroup>
+    <Copy SourceFiles="@(SlangNativeDlls)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" ContinueOnError="false" />
+    
+    <Message Text="Successfully copied all dependencies" Importance="high" />
+  </Target>
 
 </Project>

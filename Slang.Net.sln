@@ -13,6 +13,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slang.Net", "Slang.Net\Slang.Net.csproj", "{93ED428D-DF84-2311-DA04-BB0ADB48A9E3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slang.Net.Samples.SimpleCompileTest", "Samples\Slang.Net.Samples.SimpleCompileTest\Slang.Net.Samples.SimpleCompileTest.csproj", "{E9D9177C-1284-451A-9FF9-D8509FED1892}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C3D8F1A9-2E4F-4B5A-9D1E-8F7C9D0E1F3C} = {C3D8F1A9-2E4F-4B5A-9D1E-8F7C9D0E1F3C}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject

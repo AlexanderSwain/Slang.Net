@@ -1,30 +1,43 @@
-# Slang.Net Early Alpha
+# Slang.Net Class Library
 
-A .NET wrapper for the Slang Shader Language compiler, which includes the Compilation API, and Reflection API. providing both native C++ and managed C++/CLI interfaces for integrating Slang into .NET applications.
+A .NET class library wrapper for the Slang Shader Language compiler, providing multi-platform support and comprehensive APIs for shader compilation and reflection.
 
 ## Overview
 
-This project consists of three main components:
-- **SlangNative** - Pure native C++ wrapper library
-- **Slang.Net** - Managed C++/CLI wrapper for .NET interoperability
-- **Slang.Net** - C# test project demonstrating usage
+This project provides a complete .NET class library for integrating Slang shader compilation into .NET applications. The project consists of multiple layers:
+
+- **Slang.Net** - Main C# class library (multi-platform: x86, x64, ARM64)
+- **Slang.Net.CPP** - C++/CLI wrapper providing managed interoperability
+- **SlangNative** - Native C++ wrapper for direct Slang API access
+- **Sample Projects** - Demonstration applications showing library usage
+
+## Features
+
+- ✅ **Class Library**: Ready for integration into other .NET applications
+- ✅ **Multi-Platform**: Supports AnyCPU, x86, x64, and ARM64 architectures
+- ✅ **NuGet Ready**: Package metadata included for distribution
+- ✅ **Automatic Dependencies**: Post-build targets copy all required DLLs
+- ✅ **Comprehensive API**: Full access to Slang compilation and reflection APIs
 
 ## Prerequisites
 
 ### Required Software
-- **Visual Studio 2022** (or Visual Studio 2019 with C++/CLI support)
-- **Windows SDK** (latest version recommended)
-- **.NET Framework 4.7.2 or later** (for the test project)
+- **Visual Studio 2022** (Community, Professional, or Enterprise)
+- **OR Visual Studio Build Tools 2022**
+- **.NET 9.0 SDK**
+- **Windows SDK** (latest version)
 
-### Required Dependencies
-- **Slang SDK** - Embedded LLVM version included in the project
-  - The project uses headers from `Native\EmbeddedLLVM\slang-2025.10.3-windows-x86_64\include\`
-  - Slang libraries are located in `Native\EmbeddedLLVM\slang-2025.10.3-windows-x86_64\lib\`
-  - Slang DLLs are located in `Native\EmbeddedLLVM\slang-2025.10.3-windows-x86_64\bin\`
+### Included Dependencies
+- **Slang SDK** - Embedded LLVM version included
+  - Headers: `Native\EmbeddedLLVM\slang-2025.10.3-windows-x86_64\include\`
+  - Libraries: `Native\EmbeddedLLVM\slang-2025.10.3-windows-x86_64\lib\`
+  - Runtime DLLs: `Native\EmbeddedLLVM\slang-2025.10.3-windows-x86_64\bin\`
 
 ### Platform Support
-- ✅ **x64 (64-bit)**: Fully supported for Debug and Release configurations
-- ❌ **x86 (32-bit)**: Not supported (Slang libraries are x64-only)
+- ✅ **AnyCPU**: Supports any CPU architecture
+- ✅ **x86 (32-bit)**: Full support with proper dependencies
+- ✅ **x64 (64-bit)**: Full support (primary development platform)
+- ✅ **ARM64**: Full support for ARM64 systems
 
 ## Project Structure
 
@@ -64,6 +77,73 @@ Slang.Net/
    - Set the solution platform to **x64** (required)
    - Choose either **Debug** or **Release** configuration
 
+## Quick Start
+
+### Building the Class Library
+
+1. **Open Solution**
+   ```powershell
+   # Navigate to project directory
+   cd "C:\Users\[YourUsername]\Code\Playground\Slang.Net"
+   
+   # Open in Visual Studio
+   devenv Slang.Net.sln
+   ```
+
+2. **Build All Projects**
+   ```powershell
+   # Build Debug configuration
+   msbuild Slang.Net.sln -p:Configuration=Debug -p:Platform="Any CPU"
+   
+   # Build Release configuration  
+   msbuild Slang.Net.sln -p:Configuration=Release -p:Platform="Any CPU"
+   ```
+
+3. **Run Sample Application**
+   ```powershell
+   # Build and run the sample (dependencies copied automatically)
+   msbuild "Samples\Slang.Net.Samples.SimpleCompileTest\Slang.Net.Samples.SimpleCompileTest.csproj" -p:Configuration=Debug
+   
+   # Execute the sample
+   cd "Samples\Slang.Net.Samples.SimpleCompileTest\bin\Debug\net9.0"
+   .\Slang.Net.Samples.SimpleCompileTest.exe
+   ```
+
+### Using in Your Project
+
+1. **Add Project Reference**
+   ```xml
+   <ItemGroup>
+     <ProjectReference Include="path\to\Slang.Net\Slang.Net.csproj" />
+   </ItemGroup>
+   ```
+
+2. **Basic Usage**
+   ```csharp
+   using System;
+   
+   // Create a session builder
+   var sessionBuilder = new SessionBuilder();
+   sessionBuilder.AddSearchPath(@"C:\MyShaders");
+   
+   // Build session and load module
+   var session = sessionBuilder.Build();
+   var module = session.LoadModule("MyShader.slang");
+   ```
+
+## Build Methods
+
+### Method 1: Visual Studio IDE
+
+1. **Open Solution**
+   - Launch Visual Studio 2022
+   - File → Open → Project/Solution
+   - Select `Slang.Net.sln`
+
+2. **Select Configuration**
+   - Choose Debug or Release from the toolbar
+   - Choose platform (Any CPU recommended)
+
 3. **Build**
    - Right-click the solution in Solution Explorer
    - Select "Build Solution" or press `Ctrl+Shift+B`
@@ -79,12 +159,12 @@ Slang.Net/
 
 2. **Build Debug Configuration**
    ```cmd
-   MSBuild.exe "Slang.Net.sln" /p:Configuration=Debug /p:Platform=x64
+   MSBuild.exe "Slang.Net.sln" /p:Configuration=Debug /p:Platform="Any CPU"
    ```
 
 3. **Build Release Configuration**
    ```cmd
-   MSBuild.exe "Slang.Net.sln" /p:Configuration=Release /p:Platform=x64
+   MSBuild.exe "Slang.Net.sln" /p:Configuration=Release /p:Platform="Any CPU"
    ```
 
 ### Method 3: Using PowerShell Build Script (Easiest)
