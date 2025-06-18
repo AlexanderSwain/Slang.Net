@@ -54,6 +54,24 @@
 			"options": {
 				"cwd": "${workspaceFolder}\\Samples\\Slang.Net.Samples.SimpleCompileTest"
 			}
+		},
+		{
+			"label": "Build DirectX Sample Project (MSBuild)",
+			"type": "shell",
+			"command": "& \"${env:ProgramFiles}\\Microsoft Visual Studio\\2022\\Preview\\MSBuild\\Current\\Bin\\MSBuild.exe\"",
+			"args": [
+				"Slang.Net.Samples.DirectXSilkNet.csproj",
+				"/p:Configuration=Debug",
+				"/p:Platform=x64"
+			],
+			"group": "build",
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"isBackground": false,
+			"options": {
+				"cwd": "${workspaceFolder}\\Samples\\Slang.Net.Samples.DirectXSilkNet"
+			}
 		}
 	]
 }
