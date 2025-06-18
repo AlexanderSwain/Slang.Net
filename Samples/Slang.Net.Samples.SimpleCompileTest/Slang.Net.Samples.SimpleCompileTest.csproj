@@ -7,17 +7,13 @@
 		<Nullable>enable</Nullable>
 		<LangVersion>preview</LangVersion>
 		<EnablePreviewFeatures>true</EnablePreviewFeatures>
-		<PlatformTarget>ARM64</PlatformTarget>
+		<PlatformTarget>x64</PlatformTarget>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<Content Include="AverageColor.slang">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
-	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\..\Slang.Net\Slang.Net.csproj" />
-		<ProjectReference Include="..\..\Slang.Net.CPP\Slang.Net.CPP.vcxproj" />
 	</ItemGroup>
 	<!-- Post-build target to copy all required dependencies -->
 	<Target Name="CopyDependencies" AfterTargets="Build">
