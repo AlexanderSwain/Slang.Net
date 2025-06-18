@@ -129,49 +129,49 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>      
-      <AdditionalIncludeDirectories>$(SolutionDir)Native;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\Native;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>    
     </ClCompile>    <Link>
-      <AdditionalDependencies>$(SolutionDir)Slang.Net\bin\$(Configuration)\net9.0\SlangNative.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\SlangNative.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>      <AdditionalIncludeDirectories>$(SolutionDir)Native;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>      <LanguageStandard>stdcpp17</LanguageStandard>    </ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>      <AdditionalIncludeDirectories>$(SolutionDir)src\Native;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>      <LanguageStandard>stdcpp17</LanguageStandard>    </ClCompile>
     <Link>
-      <AdditionalDependencies>$(SolutionDir)Slang.Net\bin\$(Configuration)\net9.0\SlangNative.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\SlangNative.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>      
-      <AdditionalIncludeDirectories>$(SolutionDir)Native;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\Native;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>    
     </ClCompile>    <Link>
-      <AdditionalDependencies>$(SolutionDir)Slang.Net\bin\$(Configuration)\net9.0\SlangNative.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\SlangNative.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>      <AdditionalIncludeDirectories>$(SolutionDir)Native;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>      <LanguageStandard>stdcpp17</LanguageStandard>    </ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>      <AdditionalIncludeDirectories>$(SolutionDir)src\Native;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>      <LanguageStandard>stdcpp17</LanguageStandard>    </ClCompile>
     <Link>
-      <AdditionalDependencies>$(SolutionDir)Slang.Net\bin\$(Configuration)\net9.0\SlangNative.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\SlangNative.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>      
-      <AdditionalIncludeDirectories>$(SolutionDir)Native;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\Native;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>    
     </ClCompile>    <Link>
-      <AdditionalDependencies>$(SolutionDir)Slang.Net\bin\$(Configuration)\net9.0\SlangNative.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\SlangNative.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>      <AdditionalIncludeDirectories>$(SolutionDir)Native;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>      <LanguageStandard>stdcpp17</LanguageStandard>    </ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>      <AdditionalIncludeDirectories>$(SolutionDir)src\Native;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>      <LanguageStandard>stdcpp17</LanguageStandard>    </ClCompile>
     <Link>
-      <AdditionalDependencies>$(SolutionDir)Slang.Net\bin\$(Configuration)\net9.0\SlangNative.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\SlangNative.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -258,10 +258,10 @@
   </ItemGroup>  <ItemDefinitionGroup>
     <PostBuildEvent>
       <Command>echo Copying Slang.Net.CPP outputs for $(Platform)...
-if not exist "$(SolutionDir)Slang.Net\lib\$(Platform)\" mkdir "$(SolutionDir)Slang.Net\lib\$(Platform)\"
-copy "$(TargetPath)" "$(SolutionDir)Slang.Net\lib\$(Platform)\" &gt;nul || echo Warning: Failed to copy $(TargetPath)
-if exist "$(TargetDir)$(TargetName).pdb" copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)Slang.Net\lib\$(Platform)\" &gt;nul || echo Warning: Failed to copy PDB file
-if exist "$(TargetDir)SlangNative.dll" copy "$(TargetDir)SlangNative.dll" "$(SolutionDir)Slang.Net\lib\$(Platform)\" &gt;nul || echo Warning: Failed to copy SlangNative.dll
+if not exist "$(SolutionDir)src\Slang.Net\lib\$(Platform)\" mkdir "$(SolutionDir)src\Slang.Net\lib\$(Platform)\"
+copy "$(TargetPath)" "$(SolutionDir)src\Slang.Net\lib\$(Platform)\" &gt;nul || echo Warning: Failed to copy $(TargetPath)
+if exist "$(TargetDir)$(TargetName).pdb" copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)src\Slang.Net\lib\$(Platform)\" &gt;nul || echo Warning: Failed to copy PDB file
+if exist "$(TargetDir)SlangNative.dll" copy "$(TargetDir)SlangNative.dll" "$(SolutionDir)src\Slang.Net\lib\$(Platform)\" &gt;nul || echo Warning: Failed to copy SlangNative.dll
 echo Slang.Net.CPP copy completed for $(Platform)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>

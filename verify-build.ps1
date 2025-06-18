@@ -64,7 +64,7 @@ Write-Header "Slang.Net Build Verification"
 Write-Info "Configuration: $Configuration"
 Write-Info "Platform: x64"
 
-$outputDir = "Slang.Net\bin\$Configuration\net9.0"
+$outputDir = "src\Slang.Net\bin\$Configuration\net9.0"
 $allFilesPresent = $true
 
 Write-Info ""
@@ -88,8 +88,8 @@ $allFilesPresent = (Test-FileExists "$outputDir\SlangNative.lib" "SlangNative.li
 # Check Slang.Net managed files
 $allFilesPresent = (Test-FileExists "$outputDir\Slang.Net.dll" "Slang.Net.dll (Managed C++/CLI wrapper)") -and $allFilesPresent
 
-# Check test files
-$allFilesPresent = (Test-FileExists "$outputDir\Slang.Net.exe" "Slang.Net.exe (Test executable)") -and $allFilesPresent
+# Check for .NET library (commented out since this is a library project, not executable)
+# $allFilesPresent = (Test-FileExists "$outputDir\Slang.Net.exe" "Slang.Net.exe (Test executable)") -and $allFilesPresent
 
 # Check debug symbols for Debug builds
 if ($Configuration -eq "Debug") {
@@ -106,8 +106,8 @@ Write-Info ""
 Write-Info "Checking Slang dependencies..."
 
 # Check new embedded LLVM directories
-$libDir = "Native\EmbeddedLLVM\slang-2025.10.3-windows-x86_64\lib"
-$binDir = "Native\EmbeddedLLVM\slang-2025.10.3-windows-x86_64\bin"
+$libDir = "src\Native\EmbeddedLLVM\slang-2025.10.3-windows\x64\lib"
+$binDir = "src\Native\EmbeddedLLVM\slang-2025.10.3-windows\x64\bin"
 
 if (Test-Path $libDir) {
     Write-Success "  ✓ Slang lib directory found"
@@ -134,11 +134,10 @@ Write-Info ""
 if ($allFilesPresent) {
     Write-Header "[OK] BUILD VERIFICATION PASSED"
     Write-Success "All required files are present and the build appears successful!"
-    Write-Info ""
-    Write-Info "You can now:"
-    Write-Info "  1. Run the test: cd $outputDir; .\Slang.Net.exe"
-    Write-Info "  2. Use the libraries in your own projects"
-    Write-Info "  3. Debug using Visual Studio"
+    Write-Info ""    Write-Info "You can now:"
+    Write-Info "  1. Use the libraries in your own projects"
+    Write-Info "  2. Debug using Visual Studio"
+    Write-Info "  3. Install the NuGet package for easier distribution"
 } else {
     Write-Header "[FAILED] BUILD VERIFICATION FAILED"
     Write-Error "Some required files are missing. Please rebuild the project."
