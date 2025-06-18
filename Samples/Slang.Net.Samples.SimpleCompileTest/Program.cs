@@ -4,14 +4,13 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        var slangFile = "AverageColor.slang";
         // Create a session with compiler options and search paths
         SessionBuilder builder = new SessionBuilder()
             .AddCompilerOption(CompilerOptionName.WarningsAsErrors, new CompilerOptionValue(CompilerOptionValueKind.Int, 0, 0, "all", null))
             .AddCompilerOption(CompilerOptionName.Obfuscate, new CompilerOptionValue(CompilerOptionValueKind.Int, 1, 0, null, null))
             .AddPreprocessorMacro("LIGHTING_SCALER", "12")
             .AddShaderModel(CompileTarget.SLANG_HLSL, "cs_5_0")
-            .AddSearchPath($@"{AppDomain.CurrentDomain.BaseDirectory}\{slangFile}");
+            .AddSearchPath($@"{AppDomain.CurrentDomain.BaseDirectory}");
 
         // Create the session
         Session session = builder.Create();
