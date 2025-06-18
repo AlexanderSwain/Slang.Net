@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Target to copy native dependencies when building without a specific runtime identifier -->
+  <Target Name="CopySlangNetNativeDependencies" AfterTargets="ResolveReferences" BeforeTargets="Build">
+    
+    <!-- Determine the current runtime identifier based on the platform -->
+    <PropertyGroup>
+      <SlangNetRuntimeIdentifier Condition="'$(RuntimeIdentifier)' == '' AND $([MSBuild]::IsOSPlatform('Windows')) AND ('$(Platform)' == 'x64' OR '$(PlatformTarget)' == 'x64' OR '$(Prefer32Bit)' != 'true')">win-x64</SlangNetRuntimeIdentifier>
+      <SlangNetRuntimeIdentifier Condition="'$(RuntimeIdentifier)' == '' AND $([MSBuild]::IsOSPlatform('Windows')) AND ('$(Platform)' == 'ARM64' OR '$(PlatformTarget)' == 'ARM64')">win-arm64</SlangNetRuntimeIdentifier>
+      <SlangNetRuntimeIdentifier Condition="'$(RuntimeIdentifier)' != ''">$(RuntimeIdentifier)</SlangNetRuntimeIdentifier>
+      
+      <!-- Default to win-x64 if we can't determine the platform -->
+      <SlangNetRuntimeIdentifier Condition="'$(SlangNetRuntimeIdentifier)' == ''">win-x64</SlangNetRuntimeIdentifier>
+      
+      <SlangNetNativeSourceDir>$(MSBuildThisFileDirectory)..\runtimes\$(SlangNetRuntimeIdentifier)\native</SlangNetNativeSourceDir>
+    </PropertyGroup>    <!-- Only copy if we're building without a runtime identifier and the source directory exists -->
+    <ItemGroup Condition="'$(RuntimeIdentifier)' == '' AND Exists('$(SlangNetNativeSourceDir)')">
+      <SlangNetNativeFiles Include="$(SlangNetNativeSourceDir)\*.dll" />
+    </ItemGroup>
+    
+    <!-- Copy the native files to the output directory -->
+    <Copy SourceFiles="@(SlangNetNativeFiles)" 
+          DestinationFolder="$(OutputPath)" 
+          SkipUnchangedFiles="true" 
+          Condition="'@(SlangNetNativeFiles)' != ''" />
+      <Message Text="Slang.Net: Copied native dependencies to $(OutputPath)" 
+             Importance="normal" 
+             Condition="'@(SlangNetNativeFiles)' != ''" />
+             
+  </Target>
+
+</Project>
