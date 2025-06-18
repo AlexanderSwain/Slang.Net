@@ -81,10 +81,9 @@ Slang.Net/
 
 ### Building the Class Library
 
-1. **Open Solution**
-   ```powershell
+1. **Open Solution**   ```powershell
    # Navigate to project directory
-   cd "C:\Users\[YourUsername]\Code\Playground\Slang.Net"
+   cd "path\to\Slang.Net"
    
    # Open in Visual Studio
    devenv Slang.Net.sln
@@ -152,9 +151,8 @@ Slang.Net/
 
 1. **Open Developer Command Prompt**
    - Start "Developer Command Prompt for VS 2022"
-   - Navigate to the project directory:
-   ```cmd
-   cd "C:\Users\[YourUsername]\Code\Playground\Slang.Net"
+   - Navigate to the project directory:   ```cmd
+   cd "path\to\Slang.Net"
    ```
 
 2. **Build Debug Configuration**
@@ -288,9 +286,8 @@ You've already completed this step by adding `slang-2025.10.3-windows-x86_64` to
    - Download the Windows x64 version (e.g., `slang-2025.11.0-windows-x86_64.zip`)
 
 2. **Extract to the EmbeddedLLVM directory**:
-   ```powershell
-   # Navigate to the project directory
-   cd "c:\Users\[YourUsername]\Code\Playground\Slang.Net"
+   ```powershell   # Navigate to the project directory
+   cd "path\to\Slang.Net"
    
    # Extract the downloaded ZIP file to Native\EmbeddedLLVM\
    # This should create a folder like: Native\EmbeddedLLVM\slang-2025.11.0-windows-x86_64\
@@ -407,9 +404,8 @@ You've already completed this step by adding `slang-2025.10.3-windows-x86_64` to
    ```
 
 4. **Run the verification script**:
-   ```powershell
-   # Go back to project root
-   Set-Location "c:\Users\[YourUsername]\Code\Playground\Slang.Net"
+   ```powershell   # Go back to project root
+   Set-Location "path\to\Slang.Net"
    
    # Run verification
    .\verify-build.ps1

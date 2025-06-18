@@ -404,3 +404,55 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+## Project-specific ignores for Slang.Net
+
+# Project-specific temporary files and logs
+build-*.log
+verify-build.log
+test-*.log
+build.log
+build-test.log
+build-test2.log
+build-win32.log
+
+# Local NuGet packages for testing
+local-packages/
+package-contents/
+package-verification-temp/
+
+# Generated test files and temporary code
+TestConsole.cs
+TestProgram.cs
+IEnumerable_Usage_Examples.cs
+test_alias.cpp
+test_includes.cpp
+
+# Temporary documentation and status files
+BUILD_STATUS.md
+PROJECT_CONVERSION_FINAL_STATUS.md
+SOLUTION_FIX_SUMMARY.md
+SOLUTION_RESOLUTION_SUMMARY.md
+TASK_COMPLETION_SUMMARY.md
+IEnumerable_Implementation_Summary.md
+README_ClassLibrary.md
+README_IEnumerable_Enhancement.md
+NATIVE_DEPENDENCY_IMPROVEMENTS.md
+
+# MSBuild object files and artifacts
+PreprocessorMacroDescCLI.obj
+
+# Additional temporary files
+slang.net icon.png
+run-sample.ps1
+ManagedWrapper.vcxproj.user
+cleanup-repo.ps1
+
+# Sample project build outputs (in addition to standard bin/obj patterns)
+Samples/**/bin/
+Samples/**/obj/
+
+# Exception: Keep the embedded Slang SDK binaries (these are required dependencies)
+!Native/EmbeddedLLVM/**/bin/
+!Native/EmbeddedLLVM/**/lib/
+!Native/EmbeddedLLVM/**/include/

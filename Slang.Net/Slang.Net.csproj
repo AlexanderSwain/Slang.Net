@@ -17,34 +17,19 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
     <PackageTags>slang;shader;graphics;hlsl;glsl;cross-platform</PackageTags>
-    <PackageIcon>slang.net icon.png</PackageIcon>
+    <PackageIcon>icon.png</PackageIcon>
     <RepositoryUrl>https://github.com/AlexanderSwain/Slang.Net.git</RepositoryUrl>
   </PropertyGroup>  <ItemGroup>
-    <None Remove="Deprecated\Shaders\ParameterInfo.slang" />
-    <None Remove="Deprecated\Shaders\Test.slang" />
-  </ItemGroup>
+  <Compile Remove="Deprecated\**" />
+  <EmbeddedResource Remove="Deprecated\**" />
+  <None Remove="Deprecated\**" />
+</ItemGroup>
   
-  <!-- Exclude deprecated C# files from compilation -->
-  <ItemGroup>
-    <Compile Remove="Deprecated\**\*.cs" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Content Include="Deprecated\Shaders\ParameterInfo.slang">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Deprecated\Shaders\Test.slang">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup><ItemGroup>
+  <!-- Exclude deprecated C# files from compilation --><ItemGroup>
     <ProjectReference Include="..\Slang.Net.CPP\Slang.Net.CPP.vcxproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md" Pack="true" PackagePath="\" />
-    <None Include="..\slang.net icon.png">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
     <None Include="Slang.Net.targets">
       <Pack>True</Pack>
       <PackagePath>build\Slang.Net.targets</PackagePath>
@@ -52,7 +37,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Extensions\" />
-    <Folder Include="Deprecated\Output Source\" />
     <Folder Include="lib\ARM64\" />
     <Folder Include="lib\x64\" />
   </ItemGroup>
@@ -176,6 +160,12 @@
       <PackagePath>runtimes\win-arm64\native\%(Filename)%(Extension)</PackagePath>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <None Update="icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <!-- Build validation target to ensure required native dependencies are present -->
   <Target Name="ValidateNativeDependencies" BeforeTargets="Build" Condition="'$(Platform)' != 'AnyCPU'">
@@ -201,8 +191,7 @@
     
     <!-- Check each required file -->
     <Message Text="Checking: %(RequiredFiles.Identity)" Importance="low" />
-    <Error Condition="!Exists('%(RequiredFiles.Identity)')" 
-           Text="Required native dependency not found: %(RequiredFiles.Identity). Please ensure the native projects have been built for platform $(Platform)." />
+    <Error Condition="!Exists('%(RequiredFiles.Identity)')" Text="Required native dependency not found: %(RequiredFiles.Identity). Please ensure the native projects have been built for platform $(Platform)." />
   </Target>
 
 </Project>
