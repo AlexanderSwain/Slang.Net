@@ -8,7 +8,7 @@
     <Platforms>AnyCPU;x86;x64;ARM64</Platforms>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Slang.Net</PackageId>
-    <PackageVersion>1.0.0</PackageVersion>
+    <PackageVersion>0.0.1</PackageVersion>
     <Title>Slang.Net - .NET Bindings for the Slang Shader Language</Title>
     <Description>A .NET class library providing bindings for the Slang shader language compiler, supporting cross-platform shader development.</Description>
     <Authors>Slang.Net Contributors</Authors>
@@ -17,6 +17,8 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
     <PackageTags>slang;shader;graphics;hlsl;glsl;cross-platform</PackageTags>
+    <PackageIcon>slang.net icon.png</PackageIcon>
+    <RepositoryUrl>https://github.com/AlexanderSwain/Slang.Net.git</RepositoryUrl>
   </PropertyGroup>  <ItemGroup>
     <None Remove="Deprecated\Shaders\ParameterInfo.slang" />
     <None Remove="Deprecated\Shaders\Test.slang" />
@@ -40,6 +42,10 @@
 
   <ItemGroup>
     <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\slang.net icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
