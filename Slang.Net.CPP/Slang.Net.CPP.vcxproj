@@ -251,12 +251,20 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-  </ItemGroup>
-  <ItemGroup>
+  </ItemGroup>  <ItemGroup>
     <ProjectReference Include="..\Native\SlangNative.vcxproj">
       <Project>{c3d8f1a9-2e4f-4b5a-9d1e-8f7c9d0e1f3c}</Project>
     </ProjectReference>
-  </ItemGroup>
+  </ItemGroup>  <ItemDefinitionGroup>
+    <PostBuildEvent>
+      <Command>echo Copying Slang.Net.CPP outputs for $(Platform)...
+if not exist "$(SolutionDir)Slang.Net\lib\$(Platform)\" mkdir "$(SolutionDir)Slang.Net\lib\$(Platform)\"
+copy "$(TargetPath)" "$(SolutionDir)Slang.Net\lib\$(Platform)\" &gt;nul || echo Warning: Failed to copy $(TargetPath)
+if exist "$(TargetDir)$(TargetName).pdb" copy "$(TargetDir)$(TargetName).pdb" "$(SolutionDir)Slang.Net\lib\$(Platform)\" &gt;nul || echo Warning: Failed to copy PDB file
+if exist "$(TargetDir)SlangNative.dll" copy "$(TargetDir)SlangNative.dll" "$(SolutionDir)Slang.Net\lib\$(Platform)\" &gt;nul || echo Warning: Failed to copy SlangNative.dll
+echo Slang.Net.CPP copy completed for $(Platform)</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

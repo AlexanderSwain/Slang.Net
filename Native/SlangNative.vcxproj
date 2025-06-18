@@ -319,7 +319,11 @@
     <ClCompile Include="SlangNative.cpp" />
   </ItemGroup>  <ItemDefinitionGroup>
     <PostBuildEvent>
-      <Command>copy "$(ProjectDir)EmbeddedLLVM\slang-2025.10.3-windows\$(Platform)\bin\*.dll" "$(TargetDir)"</Command>
+      <Command>echo Copying Slang native dependencies for $(Platform)...
+if not exist "$(SolutionDir)Slang.Net\lib\$(Platform)\" mkdir "$(SolutionDir)Slang.Net\lib\$(Platform)\"
+copy "$(ProjectDir)EmbeddedLLVM\slang-2025.10.3-windows\$(Platform)\bin\*.dll" "$(TargetDir)" &gt;nul 2&gt;&amp;1 || echo Warning: Some Slang DLLs may not have copied to output directory
+copy "$(ProjectDir)EmbeddedLLVM\slang-2025.10.3-windows\$(Platform)\bin\*.dll" "$(SolutionDir)Slang.Net\lib\$(Platform)\" &gt;nul 2&gt;&amp;1 || echo Warning: Some Slang DLLs may not have copied to lib directory
+echo Native dependency copy completed for $(Platform)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
