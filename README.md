@@ -340,16 +340,23 @@ string GetCompiledShader(string shaderPath)
 
 ## Common Scenarios
 
-### Game Engine Integration
+### DirectX Integration with Silk.NET
 
 ```csharp
-public class ShaderCompiler
+using Silk.NET.Direct3D11;
+using Silk.NET.DXGI;
+using Slang;
+using System.Text;
+
+public class DirectXShaderManager
 {
-    private readonly Session _session;
+    private readonly ID3D11Device _device;
+    private readonly Session _slangSession;
     
-    public ShaderCompiler(string shaderDirectory)
+    public DirectXShaderManager(ID3D11Device device, string shaderDirectory)
     {
-        _session = new SessionBuilder()
+        _device = device;
+        _slangSession = new SessionBuilder()
             .AddSearchPath(shaderDirectory)
             .AddShaderModel(CompileTarget.SLANG_HLSL, "vs_5_0")
             .AddShaderModel(CompileTarget.SLANG_HLSL, "ps_5_0")
@@ -357,42 +364,302 @@ public class ShaderCompiler
             .Create();
     }
     
-    public CompiledShader CompileVertexShader(string path) =>
-        CompileShaderForStage(path, "VS");
-        
-    public CompiledShader CompilePixelShader(string path) =>
-        CompileShaderForStage(path, "PS");
-        
-    private CompiledShader CompileShaderForStage(string path, string entryPoint)
+    public unsafe ComPtr<ID3D11VertexShader> CreateVertexShader(string shaderPath, string entryPoint = "VS")
     {
-        var module = _session.LoadModule(path);
+        var hlslCode = CompileShader(shaderPath, entryPoint);
+        var bytecode = CompileHLSL(hlslCode, entryPoint, "vs_5_0");
+        
+        ComPtr<ID3D11VertexShader> shader = default;
+        _device.CreateVertexShader(bytecode, (nuint)bytecode.Length, null, ref shader);
+        return shader;
+    }
+    
+    public unsafe ComPtr<ID3D11PixelShader> CreatePixelShader(string shaderPath, string entryPoint = "PS")
+    {
+        var hlslCode = CompileShader(shaderPath, entryPoint);
+        var bytecode = CompileHLSL(hlslCode, entryPoint, "ps_5_0");
+        
+        ComPtr<ID3D11PixelShader> shader = default;
+        _device.CreatePixelShader(bytecode, (nuint)bytecode.Length, null, ref shader);
+        return shader;
+    }
+    
+    public unsafe ComPtr<ID3D11ComputeShader> CreateComputeShader(string shaderPath, string entryPoint = "CS")
+    {
+        var hlslCode = CompileShader(shaderPath, entryPoint);
+        var bytecode = CompileHLSL(hlslCode, entryPoint, "cs_5_0");
+        
+        ComPtr<ID3D11ComputeShader> shader = default;
+        _device.CreateComputeShader(bytecode, (nuint)bytecode.Length, null, ref shader);
+        return shader;
+    }
+    
+    private string CompileShader(string shaderPath, string entryPoint)
+    {
+        var module = _slangSession.LoadModule(shaderPath);
         var entry = module.Program.EntryPoints.First(e => e.Name == entryPoint);
-        return new CompiledShader(entry.Compile(), entry.Stage);
+        return entry.Compile();
+    }
+    
+    private byte[] CompileHLSL(string hlslCode, string entryPoint, string target)
+    {
+        // Use D3DCompile or similar to compile HLSL to bytecode
+        // This is a simplified example - you'd typically use Silk.NET.Direct3D.Compilers
+        return Encoding.UTF8.GetBytes(hlslCode); // Placeholder
     }
 }
 ```
 
-### Compute Shader Pipeline
+### OpenGL Integration with Silk.NET
 
 ```csharp
-public class ComputePipeline
+using Silk.NET.OpenGL;
+using Slang;
+
+public class OpenGLShaderManager
 {
-    public void ProcessTexture(string shaderPath, string entryPoint)
+    private readonly GL _gl;
+    private readonly Session _slangSession;
+    
+    public OpenGLShaderManager(GL gl, string shaderDirectory)
     {
-        using var session = new SessionBuilder()
-            .AddShaderModel(CompileTarget.SLANG_HLSL, "cs_5_0")
-            .AddPreprocessorMacro("THREAD_GROUP_SIZE", "32")
+        _gl = gl;
+        _slangSession = new SessionBuilder()
+            .AddSearchPath(shaderDirectory)
+            .AddShaderModel(CompileTarget.SLANG_GLSL, "460")
+            .AddPreprocessorMacro("GL_CORE_PROFILE", "1")
+            .Create();
+    }
+    
+    public uint CreateShaderProgram(string vertexShaderPath, string fragmentShaderPath)
+    {
+        var vertexShader = CreateShader(vertexShaderPath, "VS", ShaderType.VertexShader);
+        var fragmentShader = CreateShader(fragmentShaderPath, "FS", ShaderType.FragmentShader);
+        
+        var program = _gl.CreateProgram();
+        _gl.AttachShader(program, vertexShader);
+        _gl.AttachShader(program, fragmentShader);
+        _gl.LinkProgram(program);
+        
+        // Check for linking errors
+        _gl.GetProgram(program, GLEnum.LinkStatus, out var status);
+        if (status == 0)
+        {
+            var log = _gl.GetProgramInfoLog(program);
+            throw new Exception($"Shader program linking failed: {log}");
+        }
+        
+        // Cleanup individual shaders
+        _gl.DeleteShader(vertexShader);
+        _gl.DeleteShader(fragmentShader);
+        
+        return program;
+    }
+    
+    public uint CreateComputeShader(string shaderPath, string entryPoint = "CS")
+    {
+        var computeShader = CreateShader(shaderPath, entryPoint, ShaderType.ComputeShader);
+        
+        var program = _gl.CreateProgram();
+        _gl.AttachShader(program, computeShader);
+        _gl.LinkProgram(program);
+        
+        // Check for linking errors
+        _gl.GetProgram(program, GLEnum.LinkStatus, out var status);
+        if (status == 0)
+        {
+            var log = _gl.GetProgramInfoLog(program);
+            throw new Exception($"Compute shader linking failed: {log}");
+        }
+        
+        _gl.DeleteShader(computeShader);
+        return program;
+    }
+    
+    private uint CreateShader(string shaderPath, string entryPoint, ShaderType type)
+    {
+        var module = _slangSession.LoadModule(shaderPath);
+        var entry = module.Program.EntryPoints.First(e => e.Name == entryPoint);
+        var glslCode = entry.Compile();
+        
+        var shader = _gl.CreateShader(type);
+        _gl.ShaderSource(shader, glslCode);
+        _gl.CompileShader(shader);
+        
+        // Check for compilation errors
+        _gl.GetShader(shader, GLEnum.CompileStatus, out var status);
+        if (status == 0)
+        {
+            var log = _gl.GetShaderInfoLog(shader);
+            throw new Exception($"Shader compilation failed: {log}");
+        }
+        
+        return shader;
+    }
+}
+```
+
+### Vulkan Integration with Silk.NET
+
+```csharp
+using Silk.NET.Vulkan;
+using Slang;
+using System.Text;
+
+public unsafe class VulkanShaderManager
+{
+    private readonly Vk _vk;
+    private readonly Device _device;
+    private readonly Session _slangSession;
+    
+    public VulkanShaderManager(Vk vk, Device device, string shaderDirectory)
+    {
+        _vk = vk;
+        _device = device;
+        _slangSession = new SessionBuilder()
+            .AddSearchPath(shaderDirectory)
+            .AddShaderModel(CompileTarget.SLANG_GLSL, "450")
+            .AddPreprocessorMacro("VULKAN", "1")
+            .Create();
+    }
+    
+    public ShaderModule CreateShaderModule(string shaderPath, string entryPoint)
+    {
+        // Compile Slang to GLSL
+        var module = _slangSession.LoadModule(shaderPath);
+        var entry = module.Program.EntryPoints.First(e => e.Name == entryPoint);
+        var glslCode = entry.Compile();
+        
+        // Compile GLSL to SPIR-V (you'd typically use a tool like glslang or shaderc)
+        var spirvBytecode = CompileGLSLToSpirV(glslCode);
+        
+        fixed (byte* pCode = spirvBytecode)
+        {
+            var createInfo = new ShaderModuleCreateInfo
+            {
+                SType = StructureType.ShaderModuleCreateInfo,
+                CodeSize = (nuint)spirvBytecode.Length,
+                PCode = (uint*)pCode
+            };
+            
+            ShaderModule shaderModule;
+            var result = _vk.CreateShaderModule(_device, &createInfo, null, &shaderModule);
+            
+            if (result != Result.Success)
+                throw new Exception($"Failed to create shader module: {result}");
+                
+            return shaderModule;
+        }
+    }
+    
+    public PipelineShaderStageCreateInfo CreateShaderStage(
+        string shaderPath, 
+        string entryPoint, 
+        ShaderStageFlags stage)
+    {
+        var shaderModule = CreateShaderModule(shaderPath, entryPoint);
+        
+        return new PipelineShaderStageCreateInfo
+        {
+            SType = StructureType.PipelineShaderStageCreateInfo,
+            Stage = stage,
+            Module = shaderModule,
+            PName = (byte*)Marshal.StringToHGlobalAnsi(entryPoint)
+        };
+    }
+    
+    public ComputePipelineCreateInfo CreateComputePipeline(
+        string shaderPath, 
+        string entryPoint = "CS",
+        PipelineLayout layout = default)
+    {
+        var shaderStage = CreateShaderStage(shaderPath, entryPoint, ShaderStageFlags.ComputeBit);
+        
+        return new ComputePipelineCreateInfo
+        {
+            SType = StructureType.ComputePipelineCreateInfo,
+            Stage = shaderStage,
+            Layout = layout
+        };
+    }
+    
+    private byte[] CompileGLSLToSpirV(string glslCode)
+    {
+        // This is a placeholder - you'd typically use:
+        // - Silk.NET.Shaderc for runtime compilation
+        // - Or pre-compile shaders using glslang/shaderc tools
+        // - Or use SPIRV-Cross for more advanced scenarios
+        
+        throw new NotImplementedException("GLSL to SPIR-V compilation requires additional tools like shaderc");
+    }
+}
+```
+
+### Cross-Platform Shader Pipeline
+
+```csharp
+public class CrossPlatformShaderManager
+{
+    private readonly Session _slangSession;
+    
+    public CrossPlatformShaderManager(string shaderDirectory)
+    {
+        _slangSession = new SessionBuilder()
+            .AddSearchPath(shaderDirectory)
+            .Create();
+    }
+    
+    public CompiledShaderResult CompileForTarget(
+        string shaderPath, 
+        string entryPoint,
+        GraphicsAPI targetAPI,
+        string shaderModel = null)
+    {
+        var (target, profile) = targetAPI switch
+        {
+            GraphicsAPI.DirectX11 => (CompileTarget.SLANG_HLSL, shaderModel ?? "vs_5_0"),
+            GraphicsAPI.DirectX12 => (CompileTarget.SLANG_HLSL, shaderModel ?? "vs_6_0"),
+            GraphicsAPI.OpenGL => (CompileTarget.SLANG_GLSL, shaderModel ?? "460"),
+            GraphicsAPI.Vulkan => (CompileTarget.SLANG_GLSL, shaderModel ?? "450"),
+            GraphicsAPI.Metal => (CompileTarget.SLANG_METAL, shaderModel ?? "metal2.0"),
+            _ => throw new ArgumentException($"Unsupported graphics API: {targetAPI}")
+        };
+        
+        // Configure session for target
+        var session = new SessionBuilder()
+            .AddSearchPath(_slangSession.SearchPaths.First())
+            .AddShaderModel(target, profile)
             .Create();
             
         var module = session.LoadModule(shaderPath);
-        var computeShader = module.Program.EntryPoints
-            .First(e => e.Name == entryPoint);
-            
-        var hlslCode = computeShader.Compile();
+        var entry = module.Program.EntryPoints.First(e => e.Name == entryPoint);
+        var compiledCode = entry.Compile();
         
-        // Use compiled HLSL with your graphics API
-        // (DirectX, OpenGL, Vulkan, etc.)
+        return new CompiledShaderResult
+        {
+            SourceCode = compiledCode,
+            Target = target,
+            Profile = profile,
+            EntryPoint = entryPoint
+        };
     }
+}
+
+public enum GraphicsAPI
+{
+    DirectX11,
+    DirectX12,
+    OpenGL,
+    Vulkan,
+    Metal
+}
+
+public record CompiledShaderResult
+{
+    public string SourceCode { get; init; }
+    public CompileTarget Target { get; init; }
+    public string Profile { get; init; }
+    public string EntryPoint { get; init; }
 }
 ```
 
