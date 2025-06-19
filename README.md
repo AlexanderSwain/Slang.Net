@@ -26,7 +26,7 @@ If Slang.Net adds value to your project or organization, please consider sponsor
 
 - 🚀 **Zero Configuration**: Install via NuGet and start using immediately
 - 🎯 **Type-Safe APIs**: Strongly-typed C# interfaces for all Slang functionality
-- 📦 **Self-Contained**: All dependencies included - no external SDK required
+- 📦 **Self-Contained**: Dependencies auto-downloaded during build - no external SDK required
 - 🔄 **Automatic Management**: Native resources handled automatically with proper disposal
 - 🌐 **Multi-Platform**: Works on Windows x64, x86, and ARM64 architectures
 - ⚡ **High Performance**: Direct native interop with minimal overhead

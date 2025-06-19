@@ -452,9 +452,6 @@ cleanup-repo.ps1
 Samples/**/bin/
 Samples/**/obj/
 
-# Exception: Keep the embedded Slang SDK binaries (these are required dependencies)
-!src/Native/EmbeddedLLVM/
-!src/Native/EmbeddedLLVM/**/
-!src/Native/EmbeddedLLVM/**/bin/
-!src/Native/EmbeddedLLVM/**/lib/
-!src/Native/EmbeddedLLVM/**/include/
+# Exclude downloaded Slang SDK files
+src/Native/EmbeddedLLVM/
+src/Native/EmbeddedLLVM/downloads/

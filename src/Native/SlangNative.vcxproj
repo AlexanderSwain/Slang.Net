@@ -316,8 +316,12 @@
     <ClInclude Include="SlangNative.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SlangNative.cpp" />
-  </ItemGroup>  <ItemDefinitionGroup>
+    <ClCompile Include="SlangNative.cpp" />  </ItemGroup>  <ItemDefinitionGroup>
+    <PreBuildEvent>
+      <Command>echo Downloading Slang SDK for $(Platform)...
+powershell -ExecutionPolicy Bypass -File "$(ProjectDir)download-slang-sdk.ps1" -Platform $(Platform)</Command>
+      <Message>Downloading Slang SDK dependencies</Message>
+    </PreBuildEvent>
     <PostBuildEvent>
       <Command>echo Copying Slang native dependencies for $(Platform)...
 if not exist "$(SolutionDir)Slang.Net\lib\$(Platform)\" mkdir "$(SolutionDir)Slang.Net\lib\$(Platform)\"

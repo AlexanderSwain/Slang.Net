@@ -103,20 +103,32 @@ Write-Info ""
 Write-Info "Checking Slang dependencies..."
 
 Write-Info ""
-Write-Info "Checking Slang dependencies..."
+Write-Info "Checking Slang dependencies download capability..."
 
-# Check new embedded LLVM directories
-$libDir = "src\Native\EmbeddedLLVM\slang-2025.10.3-windows\x64\lib"
-$binDir = "src\Native\EmbeddedLLVM\slang-2025.10.3-windows\x64\bin"
+# Get download script path
+$downloadScript = "src\Native\download-slang-sdk.ps1"
 
-if (Test-Path $libDir) {
-    Write-Success "  ✓ Slang lib directory found"
-    $requiredLibs = @("slang.lib", "gfx.lib", "slang-rt.lib")
-    foreach ($lib in $requiredLibs) {
+if (Test-Path $downloadScript) {
+    Write-Success "  ✓ Slang download script found"
+    
+    # Define paths that will be created by the script
+    $libDir = "src\Native\EmbeddedLLVM\slang-2025.10.3-windows\x64\lib"
+    $binDir = "src\Native\EmbeddedLLVM\slang-2025.10.3-windows\x64\bin"
+    
+    # Run the download script if it wasn't already downloaded
+    if (-not (Test-Path $libDir)) {
+        Write-Info "  Running download script to verify functionality..."
+        & powershell -ExecutionPolicy Bypass -File $downloadScript -Platform x64
+    }
+    
+    if (Test-Path $libDir) {
+        Write-Success "  ✓ Slang SDK download successful"
+        $requiredLibs = @("slang.lib", "gfx.lib", "slang-rt.lib")
+        foreach ($lib in $requiredLibs) {
         Test-FileExists "$libDir\$lib" $lib | Out-Null
     }
 } else {
-    Write-Error "  ✗ Slang lib directory not found: $libDir"
+    Write-Error "  ✗ Failed to download Slang SDK - lib directory not found"
     $allFilesPresent = $false
 }
 
@@ -126,7 +138,8 @@ if (Test-Path $binDir) {
     foreach ($dll in $requiredDlls) {
         Test-FileExists "$binDir\$dll" $dll | Out-Null
     }
-} else {    Write-Error "  [MISSING] Slang bin directory not found: $binDir"
+} else {    
+    Write-Error "  ✗ Failed to download Slang SDK - bin directory not found"
     $allFilesPresent = $false
 }
 
