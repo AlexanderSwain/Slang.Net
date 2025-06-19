@@ -25,9 +25,7 @@
   <None Remove="Deprecated\**" />
 </ItemGroup>
   
-  <!-- Exclude deprecated C# files from compilation -->  <ItemGroup>
-    <ProjectReference Include="..\Slang.Net.CPP\Slang.Net.CPP.vcxproj" />
-  </ItemGroup>
+  <!-- Exclude deprecated C# files from compilation -->
   <ItemGroup>
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
     <None Include="Slang.Net.targets">
@@ -159,6 +157,9 @@
       <Pack>true</Pack>
       <PackagePath>runtimes\win-arm64\native\%(Filename)%(Extension)</PackagePath>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Slang.Net.CPP\Slang.Net.CPP.vcxproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="icon.png">
