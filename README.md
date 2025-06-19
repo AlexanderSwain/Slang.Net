@@ -2,6 +2,23 @@
 
 A comprehensive .NET wrapper for the Slang Shader Language compiler, providing seamless integration of shader compilation and reflection capabilities into .NET applications.
 
+> **Note:** Slang.Net is currently in early development. While functional, expect APIs to evolve and additional features to be added in future releases.
+
+> **Disclaimer:** We are the developers and maintainers of this C# wrapper library only, not of the Slang shader language itself. Slang is developed and maintained by NVIDIA. This project provides .NET bindings to make Slang accessible to C# developers.
+
+> **Sponsoring Development:**
+
+Slang.Net is an open-source project maintained by volunteers. Your sponsorships directly support:
+
+- **Cross-platform support** - Help us bring Slang.Net to Linux and macOS
+- **New features** - Fund development of additional functionality
+- **Maintenance** - Support regular updates and bug fixes
+- **Documentation** - Improve guides and examples
+
+If Slang.Net adds value to your project or organization, please consider sponsoring our work. Even small contributions make a significant difference.
+
+[Become a Sponsor](#) <!-- Replace with your sponsorship link -->
+
 ## Why Slang.Net?
 
 **Slang** is a modern shader language developed by NVIDIA that brings advanced features like generics, interfaces, and modules to shader programming. **Slang.Net** makes this powerful technology accessible to .NET developers with:
@@ -705,16 +722,23 @@ public record CompiledShaderResult
 
 ## Contributing
 
-Found a bug or want to contribute? Visit our [GitHub repository](https://github.com/your-repo/Slang.Net) to:
+As an early-stage project, we welcome community contributions to help Slang.Net grow. Found a bug or want to contribute? Visit our [GitHub repository](https://github.com/your-repo/Slang.Net) to:
 
 - Report issues
 - Submit pull requests
 - Request new features
 - View the source code
+- Join discussions about future development
+
+We especially welcome contributions in these areas:
+- Cross-platform support
+- Performance improvements
+- Documentation and examples
+- Test coverage
 
 ## License
 
-This project is licensed under the same liscense as it's parent project: SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception. See the LICENSE file for details.
+This project is licensed under the same liscense as the project it is wrapping: Apache-2.0 WITH LLVM-exception. See the LICENSE file for details.
 
 ## Additional Resources
 
