@@ -6,12 +6,13 @@ A comprehensive .NET wrapper for the Slang Shader Language compiler, providing s
 
 > **Disclaimer:** We are the developers and maintainers of this C# wrapper library only, not of the Slang shader language itself. Slang is developed and maintained by NVIDIA. This project provides .NET bindings to make Slang accessible to C# developers.
 
-> **Sponsoring Development:**
+**Sponsoring Development:**
 
 Slang.Net is an open-source project maintained by volunteers. Your sponsorships directly support:
 
 - **Cross-platform support** - Help us bring Slang.Net to Linux and macOS
 - **New features** - Fund development of additional functionality
+- **Elegant .NET Abstractions** - Experience Slang through idiomatic .NET APIs
 - **Maintenance** - Support regular updates and bug fixes
 - **Documentation** - Improve guides and examples
 
@@ -303,57 +304,6 @@ Represents a shader entry point (vertex, pixel, compute, etc.).
 - `Name` - Entry point function name
 - `Stage` - Shader stage (vertex, pixel, compute, etc.)
 - `Parameters` - Input parameters
-
-## Best Practices
-
-### 1. Use `using` Statements
-Always dispose of sessions to free native resources:
-
-```csharp
-using var session = new SessionBuilder().Create();
-// Session automatically disposed when leaving scope
-```
-
-### 2. Configure Search Paths Early
-Set up search paths before loading modules:
-
-```csharp
-var session = new SessionBuilder()
-    .AddSearchPath(@"C:\CommonShaders")
-    .AddSearchPath(@"C:\ProjectShaders")
-    .Create();
-```
-
-### 3. Handle Compilation Errors
-Always wrap compilation in try-catch blocks:
-
-```csharp
-try
-{
-    var compiledShader = entryPoint.Compile();
-}
-catch (SlangCompilationException ex)
-{
-    // Handle compilation errors
-}
-```
-
-### 4. Cache Compiled Results
-Avoid recompiling the same shaders repeatedly:
-
-```csharp
-private static readonly Dictionary<string, string> _compiledShaders = new();
-
-string GetCompiledShader(string shaderPath)
-{
-    if (_compiledShaders.TryGetValue(shaderPath, out var cached))
-        return cached;
-        
-    var compiled = CompileShader(shaderPath);
-    _compiledShaders[shaderPath] = compiled;
-    return compiled;
-}
-```
 
 ## Common Scenarios
 
