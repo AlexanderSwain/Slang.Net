@@ -54,7 +54,7 @@ namespace Slang::Cpp
         FunctionReflection^ FindFunctionByNameInType(TypeReflection^ type, System::String^ name);
         VariableReflection^ FindVarByNameInType(TypeReflection^ type, System::String^ name);
         
-        TypeLayoutReflection^ ShaderReflection::GetTypeLayout(TypeReflection^ type, int layoutRules);
+        TypeLayoutReflection^ GetTypeLayout(TypeReflection^ type, int layoutRules);
         
         TypeReflection^ SpecializeType(TypeReflection^ type, array<TypeReflection^>^ specializationArgs);
         

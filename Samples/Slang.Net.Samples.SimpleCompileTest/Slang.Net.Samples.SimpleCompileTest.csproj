@@ -11,9 +11,10 @@
 		<Content Include="AverageColor.slang">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
-	</ItemGroup>
+	</ItemGroup>	
 	<ItemGroup>
 		<PackageReference Include="Slang.Net" Version="0.0.4" />
 	</ItemGroup>
 
 </Project>
+

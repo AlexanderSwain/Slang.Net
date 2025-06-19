@@ -1,4 +1,4 @@
-namespace Slang
+namespace Slang::Cpp
 {
     typedef int SlangCompileTargetIntegral;
     public enum class CompileTarget : SlangCompileTargetIntegral

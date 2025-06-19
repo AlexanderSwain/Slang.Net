@@ -1,15 +1,60 @@
 ﻿using Slang.Net.Slexx;
+using System;
+using System.Data;
+using System.Xml.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
-public unsafe class ShaderReflection : Slang.Cpp.ShaderReflection, IComposedOf<EntryPointReflection>
+public unsafe class ShaderReflection : IComposedOf<EntryPointReflection>
 {
+    internal ShaderProgram parent { get; }
+    internal Slang.Cpp.ShaderReflection cppObj { get; }
+
     #region Composed Of
     public uint Count => EntryPointCount;
     EntryPointReflection IComposedOf<EntryPointReflection>.GetByIndex(uint index) => new(GetEntryPointByIndex(index));
     #endregion
 
-    public ShaderReflection(Slang.Cpp.ShaderReflection comObj) : base(comObj.getNative())
+    public ShaderReflection(ShaderProgram shadePprogram)
     {
+        parent = shadePprogram;
+        cppObj = new Slang.Cpp.ShaderReflection(shadePprogram.CppObj.GetReflection().getNative());
     }
 
     public SlangCollection<EntryPointReflection> EntryPoints => field ??= new(this);
+
+    public ShaderProgram Parent => parent;
+
+    public uint ParameterCount => cppObj.ParameterCount;
+    public uint TypeParameterCount => cppObj.TypeParameterCount;
+
+    // Next version will fix all the memory leaks
+    public TypeParameterReflection GetTypeParameterByIndex(uint index) => new(cppObj.GetTypeParameterByIndex(index));
+    public TypeParameterReflection FindTypeParameter(string name) => new(cppObj.FindTypeParameter(name));
+    public VariableLayoutReflection GetParameterByIndex(uint index) => new(cppObj.GetParameterByIndex(index));
+
+    public uint EntryPointCount => cppObj.EntryPointCount;
+    public EntryPointReflection GetEntryPointByIndex(uint index) => new(cppObj.GetEntryPointByIndex(index));
+    public EntryPointReflection FindEntryPointByName(string name) => new(cppObj.FindEntryPointByName(name));
+
+    public uint GlobalConstantBufferBinding => cppObj.GlobalConstantBufferBinding;
+    public ulong GlobalConstantBufferSize => cppObj.GlobalConstantBufferSize;
+
+    public TypeReflection FindTypeByName(string name) => new(cppObj.FindTypeByName(name));
+    public FunctionReflection FindFunctionByName(string name) => new(cppObj.FindFunctionByName(name));
+    public FunctionReflection FindFunctionByNameInType(TypeReflection type, string name) => new(cppObj.FindFunctionByNameInType(type, name));
+    public VariableReflection FindVarByNameInType(TypeReflection type, string name) => new(cppObj.FindVarByNameInType(type, name));
+
+    public TypeLayoutReflection GetTypeLayout(TypeReflection type, int layoutRules) => new(cppObj.GetTypeLayout(type, layoutRules));
+
+    public TypeReflection SpecializeType(TypeReflection type, TypeReflection[] specializationArgs) => new(cppObj.SpecializeType(type, specializationArgs));
+
+    public bool IsSubType(TypeReflection subType, TypeReflection superType) => cppObj.IsSubType(subType, superType);
+
+    public uint HashedStringCount => cppObj.HashedStringCount;
+    public string GetHashedString(uint index) => cppObj.GetHashedString(index);
+
+    public TypeLayoutReflection GlobalParamsTypeLayout => new(cppObj.GlobalParamsTypeLayout);
+    public VariableLayoutReflection GlobalParamsVarLayout => new(cppObj.GlobalParamsVarLayout);
+
+    public System.String ToJson() => cppObj.ToJson();
 }

@@ -19,7 +19,7 @@ namespace Slang::Cpp
     {
     public:
         // Constructor with parameters (example)
-        Session(array<Slang::CompilerOption^>^ options,
+        Session(array<Slang::Cpp::CompilerOption^>^ options,
             array<Slang::Cpp::PreprocessorMacroDesc^>^ macros,
             array<Slang::Cpp::ShaderModel^>^ models,
             array<System::String^>^ searchPaths);

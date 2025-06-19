@@ -3,7 +3,7 @@
 
 using namespace System;
 
-namespace Slang
+namespace Slang::Cpp
 {
     public ref class CompilerOptionValue
     {

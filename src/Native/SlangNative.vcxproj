@@ -93,35 +93,34 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  <PropertyGroup Label="UserMacros" />  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)Slang.Net\bin\$(Configuration)\net9.0\</OutDir>
-    <IntDir>$(SolutionDir)Slang.Net\bin\$(Configuration)\net9.0\</IntDir>
-  </PropertyGroup>  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\</OutDir>
+    <IntDir>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\obj\$(Platform)\</IntDir>
+    <TargetDir>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\</TargetDir>
+  </PropertyGroup><PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)Slang.Net\bin\$(Configuration)\net9.0\</OutDir>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\</OutDir>
+    <IntDir>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\obj\$(Platform)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)Slang.Net\bin\$(Configuration)\net9.0\</OutDir>
-    <IntDir>$(SolutionDir)Slang.Net\bin\$(Configuration)\net9.0\</IntDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <OutDir>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\</OutDir>
+    <IntDir>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\obj\$(Platform)\</IntDir>
+  </PropertyGroup>  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)Slang.Net\bin\$(Configuration)\net9.0\</OutDir>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\</OutDir>
+    <IntDir>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\obj\$(Platform)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)Slang.Net\bin\$(Configuration)\net9.0\</OutDir>
-    <IntDir>$(SolutionDir)Slang.Net\bin\$(Configuration)\net9.0\</IntDir>
+    <OutDir>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\</OutDir>
+    <IntDir>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\obj\$(Platform)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)Slang.Net\bin\$(Configuration)\net9.0\</OutDir>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\</OutDir>
+    <IntDir>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\obj\$(Platform)\</IntDir>
   </PropertyGroup><ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -321,12 +320,11 @@
       <Command>echo Downloading Slang SDK for $(Platform)...
 powershell -ExecutionPolicy Bypass -File "$(ProjectDir)download-slang-sdk.ps1" -Platform $(Platform)</Command>
       <Message>Downloading Slang SDK dependencies</Message>
-    </PreBuildEvent>
-    <PostBuildEvent>
+    </PreBuildEvent>    <PostBuildEvent>
       <Command>echo Copying Slang native dependencies for $(Platform)...
-if not exist "$(SolutionDir)Slang.Net\lib\$(Platform)\" mkdir "$(SolutionDir)Slang.Net\lib\$(Platform)\"
+if not exist "$(SolutionDir)src\Slang.Net\lib\$(Platform)\" mkdir "$(SolutionDir)src\Slang.Net\lib\$(Platform)\"
 copy "$(ProjectDir)EmbeddedLLVM\slang-2025.10.3-windows\$(Platform)\bin\*.dll" "$(TargetDir)" &gt;nul 2&gt;&amp;1 || echo Warning: Some Slang DLLs may not have copied to output directory
-copy "$(ProjectDir)EmbeddedLLVM\slang-2025.10.3-windows\$(Platform)\bin\*.dll" "$(SolutionDir)Slang.Net\lib\$(Platform)\" &gt;nul 2&gt;&amp;1 || echo Warning: Some Slang DLLs may not have copied to lib directory
+copy "$(ProjectDir)EmbeddedLLVM\slang-2025.10.3-windows\$(Platform)\bin\*.dll" "$(SolutionDir)src\Slang.Net\lib\$(Platform)\" &gt;nul 2&gt;&amp;1 || echo Warning: Some Slang DLLs may not have copied to lib directory
 echo Native dependency copy completed for $(Platform)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>

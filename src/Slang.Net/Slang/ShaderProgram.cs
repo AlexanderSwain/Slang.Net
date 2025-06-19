@@ -1,7 +1,4 @@
-﻿using Slang.Net.Slexx;
-using System;
-using System.Xml.Linq;
-
+﻿
 public unsafe class ShaderProgram : 
     IComposedOf<TypeParameterReflection>, 
     IComposedOf<VariableLayoutReflection>,
@@ -11,7 +8,7 @@ public unsafe class ShaderProgram :
 
     internal ShaderProgram(Module module)
     {
-        CppObj = new Slang.Cpp.Program(module);
+        CppObj = new Slang.Cpp.Program(module.cppObj);
     }
 
     #region Composed Of
@@ -35,7 +32,7 @@ public unsafe class ShaderProgram :
     #endregion
 
     #region Reflection API
-    ShaderReflection Reflection => field ??= new(CppObj.GetReflection());
+    ShaderReflection Reflection => field ??= new(this);
 
     public SlangCollection<TypeParameterReflection> TypeParameters => field ??= new(this);
     public SlangCollection<VariableLayoutReflection> Parameters => field ??= new(this);

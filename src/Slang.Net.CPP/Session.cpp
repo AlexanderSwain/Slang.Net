@@ -25,7 +25,7 @@ namespace Slang::Cpp
     }
 
     // Constructor with parameters implementation
-    Slang::Cpp::Session::Session(array<Slang::CompilerOption^>^ options,
+    Slang::Cpp::Session::Session(array<Slang::Cpp::CompilerOption^>^ options,
         array<Slang::Cpp::PreprocessorMacroDesc^>^ macros,
         array<Slang::Cpp::ShaderModel^>^ models,
         array<System::String^>^ searchPaths)

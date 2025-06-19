@@ -4,9 +4,9 @@
 #include <cstdint>
 
 using namespace System;
-using namespace Slang;
+using namespace Slang::Cpp;
 
-namespace Slang
+namespace Slang::Cpp
 {
     public ref class CompilerOption
     {
