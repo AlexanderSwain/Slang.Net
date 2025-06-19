@@ -453,6 +453,8 @@ Samples/**/bin/
 Samples/**/obj/
 
 # Exception: Keep the embedded Slang SDK binaries (these are required dependencies)
-!Native/EmbeddedLLVM/**/bin/
-!Native/EmbeddedLLVM/**/lib/
-!Native/EmbeddedLLVM/**/include/
+!src/Native/EmbeddedLLVM/
+!src/Native/EmbeddedLLVM/**/
+!src/Native/EmbeddedLLVM/**/bin/
+!src/Native/EmbeddedLLVM/**/lib/
+!src/Native/EmbeddedLLVM/**/include/
