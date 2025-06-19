@@ -1,6 +1,28 @@
-﻿public unsafe class Attribute : Slang.Cpp.Attribute
+﻿public unsafe class Attribute
 {
-    public Attribute(Slang.Cpp.Attribute comObj) : base(comObj.getNative()) 
+    internal Slang.Cpp.Attribute cppObj { get; }
+
+    public Attribute(Slang.Cpp.Attribute comObj)
     {
+        cppObj = comObj;
+    }
+    
+    public string Name => cppObj.Name;
+    
+    public uint ArgumentCount => cppObj.ArgumentCount;
+    
+    public string GetArgumentValueString(uint index)
+    {
+        return cppObj.GetArgumentValueString(index);
+    }
+    
+    public int? GetArgumentValueInt(uint index)
+    {
+        return cppObj.GetArgumentValueInt(index);
+    }
+    
+    public float? GetArgumentValueFloat(uint index)
+    {
+        return cppObj.GetArgumentValueFloat(index);
     }
 }

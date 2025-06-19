@@ -1,8 +1,4 @@
-﻿using Slang.Net.Slexx;
-using System;
-using System.Data;
-using System.Xml.Linq;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using System.Data;
 
 public unsafe class ShaderReflection : IComposedOf<EntryPointReflection>
 {
@@ -11,7 +7,7 @@ public unsafe class ShaderReflection : IComposedOf<EntryPointReflection>
 
     #region Composed Of
     public uint Count => EntryPointCount;
-    EntryPointReflection IComposedOf<EntryPointReflection>.GetByIndex(uint index) => new(GetEntryPointByIndex(index));
+    EntryPointReflection IComposedOf<EntryPointReflection>.GetByIndex(uint index) => GetEntryPointByIndex(index);
     #endregion
 
     public ShaderReflection(ShaderProgram shadePprogram)
@@ -41,14 +37,14 @@ public unsafe class ShaderReflection : IComposedOf<EntryPointReflection>
 
     public TypeReflection FindTypeByName(string name) => new(cppObj.FindTypeByName(name));
     public FunctionReflection FindFunctionByName(string name) => new(cppObj.FindFunctionByName(name));
-    public FunctionReflection FindFunctionByNameInType(TypeReflection type, string name) => new(cppObj.FindFunctionByNameInType(type, name));
-    public VariableReflection FindVarByNameInType(TypeReflection type, string name) => new(cppObj.FindVarByNameInType(type, name));
+    public FunctionReflection FindFunctionByNameInType(TypeReflection type, string name) => new(cppObj.FindFunctionByNameInType(type.cppObj, name));
+    public VariableReflection FindVarByNameInType(TypeReflection type, string name) => new(cppObj.FindVarByNameInType(type.cppObj, name));
 
-    public TypeLayoutReflection GetTypeLayout(TypeReflection type, int layoutRules) => new(cppObj.GetTypeLayout(type, layoutRules));
+    public TypeLayoutReflection GetTypeLayout(TypeReflection type, int layoutRules) => new(cppObj.GetTypeLayout(type.cppObj, layoutRules));
 
-    public TypeReflection SpecializeType(TypeReflection type, TypeReflection[] specializationArgs) => new(cppObj.SpecializeType(type, specializationArgs));
+    public TypeReflection SpecializeType(TypeReflection type, TypeReflection[] specializationArgs) => new(cppObj.SpecializeType(type.cppObj, specializationArgs.Select(x => x.cppObj).ToArray()));
 
-    public bool IsSubType(TypeReflection subType, TypeReflection superType) => cppObj.IsSubType(subType, superType);
+    public bool IsSubType(TypeReflection subType, TypeReflection superType) => cppObj.IsSubType(subType.cppObj, superType.cppObj);
 
     public uint HashedStringCount => cppObj.HashedStringCount;
     public string GetHashedString(uint index) => cppObj.GetHashedString(index);

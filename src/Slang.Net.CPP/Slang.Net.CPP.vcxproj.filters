@@ -55,7 +55,6 @@
     <ClInclude Include="VariableReflection.h" />
     <ClInclude Include="TypeDef.h" />
     <ClInclude Include="StringUtils.h" />
-    <ClInclude Include="SlangNativePInvoke.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Enums">

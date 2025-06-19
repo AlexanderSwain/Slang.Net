@@ -1,6 +1,4 @@
-﻿// Using global using directive
-
-public class CompilerOption
+﻿public class CompilerOption
 {
     public CompilerOptionName Name { get; }
     public CompilerOptionValue Value { get; }
