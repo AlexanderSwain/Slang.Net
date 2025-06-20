@@ -15,24 +15,27 @@ if ($validPlatforms -notcontains $Platform) {
     exit 1
 }
 
-Write-Host "===== Building Slang.Net.CPP Managed Library =====" -ForegroundColor DarkGray
+Write-Host "===== Building Slang.Net Nuget Package =====" -ForegroundColor DarkGray
 
 # Directories
-$nativeOutputDir = "$PSScriptRoot\..\Native\bin\$Configuration\$Platform"
-$slangNetCppOutputDir = "$PSScriptRoot\bin\$Configuration\net9.0\$Platform"
-if (-not (Test-Path -Path $slangNetCppOutputDir)) {
+$nativeOutputDir = "$PSScriptRoot\..\Slang.Net.CPP\bin\$Configuration\net9.0\$Platform"
+$slangNetOutputDir = "$PSScriptRoot\bin\$Configuration\net9.0\$Platform"
+if (-not (Test-Path -Path $slangNetOutputDir)) {
     # Create directory and all parent directories if they don't exist
-    New-Item -ItemType Directory -Path $slangNetCppOutputDir -Force | Out-Null
-    Write-Host "Created directory: $slangNetCppOutputDir" -ForegroundColor Yellow
+    New-Item -ItemType Directory -Path $slangNetOutputDir -Force | Out-Null
+    Write-Host "Created directory: $slangNetOutputDir" -ForegroundColor Yellow
 }
 
-# STEP 1: Copy native files to Slang.Net.CPP output directory
+# STEP 1: Copy native files to Slang.Net output directory
 Write-Host "Build Slang.Net.CPP(STEP 1): Copy native files..." -ForegroundColor Green
 
 # Check alternative locations
 $nativeOutputFiles = @(
     "$nativeOutputDir\gfx.dll",
     "$nativeOutputDir\slang.dll",
+    "$nativeOutputDir\Slang.Net.CPP.dll",
+    "$nativeOutputDir\Slang.Net.CPP.dll.metagen",
+    "$nativeOutputDir\Slang.Net.CPP.pdb",
     "$nativeOutputDir\slang-glslang.dll",
     "$nativeOutputDir\slang-glsl-module.dll",
     "$nativeOutputDir\slang-llvm.dll",
@@ -43,8 +46,8 @@ $nativeOutputFiles = @(
 
 foreach ($file in $nativeOutputFiles) {
     if (Test-Path $file) {
-        Copy-Item $file $slangNetCppOutputDir -Force
-        Write-Host "Copied: $file to $slangNetCppOutputDir" -ForegroundColor Black
+        Copy-Item $file $slangNetOutputDir -Force
+        Write-Host "Copied: $file to $slangNetOutputDir" -ForegroundColor Black
     }
     else {
         Write-Host "Missing: $file" -ForegroundColor Red
@@ -53,8 +56,8 @@ foreach ($file in $nativeOutputFiles) {
     }
 }
 
-# STEP 2: Build Slang.Net.CPP project for the specified platform
-Write-Host "Build Slang.Net.CPP(STEP 2): MSBuild Slang.Net.CPP project $Configuration|$Platform..." -ForegroundColor Gray
+# STEP 2: Build Slang.Net project for the specified platform
+Write-Host "Build Slang.Net(STEP 2): MSBuild Slang.Net.CPP project $Configuration|$Platform..." -ForegroundColor Gray
 
 # MSBuild paths
 $msbuildPaths = @(
@@ -80,19 +83,18 @@ if (-not $msbuildPath) {
     exit 1
 }
 
-# STEP 2: Build SlangNative project for the specified platform
+# STEP 2: Build Slang.Net project for the specified platform
 Write-Host "Build Slang.Net.CPP(STEP 2): MSBuild Slang.Net.CPP project $Configuration|$Platform..." -ForegroundColor Gray
-if (-not $FromVisualStudio) {
-    
-    Write-Host "MSBuild SlangNative project $Configuration|$Platform..." -ForegroundColor Green
 
-    # Map "x86" platform to "Win32" if needed (MSBuild uses "Win32" for 32-bit builds)
+if (-not $FromVisualStudio) {
+    # STEP 2: Build SlangNative project for the specified platform
+    Write-Host "MSBuild Slang.Net project $Configuration|$Platform..." -ForegroundColor Green    # Map "x86" platform to "Win32" if needed (MSBuild uses "Win32" for 32-bit builds)
     $msbuildPlatform = if ($Platform -eq "x86") { "Win32" } else { $Platform }
     # Skip PreBuildEvent and PostBuildEvent targets
-    & $msbuildPath "$PSScriptRoot\Slang.Net.CPP.vcxproj" /p:Configuration=$Configuration /p:Platform=$msbuildPlatform /t:Rebuild /p:PreBuildEventUseInBuild=false /p:PostBuildEventUseInBuild=false
+    & $msbuildPath "$PSScriptRoot\Slang.Net.csproj" /p:Configuration=$Configuration /p:Platform=$msbuildPlatform /t:Rebuild /p:PreBuildEventUseInBuild=false /p:PostBuildEventUseInBuild=false
 
     if (-not $?) {
-        Write-Host "SlangNative build failed!" -ForegroundColor Red
+        Write-Host "Slang.Net build failed!" -ForegroundColor Red
         exit 1
     }
 }
@@ -100,25 +102,24 @@ else {
     Write-Host "Visual Studio already ran MSBUILD.exe. Skipping..." -ForegroundColor Green
 }
 
-# Ensure Slang.Net.CPP.lib exists
-$slangNetCppOutputDir = "$PSScriptRoot\bin\$Configuration\net9.0\$Platform"
-if (-not (Test-Path $slangNetCppOutputDir)) {
-    Write-Host "Build SlangNative failed due to missing output directory after msbuild call: $nativeOutputDir" -ForegroundColor Red
+# Ensure output directory exists and contains needed files
+if (-not (Test-Path $slangNetOutputDir)) {
+    Write-Host "Build failed due to missing output directory after msbuild call: $slangNetOutputDir" -ForegroundColor Red
     exit 1
 }
 
-# Check alternative locations
-$slangNetCppOutputFiles = @(
-    "$slangNetCppOutputDir\Slang.Net.CPP.dll"
-)
+# Check for essential files
+#$outputFiles = @(
+#    "$slangNetOutputDir\Slang.Net.CPP.dll"
+#)
     
-foreach ($file in $slangNetCppOutputFiles) {
-    if (Test-Path $file) {
-        Write-Host "Verified: $file" -ForegroundColor Cyan
-    }
-    else {
-        Write-Host "Missing: $file" -ForegroundColor Red
-        Write-Host "SlangNative build failed due to missing output file!" -ForegroundColor Red
-        exit 1
-    }
-}
+#foreach ($file in $outputFiles) {
+#    if (Test-Path $file) {
+#        Write-Host "Verified: $file" -ForegroundColor Cyan
+#    }
+#    else {
+#        Write-Host "Missing: $file" -ForegroundColor Red
+#        Write-Host "Build failed due to missing output file!" -ForegroundColor Red
+#        exit 1
+#    }
+#}

@@ -11,14 +11,15 @@
     <PackageVersion>0.0.4</PackageVersion>
     <Title>Slang.Net - .NET Bindings for the Slang Shader Language</Title>
     <Description>A .NET class library providing bindings for the Slang shader language compiler, supporting cross-platform shader development.</Description>
-    <Authors>Slang.Net Contributors</Authors>
-    <Copyright>Copyright (c) 2025 Slang.Net Contributors</Copyright>
+    <Authors>Aqqorn</Authors>
+    <Copyright>Copyright (c) 2025 Aqqorn</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
     <PackageTags>slang;shader;graphics;hlsl;glsl;cross-platform</PackageTags>
     <PackageIcon>icon.png</PackageIcon>
     <RepositoryUrl>https://github.com/AlexanderSwain/Slang.Net.git</RepositoryUrl>
+    <PackageOutputPath>$(SolutionDir)Build\</PackageOutputPath>
   </PropertyGroup>  <ItemGroup>
   <Compile Remove="Deprecated\**" />
   <EmbeddedResource Remove="Deprecated\**" />
@@ -167,7 +168,6 @@
       <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
-
   <!-- Build validation target to ensure required native dependencies are present -->
   <Target Name="ValidateNativeDependencies" BeforeTargets="Build" Condition="'$(Platform)' != 'AnyCPU'">
     <PropertyGroup>
@@ -193,6 +193,16 @@
     <!-- Check each required file -->
     <Message Text="Checking: %(RequiredFiles.Identity)" Importance="low" />
     <Error Condition="!Exists('%(RequiredFiles.Identity)')" Text="Required native dependency not found: %(RequiredFiles.Identity). Please ensure the native projects have been built for platform $(Platform)." />
+  </Target>
+  
+  <!-- Pre-build event to prepare the environment -->
+  <Target Name="PreBuildEvent" BeforeTargets="PreBuildEvent">
+    <Exec Command="powershell.exe -ExecutionPolicy Bypass -File &quot;$(ProjectDir)pre-build.ps1&quot; -Configuration $(Configuration) -Platform $(Platform)" />
+  </Target>
+  
+  <!-- Post-build event to finalize the build -->
+  <Target Name="PostBuildEvent" AfterTargets="PostBuildEvent">
+    <Exec Command="powershell.exe -ExecutionPolicy Bypass -File &quot;$(ProjectDir)post-build.ps1&quot; -Configuration $(Configuration) -Platform $(Platform)" />
   </Target>
 
 </Project>
