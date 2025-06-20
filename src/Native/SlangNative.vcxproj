@@ -97,7 +97,6 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  
   <!-- Define custom include directories property to avoid expansion issues -->
   <PropertyGroup>
     <SlangSDKIncludeDir>$(ProjectDir)EmbeddedLLVM\slang-2025.10.3-windows\$(Platform)\include</SlangSDKIncludeDir>
