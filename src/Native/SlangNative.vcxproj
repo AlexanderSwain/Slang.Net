@@ -96,7 +96,14 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <PropertyGroup Label="UserMacros" />  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  <PropertyGroup Label="UserMacros" />
+  
+  <!-- Define custom include directories property to avoid expansion issues -->
+  <PropertyGroup>
+    <SlangSDKIncludeDir>$(ProjectDir)EmbeddedLLVM\slang-2025.10.3-windows\$(Platform)\include</SlangSDKIncludeDir>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>.\bin\$(Configuration)\$(Platform)\</OutDir>
     <IntDir>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\obj\$(Platform)\</IntDir>
@@ -124,14 +131,13 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\</OutDir>
     <IntDir>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\obj\$(Platform)\</IntDir>
-  </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  </PropertyGroup>  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;SLANGNATIVE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)EmbeddedLLVM\slang-2025.10.3-windows\$(Platform)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SlangSDKIncludeDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -140,8 +146,7 @@
       <AdditionalLibraryDirectories>$(ProjectDir)EmbeddedLLVM\slang-2025.10.3-windows\$(Platform)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>slang.lib;gfx.lib;slang-rt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+  </ItemDefinitionGroup>  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -149,7 +154,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;SLANGNATIVE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)EmbeddedLLVM\slang-2025.10.3-windows\$(Platform)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SlangSDKIncludeDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -160,14 +165,13 @@
       <AdditionalLibraryDirectories>$(ProjectDir)EmbeddedLLVM\slang-2025.10.3-windows\$(Platform)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>slang.lib;gfx.lib;slang-rt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+  </ItemDefinitionGroup>  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;SLANGNATIVE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)EmbeddedLLVM\slang-2025.10.3-windows\$(Platform)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SlangSDKIncludeDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -176,8 +180,7 @@
       <AdditionalLibraryDirectories>$(ProjectDir)EmbeddedLLVM\slang-2025.10.3-windows\$(Platform)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>slang.lib;gfx.lib;slang-rt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+  </ItemDefinitionGroup>  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -185,7 +188,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;SLANGNATIVE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)EmbeddedLLVM\slang-2025.10.3-windows\$(Platform)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SlangSDKIncludeDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -196,14 +199,13 @@
       <AdditionalLibraryDirectories>$(ProjectDir)EmbeddedLLVM\slang-2025.10.3-windows\$(Platform)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>slang.lib;gfx.lib;slang-rt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+  </ItemDefinitionGroup>  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;SLANGNATIVE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)EmbeddedLLVM\slang-2025.10.3-windows\$(Platform)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SlangSDKIncludeDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -212,8 +214,7 @@
       <AdditionalLibraryDirectories>$(ProjectDir)EmbeddedLLVM\slang-2025.10.3-windows\$(Platform)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>slang.lib;gfx.lib;slang-rt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+  </ItemDefinitionGroup>  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -221,7 +222,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;SLANGNATIVE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)EmbeddedLLVM\slang-2025.10.3-windows\$(Platform)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SlangSDKIncludeDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -336,23 +337,36 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SlangNative.cpp" />  </ItemGroup>  
-
-  <!-- Override default targets to use our custom build script for all platforms -->
-  <Target Name="Build" DependsOnTargets="CustomBuild" />
-  <Target Name="Rebuild" DependsOnTargets="CustomClean;CustomBuild" />
-  <Target Name="Clean" DependsOnTargets="CustomClean" />
-  
-  <!-- Custom targets for our build process -->
-  <Target Name="CustomBuild">
-    <Message Importance="high" Text="Building SlangNative with custom build script for all platforms..." />
-    <Exec Command="powershell -ExecutionPolicy Bypass -File '$(SolutionDir)src\all-platforms.ps1' -Script '$(ProjectDir)build.ps1' -FromVisualStudio" />
-  </Target>
-  
-  <Target Name="CustomClean">
-    <Message Importance="high" Text="Cleaning SlangNative with custom clean script for all platforms..." />
-    <Exec Command="powershell -ExecutionPolicy Bypass -File '$(SolutionDir)src\all-platforms.ps1' -Script '$(ProjectDir)cleaner.ps1' -FromVisualStudio" />
-  </Target>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  
+  <!-- Override default targets to use our custom build script for all platforms -->
+  <!-- These target definitions MUST come after the Microsoft.Cpp.targets import -->
+  <Target Name="Build" DependsOnTargets="$(BuildDependsOn)" Returns="$(TargetPath)" />
+  <Target Name="Rebuild" DependsOnTargets="Clean;Build" />  <Target Name="Clean">
+    <Message Importance="high" Text="Cleaning SlangNative with custom clean script for all platforms... (Configuration: $(Configuration), Platform: $(Platform))" />
+    <Exec Command="powershell -ExecutionPolicy Bypass -File $(ProjectDir)..\all-platforms.ps1 -Script $(ProjectDir)cleaner.ps1 -FromVisualStudio" />
+  </Target>
+    
+  <!-- Add this target to the BuildDependsOn property to make it part of the build process -->
+  <PropertyGroup>
+    <BuildDependsOn>
+      CustomBuild;
+      $(BuildDependsOn)
+    </BuildDependsOn>
+  </PropertyGroup>
+  <!-- Custom build target -->  <Target Name="CustomBuild">
+    <Message Importance="high" Text="Building SlangNative with custom build script for all platforms... (Configuration: $(Configuration), Platform: $(Platform))" />
+    <Exec Command="powershell -ExecutionPolicy Bypass -File $(ProjectDir)..\all-platforms.ps1 -Script $(ProjectDir)build.ps1 -FromVisualStudio" />
+  </Target>
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+
+  <!-- Add diagnostic target to debug MSBuild variables -->
+  <Target Name="DebugMSBuildVars" BeforeTargets="Build">
+    <Message Importance="high" Text="=== MSBuild Variable Debug Information ===" />
+    <Message Importance="high" Text="SolutionDir = $(SolutionDir)" />
+    <Message Importance="high" Text="ProjectDir = $(ProjectDir)" />
+    <Message Importance="high" Text="MSBuildProjectDirectory = $(MSBuildProjectDirectory)" />
+    <Message Importance="high" Text="===================================" />
+  </Target>
 </Project>

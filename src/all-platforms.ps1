@@ -30,7 +30,11 @@ if (-not (Test-Path $Script)) {
     exit 1
 }
 
-foreach ($Platform in $platforms) {    foreach ($Configuration in $configuration) {
+foreach ($Platform in $platforms) {
+    foreach ($Configuration in $configuration) {
+        # Add more debugging information
+        Write-Host "DEBUG: About to process $Configuration | $Platform" -ForegroundColor Yellow
+        
         Write-Host "===== $scriptType SlangNative Library: $Configuration | $Platform =====" -ForegroundColor DarkGray
         
         try {
