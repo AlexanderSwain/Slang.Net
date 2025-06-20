@@ -15,6 +15,11 @@ if ($validPlatforms -notcontains $Platform) {
     exit 1
 }
 
+# Special validation for ARM64 Debug case
+if ($Platform -eq "ARM64" -and $Configuration -eq "Debug") {
+    Write-Host "IMPORTANT: Processing the special case of ARM64 Debug configuration" -ForegroundColor Magenta
+}
+
 Write-Host "===== Building SlangNative Library =====" -ForegroundColor DarkGray
 
 # Directories

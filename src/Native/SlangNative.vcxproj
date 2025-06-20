@@ -353,10 +353,15 @@
       CustomBuild;
       $(BuildDependsOn)
     </BuildDependsOn>
-  </PropertyGroup>
-  <!-- Custom build target -->  <Target Name="CustomBuild">
+  </PropertyGroup>  <!-- Custom build target -->  <Target Name="CustomBuild">
     <Message Importance="high" Text="Building SlangNative with custom build script for all platforms... (Configuration: $(Configuration), Platform: $(Platform))" />
     <Exec Command="powershell -ExecutionPolicy Bypass -File $(ProjectDir)..\all-platforms.ps1 -Script $(ProjectDir)build.ps1 -FromVisualStudio" />
+  </Target>
+
+  <!-- Add a special target specifically for Debug ARM64 to ensure it gets built -->
+  <Target Name="BuildDebugARM64" AfterTargets="Build" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <Message Importance="high" Text="Special build step for Debug ARM64" />
+    <Exec Command="powershell -ExecutionPolicy Bypass -File $(ProjectDir)build.ps1 -Configuration Debug -Platform ARM64 -FromVisualStudio" />
   </Target>
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
