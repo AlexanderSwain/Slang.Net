@@ -335,22 +335,23 @@
     <ClInclude Include="SlangNative.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SlangNative.cpp" />
-  </ItemGroup>  
-<ItemDefinitionGroup>
-    <PreBuildEvent>
-      <Command>echo Running multi-platform build process using all-platforms.ps1... 
-        powershell -ExecutionPolicy Bypass -File "$(SolutionDir)src\all-platforms.ps1" -Script "$(ProjectDir)pre-build.ps1" -FromVisualStudio
-      </Command>
-      <Message>Building all platforms using custom build script</Message>
-    </PreBuildEvent>
-    <PostBuildEvent>
-      <Command>echo Running multi-platform build process using all-platforms.ps1... 
-        powershell -ExecutionPolicy Bypass -File "$(SolutionDir)src\all-platforms.ps1" -Script "$(ProjectDir)post-build.ps1" -FromVisualStudio
-      </Command>
-      <Message>Post-processing for all platforms using custom build script</Message>
-    </PostBuildEvent>
-  </ItemDefinitionGroup>
+    <ClCompile Include="SlangNative.cpp" />  </ItemGroup>  
+
+  <!-- Override default targets to use our custom build script for all platforms -->
+  <Target Name="Build" DependsOnTargets="CustomBuild" />
+  <Target Name="Rebuild" DependsOnTargets="CustomClean;CustomBuild" />
+  <Target Name="Clean" DependsOnTargets="CustomClean" />
+  
+  <!-- Custom targets for our build process -->
+  <Target Name="CustomBuild">
+    <Message Importance="high" Text="Building SlangNative with custom build script for all platforms..." />
+    <Exec Command="powershell -ExecutionPolicy Bypass -File '$(SolutionDir)src\all-platforms.ps1' -Script '$(ProjectDir)build.ps1' -FromVisualStudio" />
+  </Target>
+  
+  <Target Name="CustomClean">
+    <Message Importance="high" Text="Cleaning SlangNative with custom clean script for all platforms..." />
+    <Exec Command="powershell -ExecutionPolicy Bypass -File '$(SolutionDir)src\all-platforms.ps1' -Script '$(ProjectDir)cleaner.ps1' -FromVisualStudio" />
+  </Target>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
