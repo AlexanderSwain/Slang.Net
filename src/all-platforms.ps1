@@ -16,6 +16,9 @@ $configuration = @(
     "Release"
 )
 
+# Flag to track if we've processed Debug | ARM64
+$debugARM64Processed = $false
+
 $scriptName = Split-Path -Leaf $Script
 $scriptType = if ($scriptName -eq "pre-build.ps1") { "Pre-Build" } else { "Post-Build" }
 $errorCount = 0
@@ -30,8 +33,19 @@ if (-not (Test-Path $Script)) {
     exit 1
 }
 
+# Process Debug | ARM64 first to ensure it's handled
+Write-Host "===== EXPLICITLY PROCESSING Debug | ARM64 =====" -ForegroundColor Magenta
+& $Script -Configuration "Debug" -Platform "ARM64" -FromVisualStudio:$FromVisualStudio
+$debugARM64Processed = $true
+
 foreach ($Platform in $platforms) {
     foreach ($Configuration in $configuration) {
+        # Skip Debug | ARM64 since we already processed it explicitly
+        if ($Platform -eq "ARM64" -and $Configuration -eq "Debug") {
+            Write-Host "DEBUG: Skipping Debug | ARM64 - already processed explicitly" -ForegroundColor Yellow
+            continue
+        }
+        
         # Add more debugging information
         Write-Host "DEBUG: About to process $Configuration | $Platform" -ForegroundColor Yellow
         
