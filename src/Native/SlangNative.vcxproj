@@ -339,16 +339,16 @@
   </ItemGroup>  
 <ItemDefinitionGroup>
     <PreBuildEvent>
-      <Command>echo Running custom build process using pre-build.ps1... 
-        powershell -ExecutionPolicy Bypass -File "$(SolutionDir)all-platforms.ps1" -Script "$(ProjectDir)\pre-build.ps1" -FromVisualStudio
+      <Command>echo Running multi-platform build process using all-platforms.ps1... 
+        powershell -ExecutionPolicy Bypass -File "$(SolutionDir)src\all-platforms.ps1" -Script "$(ProjectDir)pre-build.ps1" -FromVisualStudio
       </Command>
-      <Message>Building using custom build script</Message>
+      <Message>Building all platforms using custom build script</Message>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>echo Running custom build process using post-build.ps1... 
-        powershell -ExecutionPolicy Bypass -File "$(SolutionDir)all-platforms.ps1" -Script "$(ProjectDir)\post-build.ps1" -FromVisualStudio
+      <Command>echo Running multi-platform build process using all-platforms.ps1... 
+        powershell -ExecutionPolicy Bypass -File "$(SolutionDir)src\all-platforms.ps1" -Script "$(ProjectDir)post-build.ps1" -FromVisualStudio
       </Command>
-      <Message>Building using custom build script</Message>
+      <Message>Post-processing for all platforms using custom build script</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
