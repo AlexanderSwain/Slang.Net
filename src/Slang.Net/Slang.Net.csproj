@@ -5,7 +5,7 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <LangVersion>preview</LangVersion>
     <EnablePreviewFeatures>true</EnablePreviewFeatures>
-    <Platforms>AnyCPU;x86;x64;ARM64</Platforms>
+    <Platforms>All</Platforms>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Slang.Net</PackageId>
     <PackageVersion>0.0.4</PackageVersion>
@@ -19,12 +19,18 @@
     <PackageTags>slang;shader;graphics;hlsl;glsl;cross-platform</PackageTags>
     <PackageIcon>icon.png</PackageIcon>
     <RepositoryUrl>https://github.com/AlexanderSwain/Slang.Net.git</RepositoryUrl>
-    <PackageOutputPath>$(SolutionDir)Build\</PackageOutputPath>
-  </PropertyGroup>  <ItemGroup>
-  <Compile Remove="Deprecated\**" />
-  <EmbeddedResource Remove="Deprecated\**" />
-  <None Remove="Deprecated\**" />
-</ItemGroup>
+    <PackageOutputPath>$(SolutionDir)Build\</PackageOutputPath>  </PropertyGroup>
+  
+  <!-- Custom target for building with all-platforms.ps1 -->
+  <Target Name="BuildAllPlatforms" BeforeTargets="BeforeBuild">
+    <Exec Command="powershell -ExecutionPolicy Bypass -File '$(SolutionDir)src\all-platforms.ps1' -Script '$(ProjectDir)build.ps1'" />
+  </Target>
+
+  <ItemGroup>
+    <Compile Remove="Deprecated\**" />
+    <EmbeddedResource Remove="Deprecated\**" />
+    <None Remove="Deprecated\**" />
+  </ItemGroup>
   
   <!-- Exclude deprecated C# files from compilation -->
   <ItemGroup>
