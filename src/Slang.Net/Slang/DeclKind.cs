@@ -1,10 +1,13 @@
-public enum DeclKind
+namespace Slang
 {
-    UnsupportedForReflection,
-    Struct,
-    Func,
-    Module,
-    Generic,
-    Variable,
-    Namespace
+    public enum DeclKind
+    {
+        UnsupportedForReflection,
+        Struct,
+        Func,
+        Module,
+        Generic,
+        Variable,
+        Namespace
+    }
 }

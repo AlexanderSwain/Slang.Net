@@ -19,11 +19,11 @@ Write-Host "===== Building Slang.Net Nuget Package =====" -ForegroundColor DarkG
 
 # Directories
 $nativeOutputDir = "$PSScriptRoot\..\Slang.Net.CPP\bin\$Configuration\net9.0\$Platform"
-$slangNetOutputDir = "$PSScriptRoot\bin\$Configuration\net9.0\$Platform"
-if (-not (Test-Path -Path $slangNetOutputDir)) {
+$slangNetLibDir = "$PSScriptRoot\bin\$Configuration\net9.0\"
+if (-not (Test-Path -Path $slangNetLibDir)) {
     # Create directory and all parent directories if they don't exist
-    New-Item -ItemType Directory -Path $slangNetOutputDir -Force | Out-Null
-    Write-Host "Created directory: $slangNetOutputDir" -ForegroundColor Yellow
+    New-Item -ItemType Directory -Path $slangNetLibDir -Force | Out-Null
+    Write-Host "Created directory: $slangNetLibDir" -ForegroundColor Yellow
 }
 
 # STEP 1: Copy native files to Slang.Net output directory
@@ -46,8 +46,8 @@ $nativeOutputFiles = @(
 
 foreach ($file in $nativeOutputFiles) {
     if (Test-Path $file) {
-        Copy-Item $file $slangNetOutputDir -Force
-        Write-Host "Copied: $file to $slangNetOutputDir" -ForegroundColor Black
+        Copy-Item $file $slangNetLibDir -Force
+        Write-Host "Copied: $file to $slangNetLibDir" -ForegroundColor Black
     }
     else {
         Write-Host "Missing: $file" -ForegroundColor Red
@@ -103,10 +103,10 @@ else {
 }
 
 # Ensure output directory exists and contains needed files
-if (-not (Test-Path $slangNetOutputDir)) {
-    Write-Host "Build failed due to missing output directory after msbuild call: $slangNetOutputDir" -ForegroundColor Red
-    exit 1
-}
+#if (-not (Test-Path $slangNetOutputDir)) {
+#    Write-Host "Build failed due to missing output directory after msbuild call: $slangNetOutputDir" -ForegroundColor Red
+#    exit 1
+#}
 
 # Check for essential files
 #$outputFiles = @(

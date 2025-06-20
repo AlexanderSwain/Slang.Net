@@ -19,13 +19,21 @@ Write-Host "===== Pre-build Event: Slang.Net =====" -ForegroundColor Cyan
 
 # Directories
 $nativeOutputDir = "$PSScriptRoot\..\Slang.Net.CPP\bin\$Configuration\net9.0\$Platform"
-$slangNetOutputDir = "$PSScriptRoot\bin\$Configuration\net9.0\$Platform"
+$slangNetOutputDir = "$PSScriptRoot\bin\$Configuration\net9.0\"
+$slangNetLibDir = "$PSScriptRoot\lib\$Configuration\$Platform\"
 
 # Create output directory if it doesn't exist
 if (-not (Test-Path -Path $slangNetOutputDir)) {
     # Create directory and all parent directories if they don't exist
     New-Item -ItemType Directory -Path $slangNetOutputDir -Force | Out-Null
     Write-Host "Created directory: $slangNetOutputDir" -ForegroundColor Yellow
+}
+
+# Create output directory if it doesn't exist
+if (-not (Test-Path -Path $slangNetLibDir)) {
+    # Create directory and all parent directories if they don't exist
+    New-Item -ItemType Directory -Path $slangNetLibDir -Force | Out-Null
+    Write-Host "Created directory: $slangNetLibDir" -ForegroundColor Yellow
 }
 
 # STEP 1: Copy native files to Slang.Net output directory
@@ -48,8 +56,11 @@ $nativeOutputFiles = @(
 
 foreach ($file in $nativeOutputFiles) {
     if (Test-Path $file) {
-        Copy-Item $file $slangNetOutputDir -Force
-        Write-Host "Copied: $file to $slangNetOutputDir" -ForegroundColor Black
+        //Copy-Item $file $slangNetOutputDir -Force
+        //Write-Host "Copied: $file to $slangNetOutputDir" -ForegroundColor Black
+
+        Copy-Item $file $slangNetLibDir -Force
+        Write-Host "Copied: $file to $slangNetLibDir" -ForegroundColor Black
     }
     else {
         Write-Host "Missing: $file" -ForegroundColor Red

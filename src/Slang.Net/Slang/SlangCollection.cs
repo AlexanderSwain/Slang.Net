@@ -1,63 +1,66 @@
 ﻿using System.Collections;
 
-public interface IComposedOf<T>
+namespace Slang
 {
-    uint Count { get; }
-    T GetByIndex(uint index);
-}
-
-public class SlangCollection<T> : IEnumerable<T>
-{
-    internal IComposedOf<T> Parent { get; set; }
-
-    public SlangCollection(IComposedOf<T> parent)
+    public interface IComposedOf<T>
     {
-        Parent = parent;
+        uint Count { get; }
+        T GetByIndex(uint index);
     }
 
-    public IEnumerator<T> GetEnumerator()
+    public class SlangCollection<T> : IEnumerable<T>
     {
-        return new SlangEnumerator<T>(Parent);
+        internal IComposedOf<T> Parent { get; set; }
+
+        public SlangCollection(IComposedOf<T> parent)
+        {
+            Parent = parent;
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return new SlangEnumerator<T>(Parent);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 
-    IEnumerator IEnumerable.GetEnumerator()
+    public class SlangEnumerator<T> : IEnumerator<T>
     {
-        return GetEnumerator();
+        public IComposedOf<T> Composition { get; }
+        public uint? Current_Index { get; set; }
+
+        public SlangEnumerator(IComposedOf<T> composition)
+        {
+            Composition = composition;
+        }
+
+        #region Enumerable
+        public T Current => Composition.GetByIndex(Current_Index ?? throw new NullReferenceException());
+        object? IEnumerator.Current => Composition.GetByIndex(Current_Index ?? throw new NullReferenceException());
+
+        public bool MoveNext()
+        {
+            if (Current_Index == null)
+                Current_Index = 0;
+            else
+                Current_Index++;
+
+            return Current_Index < Composition.Count;
+        }
+
+        public void Reset()
+        {
+            Current_Index = null;
+        }
+
+        public void Dispose()
+        {
+            // Nothing to dispose here
+        }
+        #endregion
     }
-}
-
-public class SlangEnumerator<T> : IEnumerator<T>
-{
-    public IComposedOf<T> Composition { get; }
-    public uint? Current_Index { get; set; }
-
-    public SlangEnumerator(IComposedOf<T> composition)
-    {
-        Composition = composition;
-    }
-
-    #region Enumerable
-    public T Current => Composition.GetByIndex(Current_Index ?? throw new NullReferenceException());
-    object? IEnumerator.Current => Composition.GetByIndex(Current_Index ?? throw new NullReferenceException());
-
-    public bool MoveNext()
-    {
-        if (Current_Index == null)
-            Current_Index = 0;
-        else
-            Current_Index++;
-
-        return Current_Index < Composition.Count;
-    }
-
-    public void Reset()
-    {
-        Current_Index = null;
-    }
-
-    public void Dispose()
-    {
-        // Nothing to dispose here
-    }
-    #endregion
 }

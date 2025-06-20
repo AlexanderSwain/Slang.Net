@@ -27,7 +27,7 @@ if (-not (Test-Path -Path $slangNetCppOutputDir)) {
 }
 
 # STEP 1: Copy native files to Slang.Net.CPP output directory
-Write-Host "Build Slang.Net.CPP(STEP 1): Downloaded Slang SDK..." -ForegroundColor Green
+Write-Host "Build Slang.Net.CPP(STEP 1): Copy native files..." -ForegroundColor Green
 
 # Check alternative locations
 $nativeOutputFiles = @(

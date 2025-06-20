@@ -1,12 +1,13 @@
-﻿// Using global using directive
-
-public unsafe class Module
+﻿namespace Slang
 {
-    internal Slang.Cpp.Module cppObj { get; }
-    public ShaderProgram Program => field ??= new ShaderProgram(this);
-
-    internal Module(Session session, string moduleName)
+    public unsafe class Module
     {
-        cppObj = new Slang.Cpp.Module(session.cppObj, moduleName, null, null);
+        internal Slang.Cpp.Module cppObj { get; }
+        public ShaderProgram Program => field ??= new ShaderProgram(this);
+
+        internal Module(Session session, string moduleName)
+        {
+            cppObj = new Slang.Cpp.Module(session.cppObj, moduleName, null, null);
+        }
     }
 }

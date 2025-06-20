@@ -38,14 +38,15 @@
     <Folder Include="Extensions\" />
     <Folder Include="lib\ARM64\" />
     <Folder Include="lib\x64\" />
+	  <Folder Include="lib\Debug\x64\" />
   </ItemGroup>
   <!-- Include Slang.Net.CPP.dll as a reference in the package -->
-  <ItemGroup>
+  <!--<ItemGroup>
     <Reference Include="Slang.Net.CPP">
       <HintPath>$(OutputPath)\Slang.Net.CPP.dll</HintPath>
       <Private>true</Private>
     </Reference>
-  </ItemGroup>
+  </ItemGroup>-->
 
   <!-- Ensure Slang.Net.CPP.dll is included in the lib folder of the package for managed references -->
   <ItemGroup>
@@ -58,47 +59,47 @@
   </ItemGroup>
   <!-- Platform-specific native dependencies for x64 -->
   <ItemGroup Condition="'$(Platform)' == 'x64'">
-    <Content Include="lib\x64\gfx.dll" Condition="Exists('lib\x64\gfx.dll')">
+    <Content Include="lib\Debug\x64\gfx.dll" Condition="Exists('lib\Debug\x64\gfx.dll')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Pack>true</Pack>
       <PackagePath>runtimes\win-x64\native\gfx.dll</PackagePath>
     </Content>
-    <Content Include="lib\x64\slang-glsl-module.dll" Condition="Exists('lib\x64\slang-glsl-module.dll')">
+    <Content Include="lib\Debug\x64\slang-glsl-module.dll" Condition="Exists('lib\Debug\x64\slang-glsl-module.dll')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Pack>true</Pack>
       <PackagePath>runtimes\win-x64\native\slang-glsl-module.dll</PackagePath>
     </Content>
-    <Content Include="lib\x64\slang-glslang.dll" Condition="Exists('lib\x64\slang-glslang.dll')">
+    <Content Include="lib\Debug\x64\slang-glslang.dll" Condition="Exists('lib\Debug\x64\slang-glslang.dll')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Pack>true</Pack>
       <PackagePath>runtimes\win-x64\native\slang-glslang.dll</PackagePath>
     </Content>
-    <Content Include="lib\x64\slang-llvm.dll" Condition="Exists('lib\x64\slang-llvm.dll')">
+    <Content Include="lib\Debug\x64\slang-llvm.dll" Condition="Exists('lib\Debug\x64\slang-llvm.dll')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Pack>true</Pack>
       <PackagePath>runtimes\win-x64\native\slang-llvm.dll</PackagePath>
     </Content>
-    <Content Include="lib\x64\slang-rt.dll" Condition="Exists('lib\x64\slang-rt.dll')">
+    <Content Include="lib\Debug\x64\slang-rt.dll" Condition="Exists('lib\Debug\x64\slang-rt.dll')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Pack>true</Pack>
       <PackagePath>runtimes\win-x64\native\slang-rt.dll</PackagePath>
     </Content>
-    <Content Include="lib\x64\slang.dll" Condition="Exists('lib\x64\slang.dll')">
+    <Content Include="lib\Debug\x64\slang.dll" Condition="Exists('lib\Debug\x64\slang.dll')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Pack>true</Pack>
       <PackagePath>runtimes\win-x64\native\slang.dll</PackagePath>
     </Content>
-    <Content Include="lib\x64\Slang.Net.CPP.dll" Condition="Exists('lib\x64\Slang.Net.CPP.dll')">
+    <Content Include="lib\Debug\x64\Slang.Net.CPP.dll" Condition="Exists('lib\Debug\x64\Slang.Net.CPP.dll')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Pack>true</Pack>
       <PackagePath>runtimes\win-x64\native\Slang.Net.CPP.dll</PackagePath>
     </Content>
-    <Content Include="lib\x64\Slang.Net.CPP.pdb" Condition="Exists('lib\x64\Slang.Net.CPP.pdb')">
+    <Content Include="lib\Debug\x64\Slang.Net.CPP.pdb" Condition="Exists('lib\Debug\x64\Slang.Net.CPP.pdb')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Pack>true</Pack>
       <PackagePath>runtimes\win-x64\native\Slang.Net.CPP.pdb</PackagePath>
     </Content>
-    <Content Include="lib\x64\SlangNative.dll" Condition="Exists('lib\x64\SlangNative.dll')">
+    <Content Include="lib\Debug\x64\SlangNative.dll" Condition="Exists('lib\Debug\x64\SlangNative.dll')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Pack>true</Pack>
       <PackagePath>runtimes\win-x64\native\SlangNative.dll</PackagePath>
@@ -197,12 +198,12 @@
   
   <!-- Pre-build event to prepare the environment -->
   <Target Name="PreBuildEvent" BeforeTargets="PreBuildEvent">
-    <Exec Command="powershell.exe -ExecutionPolicy Bypass -File &quot;$(ProjectDir)pre-build.ps1&quot; -Configuration $(Configuration) -Platform $(Platform)" />
+    <Exec Command="powershell.exe -ExecutionPolicy Bypass -File '$(ProjectDir)\pre-build.ps1' -Configuration $(Configuration) -Platform $(Platform)" />
   </Target>
   
   <!-- Post-build event to finalize the build -->
   <Target Name="PostBuildEvent" AfterTargets="PostBuildEvent">
-    <Exec Command="powershell.exe -ExecutionPolicy Bypass -File &quot;$(ProjectDir)post-build.ps1&quot; -Configuration $(Configuration) -Platform $(Platform)" />
+    <Exec Command="powershell.exe -ExecutionPolicy Bypass -File '$(ProjectDir)\post-build.ps1' -Configuration $(Configuration) -Platform $(Platform)" />
   </Target>
 
 </Project>

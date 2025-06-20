@@ -47,8 +47,8 @@ if (-not (Test-Path $slangNetCppOutputDir)) {
 
 # Check alternative locations
 $slangNetCppOutputFiles = @(
-    "$slangNetCppOutputDir\Slang.Net.CPP.dll",
-    "$slangNetCppOutputDir\Slang.Net.CPP.lib"
+    "$slangNetCppOutputDir\Slang.Net.CPP.dll"
+    #"$slangNetCppOutputDir\Slang.Net.CPP.lib"
 )
     
 foreach ($file in $slangNetCppOutputFiles) {

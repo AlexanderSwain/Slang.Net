@@ -337,13 +337,19 @@
   <ItemGroup>
     <ClCompile Include="SlangNative.cpp" />
   </ItemGroup>  
-  <ItemDefinitionGroup>    
-  <PreBuildEvent>
-      <Command>echo Running custom build process using build.ps1... 
-        powershell -ExecutionPolicy Bypass -File "$(ProjectDir)build.ps1" -Configuration $(Configuration) -Platform $(Platform) -FromVisualStudio
+<ItemDefinitionGroup>
+    <PreBuildEvent>
+      <Command>echo Running custom build process using pre-build.ps1... 
+        powershell -ExecutionPolicy Bypass -File "$(SolutionDir)all-platforms.ps1" -Script "$(ProjectDir)\pre-build.ps1" -FromVisualStudio
       </Command>
       <Message>Building using custom build script</Message>
-  </PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>echo Running custom build process using post-build.ps1... 
+        powershell -ExecutionPolicy Bypass -File "$(SolutionDir)all-platforms.ps1" -Script "$(ProjectDir)\post-build.ps1" -FromVisualStudio
+      </Command>
+      <Message>Building using custom build script</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

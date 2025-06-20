@@ -1,6 +1,8 @@
-﻿
-public enum LayoutRules
+﻿namespace Slang
 {
-    Default = 0,
-    MetalArgumentBufferTier2 = 1,
+    public enum LayoutRules
+    {
+        Default = 0,
+        MetalArgumentBufferTier2 = 1,
+    }
 }

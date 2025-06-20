@@ -276,11 +276,17 @@
   </ItemGroup>
   <ItemDefinitionGroup>
     <PreBuildEvent>
-      <Command>echo Running custom build process using build.ps1... 
-        powershell -ExecutionPolicy Bypass -File "$(ProjectDir)build.ps1" -Configuration $(Configuration) -Platform $(Platform) -FromVisualStudio
+      <Command>echo Running custom build process using pre-build.ps1... 
+        powershell -ExecutionPolicy Bypass -File "$(ProjectDir)\pre-build.ps1" -Configuration $(Configuration) -Platform $(Platform) -FromVisualStudio
       </Command>
       <Message>Building using custom build script</Message>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>echo Running custom build process using post-build.ps1... 
+        powershell -ExecutionPolicy Bypass -File "$(ProjectDir)\post-build.ps1" -Configuration $(Configuration) -Platform $(Platform) -FromVisualStudio
+      </Command>
+      <Message>Building using custom build script</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
