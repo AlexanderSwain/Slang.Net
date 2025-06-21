@@ -9,7 +9,7 @@ param(
 )
 
 # Validate platform parameter
-$validPlatforms = @("x64", "ARM64", "All")
+$validPlatforms = @("x64", "ARM64")
 if ($validPlatforms -notcontains $Platform) {
     Write-Host "Error: Invalid platform '$Platform'. Valid platforms are: $($validPlatforms -join ', ')" -ForegroundColor Red
     exit 1
@@ -23,10 +23,9 @@ if ($Platform -eq "ARM64" -and $Configuration -eq "Debug") {
 Write-Host "===== Building Slang.Net.CPP Managed Library =====" -ForegroundColor DarkGray
 
 # Directories
-$slangNetCppDir = $PSScriptRoot
-$nativeDir = "$PSScriptRoot\..\Native"
-$nativeOutputDir = "$nativeDir\bin\$Configuration\$Platform"
-$slangNetCppOutputDir = "$slangNetCppDir\bin\$Configuration\net9.0\$Platform"
+$cppDir = $PSScriptRoot
+$nativeOutputDir = "$PSScriptRoot\..\Native\bin\$Configuration\$Platform"
+$slangNetCppOutputDir = "$PSScriptRoot\bin\$Configuration\net9.0\$Platform"
 
 # Print parameters for debugging
 Write-Host "DEBUG: -Configuration = $Configuration" -ForegroundColor Yellow
@@ -89,18 +88,7 @@ else {
     }
 }
 
-# Setup output directories based on platform
-if ($Platform -eq "All") {
-    # For "All" platform, we'll use a simplified output structure
-    $slangNetCppOutputDir = "$slangNetCppDir\bin\$Configuration\net9.0"
-    $nativePlatform = "x64" # Default to x64 for native dependencies when using "All" platform
-    $nativeOutputDir = "$nativeDir\bin\$Configuration\$nativePlatform"
-} else {
-    $slangNetCppOutputDir = "$slangNetCppDir\bin\$Configuration\net9.0\$Platform"
-    $nativeOutputDir = "$nativeDir\bin\$Configuration\$Platform"
-}
-
-# Create output directory if it doesn't exist
+# Ensure output directory exists
 if (-not (Test-Path -Path $slangNetCppOutputDir)) {
     # Create directory and all parent directories if they don't exist
     New-Item -ItemType Directory -Path $slangNetCppOutputDir -Force | Out-Null
@@ -110,7 +98,7 @@ if (-not (Test-Path -Path $slangNetCppOutputDir)) {
 # STEP 1: Copy native files to Slang.Net.CPP output directory
 Write-Host "Build Slang.Net.CPP(STEP 1): Copy native files..." -ForegroundColor Green
 
-# Define list of native files to copy
+# Define native files to copy
 $nativeOutputFiles = @(
     "$nativeOutputDir\gfx.dll",
     "$nativeOutputDir\slang.dll",
@@ -127,7 +115,7 @@ if ($Platform -ne "ARM64") {
     $nativeOutputFiles += "$nativeOutputDir\slang-llvm.dll"
 }
 
-# Copy native files to Slang.Net.CPP output directory
+# Copy each native file to output directory
 foreach ($file in $nativeOutputFiles) {
     if (Test-Path $file) {
         Copy-Item $file $slangNetCppOutputDir -Force
@@ -146,15 +134,14 @@ Write-Host "Build Slang.Net.CPP(STEP 2): MSBuild Slang.Net.CPP project $Configur
 if ($FromVisualStudio) {
     # When running from Visual Studio, we don't need to build the project again
     Write-Host "Visual Studio already ran MSBuild. Proceeding with output verification..." -ForegroundColor Green
-}
-else {
+} else {
     # When running standalone from command line, build the project
     Write-Host "MSBuild Slang.Net.CPP project $Configuration|$Platform..." -ForegroundColor Green
 
     # Map "x86" platform to "Win32" if needed (MSBuild uses "Win32" for 32-bit builds)
     $msbuildPlatform = if ($Platform -eq "x86") { "Win32" } else { $Platform }
     # Skip PreBuildEvent and PostBuildEvent targets
-    & $msbuildPath "$PSScriptRoot\Slang.Net.CPP.vcxproj" /p:Configuration=$Configuration /p:Platform=$msbuildPlatform /t:Rebuild /p:PreBuildEventUseInBuild=false /p:PostBuildEventUseInBuild=false
+    & $msbuildPath "$cppDir\Slang.Net.CPP.vcxproj" /p:Configuration=$Configuration /p:Platform=$msbuildPlatform /t:Rebuild /p:PreBuildEventUseInBuild=false /p:PostBuildEventUseInBuild=false
 
     if (-not $?) {
         Write-Host "Slang.Net.CPP build failed!" -ForegroundColor Red
@@ -162,23 +149,17 @@ else {
     }
 }
 
-# STEP 3: Verify output files
-Write-Host "Build Slang.Net.CPP(STEP 3): Verifying output files..." -ForegroundColor Green
-
-# Ensure output directory exists
-if (-not (Test-Path $slangNetCppOutputDir)) {
-    Write-Host "Build Slang.Net.CPP failed due to missing output directory: $slangNetCppOutputDir" -ForegroundColor Red
-    exit 1
-}
+# Verify the output files
+Write-Host "Verifying output files..." -ForegroundColor Green
 
 # List of files we expect to find in the output directory
-$cppOutputFiles = @(
+$slangNetCppOutputFiles = @(
     "$slangNetCppOutputDir\Slang.Net.CPP.dll"
 )
-
-# Verify output files
+    
+# Check for expected output files
 $missingFiles = @()
-foreach ($file in $cppOutputFiles) {
+foreach ($file in $slangNetCppOutputFiles) {
     if (-not (Test-Path $file)) {
         $missingFiles += $file
     } else {
@@ -187,35 +168,11 @@ foreach ($file in $cppOutputFiles) {
 }
 
 if ($missingFiles.Count -gt 0) {
-    # Special handling for All platform - try to find the file in a different location
-    if ($Platform -eq "All") {
-        Write-Host "Platform is 'All', checking alternative locations for missing files..." -ForegroundColor Yellow
-        
-        # Check in x64 directory first (most common)
-        $alternativeCppOutputFiles = @(
-            "$slangNetCppDir\bin\$Configuration\net9.0\x64\Slang.Net.CPP.dll"
-        )
-        
-        foreach ($altFile in $alternativeCppOutputFiles) {
-            if (Test-Path $altFile) {
-                $targetFile = "$slangNetCppOutputDir\Slang.Net.CPP.dll"
-                Write-Host "Found alternative: $altFile, copying to $targetFile" -ForegroundColor Yellow
-                Copy-Item -Path $altFile -Destination $targetFile -Force
-                Write-Host "Verified (copied): $targetFile" -ForegroundColor Cyan
-                $missingFiles = @() # Clear missing files list
-                break
-            }
-        }
+    foreach ($file in $missingFiles) {
+        Write-Host "Missing: $file" -ForegroundColor Red
     }
-    
-    # If we still have missing files, report error
-    if ($missingFiles.Count -gt 0) {
-        foreach ($file in $missingFiles) {
-            Write-Host "Missing: $file" -ForegroundColor Red
-        }
-        Write-Host "Slang.Net.CPP build failed due to missing output files!" -ForegroundColor Red
-        exit 1
-    }
+    Write-Host "Slang.Net.CPP build failed due to missing output files!" -ForegroundColor Red
+    exit 1
 }
 
 # Add confirmation that this script completed for this configuration/platform

@@ -11,7 +11,7 @@ param(
 Write-Host "===== Cleaning Slang.Net.CPP Library Output =====" -ForegroundColor DarkGray
 
 # Directories
-$projectDir = $PSScriptRoot
+$CPPDir = $PSScriptRoot
 $platforms = @("x64", "ARM64")
 $configurations = @("Debug", "Release")
 
@@ -34,16 +34,15 @@ if ($Configuration -ne "All") {
 Write-Host "Cleaning platforms: $($platforms -join ", ")" -ForegroundColor Cyan
 Write-Host "Cleaning configurations: $($configurations -join ", ")" -ForegroundColor Cyan
 
-# Files to clean from output directories
-$outputFiles = @(
-    "Slang.Net.CPP.dll",
+# CPP files to clean from output directories
+$CPPFiles = @(
     "gfx.dll",
     "slang.dll",
     "slang-glslang.dll",
     "slang-glsl-module.dll",
     "slang-llvm.dll",
-    "SlangNative.dll",
-    "SlangNative.lib",
+    "SlangCPP.dll",
+    "SlangCPP.lib",
     "slang-rt.dll"
 )
 
@@ -52,22 +51,17 @@ foreach ($plat in $platforms) {
     foreach ($config in $configurations) {
         Write-Host "Processing: $config | $plat" -ForegroundColor Cyan
         
-        # Output directory
-        $outputDir = Join-Path $projectDir "bin\$config\net9.0\$plat"
-        $intermediateDir = Join-Path $projectDir "$(ProjectName)\$plat\$config"
+        # Output and intermediate directories
+        $outputDir = Join-Path $CPPDir "bin\$config\$plat"
+        $intermediateDir = Join-Path $CPPDir "obj\$config\$plat"
+        $slangNetOutputDir = Join-Path $CPPDir "..\Slang.Net\bin\$config\net9.0"
         
         # Clean output directory
         Write-Host "Cleaning directory: $outputDir" -ForegroundColor Green
         if (Test-Path $outputDir) {
             Write-Host "  Directory exists, removing contents..." -ForegroundColor DarkGray
             try {
-                foreach ($file in $outputFiles) {
-                    $fullPath = Join-Path $outputDir $file
-                    if (Test-Path $fullPath) {
-                        Write-Host "  Removing: $fullPath" -ForegroundColor DarkGray
-                        Remove-Item -Path $fullPath -Force -ErrorAction Stop
-                    }
-                }
+                Remove-Item -Path "$outputDir\*" -Force -Recurse -ErrorAction Stop
                 Write-Host "  Successfully cleaned output directory." -ForegroundColor Green
             } catch {
                 $errorMsg = $_.Exception.Message
@@ -91,6 +85,46 @@ foreach ($plat in $platforms) {
         } else {
             Write-Host "  Directory does not exist: $intermediateDir" -ForegroundColor Yellow
         }
+        
+        # Clean SlangNet output directory
+        Write-Host "Cleaning SlangNet output directory: $slangNetOutputDir" -ForegroundColor Green
+        if (Test-Path $slangNetOutputDir) {
+            Write-Host "  Directory exists, removing CPP files..." -ForegroundColor DarkGray
+            foreach ($file in $CPPFiles) {
+                $fullPath = Join-Path $slangNetOutputDir $file
+                if (Test-Path $fullPath) {
+                    Write-Host "  Removing: $fullPath" -ForegroundColor DarkGray
+                    try {
+                        Remove-Item -Path $fullPath -Force -ErrorAction Stop
+                        Write-Host "  Successfully removed $file." -ForegroundColor Green
+                    } catch {
+                        $errorMsg = $_.Exception.Message
+                        Write-Host "  ERROR removing file: $errorMsg" -ForegroundColor Red
+                    }
+                } else {
+                    Write-Host "  File does not exist, skipping: $file" -ForegroundColor Yellow
+                }
+            }
+        } else {
+            Write-Host "  SlangNet output directory does not exist: $slangNetOutputDir" -ForegroundColor Yellow
+        }
+    }
+}
+
+# Clean EmbeddedLLVM folder with downloaded dependencies if it exists
+if ($Platform -eq "All" -and $Configuration -eq "All") {
+    $llvmDir = Join-Path $CPPDir "EmbeddedLLVM"
+    if (Test-Path $llvmDir) {
+        Write-Host "Cleaning dependencies: $llvmDir" -ForegroundColor Cyan
+        try {
+            Remove-Item -Path "$llvmDir\*" -Force -Recurse -ErrorAction Stop
+            Write-Host "Successfully cleaned LLVM dependencies." -ForegroundColor Green
+        } catch {
+            $errorMsg = $_.Exception.Message
+            Write-Host "ERROR cleaning LLVM dependencies: $errorMsg" -ForegroundColor Red
+        }
+    } else {
+        Write-Host "LLVM directory does not exist, skipping: $llvmDir" -ForegroundColor Yellow
     }
 }
 
