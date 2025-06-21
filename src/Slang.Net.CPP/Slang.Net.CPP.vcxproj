@@ -1,12 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">  <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|All">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
-      <Platform>All</Platform>
+      <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|All">
+    <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
-      <Platform>All</Platform>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x86">
+      <Configuration>Debug</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x86">
+      <Configuration>Release</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ARM64">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM64">
+      <Configuration>Release</Configuration>
+      <Platform>ARM64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -45,7 +62,7 @@
     <PlatformToolset>v143</PlatformToolset>
     <CLRSupport>true</CLRSupport>
     <CharacterSet>Unicode</CharacterSet>
-  </PropertyGroup>
+  </PropertyGroup>  
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -79,7 +96,7 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
+  </ImportGroup>  
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -108,12 +125,12 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>.\bin\$(Configuration)\net9.0\$(Platform)</OutDir>
     <IntDir>$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+  </PropertyGroup>  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)\Slang.Net\bin\$(Configuration)\net9.0\</OutDir>
     <IntDir>$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-  </PropertyGroup>  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -123,7 +140,8 @@
     <Link>
       <AdditionalDependencies>$(ProjectDir)bin\$(Configuration)\net9.0\$(Platform)\SlangNative.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-  </ItemDefinitionGroup>  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+  </ItemDefinitionGroup>  
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -133,7 +151,8 @@
     <Link>
       <AdditionalDependencies>$(ProjectDir)bin\$(Configuration)\net9.0\$(Platform)\SlangNative.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-  </ItemDefinitionGroup>  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+  </ItemDefinitionGroup>  
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -143,7 +162,8 @@
     <Link>
       <AdditionalDependencies>$(ProjectDir)bin\$(Configuration)\net9.0\$(Platform)\SlangNative.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-  </ItemDefinitionGroup>  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+  </ItemDefinitionGroup>  
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -153,7 +173,8 @@
     <Link>
       <AdditionalDependencies>$(ProjectDir)bin\$(Configuration)\net9.0\$(Platform)\SlangNative.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-  </ItemDefinitionGroup>  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+  </ItemDefinitionGroup>  
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -163,7 +184,8 @@
     <Link>
       <AdditionalDependencies>$(ProjectDir)bin\$(Configuration)\net9.0\$(Platform)\SlangNative.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-  </ItemDefinitionGroup>  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+  </ItemDefinitionGroup>  
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -257,36 +279,47 @@
       <Project>{c3d8f1a9-2e4f-4b5a-9d1e-8f7c9d0e1f3c}</Project>
     </ProjectReference>
   </ItemGroup>
-  <ItemDefinitionGroup>
-    <PreBuildEvent>
-      <Command>echo Running custom build process using pre-build.ps1... 
-        powershell -ExecutionPolicy Bypass -File "$(ProjectDir)\pre-build.ps1" -Configuration $(Configuration) -Platform $(Platform) -FromVisualStudio
-      </Command>
-      <Message>Building using custom build script</Message>
-    </PreBuildEvent>
-    <PostBuildEvent>
-      <Command>echo Running custom build process using post-build.ps1... 
-        powershell -ExecutionPolicy Bypass -File "$(ProjectDir)\post-build.ps1" -Configuration $(Configuration) -Platform $(Platform) -FromVisualStudio
-      </Command>
-      <Message>Building using custom build script</Message>
-    </PostBuildEvent>
-  </ItemDefinitionGroup>  <!-- Override default targets to use our custom build script for all platforms -->
-  <Target Name="Build" DependsOnTargets="CustomBuild" />
-  <Target Name="Rebuild" DependsOnTargets="CustomClean;CustomBuild" />
-  <Target Name="Clean" DependsOnTargets="CustomClean" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   
-  <!-- Custom targets for our build process -->
+  <!-- Override default targets to use our custom build script for all platforms -->
+  <Target Name="Build" DependsOnTargets="$(BuildDependsOn)" Returns="$(TargetPath)" />
+  <Target Name="Rebuild" DependsOnTargets="Clean;Build" />
+  <Target Name="Clean">
+    <Message Importance="high" Text="Cleaning Slang.Net.CPP with custom clean script for all platforms... (Configuration: $(Configuration), Platform: $(Platform))" />
+    <Exec Command="powershell -ExecutionPolicy Bypass -File $(ProjectDir)..\all-platforms.ps1 -Script $(ProjectDir)cleaner.ps1 -FromVisualStudio"/>
+  </Target>
+    
+  <!-- Add this target to the BuildDependsOn property to make it part of the build process -->
+  <PropertyGroup>
+    <BuildDependsOn>
+      CustomBuild;
+      $(BuildDependsOn)
+    </BuildDependsOn>
+  </PropertyGroup>
+  
+  <!-- Custom build target -->
   <Target Name="CustomBuild">
-    <Message Importance="high" Text="Building Slang.Net.CPP with custom build script for all platforms..." />
-    <Exec Command="powershell -ExecutionPolicy Bypass -File '$(SolutionDir)src\all-platforms.ps1' -Script '$(ProjectDir)build.ps1'" />
+    <Message Importance="high" Text="Building Slang.Net.CPP with custom build script... (Configuration: $(Configuration), Platform: $(Platform))" />
+    <Exec Command="powershell -ExecutionPolicy Bypass -File $(ProjectDir)..\all-platforms.ps1 -Script $(ProjectDir)build.ps1 -FromVisualStudio"/>
   </Target>
   
-  <Target Name="CustomClean">
-    <Message Importance="high" Text="Cleaning Slang.Net.CPP with custom clean script for all platforms..." />
-    <Exec Command="powershell -ExecutionPolicy Bypass -File '$(SolutionDir)src\all-platforms.ps1' -Script '$(ProjectDir)cleaner.ps1'" />
+  <!-- Add a special target specifically for Debug ARM64 to ensure it gets built -->
+  <Target Name="BuildDebugARM64" AfterTargets="Build" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <Message Importance="high" Text="Special build step for Debug ARM64" />
+    <Exec Command="powershell -ExecutionPolicy Bypass -File $(ProjectDir)build.ps1 -Configuration Debug -Platform ARM64 -FromVisualStudio" />
   </Target>
 
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  
+  <!-- Add diagnostic target to debug MSBuild variables -->
+  <Target Name="DebugMSBuildVars" BeforeTargets="Build">
+    <Message Importance="high" Text="=== MSBuild Variable Debug Information ===" />
+    <Message Importance="high" Text="SolutionDir = $(SolutionDir)" />
+    <Message Importance="high" Text="ProjectDir = $(ProjectDir)" />
+    <Message Importance="high" Text="Configuration = $(Configuration)" />
+    <Message Importance="high" Text="Platform = $(Platform)" />
+    <Message Importance="high" Text="===================================" />
+  </Target>
+
 </Project>

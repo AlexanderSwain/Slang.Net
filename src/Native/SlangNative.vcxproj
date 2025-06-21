@@ -335,13 +335,15 @@
     <ClInclude Include="SlangNative.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SlangNative.cpp" />  </ItemGroup>  
+    <ClCompile Include="SlangNative.cpp" />  
+  </ItemGroup>  
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   
   <!-- Override default targets to use our custom build script for all platforms -->
   <!-- These target definitions MUST come after the Microsoft.Cpp.targets import -->
   <Target Name="Build" DependsOnTargets="$(BuildDependsOn)" Returns="$(TargetPath)" />
-  <Target Name="Rebuild" DependsOnTargets="Clean;Build" />  <Target Name="Clean">
+  <Target Name="Rebuild" DependsOnTargets="Clean;Build" />  
+  <Target Name="Clean">
     <Message Importance="high" Text="Cleaning SlangNative with custom clean script for all platforms... (Configuration: $(Configuration), Platform: $(Platform))" />
     <Exec Command="powershell -ExecutionPolicy Bypass -File $(ProjectDir)..\all-platforms.ps1 -Script $(ProjectDir)cleaner.ps1 -FromVisualStudio" />
   </Target>
@@ -352,7 +354,9 @@
       CustomBuild;
       $(BuildDependsOn)
     </BuildDependsOn>
-  </PropertyGroup>  <!-- Custom build target -->  <Target Name="CustomBuild">
+  </PropertyGroup>  
+  <!-- Custom build target -->  
+  <Target Name="CustomBuild">
     <Message Importance="high" Text="Building SlangNative with custom build script for all platforms... (Configuration: $(Configuration), Platform: $(Platform))" />
     <Exec Command="powershell -ExecutionPolicy Bypass -File $(ProjectDir)..\all-platforms.ps1 -Script $(ProjectDir)build.ps1 -FromVisualStudio" />
   </Target>
