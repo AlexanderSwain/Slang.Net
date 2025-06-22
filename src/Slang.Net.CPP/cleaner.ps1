@@ -11,7 +11,7 @@ param(
 Write-Host "===== Cleaning Slang.Net.CPP Library Output =====" -ForegroundColor DarkGray
 
 # Directories
-$CPPDir = $PSScriptRoot
+$cppDir = $PSScriptRoot
 $platforms = @("x64", "ARM64")
 $configurations = @("Debug", "Release")
 
