@@ -57,41 +57,14 @@ foreach ($file in $nativeOutputFiles) {
 }
 
 # STEP 2: Build Slang.Net project for the specified platform
-Write-Host "Build Slang.Net(STEP 2): MSBuild Slang.Net.CPP project $Configuration|$Platform..." -ForegroundColor Gray
-
-# MSBuild paths
-$msbuildPaths = @(
-    "${env:ProgramFiles}\Microsoft Visual Studio\2022\Preview\MSBuild\Current\Bin\MSBuild.exe",
-    "${env:ProgramFiles}\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe",
-    "${env:ProgramFiles}\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe",
-    "${env:ProgramFiles}\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe",
-    "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe",
-    "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\Professional\MSBuild\Current\Bin\MSBuild.exe",
-    "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe"
-)
-$msbuildPath = $null
-foreach ($path in $msbuildPaths) {
-    if (Test-Path $path) {
-        $msbuildPath = $path
-        break
-    }
-}
-
-if (-not $msbuildPath) {
-    Write-Host "Could not find MSBuild.exe in any of the expected locations." -ForegroundColor Red
-    Write-Host "Make sure Visual Studio is installed with C++ development tools." -ForegroundColor Red
-    exit 1
-}
-
-# STEP 2: Build Slang.Net project for the specified platform
-Write-Host "Build Slang.Net.CPP(STEP 2): MSBuild Slang.Net.CPP project $Configuration|$Platform..." -ForegroundColor Gray
+Write-Host "Build Slang.Net(STEP 2): Building Slang.Net project $Configuration|$Platform..." -ForegroundColor Gray
 
 if (-not $FromVisualStudio) {
-    # STEP 2: Build SlangNative project for the specified platform
-    Write-Host "MSBuild Slang.Net project $Configuration|$Platform..." -ForegroundColor Green    # Map "x86" platform to "Win32" if needed (MSBuild uses "Win32" for 32-bit builds)
-    $msbuildPlatform = if ($Platform -eq "x86") { "Win32" } else { $Platform }
-    # Skip PreBuildEvent and PostBuildEvent targets
-    & $msbuildPath "$PSScriptRoot\Slang.Net.csproj" /p:Configuration=$Configuration /p:Platform=$msbuildPlatform /t:Rebuild /p:PreBuildEventUseInBuild=false /p:PostBuildEventUseInBuild=false
+    # STEP 2: Build Slang.Net project for the specified platform
+    Write-Host "Building Slang.Net project $Configuration|$Platform..." -ForegroundColor Green
+    
+    # Use dotnet CLI to build the .NET project - this is appropriate for .NET SDK-style projects
+    & dotnet build "$PSScriptRoot\Slang.Net.csproj" --configuration $Configuration /p:Platform=$Platform /p:PreBuildEventUseInBuild=false /p:PostBuildEventUseInBuild=false
 
     if (-not $?) {
         Write-Host "Slang.Net build failed!" -ForegroundColor Red
@@ -99,7 +72,7 @@ if (-not $FromVisualStudio) {
     }
 }
 else {
-    Write-Host "Visual Studio already ran MSBUILD.exe. Skipping..." -ForegroundColor Green
+    Write-Host "Visual Studio already built the project. Skipping..." -ForegroundColor Green
 }
 
 # Ensure output directory exists and contains needed files

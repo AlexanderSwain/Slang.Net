@@ -1,215 +1,249 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <LangVersion>preview</LangVersion>
-    <EnablePreviewFeatures>true</EnablePreviewFeatures>
-    <Platforms>All</Platforms>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageId>Slang.Net</PackageId>
-    <PackageVersion>0.0.4</PackageVersion>
-    <Title>Slang.Net - .NET Bindings for the Slang Shader Language</Title>
-    <Description>A .NET class library providing bindings for the Slang shader language compiler, supporting cross-platform shader development.</Description>
-    <Authors>Aqqorn</Authors>
-    <Copyright>Copyright (c) 2025 Aqqorn</Copyright>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <RepositoryType>git</RepositoryType>
-    <PackageTags>slang;shader;graphics;hlsl;glsl;cross-platform</PackageTags>
-    <PackageIcon>icon.png</PackageIcon>
-    <RepositoryUrl>https://github.com/AlexanderSwain/Slang.Net.git</RepositoryUrl>
-    <PackageOutputPath>$(SolutionDir)Build\</PackageOutputPath>  </PropertyGroup>
-  
-  <!-- Custom target for building with all-platforms.ps1 -->
-  <Target Name="BuildAllPlatforms" BeforeTargets="BeforeBuild">
-    <Exec Command="powershell -ExecutionPolicy Bypass -File '$(SolutionDir)src\all-platforms.ps1' -Script '$(ProjectDir)build.ps1'" />
-  </Target>
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+		<LangVersion>preview</LangVersion>
+		<EnablePreviewFeatures>true</EnablePreviewFeatures>
+		<Platforms>All</Platforms>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageId>Slang.Net</PackageId>
+		<PackageVersion>0.0.4</PackageVersion>
+		<Title>Slang.Net - .NET Bindings for the Slang Shader Language</Title>
+		<Description>A .NET class library providing bindings for the Slang shader language compiler, supporting cross-platform shader development.</Description>
+		<Authors>Aqqorn</Authors>
+		<Copyright>Copyright (c) 2025 Aqqorn</Copyright>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>slang;shader;graphics;hlsl;glsl;cross-platform</PackageTags>
+		<PackageIcon>icon.png</PackageIcon>
+		<RepositoryUrl>https://github.com/AlexanderSwain/Slang.Net.git</RepositoryUrl>
+		<PackageOutputPath>$(SolutionDir)Build\</PackageOutputPath>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Deprecated\**" />
-    <EmbeddedResource Remove="Deprecated\**" />
-    <None Remove="Deprecated\**" />
-  </ItemGroup>
-  
-  <!-- Exclude deprecated C# files from compilation -->
-  <ItemGroup>
-    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
-    <None Include="Slang.Net.targets">
-      <Pack>True</Pack>
-      <PackagePath>build\Slang.Net.targets</PackagePath>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Extensions\" />
-    <Folder Include="lib\ARM64\" />
-    <Folder Include="lib\x64\" />
-	  <Folder Include="lib\Debug\x64\" />
-  </ItemGroup>
-  <!-- Include Slang.Net.CPP.dll as a reference in the package -->
-  <!--<ItemGroup>
+	<!-- Custom target for building with all-platforms.ps1 -->
+	<Target Name="BuildAllPlatforms" BeforeTargets="BeforeBuild">
+		<Exec Command="powershell -ExecutionPolicy Bypass -File '$(SolutionDir)src\all-platforms.ps1' -Script '$(ProjectDir)build.ps1'" />
+	</Target>
+
+	<ItemGroup>
+		<Compile Remove="Deprecated\**" />
+		<EmbeddedResource Remove="Deprecated\**" />
+		<None Remove="Deprecated\**" />
+	</ItemGroup>
+
+	<!-- Exclude deprecated C# files from compilation -->
+	<ItemGroup>
+		<None Include="..\..\README.md" Pack="true" PackagePath="\" />
+		<None Include="Slang.Net.targets">
+			<Pack>True</Pack>
+			<PackagePath>build\Slang.Net.targets</PackagePath>
+		</None>
+	</ItemGroup>
+	<ItemGroup>
+		<Folder Include="Extensions\" />
+		<Folder Include="lib\ARM64\" />
+		<Folder Include="lib\x64\" />
+		<Folder Include="lib\Debug\x64\" />
+	</ItemGroup>
+	<!-- Include Slang.Net.CPP.dll as a reference in the package -->
+	<!--<ItemGroup>
     <Reference Include="Slang.Net.CPP">
       <HintPath>$(OutputPath)\Slang.Net.CPP.dll</HintPath>
       <Private>true</Private>
     </Reference>
   </ItemGroup>-->
 
-  <!-- Ensure Slang.Net.CPP.dll is included in the lib folder of the package for managed references -->
-  <ItemGroup>
-    <Content Include="$(OutputPath)\Slang.Net.CPP.dll">
-      <Pack>true</Pack>
-      <PackagePath>lib\net9.0\Slang.Net.CPP.dll</PackagePath>
-      <Visible>false</Visible>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <!-- Platform-specific native dependencies for x64 -->
-  <ItemGroup Condition="'$(Platform)' == 'x64'">
-    <Content Include="lib\Debug\x64\gfx.dll" Condition="Exists('lib\Debug\x64\gfx.dll')">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Pack>true</Pack>
-      <PackagePath>runtimes\win-x64\native\gfx.dll</PackagePath>
-    </Content>
-    <Content Include="lib\Debug\x64\slang-glsl-module.dll" Condition="Exists('lib\Debug\x64\slang-glsl-module.dll')">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Pack>true</Pack>
-      <PackagePath>runtimes\win-x64\native\slang-glsl-module.dll</PackagePath>
-    </Content>
-    <Content Include="lib\Debug\x64\slang-glslang.dll" Condition="Exists('lib\Debug\x64\slang-glslang.dll')">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Pack>true</Pack>
-      <PackagePath>runtimes\win-x64\native\slang-glslang.dll</PackagePath>
-    </Content>
-    <Content Include="lib\Debug\x64\slang-llvm.dll" Condition="Exists('lib\Debug\x64\slang-llvm.dll')">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Pack>true</Pack>
-      <PackagePath>runtimes\win-x64\native\slang-llvm.dll</PackagePath>
-    </Content>
-    <Content Include="lib\Debug\x64\slang-rt.dll" Condition="Exists('lib\Debug\x64\slang-rt.dll')">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Pack>true</Pack>
-      <PackagePath>runtimes\win-x64\native\slang-rt.dll</PackagePath>
-    </Content>
-    <Content Include="lib\Debug\x64\slang.dll" Condition="Exists('lib\Debug\x64\slang.dll')">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Pack>true</Pack>
-      <PackagePath>runtimes\win-x64\native\slang.dll</PackagePath>
-    </Content>
-    <Content Include="lib\Debug\x64\Slang.Net.CPP.dll" Condition="Exists('lib\Debug\x64\Slang.Net.CPP.dll')">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Pack>true</Pack>
-      <PackagePath>runtimes\win-x64\native\Slang.Net.CPP.dll</PackagePath>
-    </Content>
-    <Content Include="lib\Debug\x64\Slang.Net.CPP.pdb" Condition="Exists('lib\Debug\x64\Slang.Net.CPP.pdb')">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Pack>true</Pack>
-      <PackagePath>runtimes\win-x64\native\Slang.Net.CPP.pdb</PackagePath>
-    </Content>
-    <Content Include="lib\Debug\x64\SlangNative.dll" Condition="Exists('lib\Debug\x64\SlangNative.dll')">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Pack>true</Pack>
-      <PackagePath>runtimes\win-x64\native\SlangNative.dll</PackagePath>
-    </Content>
-  </ItemGroup>
-  <!-- Platform-specific native dependencies for ARM64 -->  <ItemGroup Condition="'$(Platform)' == 'ARM64'">
-    <Content Include="lib\ARM64\gfx.dll" Condition="Exists('lib\ARM64\gfx.dll')">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Pack>true</Pack>
-      <PackagePath>runtimes\win-arm64\native\gfx.dll</PackagePath>
-    </Content>
-    <Content Include="lib\ARM64\slang-glsl-module.dll" Condition="Exists('lib\ARM64\slang-glsl-module.dll')">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Pack>true</Pack>
-      <PackagePath>runtimes\win-arm64\native\slang-glsl-module.dll</PackagePath>
-    </Content>
-    <Content Include="lib\ARM64\slang-glslang.dll" Condition="Exists('lib\ARM64\slang-glslang.dll')">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Pack>true</Pack>
-      <PackagePath>runtimes\win-arm64\native\slang-glslang.dll</PackagePath>
-    </Content>
-    <Content Include="lib\ARM64\slang-rt.dll" Condition="Exists('lib\ARM64\slang-rt.dll')">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Pack>true</Pack>
-      <PackagePath>runtimes\win-arm64\native\slang-rt.dll</PackagePath>
-    </Content>
-    <Content Include="lib\ARM64\slang.dll" Condition="Exists('lib\ARM64\slang.dll')">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Pack>true</Pack>
-      <PackagePath>runtimes\win-arm64\native\slang.dll</PackagePath>
-    </Content>
-    <Content Include="lib\ARM64\Slang.Net.CPP.dll" Condition="Exists('lib\ARM64\Slang.Net.CPP.dll')">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Pack>true</Pack>
-      <PackagePath>runtimes\win-arm64\native\Slang.Net.CPP.dll</PackagePath>
-    </Content>
-    <Content Include="lib\ARM64\Slang.Net.CPP.pdb" Condition="Exists('lib\ARM64\Slang.Net.CPP.pdb')">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Pack>true</Pack>
-      <PackagePath>runtimes\win-arm64\native\Slang.Net.CPP.pdb</PackagePath>
-    </Content>
-    <Content Include="lib\ARM64\SlangNative.dll" Condition="Exists('lib\ARM64\SlangNative.dll')">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Pack>true</Pack>
-      <PackagePath>runtimes\win-arm64\native\SlangNative.dll</PackagePath>
-    </Content>
-  </ItemGroup>
-  <!-- Include all native dependencies when building for AnyCPU or packaging -->
-  <ItemGroup Condition="'$(Platform)' == 'AnyCPU' OR '$(BuildingProject)' != 'true'">
-    <!-- x64 files -->
-    <Content Include="lib\x64\*.dll" Condition="Exists('lib\x64')">
-      <Pack>true</Pack>
-      <PackagePath>runtimes\win-x64\native\%(Filename)%(Extension)</PackagePath>
-    </Content>
-    <!-- ARM64 files -->
-    <Content Include="lib\ARM64\*.dll" Condition="Exists('lib\ARM64')">
-      <Pack>true</Pack>
-      <PackagePath>runtimes\win-arm64\native\%(Filename)%(Extension)</PackagePath>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Slang.Net.CPP\Slang.Net.CPP.vcxproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="icon.png">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-  </ItemGroup>
-  <!-- Build validation target to ensure required native dependencies are present -->
-  <Target Name="ValidateNativeDependencies" BeforeTargets="Build" Condition="'$(Platform)' != 'AnyCPU'">
-    <PropertyGroup>
-      <PlatformLibDir>$(MSBuildThisFileDirectory)lib\$(Platform)</PlatformLibDir>
-    </PropertyGroup>
-    
-    <!-- Check for required core Slang DLLs -->
-    <ItemGroup>
-      <RequiredFiles Include="$(PlatformLibDir)\slang.dll" />
-      <RequiredFiles Include="$(PlatformLibDir)\slang-rt.dll" />
-      <RequiredFiles Include="$(PlatformLibDir)\SlangNative.dll" />
-      <RequiredFiles Include="$(PlatformLibDir)\Slang.Net.CPP.dll" />
-    </ItemGroup>
-    
-    <!-- Add x64-specific files -->
-    <ItemGroup Condition="'$(Platform)' == 'x64'">
-      <RequiredFiles Include="$(PlatformLibDir)\slang-llvm.dll" />
-    </ItemGroup>
-    
-    <Message Text="Validating native dependencies for platform: $(Platform)" Importance="normal" />
-    <Message Text="Checking for files in: $(PlatformLibDir)" Importance="normal" />
-    
-    <!-- Check each required file -->
-    <Message Text="Checking: %(RequiredFiles.Identity)" Importance="low" />
-    <Error Condition="!Exists('%(RequiredFiles.Identity)')" Text="Required native dependency not found: %(RequiredFiles.Identity). Please ensure the native projects have been built for platform $(Platform)." />
-  </Target>
-  
-  <!-- Pre-build event to prepare the environment -->
-  <Target Name="PreBuildEvent" BeforeTargets="PreBuildEvent">
-    <Exec Command="powershell.exe -ExecutionPolicy Bypass -File '$(ProjectDir)\pre-build.ps1' -Configuration $(Configuration) -Platform $(Platform)" />
-  </Target>
-  
-  <!-- Post-build event to finalize the build -->
-  <Target Name="PostBuildEvent" AfterTargets="PostBuildEvent">
-    <Exec Command="powershell.exe -ExecutionPolicy Bypass -File '$(ProjectDir)\post-build.ps1' -Configuration $(Configuration) -Platform $(Platform)" />
-  </Target>
+	<!-- Ensure Slang.Net.CPP.dll is included in the lib folder of the package for managed references -->
+	<!--<ItemGroup>
+		<Content Include="$(OutputPath)\Slang.Net.CPP.dll">
+			<Pack>true</Pack>
+			<PackagePath>lib\net9.0\Slang.Net.CPP.dll</PackagePath>
+			<Visible>false</Visible>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>-->
+	
+	<!-- Platform-specific native dependencies for x64 -->
+	<ItemGroup Condition="'$(Platform)' == 'x64'">
+		<Content Include="lib\Debug\x64\gfx.dll" Condition="Exists('lib\Debug\x64\gfx.dll')">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-x64\native\gfx.dll</PackagePath>
+		</Content>
+		<Content Include="lib\Debug\x64\slang.dll" Condition="Exists('lib\Debug\x64\slang.dll')">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-x64\native\slang.dll</PackagePath>
+		</Content>
+		<Content Include="lib\Debug\x64\Slang.Net.CPP.dll" Condition="Exists('lib\Debug\x64\Slang.Net.CPP.dll')">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-x64\native\Slang.Net.CPP.dll</PackagePath>
+		</Content>
+		<Content Include="lib\Debug\x64\Slang.Net.CPP.dll.metagen" Condition="Exists('lib\Debug\x64\Slang.Net.CPP.dll.metagen')">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-x64\native\Slang.Net.CPP.dll.metagen</PackagePath>
+		</Content>
+		<Content Include="lib\Debug\x64\Slang.Net.CPP.pdb" Condition="Exists('lib\Debug\x64\Slang.Net.CPP.pdb')">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-x64\native\Slang.Net.CPP.pdb</PackagePath>
+		</Content>
+		<Content Include="lib\Debug\x64\slang-glslang.dll" Condition="Exists('lib\Debug\x64\slang-glslang.dll')">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-x64\native\slang-glslang.dll</PackagePath>
+		</Content>
+		<Content Include="lib\Debug\x64\slang-glsl-module.dll" Condition="Exists('lib\Debug\x64\slang-glsl-module.dll')">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-x64\native\slang-glsl-module.dll</PackagePath>
+		</Content>
+		<Content Include="lib\Debug\x64\slang-llvm.dll" Condition="Exists('lib\Debug\x64\slang-llvm.dll')">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-x64\native\slang-llvm.dll</PackagePath>
+		</Content>
+		<Content Include="lib\Debug\x64\SlangNative.dll" Condition="Exists('lib\Debug\x64\SlangNative.dll')">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-x64\native\SlangNative.dll</PackagePath>
+		</Content>
+		<Content Include="lib\Debug\x64\SlangNative.lib" Condition="Exists('lib\Debug\x64\SlangNative.lib')">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-x64\native\SlangNative.lib</PackagePath>
+		</Content>
+		<Content Include="lib\Debug\x64\slang-rt.dll" Condition="Exists('lib\Debug\x64\slang-rt.dll')">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-x64\native\slang-rt.dll</PackagePath>
+		</Content>
+	</ItemGroup>
+
+	<!-- Platform-specific native dependencies for ARM64 -->
+	<ItemGroup Condition="'$(Platform)' == 'ARM64'">
+		<Content Include="lib\Debug\ARM64\gfx.dll" Condition="Exists('lib\Debug\ARM64\gfx.dll')">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-arm64\native\gfx.dll</PackagePath>
+		</Content>
+		<Content Include="lib\Debug\ARM64\slang.dll" Condition="Exists('lib\Debug\ARM64\slang.dll')">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-arm64\native\slang.dll</PackagePath>
+		</Content>
+		<Content Include="lib\Debug\ARM64\Slang.Net.CPP.dll" Condition="Exists('lib\Debug\ARM64\Slang.Net.CPP.dll')">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-arm64\native\Slang.Net.CPP.dll</PackagePath>
+		</Content>
+		<Content Include="lib\Debug\ARM64\Slang.Net.CPP.dll.metagen" Condition="Exists('lib\Debug\ARM64\Slang.Net.CPP.dll.metagen')">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-arm64\native\Slang.Net.CPP.dll.metagen</PackagePath>
+		</Content>
+		<Content Include="lib\Debug\ARM64\Slang.Net.CPP.pdb" Condition="Exists('lib\Debug\ARM64\Slang.Net.CPP.pdb')">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-arm64\native\Slang.Net.CPP.pdb</PackagePath>
+		</Content>
+		<Content Include="lib\Debug\ARM64\slang-glslang.dll" Condition="Exists('lib\Debug\ARM64\slang-glslang.dll')">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-arm64\native\slang-glslang.dll</PackagePath>
+		</Content>
+		<Content Include="lib\Debug\ARM64\slang-glsl-module.dll" Condition="Exists('lib\Debug\ARM64\slang-glsl-module.dll')">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-arm64\native\slang-glsl-module.dll</PackagePath>
+		</Content>
+		<Content Include="lib\Debug\ARM64\slang-llvm.dll" Condition="Exists('lib\Debug\ARM64\slang-llvm.dll')">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-arm64\native\slang-llvm.dll</PackagePath>
+		</Content>
+		<Content Include="lib\Debug\ARM64\SlangNative.dll" Condition="Exists('lib\Debug\ARM64\SlangNative.dll')">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-arm64\native\SlangNative.dll</PackagePath>
+		</Content>
+		<Content Include="lib\Debug\ARM64\SlangNative.lib" Condition="Exists('lib\Debug\ARM64\SlangNative.lib')">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-arm64\native\SlangNative.lib</PackagePath>
+		</Content>
+		<Content Include="lib\Debug\ARM64\slang-rt.dll" Condition="Exists('lib\Debug\ARM64\slang-rt.dll')">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-arm64\native\slang-rt.dll</PackagePath>
+		</Content>
+	</ItemGroup>
+	
+	<!-- Include all native dependencies when building for AnyCPU or packaging -->
+	<ItemGroup Condition="'$(Platform)' == 'AnyCPU' OR '$(BuildingProject)' != 'true'">
+		<!-- x64 files -->
+		<Content Include="lib\x64\*.dll" Condition="Exists('lib\x64')">
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-x64\native\%(Filename)%(Extension)</PackagePath>
+		</Content>
+		<!-- ARM64 files -->
+		<Content Include="lib\ARM64\*.dll" Condition="Exists('lib\ARM64')">
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-arm64\native\%(Filename)%(Extension)</PackagePath>
+		</Content>
+	</ItemGroup>
+	
+	<ItemGroup>
+		<ProjectReference Include="..\Slang.Net.CPP\Slang.Net.CPP.vcxproj" />
+	</ItemGroup>
+	
+	<ItemGroup>
+		<None Update="icon.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+	
+	<!-- Build validation target to ensure required native dependencies are present -->
+	<Target Name="ValidateNativeDependencies" BeforeTargets="Build" Condition="'$(Platform)' != 'AnyCPU'">
+		<PropertyGroup>
+			<PlatformLibDir>$(MSBuildThisFileDirectory)lib\$(Platform)</PlatformLibDir>
+		</PropertyGroup>
+
+		<!-- Check for required core Slang DLLs -->
+		<ItemGroup>
+			<RequiredFiles Include="$(PlatformLibDir)\slang.dll" />
+			<RequiredFiles Include="$(PlatformLibDir)\slang-rt.dll" />
+			<RequiredFiles Include="$(PlatformLibDir)\SlangNative.dll" />
+			<RequiredFiles Include="$(PlatformLibDir)\Slang.Net.CPP.dll" />
+		</ItemGroup>
+
+		<!-- Add x64-specific files -->
+		<ItemGroup Condition="'$(Platform)' == 'x64'">
+			<RequiredFiles Include="$(PlatformLibDir)\slang-llvm.dll" />
+		</ItemGroup>
+
+		<Message Text="Validating native dependencies for platform: $(Platform)" Importance="normal" />
+		<Message Text="Checking for files in: $(PlatformLibDir)" Importance="normal" />
+
+		<!-- Check each required file -->
+		<Message Text="Checking: %(RequiredFiles.Identity)" Importance="low" />
+		<Error Condition="!Exists('%(RequiredFiles.Identity)')" Text="Required native dependency not found: %(RequiredFiles.Identity). Please ensure the native projects have been built for platform $(Platform)." />
+	</Target>
+
+	<!-- Pre-build event to prepare the environment -->
+	<Target Name="PreBuildEvent" BeforeTargets="PreBuildEvent">
+		<Exec Command="powershell.exe -ExecutionPolicy Bypass -File '$(ProjectDir)\pre-build.ps1' -Configuration $(Configuration) -Platform $(Platform)" />
+	</Target>
+
+	<!-- Post-build event to finalize the build -->
+	<Target Name="PostBuildEvent" AfterTargets="PostBuildEvent">
+		<Exec Command="powershell.exe -ExecutionPolicy Bypass -File '$(ProjectDir)\post-build.ps1' -Configuration $(Configuration) -Platform $(Platform)" />
+	</Target>
 
 </Project>
