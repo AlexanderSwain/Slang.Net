@@ -47,12 +47,26 @@ $msbuildPaths = @(
 $msbuildPath = $null
 
 # First, if called from Visual Studio, don't try to find MSBuild - we'll skip calling it later
+# Find MSBuild (we might need it even when running from Visual Studio if output is missing)
+$msbuildPath = $null
+
+# When running from Visual Studio, try to get the MSBuild path from environment or process
 if ($FromVisualStudio) {
-    # Visual Studio is already running MSBuild, so we don't need to find it
-    Write-Host "Running from Visual Studio - will skip MSBuild step" -ForegroundColor Green
+    # First try the MSBuild environment variable
+    if ($env:MSBUILD) {
+        $msbuildPath = $env:MSBUILD
+        Write-Host "Found MSBuild from environment: $msbuildPath" -ForegroundColor Green
+    }
+    # If not found, try to find the current MSBuild process
+    elseif (Get-Process -Name "MSBuild" -ErrorAction SilentlyContinue) {
+        $msbuildProcess = Get-Process -Name "MSBuild" | Select-Object -First 1
+        $msbuildPath = $msbuildProcess.Path
+        Write-Host "Found MSBuild from running process: $msbuildPath" -ForegroundColor Green
+    }
 }
-else {
-    # Try to find MSBuild in standard locations
+
+# Try to find MSBuild in standard locations if not found above
+if (-not $msbuildPath) {
     foreach ($path in $msbuildPaths) {
         if (Test-Path $path) {
             $msbuildPath = $path
@@ -60,27 +74,37 @@ else {
             break
         }
     }
+}
+
+# If not found in standard locations, try to find it using vswhere
+if (-not $msbuildPath) {
+    Write-Host "Trying to locate MSBuild using vswhere..." -ForegroundColor Yellow
     
-    # If not found in standard locations, try to find it using vswhere
-    if (-not $msbuildPath) {
-        Write-Host "Trying to locate MSBuild using vswhere..." -ForegroundColor Yellow
-        
-        # vswhere is installed with Visual Studio 2017 and later
-        $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
-        
-        if (Test-Path $vswhere) {
-            $vsPath = & $vswhere -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
-            if ($vsPath) {
-                $potentialMsBuildPath = Join-Path $vsPath "MSBuild\Current\Bin\MSBuild.exe"
-                if (Test-Path $potentialMsBuildPath) {
-                    $msbuildPath = $potentialMsBuildPath
-                    Write-Host "Found MSBuild using vswhere at: $msbuildPath" -ForegroundColor Green
-                }
+    # vswhere is installed with Visual Studio 2017 and later
+    $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+    
+    if (Test-Path $vswhere) {
+        $vsPath = & $vswhere -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
+        if ($vsPath) {
+            $potentialMsBuildPath = Join-Path $vsPath "MSBuild\Current\Bin\MSBuild.exe"
+            if (Test-Path $potentialMsBuildPath) {
+                $msbuildPath = $potentialMsBuildPath
+                Write-Host "Found MSBuild using vswhere at: $msbuildPath" -ForegroundColor Green
             }
         }
     }
-    
-    # Exit if MSBuild is not found and we need to use it
+}
+
+if ($FromVisualStudio) {
+    # Visual Studio is already running MSBuild, so we may not need to use it
+    if ($msbuildPath) {
+        Write-Host "Running from Visual Studio - MSBuild available if needed" -ForegroundColor Green
+    } else {
+        Write-Host "Running from Visual Studio - MSBuild not found but may not be needed" -ForegroundColor Yellow
+    }
+}
+else {
+    # Exit if MSBuild is not found when running standalone
     if (-not $msbuildPath) {
         Write-Host "Could not find MSBuild.exe in any of the expected locations." -ForegroundColor Red
         Write-Host "Make sure Visual Studio is installed with C++ development tools." -ForegroundColor Red
@@ -131,17 +155,40 @@ foreach ($file in $nativeOutputFiles) {
 # STEP 2: Build Slang.Net.CPP project for the specified platform
 Write-Host "Build Slang.Net.CPP(STEP 2): MSBuild Slang.Net.CPP project $Configuration|$Platform..." -ForegroundColor Green
 
-if ($FromVisualStudio) {
-    # When running from Visual Studio, we don't need to build the project again
-    Write-Host "Visual Studio already ran MSBuild. Proceeding with output verification..." -ForegroundColor Green
+# Check if the expected output already exists and is not a placeholder
+$expectedOutputPath = "$slangNetCppOutputDir\Slang.Net.CPP.dll"
+$needsToBuild = $true
+
+if (Test-Path $expectedOutputPath) {
+    $fileInfo = Get-Item $expectedOutputPath
+    if ($fileInfo.Length -gt 100) {  # Real DLL should be much larger than a placeholder
+        if ($FromVisualStudio) {
+            Write-Host "Visual Studio already built valid output. Proceeding with output verification..." -ForegroundColor Green
+            $needsToBuild = $false
+        } else {
+            Write-Host "Valid output already exists, but rebuilding anyway since not from Visual Studio..." -ForegroundColor Green
+        }
+    } else {
+        Write-Host "Found placeholder file, need to build..." -ForegroundColor Yellow
+    }
 } else {
-    # When running standalone from command line, build the project
+    Write-Host "No output found, need to build..." -ForegroundColor Yellow
+}
+
+if ($needsToBuild) {
+    # Build the project
     Write-Host "MSBuild Slang.Net.CPP project $Configuration|$Platform..." -ForegroundColor Green
+
+    if (-not $msbuildPath) {
+        Write-Host "ERROR: MSBuild path not found but rebuild is required!" -ForegroundColor Red
+        Write-Host "Cannot build when output is missing/invalid and MSBuild is not available." -ForegroundColor Red
+        exit 1
+    }
 
     # Map "x86" platform to "Win32" if needed (MSBuild uses "Win32" for 32-bit builds)
     $msbuildPlatform = if ($Platform -eq "x86") { "Win32" } else { $Platform }
     # Skip PreBuildEvent and PostBuildEvent targets
-    & $msbuildPath "$cppDir\Slang.Net.CPP.vcxproj" /p:Configuration=$Configuration /p:Platform=$msbuildPlatform /t:Rebuild /p:PreBuildEventUseInBuild=false /p:PostBuildEventUseInBuild=false
+    & $msbuildPath "$cppDir\Slang.Net.CPP.vcxproj" /p:Configuration=$Configuration /p:Platform=$msbuildPlatform /p:RunTargetsOnly=true /t:Build /p:PreBuildEventUseInBuild=false /p:PostBuildEventUseInBuild=false
 
     if (-not $?) {
         Write-Host "Slang.Net.CPP build failed!" -ForegroundColor Red

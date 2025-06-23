@@ -282,12 +282,17 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <!-- Custom targets for dependency management -->
-  <Target Name="CustomBuild" BeforeTargets="PrepareForBuild">
+  <Target Name="CustomBuild" BeforeTargets="PrepareForBuild" Condition="'$(Platform)' == 'All'">
     <Message Importance="high" Text="Building Slang.Net.CPP dependencies with custom build script... (Configuration: $(Configuration), Platform: $(Platform))" />
     <Exec Command="powershell -ExecutionPolicy Bypass -File $(ProjectDir)..\all-platforms.ps1 -Script $(ProjectDir)build.ps1 -FromVisualStudio"/>
   </Target>
   
-  <Target Name="CustomClean" BeforeTargets="CoreClean">
+  <!-- <Target Name="CustomBuild" BeforeTargets="PrepareForBuild" Condition="'$(Platform) != All'">
+    <Message Importance="high" Text="Building Slang.Net.CPP dependencies with custom build script... (Configuration: $(Configuration), Platform: $(Platform))" />
+    <Exec Command="powershell -ExecutionPolicy Bypass -File $(ProjectDir)build.ps1 -Configuration $(Configuration) -Platform $(Platform) -FromVisualStudio"/>
+  </Target> -->
+  
+  <Target Name="CustomClean" BeforeTargets="CoreClean" Condition="'$(Platform)' == 'All'">
     <Message Importance="high" Text="Cleaning Slang.Net.CPP with custom clean script for all platforms... (Configuration: $(Configuration), Platform: $(Platform))" />
     <Exec Command="powershell -ExecutionPolicy Bypass -File $(ProjectDir)..\all-platforms.ps1 -Script $(ProjectDir)cleaner.ps1 -FromVisualStudio"/>
   </Target>
