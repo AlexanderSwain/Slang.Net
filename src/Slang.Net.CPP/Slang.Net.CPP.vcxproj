@@ -272,35 +272,24 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
+    <Reference Include="System.Core" />  </ItemGroup>
+  <!-- Use a ProjectReference with ReferenceOutputAssembly=false to ensure build order without managed reference -->
   <ItemGroup>
     <ProjectReference Include="..\Native\SlangNative.vcxproj">
       <Project>{c3d8f1a9-2e4f-4b5a-9d1e-8f7c9d0e1f3c}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <!-- Custom targets for dependency management -->
+  <Target Name="CustomBuild" BeforeTargets="PrepareForBuild">
+    <Message Importance="high" Text="Building Slang.Net.CPP dependencies with custom build script... (Configuration: $(Configuration), Platform: $(Platform))" />
+    <Exec Command="powershell -ExecutionPolicy Bypass -File $(ProjectDir)..\all-platforms.ps1 -Script $(ProjectDir)build.ps1 -FromVisualStudio"/>
+  </Target>
   
-  <!-- Override default targets to use our custom build script for all platforms -->
-  <Target Name="Build" DependsOnTargets="$(BuildDependsOn)" Returns="$(TargetPath)" />
-  <Target Name="Rebuild" DependsOnTargets="Clean;Build" />
-  <Target Name="Clean">
+  <Target Name="CustomClean" BeforeTargets="CoreClean">
     <Message Importance="high" Text="Cleaning Slang.Net.CPP with custom clean script for all platforms... (Configuration: $(Configuration), Platform: $(Platform))" />
     <Exec Command="powershell -ExecutionPolicy Bypass -File $(ProjectDir)..\all-platforms.ps1 -Script $(ProjectDir)cleaner.ps1 -FromVisualStudio"/>
-  </Target>
-    
-  <!-- Add this target to the BuildDependsOn property to make it part of the build process -->
-  <PropertyGroup>
-    <BuildDependsOn>
-      CustomBuild;
-      $(BuildDependsOn)
-    </BuildDependsOn>
-  </PropertyGroup>
-  
-  <!-- Custom build target -->
-  <Target Name="CustomBuild">
-    <Message Importance="high" Text="Building Slang.Net.CPP with custom build script... (Configuration: $(Configuration), Platform: $(Platform))" />
-    <Exec Command="powershell -ExecutionPolicy Bypass -File $(ProjectDir)..\all-platforms.ps1 -Script $(ProjectDir)build.ps1 -FromVisualStudio"/>
   </Target>
   
   <!-- Add a special target specifically for Debug ARM64 to ensure it gets built -->

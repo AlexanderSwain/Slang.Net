@@ -171,15 +171,14 @@
 		</Content>
 		<!-- ARM64 files would need to be handled separately since they're in different directories -->
 	</ItemGroup>
-
 	<ItemGroup>
-		<ProjectReference Include="..\Slang.Net.CPP\Slang.Net.CPP.vcxproj"  Condition="$(RunTargetsOnly) == ''" />
+		<ProjectReference Include="..\Slang.Net.CPP\Slang.Net.CPP.vcxproj" Condition="'$(RunTargetsOnly)' == ''" />
 	</ItemGroup>
 
-	<!-- Add direct references to the pre-built DLLs for each platform -->
-	<ItemGroup>
-		<Reference Include="Slang.Net.CPP" Condition="$(RunTargetsOnly) != ''">
-			<HintPath>$(MSBuildThisFileDirectory)lib\$(Configuration)\net9.0\$(Platform)\Slang.Net.CPP.dll</HintPath>
+	<!-- Add direct references to the pre-built DLLs for each platform when RunTargetsOnly is set -->
+	<ItemGroup Condition="'$(RunTargetsOnly)' != ''">
+		<Reference Include="Slang.Net.CPP">
+			<HintPath>$(MSBuildThisFileDirectory)bin\$(Configuration)\net9.0\Slang.Net.CPP.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
 	</ItemGroup>
@@ -189,11 +188,10 @@
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
 		</None>
-	</ItemGroup>
-	<!-- Build validation target to ensure required native dependencies are present -->
+	</ItemGroup>	<!-- Build validation target to ensure required native dependencies are present -->
 	<Target Name="ValidateNativeDependencies" BeforeTargets="Build" Condition="'$(Platform)' != 'AnyCPU'">
 		<PropertyGroup>
-			<PlatformLibDir>$(MSBuildThisFileDirectory)bin\$(Configuration)\net9.0</PlatformLibDir>
+			<PlatformLibDir>$(MSBuildThisFileDirectory)lib\$(Configuration)\net9.0\$(Platform)</PlatformLibDir>
 		</PropertyGroup>
 
 		<!-- Check for required core Slang DLLs -->

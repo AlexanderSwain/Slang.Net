@@ -30,11 +30,16 @@ Write-Host "DEBUG: -FromVisualStudio = $FromVisualStudio" -ForegroundColor Yello
 # Directories
 $slangNetDir = $PSScriptRoot
 $cppOutputDir = "$PSScriptRoot\..\Slang.Net.CPP\bin\$Configuration\net9.0\$Platform"
+$outputDir = "$PSScriptRoot\bin\$Configuration\net9.0"
 $libDir = "$PSScriptRoot\lib\$Configuration\net9.0\$Platform"
 
-# Ensure output directory exists`
+# Ensure output directories exist
+if (-not (Test-Path -Path $outputDir)) {
+    New-Item -ItemType Directory -Path $outputDir -Force | Out-Null
+    Write-Host "Created directory: $outputDir" -ForegroundColor Yellow
+}
+
 if (-not (Test-Path -Path $libDir)) {
-    # Create directory and all parent directories if they don't exist
     New-Item -ItemType Directory -Path $libDir -Force | Out-Null
     Write-Host "Created directory: $libDir" -ForegroundColor Yellow
 }
@@ -90,6 +95,18 @@ foreach ($file in $optionalFiles) {
     }
 }
 
+# Copy Slang.Net.CPP.dll to the main output directory for MSBuild reference
+$mainCppDll = "$cppOutputDir\Slang.Net.CPP.dll"
+if (Test-Path $mainCppDll) {
+    Copy-Item $mainCppDll $outputDir -Force
+    Write-Host "Copied for MSBuild reference: $mainCppDll to $outputDir" -ForegroundColor Cyan
+}
+else {
+    Write-Host "Missing managed assembly: $mainCppDll" -ForegroundColor Red
+    Write-Host "Slang.Net build failed due to missing managed assembly!" -ForegroundColor Red
+    exit 1
+}
+
 # STEP 2: Build Slang.Net project for the specified platform
 Write-Host "Build Slang.Net(STEP 2): Building Slang.Net project $Configuration|$Platform..." -ForegroundColor Green
 
@@ -114,6 +131,8 @@ $slangNetOutputFiles = @(
 
 # Alternative locations to check if the file is not in the expected path
 $alternativeLocations = @(
+    "$PSScriptRoot\bin\$Platform\$Configuration\net9.0\Slang.Net.dll",
+    "$PSScriptRoot\bin\$Configuration\net9.0\Slang.Net.dll",
     "$PSScriptRoot\bin\$Configuration\$Platform\Slang.Net.dll",
     "$PSScriptRoot\bin\$Configuration\Slang.Net.dll"
 )
