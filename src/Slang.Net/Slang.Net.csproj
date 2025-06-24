@@ -28,7 +28,8 @@
 		<Exec Command="powershell -ExecutionPolicy Bypass -File $(SolutionDir)src\all-platforms.ps1 -Script $(ProjectDir)cleaner.ps1 -FromVisualStudio" ContinueOnError="false" />
 	</Target>
 
-	<!-- Custom target for building with all-platforms.ps1 -->	<Target Name="SlangNetCustomBuild" BeforeTargets="BeforeBuild" Condition="'$(RunTargetsOnly)' != 'true' AND '$(MSBuildRuntimeType)' != 'Core'">
+	<!-- Custom target for building with all-platforms.ps1 -->	
+	<Target Name="SlangNetCustomBuild" BeforeTargets="BeforeBuild" Condition="'$(RunTargetsOnly)' != 'true' AND '$(MSBuildRuntimeType)' != 'Core'">
 		<Message Text="Building Slang.Net with custom build script... (Configuration: $(Configuration), Platform: $(Platform))" Importance="high" />
     <Message Importance="high" Text="=== MSBuild Variable Debug Information ===" />
     <Message Importance="high" Text="SolutionDir = $(SolutionDir)" />
@@ -72,24 +73,17 @@
 		<Folder Include="lib\ARM64\" />
 		<Folder Include="lib\x64\" />
 		<Folder Include="lib\Debug\x64\" />
-	</ItemGroup>
-	<!-- Include Slang.Net.CPP.dll as a reference in the package -->
-	<!--<ItemGroup>
-    <Reference Include="Slang.Net.CPP">
-      <HintPath>$(OutputPath)\Slang.Net.CPP.dll</HintPath>
-      <Private>true</Private>
-    </Reference>
-  </ItemGroup>-->
-
-	<!-- Ensure Slang.Net.CPP.dll is included in the lib folder of the package for managed references -->
-	<!--<ItemGroup>
-		<Content Include="$(OutputPath)\Slang.Net.CPP.dll">
+	</ItemGroup>	
+	
+	<!-- Include Slang.Net.CPP.dll in the lib folder of the package for managed references -->
+	<ItemGroup>
+		<Content Include="bin\$(Configuration)\net9.0\Slang.Net.CPP.dll" Condition="Exists('bin\$(Configuration)\net9.0\Slang.Net.CPP.dll')">
 			<Pack>true</Pack>
 			<PackagePath>lib\net9.0\Slang.Net.CPP.dll</PackagePath>
 			<Visible>false</Visible>
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
-	</ItemGroup>-->
+	</ItemGroup>
 	<!-- Platform-specific native dependencies for x64 -->
 	<ItemGroup>
 		<Content Include="lib\$(Configuration)\net9.0\x64\gfx.dll" Condition="Exists('lib\$(Configuration)\net9.0\x64\gfx.dll')">
