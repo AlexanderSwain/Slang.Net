@@ -28,8 +28,7 @@
 		<Exec Command="powershell -ExecutionPolicy Bypass -File $(SolutionDir)src\all-platforms.ps1 -Script $(ProjectDir)cleaner.ps1 -FromVisualStudio" ContinueOnError="false" />
 	</Target>
 
-	<!-- Custom target for building with all-platforms.ps1 -->
-	<Target Name="SlangNetCustomBuild" BeforeTargets="BeforeBuild" Condition="'$(RunTargetsOnly)' != 'true'">
+	<!-- Custom target for building with all-platforms.ps1 -->	<Target Name="SlangNetCustomBuild" BeforeTargets="BeforeBuild" Condition="'$(RunTargetsOnly)' != 'true' AND '$(MSBuildRuntimeType)' != 'Core'">
 		<Message Text="Building Slang.Net with custom build script... (Configuration: $(Configuration), Platform: $(Platform))" Importance="high" />
     <Message Importance="high" Text="=== MSBuild Variable Debug Information ===" />
     <Message Importance="high" Text="SolutionDir = $(SolutionDir)" />
@@ -39,6 +38,19 @@
     <Message Importance="high" Text="MSBuildThisFileDirectory = $(MSBuildThisFileDirectory)" />
     <Message Importance="high" Text="===================================" />
 		<Exec Command="powershell -ExecutionPolicy Bypass -File $(MSBuildThisFileDirectory)..\all-platforms-for-config.ps1 -Script $(ProjectDir)build.ps1 -Configuration $(Configuration) -FromVisualStudio" ContinueOnError="false" />
+	</Target>
+
+	<!-- Custom target for dotnet CLI builds - skip native builds and use pre-built binaries -->
+	<Target Name="SlangNetDotnetBuild" BeforeTargets="BeforeBuild" Condition="'$(RunTargetsOnly)' != 'true' AND '$(MSBuildRuntimeType)' == 'Core'">
+		<Message Text="Building Slang.Net with dotnet CLI - using pre-built binaries... (Configuration: $(Configuration), Platform: $(Platform))" Importance="high" />
+		<Message Importance="high" Text="=== dotnet CLI Build Mode ===" />
+		<Message Importance="high" Text="Configuration = $(Configuration)" />
+		<Message Importance="high" Text="Platform = $(Platform)" />
+		<Message Importance="high" Text="MSBuildRuntimeType = $(MSBuildRuntimeType)" />
+		<Message Importance="high" Text="==============================" />
+		<!-- For dotnet CLI, we need to ensure the pre-built C++/CLI assembly is available -->
+		<Error Text="Pre-built Slang.Net.CPP.dll not found. Please build the solution with MSBuild/Visual Studio first before using dotnet pack." 
+		       Condition="!Exists('$(MSBuildThisFileDirectory)bin\$(Configuration)\net9.0\Slang.Net.CPP.dll')" />
 	</Target>
 
 	<ItemGroup>
@@ -176,13 +188,13 @@
 			<PackagePath>runtimes\win-x64\native\%(Filename)%(Extension)</PackagePath>
 		</Content>
 		<!-- ARM64 files would need to be handled separately since they're in different directories -->
-	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="..\Slang.Net.CPP\Slang.Net.CPP.vcxproj" Condition="'$(RunTargetsOnly)' == ''" />
+	</ItemGroup>	<ItemGroup>
+		<!-- Only include C++/CLI project reference when using MSBuild (not dotnet CLI) -->
+		<ProjectReference Include="..\Slang.Net.CPP\Slang.Net.CPP.vcxproj" Condition="'$(RunTargetsOnly)' == '' AND '$(MSBuildRuntimeType)' != 'Core'" />
 	</ItemGroup>
 
-	<!-- Add direct references to the pre-built DLLs for each platform when RunTargetsOnly is set -->
-	<ItemGroup Condition="'$(RunTargetsOnly)' != ''">
+	<!-- Add direct references to the pre-built DLLs when using dotnet CLI or when RunTargetsOnly is set -->
+	<ItemGroup Condition="'$(RunTargetsOnly)' != '' OR '$(MSBuildRuntimeType)' == 'Core'">
 		<Reference Include="Slang.Net.CPP">
 			<HintPath>$(MSBuildThisFileDirectory)bin\$(Configuration)\net9.0\Slang.Net.CPP.dll</HintPath>
 			<Private>false</Private>
