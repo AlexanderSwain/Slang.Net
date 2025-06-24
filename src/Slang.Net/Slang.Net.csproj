@@ -20,7 +20,7 @@
 		<PackageTags>slang;shader;graphics;hlsl;glsl;cross-platform</PackageTags>
 		<PackageIcon>icon.png</PackageIcon>
 		<RepositoryUrl>https://github.com/AlexanderSwain/Slang.Net.git</RepositoryUrl>
-		<PackageOutputPath>$(SolutionDir)Build\</PackageOutputPath>
+		<PackageOutputPath>$(SolutionDir)Build\$(Configuration)\</PackageOutputPath>
 	</PropertyGroup>
 	<!-- Custom target for cleaning with all-platforms.ps1 -->
 	<Target Name="SlangNetCustomClean" BeforeTargets="BeforeClean">
@@ -38,7 +38,7 @@
     <Message Importance="high" Text="Platform = $(Platform)" />
     <Message Importance="high" Text="MSBuildThisFileDirectory = $(MSBuildThisFileDirectory)" />
     <Message Importance="high" Text="===================================" />
-		<Exec Command="powershell -ExecutionPolicy Bypass -File $(SolutionDir)src\all-platforms.ps1 -Script $(ProjectDir)build.ps1 -FromVisualStudio" ContinueOnError="false" />
+		<Exec Command="powershell -ExecutionPolicy Bypass -File $(MSBuildThisFileDirectory)..\all-platforms-for-config.ps1 -Script $(ProjectDir)build.ps1 -Configuration $(Configuration) -FromVisualStudio" ContinueOnError="false" />
 	</Target>
 
 	<ItemGroup>
@@ -79,44 +79,44 @@
 		</Content>
 	</ItemGroup>-->
 	<!-- Platform-specific native dependencies for x64 -->
-	<ItemGroup Condition="'$(Platform)' == 'x64'">
-		<Content Include="bin\$(Configuration)\net9.0\gfx.dll" Condition="Exists('bin\$(Configuration)\net9.0\gfx.dll')">
+	<ItemGroup>
+		<Content Include="lib\$(Configuration)\net9.0\x64\gfx.dll" Condition="Exists('lib\$(Configuration)\net9.0\x64\gfx.dll')">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-x64\native\gfx.dll</PackagePath>
 		</Content>
-		<Content Include="bin\$(Configuration)\net9.0\slang.dll" Condition="Exists('bin\$(Configuration)\net9.0\slang.dll')">
+		<Content Include="lib\$(Configuration)\net9.0\x64\slang.dll" Condition="Exists('lib\$(Configuration)\net9.0\x64\slang.dll')">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-x64\native\slang.dll</PackagePath>
 		</Content>
 
-		<Content Include="bin\$(Configuration)\net9.0\slang-glslang.dll" Condition="Exists('bin\$(Configuration)\net9.0\slang-glslang.dll')">
+		<Content Include="lib\$(Configuration)\net9.0\x64\slang-glslang.dll" Condition="Exists('lib\$(Configuration)\net9.0\x64\slang-glslang.dll')">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-x64\native\slang-glslang.dll</PackagePath>
 		</Content>
-		<Content Include="bin\$(Configuration)\net9.0\slang-glsl-module.dll" Condition="Exists('bin\$(Configuration)\net9.0\slang-glsl-module.dll')">
+		<Content Include="lib\$(Configuration)\net9.0\x64\slang-glsl-module.dll" Condition="Exists('lib\$(Configuration)\net9.0\x64\slang-glsl-module.dll')">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-x64\native\slang-glsl-module.dll</PackagePath>
 		</Content>
-		<Content Include="bin\$(Configuration)\net9.0\slang-llvm.dll" Condition="Exists('bin\$(Configuration)\net9.0\slang-llvm.dll')">
+		<Content Include="lib\$(Configuration)\net9.0\x64\slang-llvm.dll" Condition="Exists('lib\$(Configuration)\net9.0\x64\slang-llvm.dll')">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-x64\native\slang-llvm.dll</PackagePath>
 		</Content>
-		<Content Include="bin\$(Configuration)\net9.0\SlangNative.dll" Condition="Exists('bin\$(Configuration)\net9.0\SlangNative.dll')">
+		<Content Include="lib\$(Configuration)\net9.0\x64\SlangNative.dll" Condition="Exists('lib\$(Configuration)\net9.0\x64\SlangNative.dll')">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-x64\native\SlangNative.dll</PackagePath>
 		</Content>
-		<Content Include="bin\$(Configuration)\net9.0\SlangNative.lib" Condition="Exists('bin\$(Configuration)\net9.0\SlangNative.lib')">
+		<Content Include="lib\$(Configuration)\net9.0\x64\SlangNative.lib" Condition="Exists('lib\$(Configuration)\net9.0\x64\SlangNative.lib')">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-x64\native\SlangNative.lib</PackagePath>
 		</Content>
-		<Content Include="bin\$(Configuration)\net9.0\slang-rt.dll" Condition="Exists('bin\$(Configuration)\net9.0\slang-rt.dll')">
+		<Content Include="lib\$(Configuration)\net9.0\x64\slang-rt.dll" Condition="Exists('lib\$(Configuration)\net9.0\x64\slang-rt.dll')">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-x64\native\slang-rt.dll</PackagePath>
@@ -124,44 +124,50 @@
 	</ItemGroup>
 
 	<!-- Platform-specific native dependencies for ARM64 -->
-	<ItemGroup Condition="'$(Platform)' == 'ARM64'">
-		<Content Include="bin\$(Configuration)\net9.0\gfx.dll" Condition="Exists('bin\$(Configuration)\net9.0\gfx.dll')">
+	<ItemGroup>
+		<Content Include="lib\$(Configuration)\net9.0\ARM64\gfx.dll" Condition="Exists('lib\$(Configuration)\net9.0\ARM64\gfx.dll')">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Pack>true</Pack>
-			<PackagePath>runtimes\win-arm64\native\gfx.dll</PackagePath>
+			<PackagePath>runtimes\win-ARM64\native\gfx.dll</PackagePath>
 		</Content>
-		<Content Include="bin\$(Configuration)\net9.0\slang.dll" Condition="Exists('bin\$(Configuration)\net9.0\slang.dll')">
+		<Content Include="lib\$(Configuration)\net9.0\ARM64\slang.dll" Condition="Exists('lib\$(Configuration)\net9.0\ARM64\slang.dll')">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Pack>true</Pack>
-			<PackagePath>runtimes\win-arm64\native\slang.dll</PackagePath>
+			<PackagePath>runtimes\win-ARM64\native\slang.dll</PackagePath>
 		</Content>
 
-		<Content Include="bin\$(Configuration)\net9.0\slang-glslang.dll" Condition="Exists('bin\$(Configuration)\net9.0\slang-glslang.dll')">
+		<Content Include="lib\$(Configuration)\net9.0\ARM64\slang-glslang.dll" Condition="Exists('lib\$(Configuration)\net9.0\ARM64\slang-glslang.dll')">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Pack>true</Pack>
-			<PackagePath>runtimes\win-arm64\native\slang-glslang.dll</PackagePath>
+			<PackagePath>runtimes\win-ARM64\native\slang-glslang.dll</PackagePath>
 		</Content>
-		<Content Include="bin\$(Configuration)\net9.0\slang-glsl-module.dll" Condition="Exists('bin\$(Configuration)\net9.0\slang-glsl-module.dll')">
+		<Content Include="lib\$(Configuration)\net9.0\ARM64\slang-glsl-module.dll" Condition="Exists('lib\$(Configuration)\net9.0\ARM64\slang-glsl-module.dll')">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Pack>true</Pack>
-			<PackagePath>runtimes\win-arm64\native\slang-glsl-module.dll</PackagePath>
+			<PackagePath>runtimes\win-ARM64\native\slang-glsl-module.dll</PackagePath>
 		</Content>
-		<Content Include="bin\$(Configuration)\net9.0\SlangNative.dll" Condition="Exists('bin\$(Configuration)\net9.0\SlangNative.dll')">
+		<Content Include="lib\$(Configuration)\net9.0\ARM64\slang-llvm.dll" Condition="Exists('lib\$(Configuration)\net9.0\ARM64\slang-llvm.dll')">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Pack>true</Pack>
-			<PackagePath>runtimes\win-arm64\native\SlangNative.dll</PackagePath>
+			<PackagePath>runtimes\win-ARM64\native\slang-llvm.dll</PackagePath>
 		</Content>
-		<Content Include="bin\$(Configuration)\net9.0\SlangNative.lib" Condition="Exists('bin\$(Configuration)\net9.0\SlangNative.lib')">
+		<Content Include="lib\$(Configuration)\net9.0\ARM64\SlangNative.dll" Condition="Exists('lib\$(Configuration)\net9.0\ARM64\SlangNative.dll')">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Pack>true</Pack>
-			<PackagePath>runtimes\win-arm64\native\SlangNative.lib</PackagePath>
+			<PackagePath>runtimes\win-ARM64\native\SlangNative.dll</PackagePath>
 		</Content>
-		<Content Include="bin\$(Configuration)\net9.0\slang-rt.dll" Condition="Exists('bin\$(Configuration)\net9.0\slang-rt.dll')">
+		<Content Include="lib\$(Configuration)\net9.0\ARM64\SlangNative.lib" Condition="Exists('lib\$(Configuration)\net9.0\ARM64\SlangNative.lib')">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Pack>true</Pack>
-			<PackagePath>runtimes\win-arm64\native\slang-rt.dll</PackagePath>
+			<PackagePath>runtimes\win-ARM64\native\SlangNative.lib</PackagePath>
+		</Content>
+		<Content Include="lib\$(Configuration)\net9.0\ARM64\slang-rt.dll" Condition="Exists('lib\$(Configuration)\net9.0\ARM64\slang-rt.dll')">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-ARM64\native\slang-rt.dll</PackagePath>
 		</Content>
 	</ItemGroup>
+	
 	<!-- Include all native dependencies when building for AnyCPU or packaging -->
 	<ItemGroup Condition="'$(Platform)' == 'AnyCPU' OR '$(BuildingProject)' != 'true'">
 		<!-- x64 files -->
@@ -188,31 +194,5 @@
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
 		</None>
-	</ItemGroup>	<!-- Build validation target to ensure required native dependencies are present -->
-	<Target Name="ValidateNativeDependencies" BeforeTargets="Build" Condition="'$(Platform)' != 'AnyCPU'">
-		<PropertyGroup>
-			<PlatformLibDir>$(MSBuildThisFileDirectory)lib\$(Configuration)\net9.0\$(Platform)</PlatformLibDir>
-		</PropertyGroup>
-
-		<!-- Check for required core Slang DLLs -->
-		<ItemGroup>
-			<RequiredFiles Include="$(PlatformLibDir)\slang.dll" />
-			<RequiredFiles Include="$(PlatformLibDir)\slang-rt.dll" />
-			<RequiredFiles Include="$(PlatformLibDir)\SlangNative.dll" />
-			<RequiredFiles Include="$(PlatformLibDir)\Slang.Net.CPP.dll" />
-		</ItemGroup>
-
-		<!-- Add x64-specific files -->
-		<ItemGroup Condition="'$(Platform)' == 'x64'">
-			<RequiredFiles Include="$(PlatformLibDir)\slang-llvm.dll" />
-		</ItemGroup>
-
-		<Message Text="Validating native dependencies for platform: $(Platform)" Importance="normal" />
-		<Message Text="Checking for files in: $(PlatformLibDir)" Importance="normal" />
-
-		<!-- Check each required file -->
-		<Message Text="Checking: %(RequiredFiles.Identity)" Importance="low" />
-		<Error Condition="!Exists('%(RequiredFiles.Identity)')" Text="Required native dependency not found: %(RequiredFiles.Identity). Please ensure the native projects have been built for platform $(Platform)." />
-	</Target>
-
+	</ItemGroup>
 </Project>

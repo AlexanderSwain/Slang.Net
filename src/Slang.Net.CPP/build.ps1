@@ -27,6 +27,14 @@ $cppDir = $PSScriptRoot
 $nativeOutputDir = "$PSScriptRoot\..\Native\bin\$Configuration\$Platform"
 $slangNetCppOutputDir = "$PSScriptRoot\bin\$Configuration\net9.0\$Platform"
 
+# # Check for alternative native output location (newer build system)
+# $alternativeNativeOutputDir = "$PSScriptRoot\..\Native\bin\$Configuration\$Platform\src\Slang.Net\bin\$Configuration\$Platform"
+# if ((Test-Path "$alternativeNativeOutputDir\SlangNative.lib") -and 
+#     (Get-Item "$alternativeNativeOutputDir\SlangNative.lib").Length -gt 100) {
+#     Write-Host "Using alternative native output directory: $alternativeNativeOutputDir" -ForegroundColor Cyan
+#     $nativeOutputDir = $alternativeNativeOutputDir
+# }
+
 # Print parameters for debugging
 Write-Host "DEBUG: -Configuration = $Configuration" -ForegroundColor Yellow
 Write-Host "DEBUG: -Platform = $Platform" -ForegroundColor Yellow
@@ -122,22 +130,44 @@ if (-not (Test-Path -Path $slangNetCppOutputDir)) {
 # STEP 1: Copy native files to Slang.Net.CPP output directory
 Write-Host "Build Slang.Net.CPP(STEP 1): Copy native files..." -ForegroundColor Green
 
-# Define native files to copy
-$nativeOutputFiles = @(
-    "$nativeOutputDir\gfx.dll",
-    "$nativeOutputDir\slang.dll",
-    "$nativeOutputDir\slang-glslang.dll",
-    "$nativeOutputDir\slang-glsl-module.dll",
-    "$nativeOutputDir\SlangNative.dll",
-    "$nativeOutputDir\SlangNative.lib",
-    "$nativeOutputDir\slang-rt.dll"
-)
+## Check if we're using the alternative native output directory
+#$usingAlternativeDir = $nativeOutputDir.Contains("src\Slang.Net\bin")
+#
+#if ($usingAlternativeDir) {
+#    # For alternative directory structure, SDK files are in a different location
+#    $sdkBaseDir = "$PSScriptRoot\..\Native\EmbeddedLLVM\slang-2025.10.3-windows\$Platform\bin"
+#    $nativeOutputFiles = @(
+#        "$sdkBaseDir\gfx.dll",
+#        "$sdkBaseDir\slang.dll", 
+#        "$sdkBaseDir\slang-glslang.dll",
+#        "$sdkBaseDir\slang-glsl-module.dll",
+#        "$nativeOutputDir\SlangNative.dll",
+#        "$nativeOutputDir\SlangNative.lib",
+#        "$sdkBaseDir\slang-rt.dll"
+#    )
+#    
+#    # Add platform-specific files
+#    if ($Platform -ne "ARM64") {
+#        # slang-llvm.dll is not available on ARM64
+#        $nativeOutputFiles += "$sdkBaseDir\slang-llvm.dll"
+#    }
+#} else {
+#    # Original directory structure
+    $nativeOutputFiles = @(
+        "$nativeOutputDir\gfx.dll",
+        "$nativeOutputDir\slang.dll",
+        "$nativeOutputDir\slang-glslang.dll",
+        "$nativeOutputDir\slang-glsl-module.dll",
+        "$nativeOutputDir\SlangNative.dll",
+        "$nativeOutputDir\SlangNative.lib",
+        "$nativeOutputDir\slang-rt.dll"
+    )
 
-# Add platform-specific files
-if ($Platform -ne "ARM64") {
-    # slang-llvm.dll is not available on ARM64
-    $nativeOutputFiles += "$nativeOutputDir\slang-llvm.dll"
-}
+    # Add platform-specific files
+    if ($Platform -ne "ARM64") {
+        # slang-llvm.dll is not available on ARM64
+        $nativeOutputFiles += "$nativeOutputDir\slang-llvm.dll"
+    }
 
 # Copy each native file to output directory
 foreach ($file in $nativeOutputFiles) {

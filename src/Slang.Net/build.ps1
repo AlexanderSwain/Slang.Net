@@ -179,6 +179,3 @@ if ($missingFiles.Count -gt 0) {
     Write-Host "Slang.Net build failed due to missing output files!" -ForegroundColor Red
     exit 1
 }
-
-# Add confirmation that this script completed for this configuration/platform
-Write-Host "Build script completed for $Configuration | $Platform" -ForegroundColor Magenta

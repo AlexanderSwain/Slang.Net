@@ -2,6 +2,9 @@ param(
     [Parameter(Mandatory=$true)]
     [string]$Script,
 
+    [Parameter(Mandatory=$true)]
+    [string]$Configuration,
+
     [switch]$FromVisualStudio
 )
 
@@ -9,11 +12,6 @@ $platforms = @(
     #"x86", # Uncomment when support for x86 is added
     "x64",
     "ARM64"
-)
-
-$configuration = @(
-    "Debug",
-    "Release"
 )
 
 $scriptName = Split-Path -Leaf $Script
@@ -35,7 +33,6 @@ Write-Host "===== EXPLICITLY PROCESSING Debug | ARM64 =====" -ForegroundColor Ma
 & $Script -Configuration "Debug" -Platform "ARM64" -FromVisualStudio:$FromVisualStudio
 
 foreach ($Platform in $platforms) {
-    foreach ($Configuration in $configuration) {
         # Skip Debug | ARM64 since we already processed it explicitly
         if ($Platform -eq "ARM64" -and $Configuration -eq "Debug") {
             Write-Host "DEBUG: Skipping Debug | ARM64 - already processed explicitly" -ForegroundColor Yellow
@@ -59,8 +56,8 @@ foreach ($Platform in $platforms) {
         } catch {
             Write-Host "Exception during $scriptType for $Configuration | $Platform" -ForegroundColor Red
             Write-Host $_.Exception.Message -ForegroundColor Red
-            $errorCount++        }
-    }
+            $errorCount++        
+        }
 }
 
 if ($errorCount -gt 0) {

@@ -105,32 +105,34 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>.\bin\$(Configuration)\$(Platform)\</OutDir>
-    <IntDir>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\obj\$(Platform)\</IntDir>
-    <TargetDir>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\</TargetDir>
+    <IntDir>.\bin\$(Configuration)\$(Platform)\obj\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\</OutDir>
-    <IntDir>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\obj\$(Platform)\</IntDir>
-  </PropertyGroup>  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <OutDir>.\bin\$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>.\bin\$(Configuration)\$(Platform)\obj\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>.\bin\$(Configuration)\$(Platform)\</OutDir>
-    <IntDir>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\obj\$(Platform)\</IntDir>
+    <IntDir>.\bin\$(Configuration)\$(Platform)\obj\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\</OutDir>
-    <IntDir>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\obj\$(Platform)\</IntDir>
-  </PropertyGroup>  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <OutDir>.\bin\$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>.\bin\$(Configuration)\$(Platform)\obj\</IntDir>
+  </PropertyGroup>  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>.\bin\$(Configuration)\$(Platform)\</OutDir>
-    <IntDir>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\obj\$(Platform)\</IntDir>
+    <IntDir>.\bin\$(Configuration)\$(Platform)\obj\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\</OutDir>
-    <IntDir>$(SolutionDir)src\Slang.Net\bin\$(Configuration)\net9.0\obj\$(Platform)\</IntDir>
-  </PropertyGroup>  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>.\bin\$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>.\bin\$(Configuration)\$(Platform)\obj\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
@@ -343,7 +345,7 @@
   <!-- These target definitions MUST come after the Microsoft.Cpp.targets import -->
   <Target Name="Build" DependsOnTargets="$(BuildDependsOn)" Returns="$(TargetPath)" />
   <Target Name="Rebuild" DependsOnTargets="Clean;Build" />  
-  <Target Name="Clean">
+  <Target Name="Clean" BeforeTargets="CoreClean" Condition="'$(Platform)' == 'All'">
     <Message Importance="high" Text="Cleaning SlangNative with custom clean script for all platforms... (Configuration: $(Configuration), Platform: $(Platform))" />
     <Exec Command="powershell -ExecutionPolicy Bypass -File $(ProjectDir)..\all-platforms.ps1 -Script $(ProjectDir)cleaner.ps1 -FromVisualStudio" />
   </Target>
@@ -355,17 +357,23 @@
       $(BuildDependsOn)
     </BuildDependsOn>
   </PropertyGroup>  
+
+	<!-- Pre-build event to prepare the environment -->
+	<Target Name="CustomPreBuild" BeforeTargets="PreBuildEvent" Condition="'$(PreBuildDisabled)' == ''">
+		<Exec Command="powershell.exe -ExecutionPolicy Bypass -File $(ProjectDir)pre-build.ps1 -Configuration $(Configuration) -Platform $(Platform)" />
+	</Target>
+
   <!-- Custom build target -->  
-  <Target Name="CustomBuild">
+  <Target Name="CustomBuild" Condition="'$(Platform)' == 'All'">
     <Message Importance="high" Text="Building SlangNative with custom build script for all platforms... (Configuration: $(Configuration), Platform: $(Platform))" />
     <Exec Command="powershell -ExecutionPolicy Bypass -File $(ProjectDir)..\all-platforms.ps1 -Script $(ProjectDir)build.ps1 -FromVisualStudio" />
   </Target>
 
-  <!-- Add a special target specifically for Debug ARM64 to ensure it gets built -->
-  <Target Name="BuildDebugARM64" AfterTargets="Build" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
-    <Message Importance="high" Text="Special build step for Debug ARM64" />
-    <Exec Command="powershell -ExecutionPolicy Bypass -File $(ProjectDir)build.ps1 -Configuration Debug -Platform ARM64 -FromVisualStudio" />
-  </Target>
+  	<!-- Post-build event to finalize the build -->
+	<Target Name="CustomPostBuild" AfterTargets="PostBuildEvent" Condition="'$(PostBuildDisabled)' == ''">
+		<Exec Command="powershell.exe -ExecutionPolicy Bypass -File $(ProjectDir)post-build.ps1 -Configuration $(Configuration) -Platform $(Platform)" />
+	</Target>
+
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 

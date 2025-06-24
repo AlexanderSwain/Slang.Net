@@ -100,34 +100,35 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Label="UserMacros" />  
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>.\bin\$(Configuration)\net9.0\$(Platform)</OutDir>
+    <OutDir>.\bin\$(Configuration)\net9.0\$(Platform)\</OutDir>
     <IntDir>$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-  </PropertyGroup>
+  </PropertyGroup>  
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)\Slang.Net\bin\$(Configuration)\net9.0\</OutDir>
+    <OutDir>.\bin\$(Configuration)\net9.0\$(Platform)\</OutDir>
     <IntDir>$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>.\bin\$(Configuration)\net9.0\$(Platform)</OutDir>
-    <IntDir>$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-  </PropertyGroup>
+    <IntDir>$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>  
+  </PropertyGroup>  
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)\Slang.Net\bin\$(Configuration)\net9.0\</OutDir>
+    <OutDir>.\bin\$(Configuration)\net9.0\$(Platform)\</OutDir>
     <IntDir>$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-  </PropertyGroup>
+  </PropertyGroup>  
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>.\bin\$(Configuration)\net9.0\$(Platform)</OutDir>
-    <IntDir>$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-  </PropertyGroup>  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <OutDir>.\bin\$(Configuration)\net9.0\$(Platform)\</OutDir>
+    <IntDir>$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>  
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)\Slang.Net\bin\$(Configuration)\net9.0\</OutDir>
+    <OutDir>.\bin\$(Configuration)\net9.0\$(Platform)\</OutDir>
     <IntDir>$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -298,10 +299,10 @@
   </Target>
   
   <!-- Add a special target specifically for Debug ARM64 to ensure it gets built -->
-  <Target Name="BuildDebugARM64" AfterTargets="Build" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+  <!-- <Target Name="BuildDebugARM64" AfterTargets="Build" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <Message Importance="high" Text="Special build step for Debug ARM64" />
     <Exec Command="powershell -ExecutionPolicy Bypass -File $(ProjectDir)build.ps1 -Configuration Debug -Platform ARM64 -FromVisualStudio" />
-  </Target>
+  </Target> -->
 
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
