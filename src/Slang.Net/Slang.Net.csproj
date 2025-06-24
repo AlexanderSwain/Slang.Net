@@ -7,7 +7,7 @@
 		<LangVersion>preview</LangVersion>
 		<EnablePreviewFeatures>true</EnablePreviewFeatures>
 		<Platforms>All</Platforms>
-		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<PackageId>Slang.Net</PackageId>
 		<PackageVersion>0.0.4</PackageVersion>
 		<Title>Slang.Net - .NET Bindings for the Slang Shader Language</Title>
@@ -20,7 +20,7 @@
 		<PackageTags>slang;shader;graphics;hlsl;glsl;cross-platform</PackageTags>
 		<PackageIcon>icon.png</PackageIcon>
 		<RepositoryUrl>https://github.com/AlexanderSwain/Slang.Net.git</RepositoryUrl>
-		<PackageOutputPath>$(SolutionDir)Build\$(Configuration)\</PackageOutputPath>
+		<PackageOutputPath>$(ProjectDir)bin\$(Configuration)\net9.0\</PackageOutputPath>
 	</PropertyGroup>
 	<!-- Custom target for cleaning with all-platforms.ps1 -->
 	<Target Name="SlangNetCustomClean" BeforeTargets="BeforeClean">
