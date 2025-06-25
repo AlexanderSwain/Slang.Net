@@ -1,37 +1,94 @@
 # Building From Source
 
-**For Debugging**
+## Prerequisites
+- Visual Studio 2022 (Preview) with C++/CLI support
+- .NET 9.0 SDK
+- PowerShell
+
+## Build Process
+1. Clone the repository
+2. Run the build script from the root directory:
+   ```powershell
+   .\build.ps1
+   ```
+
+This will automatically:
+- Download the Slang SDK if needed
+- Build native dependencies for all platforms (x64/ARM64)
+- Build the C++/CLI wrapper for all platforms
+- Build the C# wrapper library
+- Create the NuGet package
+
+## Building Individual Components
+
+### Native Dependencies
 ```powershell
-& dotnet pack "src\Slang.Net\Slang.Net.csproj" --configuration Debug /p:Platform=All 
+cd src\Native
+.\build.ps1
 ```
 
-**For Release**
+### C++/CLI Wrapper
 ```powershell
-& dotnet pack "src\Slang.Net\Slang.Net.csproj" --configuration Release /p:Platform=All 
+cd src\Slang.Net.CPP
+.\build.ps1
 ```
 
-# Testing changes to Slang.Net with Sample Projects
+### C# Wrapper
+```powershell
+cd src\Slang.Net
+.\build.ps1
+```
 
-- Make changes, Build, and Pack (using instructions above)
-- Install Package (Be sure to replace 0.0.4 with correct version number)
-    - **Option 1: Using dotnet add package (Recommended)**
-      ```powershell
-      cd "Samples\Slang.Net.Samples.SimpleCompileTest"
-      dotnet add package Slang.Net --version 0.0.4 --source "..\..\src\Slang.Net\bin\Debug\net9.0"
-      ```
-    - **Option 2: Using local package source**
-      ```powershell
-      # Add local source
-      dotnet nuget add source "src\Slang.Net\bin\Debug\net9.0" --name "LocalSlangNet"
-      
-      # Install package
-      cd "Samples\Slang.Net.Samples.SimpleCompileTest"
-      dotnet add package Slang.Net --version 0.0.4 --source "LocalSlangNet"
-      ```
-    - **Option 3: Manual PackageReference (if above options fail)**
-      ```xml
-      <PackageReference Include="Slang.Net" Version="0.0.4">
-          <HintPath>..\..\src\Slang.Net\bin\Debug\net9.0\Slang.Net.0.0.4.nupkg</HintPath>
-      </PackageReference>
-      ```
-- Build and run the Sample project to test changes
+## Creating NuGet Package
+
+To create the NuGet package manually:
+```powershell
+cd src\Slang.Net
+& "${env:ProgramFiles}\Microsoft Visual Studio\2022\Preview\MSBuild\Current\Bin\MSBuild.exe" /t:Pack /p:Configuration=Debug /p:Platform=x64 /p:IsPacking=true
+```
+
+**Important**: Use MSBuild (not `dotnet pack`) to avoid C++/CLI evaluation issues.
+
+## Using the Local Package
+
+After building, you can install the local NuGet package in your projects:
+
+1. **Option 1: Using PackageReference with RestoreSources (Recommended)**
+   ```xml
+   <ItemGroup>
+     <PackageReference Include="Slang.Net" Version="0.0.4" />
+   </ItemGroup>
+
+   <PropertyGroup>
+     <RestoreSources>$(RestoreSources);path\to\Slang.Net\src\Slang.Net\bin\Debug\net9.0;https://api.nuget.org/v3/index.json</RestoreSources>
+   </PropertyGroup>
+   ```
+
+2. **Option 2: Using dotnet add package with source**
+   ```powershell
+   dotnet add package Slang.Net --version 0.0.4 --source "path\to\Slang.Net\src\Slang.Net\bin\Debug\net9.0"
+   ```
+
+3. **Option 3: Add local package source**
+   ```powershell
+   dotnet nuget add source "path\to\Slang.Net\src\Slang.Net\bin\Debug\net9.0" --name "LocalSlangNet"
+   dotnet add package Slang.Net --version 0.0.4 --source "LocalSlangNet"
+   ```
+
+**Note**: After installing a new version of the local package, you may need to clear the NuGet cache:
+```powershell
+dotnet nuget locals all --clear
+```
+
+## Testing the Package
+
+To test the package with the included sample:
+```powershell
+cd Samples\Slang.Net.Samples.SimpleCompileTest
+dotnet nuget locals all --clear  # Clear cache if needed
+dotnet restore --force --no-cache
+dotnet build
+dotnet run
+```
+
+The sample project is already configured with the local package source and will automatically use the locally built package.
