@@ -182,9 +182,12 @@
 			<PackagePath>runtimes\win-x64\native\%(Filename)%(Extension)</PackagePath>
 		</Content>
 		<!-- ARM64 files would need to be handled separately since they're in different directories -->
-	</ItemGroup>	<ItemGroup>
-		<!-- Only include C++/CLI project reference when using MSBuild (not dotnet CLI) -->
-		<ProjectReference Include="..\Slang.Net.CPP\Slang.Net.CPP.vcxproj" Condition="'$(RunTargetsOnly)' == '' AND '$(MSBuildRuntimeType)' != 'Core'" />
+	</ItemGroup>	<ItemGroup Condition="'$(MSBuildRuntimeType)' != 'Core'">
+		<!-- Only include C++/CLI project reference when using MSBuild (not dotnet CLI) and not during packing -->
+		<ProjectReference Include="..\Slang.Net.CPP\Slang.Net.CPP.vcxproj" Condition="'$(RunTargetsOnly)' == '' AND '$(IsPacking)' != 'true' AND '$(BuildingProject)' == 'true'">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+		</ProjectReference>
 	</ItemGroup>
 
 	<!-- Add direct references to the pre-built DLLs when using dotnet CLI or when RunTargetsOnly is set -->
