@@ -30,7 +30,7 @@ Write-Host "DEBUG: -FromVisualStudio = $FromVisualStudio" -ForegroundColor Yello
 # Directories
 $slangNetDir = $PSScriptRoot
 $cppOutputDir = "$PSScriptRoot\..\Slang.Net.CPP\bin\$Configuration\net9.0\$Platform"
-$outputDir = "$PSScriptRoot\bin\$Configuration\net9.0"
+$outputDir = "$PSScriptRoot\bin\$Configuration\net9.0\$Platform"
 $libDir = "$PSScriptRoot\lib\$Configuration\net9.0\$Platform"
 
 # Ensure output directories exist
