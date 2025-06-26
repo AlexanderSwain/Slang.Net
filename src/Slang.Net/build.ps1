@@ -95,18 +95,6 @@ foreach ($file in $optionalFiles) {
     }
 }
 
-# Copy Slang.Net.CPP.dll to the main output directory for MSBuild reference
-$mainCppDll = "$cppOutputDir\Slang.Net.CPP.dll"
-if (Test-Path $mainCppDll) {
-    Copy-Item $mainCppDll $outputDir -Force
-    Write-Host "Copied for MSBuild reference: $mainCppDll to $outputDir" -ForegroundColor Cyan
-}
-else {
-    Write-Host "Missing managed assembly: $mainCppDll" -ForegroundColor Red
-    Write-Host "Slang.Net build failed due to missing managed assembly!" -ForegroundColor Red
-    exit 1
-}
-
 # STEP 2: Build Slang.Net project for the specified platform
 Write-Host "Build Slang.Net(STEP 2): Building Slang.Net project $Configuration|$Platform..." -ForegroundColor Green
 
@@ -128,54 +116,3 @@ Write-Host "Verifying output files..." -ForegroundColor Green
 $slangNetOutputFiles = @(
     "$libDir\Slang.Net.dll"
 )
-
-# Alternative locations to check if the file is not in the expected path
-$alternativeLocations = @(
-    "$PSScriptRoot\bin\$Platform\$Configuration\net9.0\Slang.Net.dll",
-    "$PSScriptRoot\bin\$Configuration\net9.0\Slang.Net.dll",
-    "$PSScriptRoot\bin\$Configuration\$Platform\Slang.Net.dll",
-    "$PSScriptRoot\bin\$Configuration\Slang.Net.dll"
-)
-    
-# Check for expected output files
-$missingFiles = @()
-foreach ($file in $slangNetOutputFiles) {
-    if (Test-Path $file) {
-        Write-Host "Verified: $file" -ForegroundColor Cyan
-    } else {
-        # Try to find the file in alternative locations
-        $found = $false
-        foreach ($altLocation in $alternativeLocations) {
-            if (Test-Path $altLocation) {
-                Write-Host "Found in alternative location: $altLocation" -ForegroundColor Yellow
-                # Copy to expected location
-                Write-Host "Copying to expected location: $file" -ForegroundColor Yellow
-                try {
-                    # Make sure the directory exists
-                    $targetDir = Split-Path -Parent $file
-                    if (-not (Test-Path $targetDir)) {
-                        New-Item -ItemType Directory -Path $targetDir -Force | Out-Null
-                    }
-                    Copy-Item $altLocation $file -Force
-                    Write-Host "Copied successfully." -ForegroundColor Green
-                    $found = $true
-                    break
-                } catch {
-                    Write-Host "Error copying file: $_" -ForegroundColor Red
-                }
-            }
-        }
-        
-        if (-not $found) {
-            $missingFiles += $file
-        }
-    }
-}
-
-if ($missingFiles.Count -gt 0) {
-    foreach ($file in $missingFiles) {
-        Write-Host "Missing: $file" -ForegroundColor Red
-    }
-    Write-Host "Slang.Net build failed due to missing output files!" -ForegroundColor Red
-    exit 1
-}

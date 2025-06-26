@@ -20,8 +20,7 @@
 		<PackageIcon>icon.png</PackageIcon>
 		<RepositoryUrl>https://github.com/AlexanderSwain/Slang.Net.git</RepositoryUrl>
 		<PackageOutputPath>$(ProjectDir)bin\$(Configuration)\net9.0\</PackageOutputPath>
-		<OutputPath>$(ProjectDir)bin\$(Configuration)\net9.0\$(Platform)\</OutputPath>
-		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<OutputPath>$(ProjectDir)bin\$(Configuration)\</OutputPath>
 	</PropertyGroup>
 	<!-- Custom target for cleaning with all-platforms.ps1 -->
 	<Target Name="SlangNetCustomClean" BeforeTargets="BeforeClean">
@@ -72,11 +71,6 @@
 
 	<!-- Platform-specific native dependencies for x64 -->
 	<ItemGroup>
-		<Content Include="bin\$(Configuration)\net9.0\x64\Slang.Net.dll">
-			<Pack>true</Pack>
-			<PackagePath>lib\net9.0\x64\Slang.Net.dll</PackagePath>
-			<Visible>false</Visible>
-		</Content>
 		<Content Include="lib\$(Configuration)\net9.0\x64\gfx.dll" Condition="Exists('lib\$(Configuration)\net9.0\x64\gfx.dll')">
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-x64\native\gfx.dll</PackagePath>
@@ -112,11 +106,6 @@
 
 	<!-- Platform-specific native dependencies for ARM64 -->
 	<ItemGroup>
-		<Content Include="bin\$(Configuration)\net9.0\ARM64\Slang.Net.dll">
-			<Pack>true</Pack>
-			<PackagePath>lib\net9.0\ARM64\Slang.Net.dll</PackagePath>
-			<Visible>false</Visible>
-		</Content>
 		<Content Include="lib\$(Configuration)\net9.0\ARM64\gfx.dll" Condition="Exists('lib\$(Configuration)\net9.0\ARM64\gfx.dll')">
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-ARM64\native\gfx.dll</PackagePath>
