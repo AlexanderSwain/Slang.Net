@@ -18,6 +18,12 @@ namespace Slang
             cppObj = new Slang.Cpp.ShaderReflection(shadePprogram.CppObj.GetReflection().getNative());
         }
 
+        internal ShaderReflection(Slang.Cpp.ShaderReflection cppObj)
+        {
+            parent = new (cppObj.Parent);
+            this.cppObj = cppObj;
+        }
+
         public SlangCollection<EntryPointReflection> EntryPoints => field ??= new(this);
 
         public ShaderProgram Parent => parent;

@@ -15,13 +15,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Slang.Net" Version="0.0.4">
+		<PackageReference Include="Slang.Net" Version="0.0.6">
 			<NoWarn>NU1603</NoWarn>
 		</PackageReference>
 	</ItemGroup>
 
 	<!-- Add local package source for this project -->
 	<PropertyGroup>
-		<RestoreSources>$(RestoreSources);..\..\src\Slang.Net\bin\Debug\net9.0;https://api.nuget.org/v3/index.json</RestoreSources>
+		<RestoreSources>$(RestoreSources);..\..\src\Slang.Net\bin\$(Configuration)\net9.0;https://api.nuget.org/v3/index.json</RestoreSources>
 	</PropertyGroup>
 </Project>
