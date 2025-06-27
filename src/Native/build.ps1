@@ -28,6 +28,11 @@ Write-Host "Build SlangNative(STEP 1): Downloaded Slang SDK..." -ForegroundColor
 $sdkPath = Join-Path $nativeDir "EmbeddedLLVM\slang-2025.10.3-windows\$Platform\bin\*.dll"
 $slangSdkOutputDir = Join-Path $nativeDir "bin\$Configuration\$Platform\"
 
+if (-not (Test-Path $slangSdkOutputDir)) {
+    New-Item -ItemType Directory -Path $slangSdkOutputDir -Force | Out-Null
+    Write-Host "Created directory: $slangSdkOutputDir" -ForegroundColor Yellow
+}
+
 foreach ($file in $sdkPath) {
     Write-Host "Copying Slang SDK file: $file" -ForegroundColor Green
     Copy-Item -Path $file -Destination $slangSdkOutputDir

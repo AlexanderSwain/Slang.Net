@@ -8,20 +8,14 @@
 		<EnablePreviewFeatures>true</EnablePreviewFeatures>
 		<PlatformTarget Condition="'$(RuntimeIdentifier)' == ''">x64</PlatformTarget>
 	</PropertyGroup>
+	
 	<ItemGroup>
 		<Content Include="AverageColor.slang">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
-
+	
 	<ItemGroup>
-		<PackageReference Include="Slang.Net" Version="0.0.6">
-			<NoWarn>NU1603</NoWarn>
-		</PackageReference>
+	  <PackageReference Include="Slang.Net" Version="0.0.1" />
 	</ItemGroup>
-
-	<!-- Add local package source for this project -->
-	<PropertyGroup>
-		<RestoreSources>$(RestoreSources);..\..\src\Slang.Net\bin\$(Configuration)\net9.0;https://api.nuget.org/v3/index.json</RestoreSources>
-	</PropertyGroup>
 </Project>

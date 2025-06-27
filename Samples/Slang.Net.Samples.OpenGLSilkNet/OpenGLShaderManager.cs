@@ -157,7 +157,8 @@ Shader Type: {shaderType}";
         {
             if (!_disposed)
             {
-                _slangSession?.Dispose();
+                // Uncomment this when fixing memory leak issues
+                //_slangSession?.Dispose();
                 _disposed = true;
             }
         }

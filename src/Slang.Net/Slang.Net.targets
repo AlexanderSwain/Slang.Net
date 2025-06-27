@@ -14,7 +14,8 @@
       <SlangNetRuntimeIdentifier Condition="'$(SlangNetRuntimeIdentifier)' == ''">win-x64</SlangNetRuntimeIdentifier>
       
       <SlangNetNativeSourceDir>$(MSBuildThisFileDirectory)..\runtimes\$(SlangNetRuntimeIdentifier)\native</SlangNetNativeSourceDir>
-    </PropertyGroup>    <!-- Only copy if we're building without a runtime identifier and the source directory exists -->
+    </PropertyGroup>    
+    <!-- Only copy if we're building without a runtime identifier and the source directory exists -->
     <ItemGroup Condition="'$(RuntimeIdentifier)' == '' AND Exists('$(SlangNetNativeSourceDir)')">
       <SlangNetNativeFiles Include="$(SlangNetNativeSourceDir)\*.dll" />
     </ItemGroup>

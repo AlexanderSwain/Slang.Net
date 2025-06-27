@@ -30,14 +30,7 @@ Write-Host "DEBUG: -FromVisualStudio = $FromVisualStudio" -ForegroundColor Yello
 # Directories
 $slangNetDir = $PSScriptRoot
 $cppOutputDir = "$PSScriptRoot\..\Slang.Net.CPP\bin\$Configuration\net9.0\$Platform"
-$outputDir = "$PSScriptRoot\bin\$Configuration\net9.0\$Platform"
 $libDir = "$PSScriptRoot\lib\$Configuration\net9.0\$Platform"
-
-# Ensure output directories exist
-if (-not (Test-Path -Path $outputDir)) {
-    New-Item -ItemType Directory -Path $outputDir -Force | Out-Null
-    Write-Host "Created directory: $outputDir" -ForegroundColor Yellow
-}
 
 if (-not (Test-Path -Path $libDir)) {
     New-Item -ItemType Directory -Path $libDir -Force | Out-Null

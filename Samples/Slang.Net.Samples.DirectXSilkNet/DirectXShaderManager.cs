@@ -149,8 +149,9 @@ Target Profile: {profile}";
     {
         if (!_disposed)
         {
-            _vertexSession?.Dispose();
-            _pixelSession?.Dispose();
+            // Uncomment these when fixing memory leak issues
+            //_vertexSession?.Dispose();
+            //_pixelSession?.Dispose();
             _disposed = true;
         }
     }

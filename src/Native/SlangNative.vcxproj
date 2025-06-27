@@ -341,48 +341,6 @@
   </ItemGroup>  
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   
-  <!-- Override default targets to use our custom build script for all platforms -->
-  <!-- These target definitions MUST come after the Microsoft.Cpp.targets import -->
-  <Target Name="Build" DependsOnTargets="$(BuildDependsOn)" Returns="$(TargetPath)" />
-  <Target Name="Rebuild" DependsOnTargets="Clean;Build" />  
-  <Target Name="Clean" BeforeTargets="CoreClean" Condition="'$(Platform)' == 'All'">
-    <Message Importance="high" Text="Cleaning SlangNative with custom clean script for all platforms... (Configuration: $(Configuration), Platform: $(Platform))" />
-    <Exec Command="powershell -ExecutionPolicy Bypass -File $(ProjectDir)..\all-platforms.ps1 -Script $(ProjectDir)cleaner.ps1 -FromVisualStudio" />
-  </Target>
-    
-  <!-- Add this target to the BuildDependsOn property to make it part of the build process -->
-  <PropertyGroup>
-    <BuildDependsOn>
-      CustomBuild;
-      $(BuildDependsOn)
-    </BuildDependsOn>
-  </PropertyGroup>  
 
-	<!-- Pre-build event to prepare the environment -->
-	<Target Name="CustomPreBuild" BeforeTargets="PreBuildEvent" Condition="'$(PreBuildDisabled)' == ''">
-		<Exec Command="powershell.exe -ExecutionPolicy Bypass -File $(ProjectDir)pre-build.ps1 -Configuration $(Configuration) -Platform $(Platform)" />
-	</Target>
-
-  <!-- Custom build target -->  
-  <Target Name="CustomBuild" Condition="'$(Platform)' == 'All'">
-    <Message Importance="high" Text="Building SlangNative with custom build script for all platforms... (Configuration: $(Configuration), Platform: $(Platform))" />
-    <Exec Command="powershell -ExecutionPolicy Bypass -File $(ProjectDir)..\all-platforms.ps1 -Script $(ProjectDir)build.ps1 -FromVisualStudio" />
-  </Target>
-
-  	<!-- Post-build event to finalize the build -->
-	<Target Name="CustomPostBuild" AfterTargets="PostBuildEvent" Condition="'$(PostBuildDisabled)' == ''">
-		<Exec Command="powershell.exe -ExecutionPolicy Bypass -File $(ProjectDir)post-build.ps1 -Configuration $(Configuration) -Platform $(Platform)" />
-	</Target>
-
-  <ImportGroup Label="ExtensionTargets">
-  </ImportGroup>
-
-  <!-- Add diagnostic target to debug MSBuild variables -->
-  <Target Name="DebugMSBuildVars" BeforeTargets="Build">
-    <Message Importance="high" Text="=== MSBuild Variable Debug Information ===" />
-    <Message Importance="high" Text="SolutionDir = $(SolutionDir)" />
-    <Message Importance="high" Text="ProjectDir = $(ProjectDir)" />
-    <Message Importance="high" Text="MSBuildProjectDirectory = $(MSBuildProjectDirectory)" />
-    <Message Importance="high" Text="===================================" />
-  </Target>
+  <ImportGroup Label="ExtensionTargets"/>
 </Project>
