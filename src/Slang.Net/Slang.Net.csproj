@@ -7,7 +7,7 @@
 		<LangVersion>preview</LangVersion>
 		<EnablePreviewFeatures>true</EnablePreviewFeatures>
 		<Platforms>All</Platforms>
-		<PackageId>Slang.Net</PackageId>
+		<PackageId>Slang.Sdk</PackageId>
 		<PackageVersion>0.0.1</PackageVersion>
 		<Title>Slang.Net - .NET Bindings for the Slang Shader Language</Title>
 		<Description>A .NET class library providing bindings for the Slang shader language compiler, supporting cross-platform shader development.</Description>
@@ -34,7 +34,7 @@
 		<None Include="..\..\README.md" Pack="true" PackagePath="\" />
 		<None Include="Slang.Net.targets">
 			<Pack>True</Pack>
-			<PackagePath>build\Slang.Net.targets</PackagePath>
+			<PackagePath>build\Slang.Sdk.targets</PackagePath>
 		</None>
 	</ItemGroup>
 	<ItemGroup>

@@ -17,7 +17,7 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-	  <PackageReference Include="Slang.Net" Version="0.0.1" />
+	  <PackageReference Include="Slang.Sdk" Version="0.0.1" />
 	</ItemGroup>
 </Project>
 
