@@ -1,0 +1,87 @@
+name: Build and Publish NuGet Package
+
+on:
+  push:
+    branches: [ production ]
+  workflow_dispatch:
+
+jobs:
+  build-and-publish:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+        dotnet-quality: 'preview'
+    
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+      with:
+        vs-version: 'latest'
+    
+    - name: Setup PowerShell
+      shell: pwsh
+      run: |
+        Write-Host "PowerShell version: $($PSVersionTable.PSVersion)"
+        Write-Host "Execution policy: $(Get-ExecutionPolicy)"
+    
+    - name: Build Native Dependencies
+      shell: pwsh
+      working-directory: src
+      run: |
+        Write-Host "Building Native Dependencies..." -ForegroundColor Cyan
+        .\all-platforms.ps1 -Script Native\build.ps1
+      
+    - name: Build C++/CLI Wrapper
+      shell: pwsh
+      working-directory: src
+      run: |
+        Write-Host "Building C++/CLI Wrapper..." -ForegroundColor Cyan
+        .\all-platforms.ps1 -Script Slang.Net.CPP\build.ps1
+      
+    - name: Build C# Wrapper
+      shell: pwsh
+      working-directory: src
+      run: |
+        Write-Host "Building C# Wrapper..." -ForegroundColor Cyan
+        .\all-platforms.ps1 -Script Slang.Net\build.ps1
+    
+    - name: Create NuGet Package (Release)
+      shell: pwsh
+      working-directory: src
+      run: |
+        Write-Host "Creating NuGet Package (Release)..." -ForegroundColor Cyan
+        dotnet pack .\Slang.Net --configuration Release --verbosity normal --no-build
+    
+    - name: List generated packages
+      shell: pwsh
+      working-directory: src/Slang.Net/Builds/Release
+      run: |
+        Write-Host "Generated packages:" -ForegroundColor Cyan
+        Get-ChildItem -Filter "*.nupkg" | ForEach-Object { Write-Host "  - $($_.Name)" }
+    
+    - name: Publish to NuGet.org
+      shell: pwsh
+      working-directory: src/Slang.Net/Builds/Release
+      run: |
+        $packages = Get-ChildItem -Filter "*.nupkg"
+        foreach ($package in $packages) {
+          Write-Host "Publishing $($package.Name) to NuGet.org..." -ForegroundColor Green
+          dotnet nuget push $package.Name --api-key $env:NUGET_API_KEY --source https://api.nuget.org/v3/index.json --skip-duplicate
+        }
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+    
+    - name: Upload NuGet packages as artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: nuget-packages
+        path: src/Slang.Net/Builds/Release/*.nupkg
+        retention-days: 30

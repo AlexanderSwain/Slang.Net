@@ -5,18 +5,13 @@ namespace Slang
     public unsafe class EntryPointReflection
     {
         internal Slang.Cpp.EntryPointReflection cppObj { get; }
-        private ShaderReflection? _parent;
 
         public EntryPointReflection(Slang.Cpp.EntryPointReflection comObj)
         {
             cppObj = comObj;
         }
 
-        public ShaderReflection Parent
-        {
-            get => _parent!;
-            internal set => _parent = value;
-        }
+        public ShaderReflection Parent => field ??= new (cppObj.Parent);
 
         public string Name => cppObj.Name;
         public string NameOverride => cppObj.NameOverride;

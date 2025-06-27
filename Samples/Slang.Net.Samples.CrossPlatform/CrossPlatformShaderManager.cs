@@ -46,7 +46,7 @@ public class CrossPlatformShaderManager : IDisposable
         var (target, profile) = GetTargetAndProfile(targetAPI, shaderModel);
         
         // Configure a new session specifically for this target
-        using var session = new SessionBuilder()
+        /*using*/ var session = new SessionBuilder()
             .AddSearchPath(_shaderDirectory)
             .AddShaderModel(target, profile)
             .Create();
@@ -135,7 +135,9 @@ public class CrossPlatformShaderManager : IDisposable
     {
         if (!_disposed)
         {
-            _baseSession?.Dispose();
+            // Uncomment this when fixing memory leak issues
+            // Uncomment line 49 "using" statement
+            //_baseSession?.Dispose();
             _disposed = true;
         }
         GC.SuppressFinalize(this);

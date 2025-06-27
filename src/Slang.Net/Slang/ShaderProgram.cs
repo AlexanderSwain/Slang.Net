@@ -12,6 +12,11 @@
             CppObj = new Slang.Cpp.Program(module.cppObj);
         }
 
+        internal ShaderProgram(Slang.Cpp.Program cppObj)
+        {
+            CppObj = cppObj;
+        }
+
         #region Composed Of
         uint IComposedOf<TypeParameterReflection>.Count => Reflection.TypeParameterCount;
         TypeParameterReflection IComposedOf<TypeParameterReflection>.GetByIndex(uint index)
