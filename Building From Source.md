@@ -1,59 +1,45 @@
 # Building From Source
 
-## Generating the Nuget package
+## Prerequisites
+- Visual Studio 2022 (Preview) with C++/CLI support
+- .NET 9.0 SDK
+- PowerShell
 
-**Building Slang Native**
+## Build Process
 
-- Step 1: Make sure you're in the source directory
+### Step 1: Building Native Dependencies
 ```powershell
 cd src\
-```
-
-- Step 2: Run the build script for Slang Native
-```powershell
 .\all-platforms.ps1 -Script Native\build.ps1
 ```
 
-**Building Slang.Net.CPP**
-
-- Step 1: Make sure you're in the source directory
+### Step 2: Building C++/CLI Wrapper
 ```powershell
 cd src\
-```
-
-- Step 2: Run the build script for Slang.Net.CPP
-```powershell
 .\all-platforms.ps1 -Script Slang.Net.CPP\build.ps1
 ```
 
-**Building Slang.Net**
-
-- Step 1: Make sure you're in the source directory
+### Step 3: Building C# Wrapper
 ```powershell
 cd src\
-```
-
-- Step 2: Run the build script for Slang.Net.CPP
-```powershell
 .\all-platforms.ps1 -Script Slang.Net\build.ps1
 ```
 
-**Building the Nuget package**
+### Step 4: Creating the NuGet Package
 
-- Step 1: Make sure you're in the source directory
+Navigate to the source directory:
 ```powershell
 cd src\
 ```
 
-- Step 2: Run the build script for Slang.Net.CPP
-**For Debugging**
+**For Debug:**
 ```powershell
 dotnet pack .\Slang.Net --configuration Debug --verbosity normal --no-build
 ```
 
-**For Release**
+**For Release:**
 ```powershell
 dotnet pack .\Slang.Net --configuration Release --verbosity normal --no-build
 ```
 
-- The nuget package will be generated in the Slang.Net\Builds sub-folders
+The NuGet package will be generated in the `Slang.Net\Builds\` subdirectories.
