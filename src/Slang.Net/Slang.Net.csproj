@@ -7,7 +7,7 @@
 		<LangVersion>preview</LangVersion>
 		<EnablePreviewFeatures>true</EnablePreviewFeatures>
 		<Platforms>All</Platforms>
-		<PackageId>SlangSDK</PackageId>
+		<PackageId>Slang.Net</PackageId>
 		<PackageVersion>0.0.1</PackageVersion>
 		<Title>Slang.Net - .NET Bindings for the Slang Shader Language</Title>
 		<Description>A .NET class library providing bindings for the Slang shader language compiler, supporting cross-platform shader development.</Description>
@@ -75,6 +75,7 @@
 			<PackagePath>runtimes\win-x64\native\SlangNative.dll</PackagePath>
 		</Content>
 		<Content Include="lib\$(Configuration)\net9.0\x64\SlangNative.lib" Condition="Exists('lib\$(Configuration)\net9.0\x64\SlangNative.lib')">
+			<Pack>true</Pack>
 			<PackagePath>runtimes\win-x64\native\SlangNative.lib</PackagePath>
 		</Content>
 		<Content Include="lib\$(Configuration)\net9.0\x64\slang-rt.dll" Condition="Exists('lib\$(Configuration)\net9.0\x64\slang-rt.dll')">
