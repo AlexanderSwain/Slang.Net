@@ -1,14 +1,14 @@
-# Slang.Net
+# Slang.Sdk
 
 A comprehensive .NET wrapper for the Slang Shader Language compiler, providing seamless integration of shader compilation and reflection capabilities into .NET applications.
 
-> **Note:** Slang.Net is currently in early development. While functional, expect APIs to evolve and additional features to be added in future releases.
+> **Note:** Slang.Sdk is currently in early development. While functional, expect APIs to evolve and additional features to be added in future releases.
 
 > **Disclaimer:** We are the developers and maintainers of this C# wrapper library only, not of the Slang shader language itself. Slang is developed and maintained by NVIDIA. This project provides .NET bindings to make Slang accessible to C# developers.
 
 **Sponsoring Development:**
 
-Slang.Net is an open-source project maintained by volunteers. Your sponsorships directly support:
+Slang.Sdk is an open-source project maintained by volunteers. Your sponsorships directly support:
 
 - **Cross-platform support** - Help us bring Slang.Net to Linux and macOS
 - **New features** - Fund development of additional functionality
@@ -16,13 +16,13 @@ Slang.Net is an open-source project maintained by volunteers. Your sponsorships 
 - **Maintenance** - Support regular updates and bug fixes
 - **Documentation** - Improve guides and examples
 
-If Slang.Net adds value to your project or organization, please consider sponsoring our work. Even small contributions make a significant difference.
+If Slang.Sdk adds value to your project or organization, please consider sponsoring our work. Even small contributions make a significant difference.
 
 [Become a Sponsor](#) <!-- Replace with your sponsorship link -->
 
-## Why Slang.Net?
+## Why Slang.Sdk?
 
-**Slang** is a modern shader language developed by NVIDIA that brings advanced features like generics, interfaces, and modules to shader programming. **Slang.Net** makes this powerful technology accessible to .NET developers with:
+**Slang** is a modern shader language developed by NVIDIA that brings advanced features like generics, interfaces, and modules to shader programming. **Slang.Sdk** makes this powerful technology accessible to .NET developers with:
 
 - 🚀 **Zero Configuration**: Install via NuGet and start using immediately
 - 🎯 **Type-Safe APIs**: Strongly-typed C# interfaces for all Slang functionality
@@ -60,7 +60,7 @@ dotnet add package Slang.Sdk
 Or add to your project file:
 
 ```xml
-<PackageReference Include="Slang.Sdk" Version="1.0.0" />
+<PackageReference Include="Slang.Sdk" Version="0.0.1" />
 ```
 
 ## Quick Start
@@ -171,7 +171,7 @@ public class Program
 
 ### Compiling to Different Targets
 
-Slang.Net supports compilation to multiple target languages:
+Slang.Sdk supports compilation to multiple target languages:
 
 ```csharp
 using var session = new SessionBuilder()
