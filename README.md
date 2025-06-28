@@ -48,19 +48,19 @@ Traditional HLSL/GLSL shaders have limitations that Slang addresses:
 Install via NuGet Package Manager:
 
 ```bash
-Install-Package Slang.Net
+Install-Package Slang.Sdk
 ```
 
 Or via .NET CLI:
 
 ```bash
-dotnet add package Slang.Net
+dotnet add package Slang.Sdk
 ```
 
 Or add to your project file:
 
 ```xml
-<PackageReference Include="Slang.Net" Version="1.0.0" />
+<PackageReference Include="Slang.Sdk" Version="1.0.0" />
 ```
 
 ## Quick Start

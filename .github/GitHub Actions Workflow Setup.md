@@ -1,6 +1,6 @@
 # GitHub Actions Workflow Setup
 
-This repository includes a GitHub Actions workflow (`nuget-publish.yml`) that automatically builds and publishes the Slang.Net NuGet package when code is pushed to the `production` branch.
+This repository includes a GitHub Actions workflow file (`nuget-publish.yml`) that automatically builds and publishes the Slang.Net NuGet package when code is pushed to the `production` branch.
 
 ## Setup Instructions
 
