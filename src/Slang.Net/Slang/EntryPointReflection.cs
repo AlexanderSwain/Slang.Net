@@ -11,7 +11,9 @@ namespace Slang
             cppObj = comObj;
         }
 
-        public ShaderReflection Parent => field ??= new (cppObj.Parent);
+        // Use the field keyword when it becomes generally available, to make this cleaner
+        private ShaderReflection? _Parent;
+        public ShaderReflection Parent => _Parent ??= new (cppObj.Parent);
 
         public string Name => cppObj.Name;
         public string NameOverride => cppObj.NameOverride;

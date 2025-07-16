@@ -24,7 +24,8 @@ namespace Slang
             this.cppObj = cppObj;
         }
 
-        public SlangCollection<EntryPointReflection> EntryPoints => field ??= new(this);
+        private SlangCollection<EntryPointReflection>? _EntryPoints;
+        public SlangCollection<EntryPointReflection> EntryPoints => _EntryPoints ??= new(this);
 
         public ShaderProgram Parent => parent;
 

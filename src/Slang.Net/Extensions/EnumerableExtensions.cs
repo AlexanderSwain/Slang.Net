@@ -8,14 +8,11 @@ namespace Slang.Net.Extensions
 {
     public static class EnumerableExtensions
     {
-        extension<T>(IEnumerable<T> enumerable)
+        public static int IndexOf<T>(this IEnumerable<T> enumerable, T value)
         {
-            public int IndexOf(T value)
-            {
-                return enumerable.Select((item, index) => (item, index))
-                       .FirstOrDefault(x => EqualityComparer<T>.Default.Equals(x.item, value))
-                       .index;
-            }
+            return enumerable.Select((item, index) => (item, index))
+                   .FirstOrDefault(x => EqualityComparer<T>.Default.Equals(x.item, value))
+                   .index;
         }
     }
 }

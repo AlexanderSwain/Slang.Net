@@ -4,8 +4,6 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-		<LangVersion>preview</LangVersion>
-		<EnablePreviewFeatures>true</EnablePreviewFeatures>
 		<Platforms>All</Platforms>
 		<PackageId>Slang.Sdk</PackageId>
 		<PackageVersion>0.0.1</PackageVersion>

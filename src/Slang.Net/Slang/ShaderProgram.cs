@@ -38,11 +38,18 @@
         #endregion
 
         #region Reflection API
-        ShaderReflection Reflection => field ??= new(this);
+        ShaderReflection? _Reflection;
+        ShaderReflection Reflection => _Reflection ??= new(this);
 
-        public SlangCollection<TypeParameterReflection> TypeParameters => field ??= new(this);
-        public SlangCollection<VariableLayoutReflection> Parameters => field ??= new(this);
-        public SlangCollection<EntryPointReflection> EntryPoints => field ??= new(this);
+        // Use the field keyword when it becomes generally available, to make this cleaner
+        SlangCollection<TypeParameterReflection>? _TypeParameters;
+        SlangCollection<VariableLayoutReflection>? _Parameters;
+        SlangCollection<EntryPointReflection>? _EntryPoints;
+
+        public SlangCollection<TypeParameterReflection> TypeParameters => _TypeParameters ??= new(this);
+        public SlangCollection<VariableLayoutReflection> Parameters => _Parameters ??= new(this);
+        public SlangCollection<EntryPointReflection> EntryPoints => _EntryPoints ??= new(this);
+
         public uint GlobalConstantBufferBinding => Reflection.GlobalConstantBufferBinding;
         public ulong GlobalConstantBufferSize => Reflection.GlobalConstantBufferSize;
         public TypeReflection FindTypeByName(string name) => Reflection.FindTypeByName(name);

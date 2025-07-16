@@ -3,7 +3,10 @@
     public unsafe class Module
     {
         internal Slang.Cpp.Module cppObj { get; }
-        public ShaderProgram Program => field ??= new ShaderProgram(this);
+
+        // Use the field keyword when it becomes generally available, to make this cleaner
+        private ShaderProgram? _Program;
+        public ShaderProgram Program => _Program ??= new ShaderProgram(this);
 
         internal Module(Session session, string moduleName)
         {

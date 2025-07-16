@@ -1,7 +1,7 @@
 # Building From Source
 
 ## Prerequisites
-- Visual Studio 2022 (Preview) with C++/CLI support
+- Visual Studio 2022 with C++/CLI support
 - .NET 9.0 SDK
 - PowerShell
 
