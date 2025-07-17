@@ -30,21 +30,26 @@ namespace Slang::Cpp
     // Finalizer
     TypeParameterReflection::!TypeParameterReflection()
     {
-        // Note: We typically don't delete the native pointer as it's managed by Slang
+		SlangNative::TypeParameterReflection_Release(m_NativeTypeParameterReflection);
         m_NativeTypeParameterReflection = nullptr;
-    }    System::String^ TypeParameterReflection::Name::get()
+    }    
+    
+    System::String^ TypeParameterReflection::Name::get()
     {
-        if (!m_NativeTypeParameterReflection) return nullptr;        return Slang::Cpp::StringUtilities::ToString(TypeParameterReflection_GetName(m_NativeTypeParameterReflection));
+        if (!m_NativeTypeParameterReflection) return nullptr;        
+        return Slang::Cpp::StringUtilities::ToString(TypeParameterReflection_GetName(m_NativeTypeParameterReflection));
     }
     
     unsigned int TypeParameterReflection::Index::get()
     {
-        if (!m_NativeTypeParameterReflection) return 0;        return TypeParameterReflection_GetIndex(m_NativeTypeParameterReflection);
+        if (!m_NativeTypeParameterReflection) return 0;        
+        return TypeParameterReflection_GetIndex(m_NativeTypeParameterReflection);
     }
     
     unsigned int TypeParameterReflection::ConstraintCount::get()
     {
-        if (!m_NativeTypeParameterReflection) return 0;        return TypeParameterReflection_GetConstraintCount(m_NativeTypeParameterReflection);
+        if (!m_NativeTypeParameterReflection) return 0;        
+        return TypeParameterReflection_GetConstraintCount(m_NativeTypeParameterReflection);
     }
     
     TypeReflection^ TypeParameterReflection::GetConstraintByIndex(int index)

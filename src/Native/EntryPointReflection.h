@@ -26,6 +26,7 @@ namespace Native
 	{
 	public:
         EntryPointReflection(ShaderReflection* parent, void* native);
+		~EntryPointReflection();
 
         ShaderReflection* getParent();
         slang::EntryPointReflection* getNative();
@@ -46,5 +47,12 @@ namespace Native
 	private:
         ShaderReflection* m_parent;
 		slang::EntryPointReflection* m_native;
+
+        // Cache
+        FunctionReflection* m_function;
+		VariableLayoutReflection** m_parameters;
+        VariableLayoutReflection* m_varLayout;
+        TypeLayoutReflection* m_typeLayout;
+        VariableLayoutReflection* m_resultVarLayout;
 	};
 }

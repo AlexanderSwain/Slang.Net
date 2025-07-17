@@ -9,6 +9,54 @@ Native::EntryPointReflection::EntryPointReflection(Native::ShaderReflection* par
 {
     m_parent = parent;
 	m_native = (slang::EntryPointReflection*)native;
+
+    m_function = new Native::FunctionReflection(m_native->getFunction());
+
+    // Initialize the argument types array
+    uint32_t parameterCount = m_native->getParameterCount();
+    m_parameters = new Native::VariableLayoutReflection*[parameterCount];
+    for (uint32_t index = 0; index < parameterCount; index++)
+    {
+        m_parameters[index] = new Native::VariableLayoutReflection(m_native->getParameterByIndex(index));
+    }
+
+	m_varLayout = new Native::VariableLayoutReflection(m_native->getVarLayout());
+    m_typeLayout = new Native::TypeLayoutReflection(m_native->getTypeLayout());
+	m_resultVarLayout = new Native::VariableLayoutReflection(m_native->getResultVarLayout());
+}
+
+Native::EntryPointReflection::~EntryPointReflection()
+{
+    // Clean up the function reflection
+    delete m_function;
+    m_function = nullptr;
+
+    // Clean up the parameters array
+    for (uint32_t index = 0; index < m_native->getParameterCount(); index++)
+    {
+        delete m_parameters[index];
+    }
+    delete[] m_parameters;
+    m_parameters = nullptr;
+
+    // Clean up variable layout
+    delete m_varLayout;
+    m_varLayout = nullptr;
+
+	// Clean up type layout
+    delete m_typeLayout;
+    m_typeLayout = nullptr;
+
+	// Clean up result variable layout
+    delete m_resultVarLayout;
+    m_resultVarLayout = nullptr;
+
+	// No need to delete m_native here, as it is managed by Slang
+    //if (m_native)
+    //{
+    //    delete m_native;
+    //    m_native = nullptr;
+    //}
 }
 
 Native::ShaderReflection*  Native::EntryPointReflection::getParent()
@@ -38,12 +86,12 @@ unsigned Native::EntryPointReflection::getParameterCount()
 
 Native::FunctionReflection* Native::EntryPointReflection::getFunction()
 {
-    return new Native::FunctionReflection(m_native->getFunction());
+    return m_function;
 }
 
 Native::VariableLayoutReflection* Native::EntryPointReflection::getParameterByIndex(unsigned index)
 {
-    return new Native::VariableLayoutReflection(m_native->getParameterByIndex(index));
+    return m_parameters[index];
 }
 
 SlangStage Native::EntryPointReflection::getStage()
@@ -68,17 +116,17 @@ bool Native::EntryPointReflection::usesAnySampleRateInput()
 
 Native::VariableLayoutReflection* Native::EntryPointReflection::getVarLayout()
 {
-    return new Native::VariableLayoutReflection(m_native->getVarLayout());
+    return m_varLayout;
 }
 
 Native::TypeLayoutReflection* Native::EntryPointReflection::getTypeLayout() 
 { 
-    return new Native::TypeLayoutReflection(m_native->getTypeLayout());
+    return m_typeLayout;
 }
 
 Native::VariableLayoutReflection* Native::EntryPointReflection::getResultVarLayout()
 {
-    return new Native::VariableLayoutReflection(m_native->getResultVarLayout());
+    return m_resultVarLayout;
 }
 
 bool Native::EntryPointReflection::hasDefaultConstantBuffer()

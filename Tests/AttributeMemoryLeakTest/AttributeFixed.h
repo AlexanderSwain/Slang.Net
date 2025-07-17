@@ -16,9 +16,10 @@ namespace Native
 	// This type is empty in slang.h for some reason
 	struct SLANGNATIVE_API Attribute
 	{
-
 	public:
 		Attribute(void* native);
+		
+		// Add destructor to clean up memory
 		~Attribute();
 
 		slang::Attribute* getNative();
@@ -31,9 +32,9 @@ namespace Native
 
 	private:
 		slang::Attribute* m_native;
-
-		// Cache
-		TypeReflection** m_argumentTypes;
+		
+		// This member variable is the source of the memory leak
+		// Consider removing it entirely and letting the caller manage lifetime
+		TypeReflection* m_argumentType;
 	};
 }
-

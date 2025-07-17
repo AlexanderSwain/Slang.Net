@@ -35,7 +35,9 @@ namespace Slang::Cpp
     {
         m_NativeShaderReflection = native;
         m_bOwnsNative = false; // We don't own the native pointer in this case
-    }    // Destructor
+    }    
+    
+    // Destructor
     ShaderReflection::~ShaderReflection()
     {
         this->!ShaderReflection();
@@ -44,7 +46,7 @@ namespace Slang::Cpp
     // Finalizer
     ShaderReflection::!ShaderReflection()
     {
-        // Note: We typically don't delete the native pointer as it's managed by Slang
+		SlangNative::ShaderReflection_Release(m_NativeShaderReflection);
         m_NativeShaderReflection = nullptr;
     }
 
@@ -90,12 +92,16 @@ namespace Slang::Cpp
     {
         if (!m_NativeShaderReflection) return 0;
         return ShaderReflection_GetEntryPointCount(m_NativeShaderReflection);
-    }    EntryPointReflection^ ShaderReflection::GetEntryPointByIndex(unsigned int index)
+    }    
+
+    EntryPointReflection^ ShaderReflection::GetEntryPointByIndex(unsigned int index)
     {
         if (!m_NativeShaderReflection) return nullptr;
         void* entryPoint = ShaderReflection_GetEntryPointByIndex(m_NativeShaderReflection, index);
         return entryPoint ? gcnew EntryPointReflection(entryPoint) : nullptr;
-    }      EntryPointReflection^ ShaderReflection::FindEntryPointByName(System::String^ name)
+    }      
+
+    EntryPointReflection^ ShaderReflection::FindEntryPointByName(System::String^ name)
     {
         if (!m_NativeShaderReflection || !name) return nullptr;
         const char* nativeName = Slang::Cpp::StringUtilities::FromString(name);
@@ -173,8 +179,9 @@ namespace Slang::Cpp
         {
             nativeArgs[i] = specializationArgs[i]->getNative();
         }
-          void* specialized = ShaderReflection_SpecializeType(m_NativeShaderReflection, nativeType, specializationArgs->Length, nativeArgs);
+        void* specialized = ShaderReflection_SpecializeType(m_NativeShaderReflection, nativeType, specializationArgs->Length, nativeArgs);
         delete[] nativeArgs;
+
         return specialized ? gcnew TypeReflection(specialized) : nullptr;
     }
     
@@ -233,6 +240,7 @@ namespace Slang::Cpp
     {
         return m_NativeShaderReflection;
     }
+
     void* ShaderReflection::slangPtr()
     {
         return SlangNative::ShaderReflection_GetNative(m_NativeShaderReflection);

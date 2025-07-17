@@ -25,9 +25,11 @@ namespace Slang::Cpp
     // Finalizer
     Attribute::!Attribute()
     {
-        // Note: We typically don't delete the native pointer as it's managed by Slang
+		SlangNative::Attribute_Release(m_NativeAttribute);
         m_NativeAttribute = nullptr;
-    }    System::String^ Attribute::Name::get()
+    }    
+    
+    System::String^ Attribute::Name::get()
     {
         if (!m_NativeAttribute) return nullptr;
         return Slang::Cpp::StringUtilities::ToString(SlangNative::Attribute_GetName(m_NativeAttribute));

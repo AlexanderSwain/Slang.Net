@@ -31,10 +31,11 @@ namespace Slang::Cpp
     // Finalizer
     TypeReflection::!TypeReflection()
     {
-        // Note: We typically don't delete the native pointer as it's managed by Slang
-        // If we needed to, we'd check m_bOwnsNative first
+		SlangNative::TypeReflection_Release(m_NativeTypeReflection);
         m_NativeTypeReflection = nullptr;
-    }    // Properties
+    }    
+    
+    // Properties
     TypeKind TypeReflection::Kind::get()
     {
         if (!m_NativeTypeReflection) return TypeKind::None;

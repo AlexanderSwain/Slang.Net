@@ -32,6 +32,7 @@ namespace Native
 
 	public:		
         TypeLayoutReflection(void* native);
+		~TypeLayoutReflection();
 
         slang::TypeLayoutReflection* getNative();
 
@@ -98,6 +99,21 @@ namespace Native
 
 	private:
 		slang::TypeLayoutReflection* m_native;
+
+        // Cache
+        Native::TypeReflection* m_type;
+        Native::VariableLayoutReflection** m_fields;
+        Native::VariableLayoutReflection* m_explicitCounter;
+        Native::TypeLayoutReflection* m_unwrappedArray;
+        Native::TypeLayoutReflection* m_elementTypeLayout;
+        Native::VariableLayoutReflection* m_elementVarLayout;
+        Native::VariableLayoutReflection* m_containerVarLayout;
+        Native::TypeReflection* m_resourceResultType;
+        Native::TypeLayoutReflection* m_pendingDataTypeLayout;
+        Native::VariableLayoutReflection* m_specializedTypePendingDataVarLayout;
+        Native::TypeLayoutReflection** m_bindingRangeLeafTypeLayouts;
+        Native::VariableReflection** m_bindingRangeLeafVariables;
+        Native::VariableLayoutReflection** m_subObjectRangeOffsets;
 	};
 }
 

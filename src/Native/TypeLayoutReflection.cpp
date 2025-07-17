@@ -6,6 +6,126 @@
 Native::TypeLayoutReflection::TypeLayoutReflection(void* native)
 {
 	m_native = (slang::TypeLayoutReflection*)native;
+
+	m_type = new Native::TypeReflection(m_native->getType());
+
+	// Initialize the field layouts array
+    uint32_t fieldCount = m_native->getFieldCount();
+    m_fields = new Native::VariableLayoutReflection*[fieldCount];
+    for (uint32_t index = 0; index < fieldCount; index++)
+    {
+        m_fields[index] = new VariableLayoutReflection(m_native->getFieldByIndex(index));
+    }
+
+    Native::VariableLayoutReflection* m_explicitCounter = new VariableLayoutReflection(m_native->getExplicitCounter());
+    Native::TypeLayoutReflection* m_unwrappedArray = new TypeLayoutReflection(m_native->unwrapArray());
+    Native::TypeLayoutReflection* m_elementTypeLayout = new TypeLayoutReflection(m_native->getElementTypeLayout());
+    Native::VariableLayoutReflection* m_elementVarLayout = new VariableLayoutReflection(m_native->getElementVarLayout());
+    Native::VariableLayoutReflection* m_containerVarLayout = new VariableLayoutReflection(m_native->getContainerVarLayout());
+    Native::TypeReflection* m_resourceResultType = new TypeReflection(m_native->getResourceResultType());
+    Native::TypeLayoutReflection* m_pendingDataTypeLayout = new TypeLayoutReflection(m_native->getPendingDataTypeLayout());
+    Native::VariableLayoutReflection* m_specializedTypePendingDataVarLayout = new VariableLayoutReflection(m_native->getSpecializedTypePendingDataVarLayout());
+    
+    // Initialize the bindingRangeLeafTypeLayouts array
+    uint32_t bindingRangeCount = m_native->getBindingRangeCount();
+    m_bindingRangeLeafTypeLayouts = new Native::TypeLayoutReflection*[bindingRangeCount];
+    for (uint32_t index = 0; index < bindingRangeCount; index++)
+    {
+        m_bindingRangeLeafTypeLayouts[index] = new TypeLayoutReflection(m_native->getBindingRangeLeafTypeLayout(index));
+    }
+
+	// Initialize the bindingRangeLeafVariables array
+	m_bindingRangeLeafVariables = new Native::VariableReflection*[bindingRangeCount];
+    for (uint32_t index = 0; index < bindingRangeCount; index++)
+    {
+        m_bindingRangeLeafVariables[index] = new VariableReflection(m_native->getBindingRangeLeafVariable(index));
+	}
+
+    // Initialize the subObjectRangeOffsets array
+	uint32_t subObjectRangeCount = m_native->getSubObjectRangeCount();
+    m_subObjectRangeOffsets = new Native::VariableLayoutReflection*[subObjectRangeCount];
+    for (uint32_t index = 0; index < subObjectRangeCount; index++)
+    {
+        m_subObjectRangeOffsets[index] = new VariableLayoutReflection(m_native->getSubObjectRangeOffset(index));
+    }
+}
+
+Native::TypeLayoutReflection::~TypeLayoutReflection()
+{
+    // Clean up the type reflection
+    delete m_type;
+    m_type = nullptr;
+
+    // Clean up the field layouts array
+    for (uint32_t index = 0; index < m_native->getFieldCount(); index++)
+    {
+        delete m_fields[index];
+    }
+    delete[] m_fields;
+    m_fields = nullptr;
+
+    // Clean up explicit counter
+    delete m_explicitCounter;
+    m_explicitCounter = nullptr;
+
+    // Clean up unwrapped array
+    delete m_unwrappedArray;
+    m_unwrappedArray = nullptr;
+
+    // Clean up element type layout
+    delete m_elementTypeLayout;
+    m_elementTypeLayout = nullptr;
+
+    // Clean up element variable layout
+    delete m_elementVarLayout;
+    m_elementVarLayout = nullptr;
+
+    // Clean up container variable layout
+    delete m_containerVarLayout;
+    m_containerVarLayout = nullptr;
+
+    // Clean up resource result type
+    delete m_resourceResultType;
+    m_resourceResultType = nullptr;
+
+    // Clean up pending data type layout
+    delete m_pendingDataTypeLayout;
+    m_pendingDataTypeLayout = nullptr;
+
+    // Clean up specialized type pending data variable layout
+    delete m_specializedTypePendingDataVarLayout;
+    m_specializedTypePendingDataVarLayout = nullptr;
+
+    // Clean up binding range leaf type layouts
+    for (uint32_t index = 0; index < m_native->getBindingRangeCount(); index++)
+    {
+        delete m_bindingRangeLeafTypeLayouts[index];
+    }
+    delete[] m_bindingRangeLeafTypeLayouts;
+    m_bindingRangeLeafTypeLayouts = nullptr;
+
+    // Clean up binding range leaf variables
+    for (uint32_t index = 0; index < m_native->getBindingRangeCount(); index++)
+    {
+        delete m_bindingRangeLeafVariables[index];
+    }
+    delete[] m_bindingRangeLeafVariables;
+    m_bindingRangeLeafVariables = nullptr;
+
+    // Clean up sub-object range offsets
+    for (uint32_t index = 0; index < m_native->getSubObjectRangeCount(); index++)
+    {
+        delete m_subObjectRangeOffsets[index];
+    }
+    delete[] m_subObjectRangeOffsets;
+    m_subObjectRangeOffsets = nullptr;
+
+    // No need to delete m_native here, as it is managed by Slang
+    //if (m_native)
+    //{
+    //	delete m_native;
+    //	m_native = nullptr;
+    //}
 }
 
 slang::TypeLayoutReflection* Native::TypeLayoutReflection::getNative()
@@ -61,7 +181,7 @@ SlangInt Native::TypeLayoutReflection::findFieldIndexByName(char const* nameBegi
 
 Native::VariableLayoutReflection* Native::TypeLayoutReflection::getExplicitCounter()
 {
-    return new VariableLayoutReflection(m_native->getExplicitCounter());
+    return m_explicitCounter;
 }
 
 bool Native::TypeLayoutReflection::isArray() 
@@ -71,7 +191,7 @@ bool Native::TypeLayoutReflection::isArray()
 
 Native::TypeLayoutReflection* Native::TypeLayoutReflection::unwrapArray()
 {
-    return new TypeLayoutReflection(m_native->unwrapArray());
+    return m_unwrappedArray;
 }
 
 // only useful if `getKind() == Kind::Array`
@@ -92,17 +212,17 @@ size_t Native::TypeLayoutReflection::getElementStride(ParameterCategory category
 
 Native::TypeLayoutReflection* Native::TypeLayoutReflection::getElementTypeLayout()
 {
-    return new TypeLayoutReflection(m_native->getElementTypeLayout());
+    return m_elementTypeLayout;
 }
 
 Native::VariableLayoutReflection* Native::TypeLayoutReflection::getElementVarLayout()
 {
-    return new VariableLayoutReflection(m_native->getElementVarLayout());
+    return m_elementVarLayout;
 }
 
 Native::VariableLayoutReflection* Native::TypeLayoutReflection::getContainerVarLayout()
 {
-    return new VariableLayoutReflection(m_native->getContainerVarLayout());
+    return m_containerVarLayout;
 }
 
 // How is this type supposed to be bound?
@@ -138,7 +258,7 @@ Native::TypeReflection::ScalarType Native::TypeLayoutReflection::getScalarType()
 
 Native::TypeReflection* Native::TypeLayoutReflection::getResourceResultType() 
 {
-    return new TypeReflection(m_native->getResourceResultType());
+    return m_resourceResultType;
 }
 
 Native::ResourceShape Native::TypeLayoutReflection::getResourceShape() 
@@ -168,12 +288,12 @@ int Native::TypeLayoutReflection::getGenericParamIndex()
 
 Native::TypeLayoutReflection* Native::TypeLayoutReflection::getPendingDataTypeLayout()
 {
-    return new TypeLayoutReflection(m_native->getPendingDataTypeLayout());
+    return m_pendingDataTypeLayout;
 }
 
 Native::VariableLayoutReflection* Native::TypeLayoutReflection::getSpecializedTypePendingDataVarLayout()
 {
-    return new VariableLayoutReflection(m_native->getSpecializedTypePendingDataVarLayout());
+    return m_specializedTypePendingDataVarLayout;
 }
 
 SlangInt Native::TypeLayoutReflection::getBindingRangeCount()
@@ -224,12 +344,12 @@ SlangInt Native::TypeLayoutReflection::getExplicitCounterBindingRangeOffset()
 
 Native::TypeLayoutReflection* Native::TypeLayoutReflection::getBindingRangeLeafTypeLayout(SlangInt index)
 {
-    return new TypeLayoutReflection(m_native->getBindingRangeLeafTypeLayout(index));
+	return m_bindingRangeLeafTypeLayouts[index];
 }
 
 Native::VariableReflection* Native::TypeLayoutReflection::getBindingRangeLeafVariable(SlangInt index)
 {
-    return new VariableReflection(m_native->getBindingRangeLeafVariable(index));
+    return m_bindingRangeLeafVariables[index];
 }
 
 Native::ImageFormat Native::TypeLayoutReflection::getBindingRangeImageFormat(SlangInt index)
@@ -306,5 +426,5 @@ SlangInt Native::TypeLayoutReflection::getSubObjectRangeSpaceOffset(SlangInt sub
 
 Native::VariableLayoutReflection* Native::TypeLayoutReflection::getSubObjectRangeOffset(SlangInt subObjectRangeIndex)
 {
-    return new VariableLayoutReflection(m_native->getSubObjectRangeOffset(subObjectRangeIndex));
+	return m_subObjectRangeOffsets[subObjectRangeIndex];
 }

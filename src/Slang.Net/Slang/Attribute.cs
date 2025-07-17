@@ -1,4 +1,8 @@
-﻿namespace Slang
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+
+namespace Slang
 {
     public unsafe class Attribute
     {

@@ -31,7 +31,7 @@ namespace Slang::Cpp
     // Finalizer
     EntryPointReflection::!EntryPointReflection()
     {
-        // Note: We typically don't delete the native pointer as it's managed by Slang
+		SlangNative::EntryPointReflection_Release(m_NativeEntryPointReflection);
         m_NativeEntryPointReflection = nullptr;
     }
 

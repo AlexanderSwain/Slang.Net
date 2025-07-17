@@ -24,7 +24,7 @@ namespace Slang::Cpp
     // Finalizer
     VariableReflection::!VariableReflection()
     {
-        // Note: We typically don't delete the native pointer as it's managed by Slang
+		SlangNative::VariableReflection_Release(m_NativeVariableReflection);
         m_NativeVariableReflection = nullptr;
     }
 

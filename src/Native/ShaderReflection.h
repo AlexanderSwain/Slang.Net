@@ -2,6 +2,9 @@
 #include "slang.h"
 #include "slang-com-ptr.h"
 #include "slang-com-helper.h"
+#include <map>
+#include <list>
+#include <string>
 
 namespace Native
 {
@@ -30,6 +33,7 @@ namespace Native
 	{
 	public:
 		ShaderReflection(ProgramCLI* parent, void* native);
+		~ShaderReflection();
 
         ProgramCLI* getParent();
         slang::ShaderReflection* getNative();
@@ -74,5 +78,18 @@ namespace Native
 	private:
         ProgramCLI* m_parent;
 		slang::ShaderReflection* m_native;
+
+        TypeParameterReflection** m_typeParameters;
+        VariableLayoutReflection** m_parameters;
+        EntryPointReflection** m_entryPoints;
+        std::map<std::string, TypeReflection*> m_types;
+        std::map<std::string, FunctionReflection*> m_functions;
+		std::list<FunctionReflection*> m_function_by_name_in_type_results_to_delete;
+        std::list<VariableReflection*> m_var_by_name_in_type_results_to_delete;
+        std::list<TypeLayoutReflection*> m_type_layouts_results_to_delete;
+        std::list<TypeReflection*> m_specialize_type_results_to_delete;
+		TypeLayoutReflection* m_globalParamsTypeLayout;
+        VariableLayoutReflection* m_globalParamsVarLayout;
+        ISlangBlob* json_blob;
 	};
 }

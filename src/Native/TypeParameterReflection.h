@@ -18,6 +18,8 @@ namespace Native
 
 	public:
 		TypeParameterReflection(void* native);
+		~TypeParameterReflection();
+
 
 		slang::TypeParameterReflection* getNative();
 
@@ -28,6 +30,9 @@ namespace Native
 
 	private:
 		slang::TypeParameterReflection* m_native;
+
+		// Cache
+		TypeReflection** m_constraints;
 	};
 }
 

@@ -28,7 +28,7 @@ namespace Slang::Cpp
     // Finalizer
     GenericReflection::!GenericReflection()
     {
-        // Note: We typically don't delete the native pointer as it's managed by Slang
+		SlangNative::GenericReflection_Release(m_NativeGenericReflection);
         m_NativeGenericReflection = nullptr;
     }
 

@@ -24,7 +24,7 @@ namespace Slang::Cpp
     // Finalizer
     Modifier::!Modifier()
     {
-        // Note: We typically don't delete the native pointer as it's managed by Slang
+		SlangNative::Modifier_Release(m_NativeModifier);
         m_NativeModifier = nullptr;
     }
 

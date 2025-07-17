@@ -32,9 +32,11 @@ namespace Slang::Cpp
     // Finalizer
     FunctionReflection::!FunctionReflection()
     {
-        // Note: We typically don't delete the native pointer as it's managed by Slang
+		SlangNative::FunctionReflection_Release(m_NativeFunctionReflection);
         m_NativeFunctionReflection = nullptr;
-    }    System::String^ FunctionReflection::Name::get()
+    }    
+    
+    System::String^ FunctionReflection::Name::get()
     {
         if (!m_NativeFunctionReflection) return nullptr;
         return Slang::Cpp::StringUtilities::ToString(SlangNative::FunctionReflection_GetName(m_NativeFunctionReflection));

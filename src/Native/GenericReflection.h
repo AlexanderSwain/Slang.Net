@@ -3,6 +3,7 @@
 #include "slang-com-ptr.h"
 #include "slang-com-helper.h"
 #include <map>
+#include <list>
 #include "DeclKind.h"
 
 // Forward declarations
@@ -27,6 +28,7 @@ namespace Native
 
 	public:
 		GenericReflection(void* native);
+		~GenericReflection();
         
         slang::GenericReflection* getNative();
 
@@ -48,6 +50,14 @@ namespace Native
 
 	private:
 		slang::GenericReflection* m_native;
+
+		// Cache
+		VariableReflection** m_typeParameters;
+		VariableReflection** m_valueParameters;
+        std::list<Native::TypeReflection*> m_typeParameterConstraintsResultsToDelete;
+		GenericReflection* m_outerGenericContainer;
+        std::list<TypeReflection*> m_concreteTypeResultsToDelete;
+        std::list<GenericReflection*> m_applySpecializationsResultsToDelete;
 	};
 }
 

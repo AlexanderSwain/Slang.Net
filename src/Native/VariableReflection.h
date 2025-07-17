@@ -8,6 +8,7 @@
 #include "Attribute.h"
 #include "GenericReflection.h"
 #include "VariableReflection.h"
+#include <list>
 
 #ifdef SLANGNATIVE_EXPORTS
 #define SLANGNATIVE_API __declspec(dllexport)
@@ -22,6 +23,7 @@ namespace Native
 
 	public:
 		VariableReflection(void* native);
+		~VariableReflection();
         
         slang::VariableReflection* getNative();
 
@@ -39,6 +41,12 @@ namespace Native
 
 	private:
 		slang::VariableReflection* m_native;
+
+        Native::TypeReflection* m_type;
+        std::map<Modifier::ID, Modifier*> m_modifiers;
+		Native::Attribute** m_userAttributes;
+		Native::GenericReflection* m_genericContainer;
+        std::list<Native::VariableReflection*> m_applySpecializationsResultsToDelete;
 	};
 }
 

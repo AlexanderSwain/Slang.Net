@@ -28,7 +28,7 @@ namespace Slang::Cpp
     // Finalizer
     TypeLayoutReflection::!TypeLayoutReflection()
     {
-        // Note: We typically don't delete the native pointer as it's managed by Slang
+		SlangNative::TypeLayoutReflection_Release(m_NativeTypeLayoutReflection);
         m_NativeTypeLayoutReflection = nullptr;
     }
 

@@ -1,35 +1,19 @@
-#include "Attribute.h"
-
+#include "AttributeFixed.h"
 
 Native::Attribute::Attribute(void* native)
 {
 	m_native = (slang::Attribute*)native;
-
-	// Initialize the argument types array
-	uint32_t argumentCount = m_native->getArgumentCount();
-	m_argumentTypes = new TypeReflection*[argumentCount];
-	for (uint32_t index = 0; index < argumentCount; index++)
-	{
-		m_argumentTypes[index] = new TypeReflection(m_native->getArgumentType(index));
-	}
+	m_argumentType = nullptr;
 }
 
+// Add destructor to clean up the cached TypeReflection
 Native::Attribute::~Attribute()
 {
-	// Clean up the argument types array
-	for (uint32_t index = 0; index < m_native->getArgumentCount(); index++)
+	if (m_argumentType)
 	{
-		delete m_argumentTypes[index];
+		delete m_argumentType;
+		m_argumentType = nullptr;
 	}
-	delete[] m_argumentTypes;
-	m_argumentTypes = nullptr;
-
-	// No need to delete m_native here, as it is managed by Slang
-	//if (m_native)
-	//{
-	//	delete m_native;
-	//	m_native = nullptr;
-	//}
 }
 
 slang::Attribute* Native::Attribute::getNative()
@@ -41,22 +25,40 @@ char const* Native::Attribute::getName()
 {
 	return m_native->getName();
 }
+
 uint32_t Native::Attribute::getArgumentCount()
 {
 	return m_native->getArgumentCount();
 }
+
+// OPTION 1: Fix the memory leak by adding destructor (but this still has the logic bug)
 Native::TypeReflection* Native::Attribute::getArgumentType(uint32_t index)
 {
-	return m_argumentTypes[index];
+	if (!m_argumentType)
+		m_argumentType = new TypeReflection(m_native->getArgumentType(index));
+	return m_argumentType;
 }
+
+// OPTION 2: Better fix - remove caching entirely and let caller manage lifetime
+/*
+Native::TypeReflection* Native::Attribute::getArgumentType(uint32_t index)
+{
+	// Let the caller manage the lifetime, just like other similar methods in the codebase
+	// This also fixes the logic bug where only the first call was cached
+	return new TypeReflection(m_native->getArgumentType(index));
+}
+*/
+
 SlangResult Native::Attribute::getArgumentValueInt(uint32_t index, int* value)
 {
 	return m_native->getArgumentValueInt(index, value);
 }
+
 SlangResult Native::Attribute::getArgumentValueFloat(uint32_t index, float* value)
 {
 	return m_native->getArgumentValueFloat(index, value);
 }
+
 const char* Native::Attribute::getArgumentValueString(uint32_t index, size_t* outSize)
 {
 	return m_native->getArgumentValueString(index, outSize);

@@ -30,7 +30,7 @@ namespace Slang::Cpp
     // Finalizer
     VariableLayoutReflection::!VariableLayoutReflection()
     {
-        // Note: We typically don't delete the native pointer as it's managed by Slang
+		SlangNative::VariableLayoutReflection_Release(m_NativeVariableLayoutReflection);
         m_NativeVariableLayoutReflection = nullptr;
     }
 

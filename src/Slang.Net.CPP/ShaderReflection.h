@@ -29,7 +29,9 @@ namespace Slang::Cpp
         ShaderReflection(void* native);
 
         // Destructor
-        ~ShaderReflection();        // Finalizer
+        ~ShaderReflection();
+
+        // Finalizer
         !ShaderReflection();
 
         property Program^ Parent{ Program ^ get(); }
