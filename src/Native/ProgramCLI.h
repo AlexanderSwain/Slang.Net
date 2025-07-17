@@ -47,42 +47,16 @@ namespace Native
 		//Properties
 		slang::IComponentType* getNative();
 		slang::IComponentType* getLinked();
-		ModuleCLI* getModule();
+		ModuleCLI* getParent();
 		SlangResult GetCompiled(unsigned int entryPointIndex, unsigned int targetIndex, const char** output);
-
-		// Reflection API
-		void* GetReflection();
-        unsigned int getParameterCount();
-        unsigned int getTypeParameterCount();
-        TypeParameterReflection* getTypeParameterByIndex(unsigned int index);
-        TypeParameterReflection* findTypeParameter(char const* name);
-        VariableLayoutReflection* getParameterByIndex(unsigned int index);
-        //static ProgramLayout* get(SlangCompileRequest* request);
-        SlangUInt getEntryPointCount();
-        EntryPointReflection* getEntryPointByIndex(SlangUInt index);
-        SlangUInt getGlobalConstantBufferBinding();
-        size_t getGlobalConstantBufferSize();   
-        TypeReflection* findTypeByName(const char* name);
-        FunctionReflection* findFunctionByName(const char* name);
-        FunctionReflection* findFunctionByNameInType(TypeReflection* type, const char* name);
-        VariableReflection* findVarByNameInType(TypeReflection* type, const char* name);
-        TypeLayoutReflection* getTypeLayout(TypeReflection* type, LayoutRules rules = LayoutRules::Default);
-        EntryPointReflection* findEntryPointByName(const char* name);
-        TypeReflection* specializeType(TypeReflection* type, SlangInt specializationArgCount, TypeReflection* const* specializationArgs, ISlangBlob** outDiagnostics);
-        GenericReflection* specializeGeneric(GenericReflection* genRef, SlangInt specializationArgCount, GenericArgType const* specializationArgTypes, GenericArgReflection const* specializationArgVals, ISlangBlob** outDiagnostics);
-        bool isSubType(TypeReflection* subType, TypeReflection* superType);
-        SlangUInt getHashedStringCount() const;
-        const char* getHashedString(SlangUInt index, size_t* outCount) const;
-        TypeLayoutReflection* getGlobalParamsTypeLayout();
-        VariableLayoutReflection* getGlobalParamsVarLayout();
-        SlangResult toJson(ISlangBlob** outBlob);
+		void* GetLayout(int targetIndex);
 
 	private:
-		ModuleCLI* m_module = nullptr;
-		slang::IComponentType* m_program = nullptr;
+		ModuleCLI* m_parent = nullptr;
+		slang::IComponentType* m_composedProgram = nullptr;
 		slang::IComponentType* m_linkedProgram = nullptr;
-        slang::ProgramLayout* m_layout = nullptr;
-		std::string m_errorBuffer; // Buffer to store error messages
+        std::string m_linkedProgram_Diagnostics; // Check for memory leaks for this
+		std::string m_errorBuffer; // Check to see if this is unused // Buffer to store error messages
 		slang::IComponentType** getProgramComponents();
 	};
 }

@@ -30,9 +30,9 @@ namespace Slang::Cpp
         const char* name = Slang::Cpp::StringUtilities::FromString(moduleName);
         const char* path = Slang::Cpp::StringUtilities::FromString(modulePath);
         const char* source = Slang::Cpp::StringUtilities::FromString(shaderSource);
-		const char* errorMessage = nullptr;
 
-        m_NativeModule = SlangNative::CreateModule(nativeParent, name, path, source, &errorMessage);
+        m_NativeModule = SlangNative::CreateModule(nativeParent, name, path, source);
+        const char* errorMessage = SlangNative::SlangNative_GetLastError();
 
         if (!m_NativeModule)
             ThrowErrorMessage(errorMessage);

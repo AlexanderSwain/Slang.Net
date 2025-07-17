@@ -16,21 +16,24 @@ using namespace Native;
 namespace SlangNative
 {
     // Session API
-    extern "C" SLANGNATIVE_API void* CreateSession(void* options, int optionsLength,
+    extern "C" SLANGNATIVE_API void* CreateSession(
+        void* options, int optionsLength,
         void* macros, int macrosLength,
         void* models, int modelsLength,
-        char* searchPaths[], int searchPathsLength,
-        const char** error);
+        char* searchPaths[], int searchPathsLength);
+
+    //Diagnostics
+    extern "C" SLANGNATIVE_API const char* SlangNative_GetLastError();
 
     // Module API
-    extern "C" SLANGNATIVE_API void* CreateModule(void* parentSession, const char* moduleName, const char* modulePath, const char* shaderSource, const char** error);
-    extern "C" SLANGNATIVE_API void* FindEntryPoint(void* parentModule, const char* entryPointName, const char** error);
+    extern "C" SLANGNATIVE_API void* CreateModule(void* parentSession, const char* moduleName, const char* modulePath, const char* shaderSource);
+    extern "C" SLANGNATIVE_API void* FindEntryPoint(void* parentModule, const char* entryPointName);
     extern "C" SLANGNATIVE_API void GetParameterInfo(void* parentEntryPoint, void** outParameterInfo, int* outParameterCount);
 
     // Program API
     extern "C" SLANGNATIVE_API void* CreateProgram(void* parentModule);
     extern "C" SLANGNATIVE_API int32_t Compile(void* program, unsigned int entryPointIndex, unsigned int targetIndex, const char** output);
-    extern "C" SLANGNATIVE_API void* GetProgramReflection(void* program);
+    extern "C" SLANGNATIVE_API void* GetProgramReflection(void* program, unsigned int targetIndex);
 
     // ShaderReflection API
     extern "C" SLANGNATIVE_API void ShaderReflection_Release(void* shaderReflection);

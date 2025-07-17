@@ -1,125 +1,228 @@
-# Native::Attribute Memory Leak Test
+# Comprehensive Slang Reflection API Test
 
-This test project is designed to detect memory leaks in the `Native::Attribute` class from the SlangNative library.
+This test suite provides comprehensive testing of the Slang reflection API, designed to test all major reflection features including:
 
-## Project Structure
+## Features Tested
 
-```
-Tests/AttributeMemoryLeakTest/
-??? AttributeMemoryLeakTest.vcxproj    # Visual Studio project file
-??? main.cpp                           # Main test application
-??? MemoryLeakDetector.h               # Memory leak detection utilities
-??? MemoryLeakDetector.cpp             # Implementation of memory leak detector
-??? README.md                          # This file
-```
+### Core Reflection API
+- **Session Management**: Creating and configuring Slang sessions
+- **Module Loading**: Loading Slang shader modules from source
+- **Program Creation**: Creating shader programs from modules
+- **Reflection Extraction**: Getting reflection data from compiled programs
 
-## How to Run
+### Shader Reflection Tests
+- Parameter enumeration and inspection
+- Type parameter analysis
+- Entry point discovery and properties
+- Global constant buffer information
+- Hashed string management
+- JSON export functionality
 
-1. **Prerequisites:**
-   - Visual Studio 2022 with C++ development tools
-   - Windows 10 SDK
-   - The SlangNative project must be built first
+### Entry Point Reflection Tests
+- Entry point enumeration by index and name
+- Stage identification (vertex, pixel, compute, etc.)
+- Parameter counting and inspection
+- Compute shader specific properties:
+  - Thread group size analysis
+  - Wave size detection
+- Function reflection access
+- Layout information retrieval
+- Default constant buffer detection
 
-2. **Building:**
-   - Open the main Slang.Net solution in Visual Studio
-   - Build the SlangNative project first (in Debug mode for best leak detection)
-   - Then build this test project
+### Type Reflection Tests
+- Type discovery by name
+- Type kind identification
+- Field enumeration and inspection
+- Array type analysis:
+  - Element type extraction
+  - Element count determination
+- Matrix properties (rows/columns)
+- User attribute analysis
+- Generic container inspection
 
-3. **Running:**
-   - Run the executable from Visual Studio (F5) or command line
-   - The test will output detailed information about memory usage and any detected leaks
+### Function Reflection Tests
+- Function discovery by name
+- Parameter enumeration
+- Return type analysis
+- User attribute inspection
+- Overload detection and counting
+- Generic container access
 
-## What It Tests
+### Variable Reflection Tests
+- Global parameter enumeration
+- Variable layout information:
+  - Binding indices and spaces
+  - Memory offsets
+  - Type layout details
+- Size and alignment analysis
 
-The test suite includes several test scenarios:
+### Attribute Reflection Tests
+- Attribute discovery on types and functions
+- Argument counting and value extraction:
+  - String arguments
+  - Integer arguments
+  - Float arguments
+- Named attribute lookup
 
-### 1. Basic Attribute Creation
-- Creates and destroys `Native::Attribute` objects repeatedly
-- Verifies basic functionality (getName, getArgumentCount)
+### Generic Reflection Tests
+- Generic type container analysis
+- Type parameter enumeration
+- Value parameter inspection
+- Constraint analysis
 
-### 2. Attribute Argument Access
-- Tests all argument accessor methods
-- Verifies correct values are returned
+### Layout Reflection Tests
+- Type layout analysis:
+  - Size calculation
+  - Stride determination
+  - Alignment requirements
+- Field layout inspection:
+  - Field offsets
+  - Field naming
+- Memory layout validation
 
-### 3. Attribute Type Reflection
-- **This is the main test for the memory leak issue**
-- Calls `getArgumentType()` multiple times with different indices
-- Demonstrates the bug where only one TypeReflection object is cached
+### Compilation Tests
+- Multi-target compilation testing
+- Entry point specific compilation
+- Error detection and reporting
 
-### 4. Multiple Attribute Instances
-- Creates many attribute instances simultaneously
-- Tests interaction between multiple objects
+## Test Data Requirements
 
-### 5. Stress Test
-- Runs intensive operations to amplify any memory leaks
-- Monitors memory usage throughout execution
+The test expects a comprehensive Slang shader file named `ComprehensiveSlangTest.slang` that should include:
 
-### 6. Real World Scenario
-- Simulates realistic usage patterns
-- Tests with various attribute configurations
+### Expected Entry Points
+- `VS` - Vertex shader
+- `PS` - Pixel shader  
+- `GS` - Geometry shader
+- `CS` - Compute shader
+- `HS` - Hull shader
+- `DS` - Domain shader
+- `TestAttributeFunction` - Function with attributes
+
+### Expected Types
+- `ComplexStruct` - Complex structure type
+- `NestedStruct` - Nested structure
+- `MyAttributeStruct` - Structure with attributes
+- `GenericBuffer` - Generic buffer type
+- `LambertianModel` - Interface implementation
+- `ILightModel` - Interface definition
+- Standard types: `float`, `float2`, `float3`, `float4`, `float3x3`, `float4x4`
+
+### Expected Functions
+- `genericMax` - Generic function
+- `utilityFunction` - Function with attributes
+- `overloadedFunction` - Overloaded function
+- `functionWithDefaults` - Function with default parameters
+- `calculateLighting` - Lighting calculation function
+
+## Memory Leak Detection
+
+The test includes comprehensive memory leak detection using the Windows CRT debug heap:
+
+- **Automatic Tracking**: Memory allocations are tracked throughout test execution
+- **Leak Reporting**: Any memory leaks are reported at the end of testing
+- **Resource Cleanup**: All Slang objects are properly released
+
+## Usage
+
+1. **Prerequisites**:
+   - Windows with Visual Studio 2022
+   - C++14 or later compiler
+   - Slang shader file: `ComprehensiveSlangTest.slang`
+
+2. **Build**:# From Visual Studio
+Build -> Build Solution
+
+# Or from command line
+msbuild AttributeMemoryLeakTest.vcxproj
+3. **Run**:# From Visual Studio
+Debug -> Start Without Debugging
+
+# Or from command line
+.\Debug\AttributeMemoryLeakTest.exe
+## Test Output
+
+The test provides detailed output including:
+
+### Test Categories
+Each test category is clearly separated with headers showing:
+- Test category name
+- Individual test results with PASS/FAIL status
+- Detailed information about discovered reflection data
+
+### Summary Report
+- Total test count
+- Pass/fail statistics
+- Success percentage
+- Detailed failure list (if any)
+
+### Memory Leak Report
+- Memory allocation tracking results
+- Any detected leaks with details
+- Memory usage statistics
 
 ## Expected Results
 
-### With Current Implementation (Memory Leak)
-The current implementation has a potential memory leak because:
-- `m_argumentType` is allocated with `new` but never freed
-- Only one TypeReflection object is cached regardless of index
-- No destructor exists to clean up the allocated memory
+A successful test run should show:
+- ? Session creation and configuration
+- ? Module loading from shader source
+- ? Program compilation
+- ? Reflection data extraction
+- ? Discovery of expected types, functions, and entry points
+- ? Proper attribute and layout analysis
+- ? No memory leaks detected
 
-### After Fix
-Once the memory leak is fixed, all tests should pass with no memory leaks detected.
+## Troubleshooting
 
-## Memory Leak Detection Features
+### Common Issues
 
-The test uses several memory leak detection mechanisms:
+1. **Shader File Not Found**:
+   - Ensure `ComprehensiveSlangTest.slang` is in the working directory
+   - Check file path and permissions
 
-1. **CRT Debug Heap**: Uses `_CrtSetDbgFlag` to enable memory leak detection
-2. **Memory Checkpoints**: Takes snapshots before and after operations
-3. **Scoped Detection**: Uses RAII pattern for automatic leak detection
-4. **Process Memory Monitoring**: Tracks overall memory usage
+2. **API Function Not Found**:
+   - Verify Slang library is properly linked
+   - Check that all native functions are correctly declared
 
-## Output Interpretation
+3. **Memory Leaks Detected**:
+   - Review resource cleanup code
+   - Ensure all reflection objects are properly released
+   - Check for exception handling gaps
 
-- **"NO MEMORY LEAKS DETECTED"** = Good! The code is clean
-- **"MEMORY LEAK DETECTED"** = Problem found, review the dump output
-- Memory usage should remain relatively stable during stress tests
+4. **Test Failures**:
+   - Verify shader content matches expected structures
+   - Check that entry points and types are correctly named
+   - Ensure attributes are properly defined
 
-## Debugging Memory Leaks
+## Integration with CI/CD
 
-If leaks are detected:
+This test can be integrated into continuous integration pipelines:
+# Example GitHub Actions step
+- name: Run Reflection Tests
+  run: |
+    .\Tests\AttributeMemoryLeakTest\Debug\AttributeMemoryLeakTest.exe
+  working-directory: ${{ github.workspace }}
+The test returns:
+- **Exit code 0**: All tests passed
+- **Exit code 1**: One or more tests failed or exceptions occurred
 
-1. Look at the memory dump output for allocation details
-2. Use the allocation numbers to set breakpoints: `_CrtSetBreakAlloc(number)`
-3. Run in debugger to see exactly where the leak occurs
-4. Fix the issue by adding proper cleanup code
+## Extending the Tests
 
-## Known Issues with Current Implementation
+To add new reflection tests:
 
-The `Native::Attribute::getArgumentType()` method has these problems:
+1. **Add Test Method**: Create new test method in `SlangReflectionTester` class
+2. **Call in Main**: Add call to new test in `runAllTests()` method  
+3. **Add Expected Data**: Update expected types/functions/entry points lists
+4. **Update Shader**: Modify `ComprehensiveSlangTest.slang` to include new test cases
 
-```cpp
-Native::TypeReflection* Native::Attribute::getArgumentType(uint32_t index)
-{
-    if (!m_argumentType)
-        m_argumentType = new TypeReflection(m_native->getArgumentType(index));
-    return m_argumentType;
-}
-```
+## Performance Considerations
 
-Issues:
-1. **Memory Leak**: No destructor to free `m_argumentType`
-2. **Wrong Caching**: Only caches the first call, ignoring the index parameter
-3. **Logic Error**: Subsequent calls with different indices return wrong object
+The test suite is designed for correctness over performance:
+- Comprehensive reflection API coverage
+- Detailed validation of all returned data
+- Memory leak detection overhead
+- Extensive logging and reporting
 
-## Recommended Fix
-
-Remove the caching entirely and let the caller manage the lifetime:
-
-```cpp
-Native::TypeReflection* Native::Attribute::getArgumentType(uint32_t index)
-{
-    return new TypeReflection(m_native->getArgumentType(index));
-}
-```
-
-This follows the same pattern used elsewhere in the codebase and lets the COM reference counting handle memory management.
+For performance-critical scenarios, consider:
+- Selective test execution
+- Reduced logging verbosity
+- Parallel test execution where possible

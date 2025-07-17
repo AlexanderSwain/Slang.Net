@@ -15,6 +15,13 @@ namespace Slang::Cpp
         void* nativeParent = parent->getNative();
 
         m_NativeProgram = SlangNative::CreateProgram(nativeParent);
+        const char* errorMessage = SlangNative::SlangNative_GetLastError();
+
+        if (!m_NativeProgram)
+        {
+            System::String^ errorMsg = errorMessage ? gcnew System::String(errorMessage) : "Unknown compilation error.";
+            throw gcnew System::Exception(errorMsg);
+        }
     }
 
 	// Constructor with native pointer implementation
@@ -55,22 +62,31 @@ namespace Slang::Cpp
     {
         const char* result = nullptr;
         int32_t compileResult = SlangNative::Compile(m_NativeProgram, entryPointIndex, targetIndex, &result);
+        const char* errorMessage = SlangNative::SlangNative_GetLastError();
 
         if (compileResult < 0)
         {
-            System::String^ errorMsg = result ? gcnew System::String(result) : "Unknown compilation error.";
+            System::String^ errorMsg = errorMessage ? gcnew System::String(errorMessage) : "Unknown compilation error.";
             throw gcnew System::Exception(errorMsg);
         }
 
         return gcnew System::String(result);
     }
 
-    ShaderReflection^ Slang::Cpp::Program::GetReflection()
+    ShaderReflection^ Slang::Cpp::Program::GetReflection(unsigned int targetIndex)
     {
         if (!m_NativeProgram) return nullptr;
         
         // Get reflection from the native program
-        void* nativeReflection = SlangNative::GetProgramReflection(m_NativeProgram);
-        return nativeReflection ? gcnew ShaderReflection(nativeReflection) : nullptr;
+        void* nativeReflection = SlangNative::GetProgramReflection(m_NativeProgram, targetIndex);
+        const char* errorMessage = SlangNative::SlangNative_GetLastError();
+
+        if (!nativeReflection)
+        {
+            System::String^ errorMsg = errorMessage ? gcnew System::String(errorMessage) : "Unknown compilation error.";
+            throw gcnew System::Exception(errorMsg);
+        }
+
+        return gcnew ShaderReflection(nativeReflection);
     }
 }

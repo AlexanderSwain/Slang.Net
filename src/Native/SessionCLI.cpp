@@ -29,7 +29,7 @@ Native::SessionCLI::SessionCLI(CompilerOptionCLI* options, int optionsLength,
         targetDescs.push_back(targetDesc);
     }
 
-    // Use the vector data as the targets array if we have any targets
+	// Sets the target descriptions if we have any
     if (!targetDescs.empty())
     {
         sessionDesc.targets = targetDescs.data();
@@ -55,15 +55,14 @@ Native::SessionCLI::SessionCLI(CompilerOptionCLI* options, int optionsLength,
         compilerOptions.push_back(entry);
     }
     
-    // Use the vector data as the targets array if we have any targets
-    if (!targetDescs.empty())
+	// Sets the compiler options if we have any
+    if (!compilerOptions.empty())
     {
         sessionDesc.compilerOptionEntries = compilerOptions.data();
         sessionDesc.compilerOptionEntryCount = compilerOptions.size();
     }
     
     // Set PreprocessorMacroDesc
-        // Set compiler options
     std::vector<slang::PreprocessorMacroDesc> preprocessorMacroDesc;
     preprocessorMacroDesc.reserve(macrosLength);
     
@@ -75,18 +74,22 @@ Native::SessionCLI::SessionCLI(CompilerOptionCLI* options, int optionsLength,
         preprocessorMacroDesc.push_back(macroDesc);
     }
     
-    // Use the vector data as the targets array if we have any targets
+	// Set the preprocessor macros if we have any
     if (!preprocessorMacroDesc.empty())
     {
         sessionDesc.preprocessorMacros = preprocessorMacroDesc.data();
         sessionDesc.preprocessorMacroCount = preprocessorMacroDesc.size();
     }
 
-    sessionDesc.searchPaths = searchPaths;
-    sessionDesc.searchPathCount = searchPathsLength; // Update the count to reflect the number of paths
+	// Set the search paths if we have any
+    if (searchPathsLength != 0)
+    {
+        sessionDesc.searchPaths = searchPaths;
+        sessionDesc.searchPathCount = searchPathsLength;
+    }
 
     Slang::ComPtr<slang::ISession> session;
-    SlangResult createResult = s_context->createSession(sessionDesc, session.writeRef());
+    SlangResult createResult = GetGlobalSession()->createSession(sessionDesc, session.writeRef());
     m_session = session;
     
     if (SLANG_FAILED(createResult))

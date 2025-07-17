@@ -77,14 +77,14 @@ Native::FunctionReflection::~FunctionReflection()
     m_genericContainer = nullptr;
 
     // Clean up apply specializations results
-    for (auto& result : m_applySpecializationsResultsToDelete) {
-        delete result;
+    for (auto& item : m_applySpecializationsResultsToDelete) {
+        delete item;
     }
     m_applySpecializationsResultsToDelete.clear();
 
     // Clean up specialize with arg types results
-    for (auto& result : m_specializeWithArgTypesResultsToDelete) {
-        delete result;
+    for (auto& pair : m_specializeWithArgTypesResultsToDelete) {
+        delete pair;
     }
     m_specializeWithArgTypesResultsToDelete.clear();
 

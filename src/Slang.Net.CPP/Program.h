@@ -34,7 +34,7 @@ namespace Slang::Cpp
         System::String^ Compile(unsigned int entryPointIndex, unsigned int targetIndex);
         
         // Reflection
-        ShaderReflection^ GetReflection();
+        ShaderReflection^ GetReflection(unsigned int targetIndex);
 
     private:
         void* m_NativeProgram;

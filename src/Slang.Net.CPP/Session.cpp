@@ -66,15 +66,15 @@ namespace Slang::Cpp
             nativeSearchPaths[i] = static_cast<char*>(strPtr.ToPointer());
         }
 
-		const char* errorMessage = nullptr;
+		
         
         // Call the native function
         m_NativeSession = SlangNative::CreateSession(
             nativeOptions, optionsLength,
             nativeMacros, macrosLength,
             nativeModels, modelsLength,
-            nativeSearchPaths, searchPathsLength,
-            &errorMessage);
+            nativeSearchPaths, searchPathsLength);
+        const char* errorMessage = SlangNative::SlangNative_GetLastError();
 
         if (!m_NativeSession)
             ThrowErrorMessage(errorMessage);
