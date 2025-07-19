@@ -34,6 +34,9 @@ namespace Slang::Cpp
         // Finalizer
         !ShaderReflection();
 
+        // IDisposable implementation
+        virtual void Dispose();
+
         property Program^ Parent{ Program ^ get(); }
 
         // Properties and Methods

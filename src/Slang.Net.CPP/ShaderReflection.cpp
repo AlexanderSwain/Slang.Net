@@ -242,7 +242,7 @@ namespace Slang::Cpp
     {
         this->!ShaderReflection();
         System::GC::SuppressFinalize(this);
-	}
+    }
 
     void* ShaderReflection::getNative()
     {
