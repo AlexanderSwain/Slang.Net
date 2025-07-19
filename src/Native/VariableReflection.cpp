@@ -2,21 +2,14 @@
 
 Native::VariableReflection::VariableReflection(void* native)
 {
+    if (!native) throw std::invalid_argument("Native pointer cannot be null");
+
 	m_native = (slang::VariableReflection*)native;
 
-	// Initialize the type reflection
-	m_type = new TypeReflection(m_native->getType());
-
-	// Initialize user attributes
-	unsigned int userAttributeCount = m_native->getUserAttributeCount();
-	m_userAttributes = new Attribute * [userAttributeCount];
-    for (unsigned int index = 0; index < userAttributeCount; index++)
-    {
-        m_userAttributes[index] = new Attribute(m_native->getUserAttributeByIndex(index));
-	}
-
-	// Initialize generic container
-	m_genericContainer = new GenericReflection(m_native->getGenericContainer());
+	// Use lazy initialization - only initialize when accessed
+	m_type = nullptr;
+	m_userAttributes = nullptr;
+	m_genericContainer = nullptr;
 }
 
 Native::VariableReflection::~VariableReflection()
@@ -33,12 +26,15 @@ Native::VariableReflection::~VariableReflection()
     m_modifiers.clear(); // Clear the map
 
     // Clean up user attributes
-    for (unsigned int index = 0; index < m_native->getUserAttributeCount(); index++)
+    if (m_userAttributes)
     {
-        delete m_userAttributes[index];
+        for (unsigned int index = 0; index < m_native->getUserAttributeCount(); index++)
+        {
+            delete m_userAttributes[index];
+        }
+        delete[] m_userAttributes;
+        m_userAttributes = nullptr;
     }
-    delete[] m_userAttributes;
-    m_userAttributes = nullptr;
 
     // Clean up generic container
     delete m_genericContainer;
@@ -70,6 +66,14 @@ char const* Native::VariableReflection::getName()
 
 Native::TypeReflection* Native::VariableReflection::getType()
 {
+    if (!m_type)
+    {
+        slang::TypeReflection* typePtr = m_native->getType();
+        if (typePtr) 
+            m_type = new TypeReflection(typePtr);
+        else
+            m_type = nullptr;
+    }
     return m_type;
 }
 
@@ -83,9 +87,14 @@ Native::Modifier* Native::VariableReflection::findModifier(Modifier::ID id)
         return it->second;
 
     // If not cached, create a new Modifier and cache it
-    Native::Modifier* result = new Native::Modifier(m_native->findModifier((slang::Modifier::ID)id));
-    m_modifiers[id] = result;
-    return result;
+    slang::Modifier* nativeModifier = m_native->findModifier((slang::Modifier::ID)id);
+    if (nativeModifier)
+    {
+        Native::Modifier* result = new Native::Modifier(nativeModifier);
+        m_modifiers[id] = result;
+        return result;
+    }
+    return nullptr;
 }
 
 unsigned int Native::VariableReflection::getUserAttributeCount()
@@ -95,6 +104,19 @@ unsigned int Native::VariableReflection::getUserAttributeCount()
 
 Native::Attribute* Native::VariableReflection::getUserAttributeByIndex(unsigned int index)
 {
+    if (!m_userAttributes)
+    {
+        unsigned int userAttributeCount = m_native->getUserAttributeCount();
+        m_userAttributes = new Attribute * [userAttributeCount];
+        for (unsigned int i = 0; i < userAttributeCount; i++)
+        {
+            slang::Attribute* nativeUserAttribute = m_native->getUserAttributeByIndex(i);
+            if (nativeUserAttribute)
+                m_userAttributes[i] = new Attribute(nativeUserAttribute);
+            else
+                m_userAttributes[i] = nullptr;
+        }
+    }
 	return m_userAttributes[index];
 }
 
@@ -102,14 +124,20 @@ Native::Attribute* Native::VariableReflection::findAttributeByName(char const* n
 {
     // Memory leak here, but this method is unused anyways.
     // Decided to keep it for consistency with slang api.
-    return new Attribute(m_native->findAttributeByName(SessionCLI::GetGlobalSession(), name));
+    slang::Attribute* nativeAttribute = m_native->findAttributeByName(SessionCLI::GetGlobalSession(), name);
+    if (nativeAttribute)
+        return new Attribute(nativeAttribute);
+    return nullptr;
 }
 
 Native::Attribute* Native::VariableReflection::findUserAttributeByName(char const* name)
 {
     // Memory leak here, but this method is unused anyways.
     // Decided to keep it for consistency with slang api.
-    return new Attribute(m_native->findUserAttributeByName(SessionCLI::GetGlobalSession(), name));
+    slang::Attribute* nativeAttribute = m_native->findUserAttributeByName(SessionCLI::GetGlobalSession(), name);
+    if (nativeAttribute)
+        return new Attribute(nativeAttribute);
+    return nullptr;
 }
 
 bool Native::VariableReflection::hasDefaultValue()
@@ -124,12 +152,25 @@ SlangResult Native::VariableReflection::getDefaultValueInt(int64_t* value)
 
 Native::GenericReflection* Native::VariableReflection::getGenericContainer()
 {
+    if (!m_genericContainer)
+    {
+        slang::GenericReflection* containerPtr = m_native->getGenericContainer();
+        if (containerPtr) 
+            m_genericContainer = new GenericReflection(containerPtr);
+        else
+            m_genericContainer = nullptr;
+    }
     return m_genericContainer;
 }
 
 Native::VariableReflection* Native::VariableReflection::applySpecializations(GenericReflection* genRef)
 {
-    Native::VariableReflection* result = new Native::VariableReflection(m_native->applySpecializations((slang::GenericReflection*)genRef->getNative()));
-    m_applySpecializationsResultsToDelete.push_back(result);
-    return result;
+    slang::VariableReflection* nativeResult = m_native->applySpecializations((slang::GenericReflection*)genRef->getNative());
+    if (nativeResult)
+    {
+        Native::VariableReflection* result = new Native::VariableReflection(nativeResult);
+        m_applySpecializationsResultsToDelete.push_back(result);
+        return result;
+    }
+    return nullptr;
 }

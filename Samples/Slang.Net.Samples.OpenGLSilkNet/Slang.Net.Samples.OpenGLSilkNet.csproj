@@ -22,6 +22,10 @@
 		<PackageReference Include="Silk.NET.Input" Version="2.21.0" />
 		<PackageReference Include="Slang.Sdk" Version="0.0.1" />
 	</ItemGroup>
+	
+	<ItemGroup>
+	  <ProjectReference Include="..\Slang.Net.Samples.VulkanSilkNet\Slang.Net.Samples.VulkanSilkNet.csproj" />
+	</ItemGroup>
 </Project>
 
 

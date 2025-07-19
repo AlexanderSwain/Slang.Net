@@ -7,22 +7,17 @@
 
 Native::EntryPointReflection::EntryPointReflection(Native::ShaderReflection* parent, void* native)
 {
+    if (!native) throw std::invalid_argument("Native pointer cannot be null");
+    
     m_parent = parent;
 	m_native = (slang::EntryPointReflection*)native;
 
-    m_function = new Native::FunctionReflection(m_native->getFunction());
-
-    // Initialize the argument types array
-    uint32_t parameterCount = m_native->getParameterCount();
-    m_parameters = new Native::VariableLayoutReflection*[parameterCount];
-    for (uint32_t index = 0; index < parameterCount; index++)
-    {
-        m_parameters[index] = new Native::VariableLayoutReflection(m_native->getParameterByIndex(index));
-    }
-
-	m_varLayout = new Native::VariableLayoutReflection(m_native->getVarLayout());
-    m_typeLayout = new Native::TypeLayoutReflection(m_native->getTypeLayout());
-	m_resultVarLayout = new Native::VariableLayoutReflection(m_native->getResultVarLayout());
+    // Use lazy initialization - only initialize when accessed
+    m_function = nullptr;
+    m_parameters = nullptr;
+	m_varLayout = nullptr;
+    m_typeLayout = nullptr;
+	m_resultVarLayout = nullptr;
 }
 
 Native::EntryPointReflection::~EntryPointReflection()
@@ -32,12 +27,15 @@ Native::EntryPointReflection::~EntryPointReflection()
     m_function = nullptr;
 
     // Clean up the parameters array
-    for (uint32_t index = 0; index < m_native->getParameterCount(); index++)
+    if (m_parameters)
     {
-        delete m_parameters[index];
+        for (uint32_t index = 0; index < m_native->getParameterCount(); index++)
+        {
+            delete m_parameters[index];
+        }
+        delete[] m_parameters;
+        m_parameters = nullptr;
     }
-    delete[] m_parameters;
-    m_parameters = nullptr;
 
     // Clean up variable layout
     delete m_varLayout;
@@ -86,11 +84,32 @@ unsigned Native::EntryPointReflection::getParameterCount()
 
 Native::FunctionReflection* Native::EntryPointReflection::getFunction()
 {
+    if (!m_function)
+    {
+        slang::FunctionReflection* functionPtr = m_native->getFunction();
+        if (functionPtr) 
+            m_function = new Native::FunctionReflection(functionPtr);
+        else
+            m_function = nullptr;
+    }
     return m_function;
 }
 
 Native::VariableLayoutReflection* Native::EntryPointReflection::getParameterByIndex(unsigned index)
 {
+    if (!m_parameters)
+    {
+        uint32_t parameterCount = m_native->getParameterCount();
+        m_parameters = new Native::VariableLayoutReflection*[parameterCount];
+        for (uint32_t i = 0; i < parameterCount; i++)
+        {
+            slang::VariableLayoutReflection* nativeParameter = m_native->getParameterByIndex(i);
+            if (nativeParameter)
+                m_parameters[i] = new Native::VariableLayoutReflection(nativeParameter);
+            else
+                m_parameters[i] = nullptr;
+        }
+    }
     return m_parameters[index];
 }
 
@@ -116,16 +135,40 @@ bool Native::EntryPointReflection::usesAnySampleRateInput()
 
 Native::VariableLayoutReflection* Native::EntryPointReflection::getVarLayout()
 {
+    if (!m_varLayout)
+    {
+        slang::VariableLayoutReflection* varLayoutPtr = m_native->getVarLayout();
+        if (varLayoutPtr) 
+            m_varLayout = new Native::VariableLayoutReflection(varLayoutPtr);
+        else
+            m_varLayout = nullptr;
+    }
     return m_varLayout;
 }
 
 Native::TypeLayoutReflection* Native::EntryPointReflection::getTypeLayout() 
 { 
+    if (!m_typeLayout)
+    {
+        slang::TypeLayoutReflection* typeLayoutPtr = m_native->getTypeLayout();
+        if (typeLayoutPtr) 
+            m_typeLayout = new Native::TypeLayoutReflection(typeLayoutPtr);
+        else
+            m_typeLayout = nullptr;
+    }
     return m_typeLayout;
 }
 
 Native::VariableLayoutReflection* Native::EntryPointReflection::getResultVarLayout()
 {
+    if (!m_resultVarLayout)
+    {
+        slang::VariableLayoutReflection* resultVarLayoutPtr = m_native->getResultVarLayout();
+        if (resultVarLayoutPtr) 
+            m_resultVarLayout = new Native::VariableLayoutReflection(resultVarLayoutPtr);
+        else
+            m_resultVarLayout = nullptr;
+    }
     return m_resultVarLayout;
 }
 

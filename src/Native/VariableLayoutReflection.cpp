@@ -6,12 +6,15 @@
 
 Native::VariableLayoutReflection::VariableLayoutReflection(void* native)
 {
+    if (!native) throw std::invalid_argument("Native pointer cannot be null");
+
 	m_native = (slang::VariableLayoutReflection*)native;
 
-    m_variable = new Native::VariableReflection(m_native->getVariable());
-    m_typeLayout = new Native::TypeLayoutReflection(m_native->getTypeLayout());
-    m_type = new TypeReflection(m_native->getType());
-    m_pendingDataLayout = new VariableLayoutReflection(m_native->getPendingDataLayout());
+    // Use lazy initialization - only initialize when accessed
+    m_variable = nullptr;
+    m_typeLayout = nullptr;
+    m_type = nullptr;
+    m_pendingDataLayout = nullptr;
 }
 
 Native::VariableLayoutReflection::~VariableLayoutReflection()
@@ -47,6 +50,14 @@ slang::VariableLayoutReflection* Native::VariableLayoutReflection::getNative()
 
 Native::VariableReflection* Native::VariableLayoutReflection::getVariable()
 {
+    if (!m_variable)
+    {
+        slang::VariableReflection* variablePtr = m_native->getVariable();
+        if (variablePtr) 
+            m_variable = new Native::VariableReflection(variablePtr);
+        else
+            m_variable = nullptr;
+    }
     return m_variable;
 }
 
@@ -65,13 +76,26 @@ Native::Modifier* Native::VariableLayoutReflection::findModifier(Modifier::ID id
         return it->second;
 
     // If not cached, create a new Modifier and cache it
-    Native::Modifier* result = new Native::Modifier(m_native->findModifier((slang::Modifier::ID)id));
-    m_modifiers[id] = result;
-    return result;
+    slang::Modifier* nativeModifier = m_native->findModifier((slang::Modifier::ID)id);
+    if (nativeModifier)
+    {
+        Native::Modifier* result = new Native::Modifier(nativeModifier);
+        m_modifiers[id] = result;
+        return result;
+    }
+    return nullptr;
 }
 
 Native::TypeLayoutReflection* Native::VariableLayoutReflection::getTypeLayout()
 {
+    if (!m_typeLayout)
+    {
+        slang::TypeLayoutReflection* typeLayoutPtr = m_native->getTypeLayout();
+        if (typeLayoutPtr) 
+            m_typeLayout = new Native::TypeLayoutReflection(typeLayoutPtr);
+        else
+            m_typeLayout = nullptr;
+    }
     return m_typeLayout;
 }
 
@@ -103,6 +127,14 @@ size_t Native::VariableLayoutReflection::getOffset(slang::ParameterCategory cate
 
 Native::TypeReflection* Native::VariableLayoutReflection::getType() 
 {
+    if (!m_type)
+    {
+        slang::TypeReflection* typePtr = m_native->getType();
+        if (typePtr) 
+            m_type = new TypeReflection(typePtr);
+        else
+            m_type = nullptr;
+    }
     return m_type;
 }
 
@@ -147,5 +179,13 @@ SlangStage Native::VariableLayoutReflection::getStage()
 
 Native::VariableLayoutReflection* Native::VariableLayoutReflection::getPendingDataLayout()
 {
+    if (!m_pendingDataLayout)
+    {
+        slang::VariableLayoutReflection* pendingDataLayoutPtr = m_native->getPendingDataLayout();
+        if (pendingDataLayoutPtr) 
+            m_pendingDataLayout = new VariableLayoutReflection(pendingDataLayoutPtr);
+        else
+            m_pendingDataLayout = nullptr;
+    }
     return m_pendingDataLayout;
 }

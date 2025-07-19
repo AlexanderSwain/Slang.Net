@@ -5,45 +5,39 @@
 
 Native::GenericReflection::GenericReflection(void* native)
 {
+    if (!native) throw std::invalid_argument("Native pointer cannot be null");
+
 	m_native = (slang::GenericReflection*)native;
 
-    // Initialize the argument types array
-    uint32_t typeParameterCount = m_native->getTypeParameterCount();
-    m_typeParameters = new VariableReflection*[typeParameterCount];
-    for (uint32_t index = 0; index < typeParameterCount; index++)
-    {
-        m_typeParameters[index] = new Native::VariableReflection(m_native->getTypeParameter(index));
-    }
-
-	// Initialize the value parameters array
-    uint32_t valueParameterCount = m_native->getValueParameterCount();
-    m_valueParameters = new VariableReflection*[valueParameterCount];
-    for (uint32_t index = 0; index < valueParameterCount; index++)
-    {
-        m_valueParameters[index] = new Native::VariableReflection(m_native->getValueParameter(index));
-	}
-
-	// Initialize outer generic container
-    GenericReflection* outerContainer = new Native::GenericReflection(m_native->getOuterGenericContainer());
+    // Use lazy initialization - only initialize when accessed
+    m_typeParameters = nullptr;
+	m_valueParameters = nullptr;
+	m_outerGenericContainer = nullptr;
 }
 
 Native::GenericReflection::~GenericReflection()
 {
     // Clean up type parameters
-    for (uint32_t index = 0; index < m_native->getTypeParameterCount(); index++)
+    if (m_typeParameters)
     {
-        delete m_typeParameters[index];
+        for (uint32_t index = 0; index < m_native->getTypeParameterCount(); index++)
+        {
+            delete m_typeParameters[index];
+        }
+        delete[] m_typeParameters;
+        m_typeParameters = nullptr;
     }
-    delete[] m_typeParameters;
-    m_typeParameters = nullptr;
 
     // Clean up value parameters
-    for (uint32_t index = 0; index < m_native->getValueParameterCount(); index++)
+    if (m_valueParameters)
     {
-        delete m_valueParameters[index];
+        for (uint32_t index = 0; index < m_native->getValueParameterCount(); index++)
+        {
+            delete m_valueParameters[index];
+        }
+        delete[] m_valueParameters;
+        m_valueParameters = nullptr;
     }
-    delete[] m_valueParameters;
-    m_valueParameters = nullptr;
 
     // Clean up type parameter constraint results
     for (auto& result : m_typeParameterConstraintsResultsToDelete) {
@@ -96,6 +90,19 @@ unsigned int Native::GenericReflection::getTypeParameterCount()
 
 Native::VariableReflection* Native::GenericReflection::getTypeParameter(unsigned index)
 {
+    if (!m_typeParameters)
+    {
+        uint32_t typeParameterCount = m_native->getTypeParameterCount();
+        m_typeParameters = new VariableReflection*[typeParameterCount];
+        for (uint32_t i = 0; i < typeParameterCount; i++)
+        {
+            slang::VariableReflection* nativeTypeParameter = m_native->getTypeParameter(i);
+            if (nativeTypeParameter)
+                m_typeParameters[i] = new Native::VariableReflection(nativeTypeParameter);
+            else
+                m_typeParameters[i] = nullptr;
+        }
+    }
     return m_typeParameters[index];
 }
 
@@ -106,6 +113,19 @@ unsigned int Native::GenericReflection::getValueParameterCount()
 
 Native::VariableReflection* Native::GenericReflection::getValueParameter(unsigned index)
 {
+    if (!m_valueParameters)
+    {
+        uint32_t valueParameterCount = m_native->getValueParameterCount();
+        m_valueParameters = new VariableReflection*[valueParameterCount];
+        for (uint32_t i = 0; i < valueParameterCount; i++)
+        {
+            slang::VariableReflection* nativeValueParameter = m_native->getValueParameter(i);
+            if (nativeValueParameter)
+                m_valueParameters[i] = new Native::VariableReflection(nativeValueParameter);
+            else
+                m_valueParameters[i] = nullptr;
+        }
+    }
 	return m_valueParameters[index];
 }
 
@@ -116,9 +136,14 @@ unsigned int Native::GenericReflection::getTypeParameterConstraintCount(Variable
 
 Native::TypeReflection* Native::GenericReflection::getTypeParameterConstraintType(VariableReflection* typeParam, unsigned index)
 {
-    Native::TypeReflection* result = new TypeReflection(m_native->getTypeParameterConstraintType((slang::VariableReflection*)typeParam->getNative(), index));
-	m_typeParameterConstraintsResultsToDelete.push_back(result);
-	return result;
+    slang::TypeReflection* nativeResult = m_native->getTypeParameterConstraintType((slang::VariableReflection*)typeParam->getNative(), index);
+    if (nativeResult)
+    {
+        Native::TypeReflection* result = new TypeReflection(nativeResult);
+        m_typeParameterConstraintsResultsToDelete.push_back(result);
+        return result;
+    }
+    return nullptr;
 }
 
 //Native::DeclReflection* Native::GenericReflection::getInnerDecl()
@@ -133,14 +158,27 @@ Native::DeclKind Native::GenericReflection::getInnerKind()
 
 Native::GenericReflection* Native::GenericReflection::getOuterGenericContainer()
 {
+    if (!m_outerGenericContainer)
+    {
+        slang::GenericReflection* outerContainerPtr = m_native->getOuterGenericContainer();
+        if (outerContainerPtr) 
+            m_outerGenericContainer = new GenericReflection(outerContainerPtr);
+        else
+            m_outerGenericContainer = nullptr;
+    }
     return m_outerGenericContainer;
 }
 
 Native::TypeReflection* Native::GenericReflection::getConcreteType(VariableReflection* typeParam)
 {
-    Native::TypeReflection* result = new TypeReflection(m_native->getConcreteType((slang::VariableReflection*)typeParam->getNative()));
-	m_concreteTypeResultsToDelete.push_back(result);
-	return result;
+    slang::TypeReflection* nativeResult = m_native->getConcreteType((slang::VariableReflection*)typeParam->getNative());
+    if (nativeResult)
+    {
+        Native::TypeReflection* result = new TypeReflection(nativeResult);
+        m_concreteTypeResultsToDelete.push_back(result);
+        return result;
+    }
+    return nullptr;
 }
 
 int64_t Native::GenericReflection::getConcreteIntVal(VariableReflection* valueParam)
@@ -150,7 +188,12 @@ int64_t Native::GenericReflection::getConcreteIntVal(VariableReflection* valuePa
 
 Native::GenericReflection* Native::GenericReflection::applySpecializations(GenericReflection* genRef)
 {
-    Native::GenericReflection* result = new Native::GenericReflection(m_native->applySpecializations((slang::GenericReflection*)genRef->getNative()));
-    m_applySpecializationsResultsToDelete.push_back(result);
-    return result;
+    slang::GenericReflection* nativeResult = m_native->applySpecializations((slang::GenericReflection*)genRef->getNative());
+    if (nativeResult)
+    {
+        Native::GenericReflection* result = new Native::GenericReflection(nativeResult);
+        m_applySpecializationsResultsToDelete.push_back(result);
+        return result;
+    }
+    return nullptr;
 }

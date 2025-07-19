@@ -13,7 +13,7 @@ namespace Slang
 
         // Use the field keyword when it becomes generally available, to make this cleaner
         private ShaderReflection? _Parent;
-        public ShaderReflection Parent => _Parent ??= new (cppObj.Parent);
+        public ShaderReflection Parent => _Parent ??= new (new(cppObj.Parent.Parent), cppObj.Parent);
 
         public string Name => cppObj.Name;
         public string NameOverride => cppObj.NameOverride;

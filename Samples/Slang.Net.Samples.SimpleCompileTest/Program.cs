@@ -19,7 +19,7 @@ public class Program
         Module module = session.LoadModule("AverageColor.slang");
 
         // Access the shader program from the module
-        ShaderProgram program = module.Program;
+        ShaderReflection program = module.Program.GetReflection(0);
 
         // Print the number of entry points in the shader program
         var entryPoint = program.EntryPoints.Where(x => x.Name == "CS").First();

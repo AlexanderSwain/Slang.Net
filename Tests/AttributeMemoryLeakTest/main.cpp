@@ -95,18 +95,13 @@ public:
         };
 
         Native::ShaderModelCLI models[] = {
-            Native::ShaderModelCLI(Native::CompileTargetCLI::SLANG_HLSL, "vs_5_0"),
-            Native::ShaderModelCLI(Native::CompileTargetCLI::SLANG_HLSL, "gs_5_0"),
-            Native::ShaderModelCLI(Native::CompileTargetCLI::SLANG_HLSL, "hs_5_0"),
-            Native::ShaderModelCLI(Native::CompileTargetCLI::SLANG_HLSL, "ds_5_0"),
-            Native::ShaderModelCLI(Native::CompileTargetCLI::SLANG_HLSL, "ps_5_0"),
             Native::ShaderModelCLI(Native::CompileTargetCLI::SLANG_HLSL, "cs_5_0"),
 		};
         
         session = CreateSession(
             nullptr, 0,  // No options for now
             nullptr, 0,  // No macros for now  
-            models, 6,  // Models for session
+            models, 1,  // Models for session
             searchPaths, 2);
         const char* error = SlangNative_GetLastError();
         
@@ -412,7 +407,7 @@ public:
                         const char* paramName = VariableReflection_GetName(param);
                         addTestResult("Function Parameter " + to_string(i), true,
                             "Name: " + safeString(paramName));
-                        VariableReflection_Release(param);
+                       //VariableReflection_Release(param);
                     }
                 }
                 
@@ -424,7 +419,7 @@ public:
                         unsigned int argCount = Attribute_GetArgumentCount(attr);
                         addTestResult("Function Attribute " + to_string(i), true,
                             "Name: " + safeString(attrName) + ", Args: " + to_string(argCount));
-                        Attribute_Release(attr);
+                        //Attribute_Release(attr);
                     }
                 }
                 

@@ -67,12 +67,14 @@ namespace Slang::Cpp
     {
         if (!m_NativeShaderReflection) return 0;
         return ShaderReflection_GetTypeParameterCount(m_NativeShaderReflection);
-    }    TypeParameterReflection^ ShaderReflection::GetTypeParameterByIndex(unsigned int index)
+    }    
+    TypeParameterReflection^ ShaderReflection::GetTypeParameterByIndex(unsigned int index)
     {
         if (!m_NativeShaderReflection) return nullptr;
         void* param = ShaderReflection_GetTypeParameterByIndex(m_NativeShaderReflection, index);
         return param ? gcnew TypeParameterReflection(param) : nullptr;
-    }      TypeParameterReflection^ ShaderReflection::FindTypeParameter(System::String^ name)
+    }      
+    TypeParameterReflection^ ShaderReflection::FindTypeParameter(System::String^ name)
     {
         if (!m_NativeShaderReflection || !name) return nullptr;
         const char* nativeName = Slang::Cpp::StringUtilities::FromString(name);

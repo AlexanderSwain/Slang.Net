@@ -4,6 +4,7 @@
 #include "slang-com-helper.h"
 #include "TypeReflection.h"
 #include "TypeDef.h"
+#include <stdexcept>
 
 #ifdef SLANGNATIVE_EXPORTS
 #define SLANGNATIVE_API __declspec(dllexport)

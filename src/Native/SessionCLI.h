@@ -12,7 +12,8 @@ namespace Native
 	{
 	public:
 		// Constructor with parameters (example)
-		SessionCLI(CompilerOptionCLI* options, int optionsLength,
+		SessionCLI(
+			CompilerOptionCLI* options, int optionsLength,
 			PreprocessorMacroDescCLI* macros, int macrosLength,
 			ShaderModelCLI* models, int modelsLength,
 			char** searchPaths, int searchPathsLength);

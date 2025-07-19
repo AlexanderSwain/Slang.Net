@@ -2,33 +2,47 @@
 
 namespace Slang
 {
-    public unsafe class ShaderReflection : IComposedOf<EntryPointReflection>
+    public unsafe class ShaderReflection :
+        IComposedOf<TypeParameterReflection>,
+        IComposedOf<VariableLayoutReflection>,
+        IComposedOf<EntryPointReflection>
     {
-        internal ShaderProgram parent { get; }
+        public ShaderProgram Parent { get; }
         internal Slang.Cpp.ShaderReflection cppObj { get; }
 
         #region Composed Of
-        public uint Count => EntryPointCount;
+        uint IComposedOf<TypeParameterReflection>.Count => TypeParameterCount;
+        TypeParameterReflection IComposedOf<TypeParameterReflection>.GetByIndex(uint index) => GetTypeParameterByIndex(index);
+        uint IComposedOf<VariableLayoutReflection>.Count => ParameterCount;
+        VariableLayoutReflection IComposedOf<VariableLayoutReflection>.GetByIndex(uint index) => GetParameterByIndex(index);
+        uint IComposedOf<EntryPointReflection>.Count => EntryPointCount;
         EntryPointReflection IComposedOf<EntryPointReflection>.GetByIndex(uint index) => GetEntryPointByIndex(index);
         #endregion
 
-        public ShaderReflection(ShaderProgram shadePprogram)
+        public ShaderReflection(ShaderProgram shaderProgram, uint targetIndex)
         {
-            parent = shadePprogram;
-            cppObj = new Slang.Cpp.ShaderReflection(shadePprogram.CppObj.GetReflection().getNative());
+            Parent = shaderProgram;
+            cppObj = new Slang.Cpp.ShaderReflection(shaderProgram.CppObj.GetReflection(targetIndex).getNative());
         }
 
-        internal ShaderReflection(Slang.Cpp.ShaderReflection cppObj)
+        internal ShaderReflection(ShaderProgram parent, Slang.Cpp.ShaderReflection cppObj)
         {
-            parent = new (cppObj.Parent);
+            Parent = parent;
             this.cppObj = cppObj;
         }
 
+        #region .Net Style Collection Abstractions
+        private SlangCollection<TypeParameterReflection>? _TypeParameters;
+        public SlangCollection<TypeParameterReflection> TypeParameters => _TypeParameters ??= new(this);
+
+        private SlangCollection<EntryPointReflection>? _Parameters;
+        public SlangCollection<EntryPointReflection> Parameters => _Parameters ??= new(this);
+
         private SlangCollection<EntryPointReflection>? _EntryPoints;
         public SlangCollection<EntryPointReflection> EntryPoints => _EntryPoints ??= new(this);
+        #endregion
 
-        public ShaderProgram Parent => parent;
-
+        #region Reflection API
         public uint ParameterCount => cppObj.ParameterCount;
         public uint TypeParameterCount => cppObj.TypeParameterCount;
 
@@ -62,5 +76,6 @@ namespace Slang
         public VariableLayoutReflection GlobalParamsVarLayout => new(cppObj.GlobalParamsVarLayout);
 
         public System.String ToJson() => cppObj.ToJson();
+        #endregion
     }
 }

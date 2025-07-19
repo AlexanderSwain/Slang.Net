@@ -5,40 +5,30 @@
 
 Native::TypeReflection::TypeReflection(void* native)
 {
+    if (!native) throw std::invalid_argument("Native pointer cannot be null");
+
 	m_native = (slang::TypeReflection*)native;
-
-    // Initialize the fields array
-    uint32_t fieldsCount = m_native->getFieldCount();
-    m_fields = new Native::VariableReflection*[fieldsCount];
-    for (uint32_t index = 0; index < fieldsCount; index++)
-    {
-        m_fields[index] = new VariableReflection(m_native->getFieldByIndex(index));
-    }
-
-    m_unwrappedArray = new TypeReflection(m_native->unwrapArray());
-    m_elementType = new TypeReflection(m_native->getElementType());
-    m_resourceResultType = new TypeReflection(m_native->getResourceResultType());
-    
-    // Initialize the userAttributes array
-    uint32_t userAttributesCount = m_native->getUserAttributeCount();
-    m_userAttributes = new Native::Attribute*[userAttributesCount];
-    for (uint32_t index = 0; index < userAttributesCount; index++)
-    {
-        m_userAttributes[index] = new Attribute(m_native->getUserAttributeByIndex(index));
-    }
-
-    m_genericContainer = new GenericReflection(m_native->getGenericContainer());
+    m_fields = nullptr;
+    m_unwrappedArray = nullptr;
+    m_elementType = nullptr;
+    m_resourceResultType = nullptr;
+    m_userAttributes = nullptr;
+    m_genericContainer = nullptr;
 }
 
 Native::TypeReflection::~TypeReflection()
 {
     // Clean up the fields array
-    for (uint32_t index = 0; index < m_native->getFieldCount(); index++)
+    if (m_fields)
     {
-        delete m_fields[index];
-    }
-    delete[] m_fields;
-    m_fields = nullptr;
+        uint32_t fieldsCount = m_native->getFieldCount();
+        for (uint32_t index = 0; index < fieldsCount; index++)
+        {
+            delete m_fields[index];
+        }
+        delete[] m_fields;
+        m_fields = nullptr;
+	}
 
     // Clean up unwrapped array type
     delete m_unwrappedArray;
@@ -53,12 +43,16 @@ Native::TypeReflection::~TypeReflection()
     m_resourceResultType = nullptr;
 
     // Clean up the user attributes array
-    for (uint32_t index = 0; index < m_native->getUserAttributeCount(); index++)
+    if (m_userAttributes)
     {
-        delete m_userAttributes[index];
-    }
-    delete[] m_userAttributes;
-    m_userAttributes = nullptr;
+        uint32_t userAttributesCount = m_native->getUserAttributeCount();
+        for (uint32_t index = 0; index < userAttributesCount; index++)
+        {
+            delete m_userAttributes[index];
+        }
+        delete[] m_userAttributes;
+        m_userAttributes = nullptr;
+	}
 
     // Clean up ApplySpecializations Results list
     for (auto& result : m_applySpecializationsResultsToDelete) {
@@ -96,6 +90,20 @@ unsigned int Native::TypeReflection::getFieldCount()
 
 Native::VariableReflection* Native::TypeReflection::getFieldByIndex(unsigned int index)
 {
+    if (!m_fields)
+    {
+        uint32_t fieldsCount = m_native->getFieldCount();
+        m_fields = new Native::VariableReflection * [fieldsCount];
+        for (uint32_t index = 0; index < fieldsCount; index++)
+        {
+			slang::VariableReflection* nativeField = m_native->getFieldByIndex(index);
+			if (nativeField)
+                m_fields[index] = new VariableReflection(nativeField);
+			else
+				m_fields[index] = nullptr;
+        }
+    }
+
 	return m_fields[index];
 }
 
@@ -106,6 +114,15 @@ bool Native::TypeReflection::isArray()
 
 Native::TypeReflection* Native::TypeReflection::unwrapArray()
 {
+    if (!m_unwrappedArray)
+    {
+		slang::TypeReflection* nativeUnwrappedArray = m_native->unwrapArray();
+        if (nativeUnwrappedArray)
+            m_unwrappedArray = new TypeReflection(nativeUnwrappedArray);
+		else
+			m_unwrappedArray = nullptr;
+    }
+
     return m_unwrappedArray;
 }
 
@@ -122,6 +139,15 @@ size_t Native::TypeReflection::getTotalArrayElementCount()
 
 Native::TypeReflection* Native::TypeReflection::getElementType()
 {
+    if (!m_elementType)
+    {
+        slang::TypeReflection* nativeElementType = m_native->getElementType();
+        if (nativeElementType)
+            m_elementType = new TypeReflection(nativeElementType);
+		else
+			m_elementType = nullptr;
+    }
+
     return m_elementType;
 }
 
@@ -142,6 +168,16 @@ Native::TypeReflection::ScalarType Native::TypeReflection::getScalarType()
 
 Native::TypeReflection* Native::TypeReflection::getResourceResultType()
 {
+    if (!m_resourceResultType)
+    {
+		slang::TypeReflection* nativeResourceResultType = m_native->getResourceResultType();
+
+        if (nativeResourceResultType)
+            m_resourceResultType = new TypeReflection(nativeResourceResultType);
+		else
+			m_resourceResultType = nullptr;
+    }
+
     return m_resourceResultType;
 }
 
@@ -172,6 +208,20 @@ unsigned int Native::TypeReflection::getUserAttributeCount()
 
 Native::Attribute* Native::TypeReflection::getUserAttributeByIndex(unsigned int index)
 {
+    if (!m_userAttributes)
+    {
+        uint32_t userAttributesCount = m_native->getUserAttributeCount();
+        m_userAttributes = new Native::Attribute * [userAttributesCount];
+        for (uint32_t index = 0; index < userAttributesCount; index++)
+        {
+			slang::Attribute* nativeUserAttribute = m_native->getUserAttributeByIndex(index);
+			if (nativeUserAttribute)
+                m_userAttributes[index] = new Attribute(nativeUserAttribute);
+			else
+				m_userAttributes[index] = nullptr;
+        }
+    }
+
     return m_userAttributes[index];
 }
 
@@ -198,5 +248,14 @@ Native::TypeReflection* Native::TypeReflection::applySpecializations(GenericRefl
 
 Native::GenericReflection* Native::TypeReflection::getGenericContainer()
 {
+    if (!m_genericContainer)
+    {
+		slang::GenericReflection* nativeGenericContainer = m_native->getGenericContainer();
+		if (nativeGenericContainer)
+            m_genericContainer = new GenericReflection(m_native->getGenericContainer());
+		else
+			m_genericContainer = nullptr;
+    }
+
     return m_genericContainer;
 }

@@ -27,4 +27,7 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID, uint3 groupThreadID : SV_G
     InterlockedAdd(outputInt[0].y, colorInt.g);
     InterlockedAdd(outputInt[0].z, colorInt.b);
     InterlockedAdd(outputInt[0].w, colorInt.a);
+
+    // Just divide each component by the number of pixels after extracting the outputInt on the CPU
+    // And you have your average color
 }

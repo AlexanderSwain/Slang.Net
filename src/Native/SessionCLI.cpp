@@ -6,7 +6,8 @@
 slang::IGlobalSession* Native::SessionCLI::s_context = nullptr;
 
 // Constructor with parameters implementation
-Native::SessionCLI::SessionCLI(CompilerOptionCLI* options, int optionsLength,
+Native::SessionCLI::SessionCLI(
+    CompilerOptionCLI* options, int optionsLength,
     PreprocessorMacroDescCLI* macros, int macrosLength, 
     ShaderModelCLI* models, int modelsLength,
     char** searchPaths, int searchPathsLength)
