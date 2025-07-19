@@ -24,7 +24,9 @@ namespace Slang::Cpp
         ~Attribute();
 
         // Finalizer
-        !Attribute();        // Properties and Methods
+        !Attribute();        
+        
+        // Properties and Methods
         property System::String^ Name { System::String^ get(); }
         property unsigned int ArgumentCount { unsigned int get(); }
         System::String^ GetArgumentValueString(unsigned int index);

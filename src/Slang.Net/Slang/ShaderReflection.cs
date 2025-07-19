@@ -46,7 +46,6 @@ namespace Slang
         public uint ParameterCount => cppObj.ParameterCount;
         public uint TypeParameterCount => cppObj.TypeParameterCount;
 
-        // Next version will fix all the memory leaks
         public TypeParameterReflection GetTypeParameterByIndex(uint index) => new(cppObj.GetTypeParameterByIndex(index));
         public TypeParameterReflection FindTypeParameter(string name) => new(cppObj.FindTypeParameter(name));
         public VariableLayoutReflection GetParameterByIndex(uint index) => new(cppObj.GetParameterByIndex(index));

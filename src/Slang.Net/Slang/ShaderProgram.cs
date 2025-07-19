@@ -14,11 +14,11 @@
             CppObj = cppObj;
         }
 
-        /* [Fix]
+        /* [Fix This]
          * If this constructor is used: internal ShaderReflection(ShaderProgram parent, Slang.Cpp.ShaderReflection cppObj)
          * And then GetReflection(uint targetIndex) is called continuously
          * More memory will be allocated
-         * Not a common thing so this fix doesn't have priority.
+         * Not a common thing so this bug doesn't have priority.
          */
         public ShaderReflection GetReflection(uint targetIndex)
         {

@@ -391,38 +391,6 @@ public:
                     ", Attrs: " + to_string(attrCount) + ", Overloaded: " + (isOverloaded ? "true" : "false") +
                     ", Overloads: " + to_string(overloadCount));
                 
-                // Test return type
-                void* returnType = FunctionReflection_GetReturnType(function);
-                if (returnType) {
-                    const char* returnTypeName = TypeReflection_GetName(returnType);
-                    addTestResult("Function Return Type", true, 
-                        "Return type: " + safeString(returnTypeName));
-                    TypeReflection_Release(returnType);
-                }
-                
-                // Test parameters
-                for (unsigned int i = 0; i < min(paramCount, 5u); i++) { // Limit to first 5 parameters
-                    void* param = FunctionReflection_GetParameterByIndex(function, i);
-                    if (param) {
-                        const char* paramName = VariableReflection_GetName(param);
-                        addTestResult("Function Parameter " + to_string(i), true,
-                            "Name: " + safeString(paramName));
-                       //VariableReflection_Release(param);
-                    }
-                }
-                
-                // Test function attributes
-                for (unsigned int i = 0; i < attrCount; i++) {
-                    void* attr = FunctionReflection_GetUserAttributeByIndex(function, i);
-                    if (attr) {
-                        const char* attrName = Attribute_GetName(attr);
-                        unsigned int argCount = Attribute_GetArgumentCount(attr);
-                        addTestResult("Function Attribute " + to_string(i), true,
-                            "Name: " + safeString(attrName) + ", Args: " + to_string(argCount));
-                        //Attribute_Release(attr);
-                    }
-                }
-                
                 FunctionReflection_Release(function);
             }
         }

@@ -70,7 +70,7 @@ namespace Slang::Cpp
         
         System::String^ ToJson();
 
-        // Internal
+        // Make Internal
         void* getNative();
         void* slangPtr();
 

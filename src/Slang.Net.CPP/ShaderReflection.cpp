@@ -238,6 +238,12 @@ namespace Slang::Cpp
 		return result;
     }
 
+    void ShaderReflection::Dispose()
+    {
+        this->!ShaderReflection();
+        System::GC::SuppressFinalize(this);
+	}
+
     void* ShaderReflection::getNative()
     {
         return m_NativeShaderReflection;
