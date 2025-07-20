@@ -23,7 +23,7 @@ namespace Slang.Sdk.Binding
 
         internal string? GetName()
         {
-            return Call(() => FromUtf8(SlangNativeInterop.FunctionReflection_GetName(Handle)));
+            return Call(() => new string(SlangNativeInterop.FunctionReflection_GetName(Handle)));
         }
 
         internal TypeReflection GetReturnType()
@@ -58,15 +58,16 @@ namespace Slang.Sdk.Binding
 
         internal AttributeReflection FindAttributeByName(string name)
         {
-            var namePtr = ToUtf8(name);
-            try
-            {
-                return new AttributeReflection(this, Call(() => StrongTypeInterop.FunctionReflection_FindAttributeByName(Handle, namePtr)));
-            }
-            finally
-            {
-                FreeUtf8(namePtr);
-            }
+                return new AttributeReflection(
+                    this, 
+                    Call(() => 
+                    {
+                        fixed (char* namePtr = name)
+                        {
+                            return StrongTypeInterop.FunctionReflection_FindAttributeByName(Handle, namePtr);
+                        }
+                    }
+                ));
         }
 
         internal GenericReflection GetGenericContainer()

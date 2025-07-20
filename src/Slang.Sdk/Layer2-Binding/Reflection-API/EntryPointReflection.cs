@@ -34,12 +34,12 @@ namespace Slang.Sdk.Binding
 
         internal string? GetName()
         {
-            return Call(() => FromUtf8(SlangNativeInterop.EntryPointReflection_GetName(Handle)));
+            return Call(() => new string(SlangNativeInterop.EntryPointReflection_GetName(Handle)));
         }
 
         internal string? GetNameOverride()
         {
-            return Call(() => FromUtf8(SlangNativeInterop.EntryPointReflection_GetNameOverride(Handle)));
+            return Call(() => new string(SlangNativeInterop.EntryPointReflection_GetNameOverride(Handle)));
         }
 
         internal uint GetParameterCount()

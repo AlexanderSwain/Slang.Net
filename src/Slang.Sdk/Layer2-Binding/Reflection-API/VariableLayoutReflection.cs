@@ -28,7 +28,7 @@ namespace Slang.Sdk.Binding
 
         internal string? GetName()
         {
-            return Call(() => FromUtf8(SlangNativeInterop.VariableLayoutReflection_GetName(Handle)));
+            return Call(() => new string(SlangNativeInterop.VariableLayoutReflection_GetName(Handle)));
         }
 
         internal ModifierReflection FindModifier(int modifierId)
@@ -88,7 +88,7 @@ namespace Slang.Sdk.Binding
 
         internal string? GetSemanticName()
         {
-            return Call(() => FromUtf8(SlangNativeInterop.VariableLayoutReflection_GetSemanticName(Handle)));
+            return Call(() => new string(SlangNativeInterop.VariableLayoutReflection_GetSemanticName(Handle)));
         }
 
         internal nuint GetSemanticIndex()

@@ -83,7 +83,7 @@ namespace Slang.Sdk.Binding
 
         internal string? GetName()
         {
-            return Call(() => FromUtf8(SlangNativeInterop.TypeReflection_GetName(Handle)));
+            return Call(() => new string(SlangNativeInterop.TypeReflection_GetName(Handle)));
         }
 
         internal uint GetUserAttributeCount()
@@ -98,15 +98,16 @@ namespace Slang.Sdk.Binding
 
         internal AttributeReflection FindAttributeByName(string name)
         {
-            var namePtr = ToUtf8(name);
-            try
-            {
-                return new AttributeReflection(this, Call(() => StrongTypeInterop.TypeReflection_FindAttributeByName(Handle, namePtr)));
-            }
-            finally
-            {
-                FreeUtf8(namePtr);
-            }
+            return new AttributeReflection(
+                this, 
+                Call(() => 
+                {
+                    fixed (char* pName = name)
+                    {
+                        return StrongTypeInterop.TypeReflection_FindAttributeByName(Handle, pName);
+                    }
+                }
+            ));
         }
 
         internal TypeReflection ApplySpecializations(GenericReflection genRef)

@@ -28,7 +28,7 @@ namespace Slang.Sdk.Binding
 
         internal string? GetName()
         {
-            return Call(() => FromUtf8(SlangNativeInterop.Modifier_GetName(Handle)));
+            return Call(() => new string(SlangNativeInterop.Modifier_GetName(Handle)));
         }
     }
 }

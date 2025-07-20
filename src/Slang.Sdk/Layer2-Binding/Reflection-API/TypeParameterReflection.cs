@@ -23,7 +23,7 @@ namespace Slang.Sdk.Binding
 
         internal string? GetName()
         {
-            return Call(() => FromUtf8(SlangNativeInterop.TypeParameterReflection_GetName(Handle)));
+            return Call(() => new string(SlangNativeInterop.TypeParameterReflection_GetName(Handle)));
         }
 
         internal uint GetIndex()

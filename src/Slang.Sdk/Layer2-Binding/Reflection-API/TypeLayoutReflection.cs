@@ -58,15 +58,13 @@ namespace Slang.Sdk.Binding
 
         internal int FindFieldIndexByName(string name)
         {
-            var namePtr = ToUtf8(name);
-            try
+            return Call(() =>
             {
-                return Call(() => SlangNativeInterop.TypeLayoutReflection_FindFieldIndexByName(Handle, namePtr));
-            }
-            finally
-            {
-                FreeUtf8(namePtr);
-            }
+                fixed (char* pName = name)
+                {
+                    return SlangNativeInterop.TypeLayoutReflection_FindFieldIndexByName(Handle, pName);
+                }
+            });
         }
 
         internal VariableLayoutReflection GetExplicitCounter()

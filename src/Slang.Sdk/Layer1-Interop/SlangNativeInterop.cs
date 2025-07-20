@@ -46,7 +46,7 @@ internal static unsafe partial class SlangNativeInterop
     [LibraryImport(LibraryName)]
     internal static partial nint Module_FindEntryPoint(
         nint parentModule, 
-        byte* entryPointName);
+        char* entryPointName);
 
     [LibraryImport(LibraryName)]
     internal static partial void Module_GetParameterInfo(
@@ -101,9 +101,7 @@ internal static unsafe partial class SlangNativeInterop
         uint index);
 
     [LibraryImport(LibraryName)]
-    internal static partial nint ShaderReflection_FindTypeParameter(
-        nint shaderReflection, 
-        byte* name);
+    internal static partial nint ShaderReflection_FindTypeParameter(nint shaderReflection, char* name);
 
     [LibraryImport(LibraryName)]
     internal static partial nint ShaderReflection_GetParameterByIndex(
@@ -121,7 +119,7 @@ internal static unsafe partial class SlangNativeInterop
     [LibraryImport(LibraryName)]
     internal static partial nint ShaderReflection_FindEntryPointByName(
         nint shaderReflection, 
-        byte* name);
+        char* name);
 
     [LibraryImport(LibraryName)]
     internal static partial uint ShaderReflection_GetGlobalConstantBufferBinding(nint shaderReflection);
@@ -132,24 +130,24 @@ internal static unsafe partial class SlangNativeInterop
     [LibraryImport(LibraryName)]
     internal static partial nint ShaderReflection_FindTypeByName(
         nint shaderReflection, 
-        byte* name);
+        char* name);
 
     [LibraryImport(LibraryName)]
     internal static partial nint ShaderReflection_FindFunctionByName(
         nint shaderReflection, 
-        byte* name);
+        char* name);
 
     [LibraryImport(LibraryName)]
     internal static partial nint ShaderReflection_FindFunctionByNameInType(
         nint shaderReflection, 
         nint type, 
-        byte* name);
+        char* name);
 
     [LibraryImport(LibraryName)]
     internal static partial nint ShaderReflection_FindVarByNameInType(
         nint shaderReflection, 
         nint type, 
-        byte* name);
+        char* name);
 
     [LibraryImport(LibraryName)]
     internal static partial nint ShaderReflection_GetTypeLayout(
@@ -175,7 +173,7 @@ internal static unsafe partial class SlangNativeInterop
     internal static partial uint ShaderReflection_GetHashedStringCount(nint shaderReflection);
 
     [LibraryImport(LibraryName)]
-    internal static partial byte* ShaderReflection_GetHashedString(
+    internal static partial char* ShaderReflection_GetHashedString(
         nint shaderReflection, 
         uint index);
 
@@ -188,7 +186,7 @@ internal static unsafe partial class SlangNativeInterop
     [LibraryImport(LibraryName)]
     internal static partial int ShaderReflection_ToJson(
         nint shaderReflection, 
-        byte** output);
+        char** output);
 
     #endregion
 
@@ -243,7 +241,7 @@ internal static unsafe partial class SlangNativeInterop
     internal static partial int TypeReflection_GetResourceAccess(nint typeReflection);
 
     [LibraryImport(LibraryName)]
-    internal static partial byte* TypeReflection_GetName(nint typeReflection);
+    internal static partial char* TypeReflection_GetName(nint typeReflection);
 
     [LibraryImport(LibraryName)]
     internal static partial uint TypeReflection_GetUserAttributeCount(nint typeReflection);
@@ -256,7 +254,7 @@ internal static unsafe partial class SlangNativeInterop
     [LibraryImport(LibraryName)]
     internal static partial nint TypeReflection_FindAttributeByName(
         nint typeReflection, 
-        byte* name);
+        char* name);
 
     [LibraryImport(LibraryName)]
     internal static partial nint TypeReflection_ApplySpecializations(
@@ -308,7 +306,7 @@ internal static unsafe partial class SlangNativeInterop
     [LibraryImport(LibraryName)]
     internal static partial int TypeLayoutReflection_FindFieldIndexByName(
         nint typeLayoutReflection, 
-        byte* name);
+        char* name);
 
     [LibraryImport(LibraryName)]
     internal static partial nint TypeLayoutReflection_GetExplicitCounter(nint typeLayoutReflection);
@@ -351,7 +349,7 @@ internal static unsafe partial class SlangNativeInterop
     internal static partial nint VariableReflection_GetNative(nint variableReflection);
 
     [LibraryImport(LibraryName)]
-    internal static partial byte* VariableReflection_GetName(nint variableReflection);
+    internal static partial char* VariableReflection_GetName(nint variableReflection);
 
     [LibraryImport(LibraryName)]
     internal static partial nint VariableReflection_GetType(nint variableReflection);
@@ -372,12 +370,12 @@ internal static unsafe partial class SlangNativeInterop
     [LibraryImport(LibraryName)]
     internal static partial nint VariableReflection_FindAttributeByName(
         nint variableReflection, 
-        byte* name);
+        char* name);
 
     [LibraryImport(LibraryName)]
     internal static partial nint VariableReflection_FindUserAttributeByName(
         nint variableReflection, 
-        byte* name);
+        char* name);
 
     [LibraryImport(LibraryName)]
     [return: MarshalAs(UnmanagedType.U1)]
@@ -411,7 +409,7 @@ internal static unsafe partial class SlangNativeInterop
     internal static partial nint VariableLayoutReflection_GetVariable(nint variableLayoutReflection);
 
     [LibraryImport(LibraryName)]
-    internal static partial byte* VariableLayoutReflection_GetName(nint variableLayoutReflection);
+    internal static partial char* VariableLayoutReflection_GetName(nint variableLayoutReflection);
 
     [LibraryImport(LibraryName)]
     internal static partial nint VariableLayoutReflection_FindModifier(
@@ -455,7 +453,7 @@ internal static unsafe partial class SlangNativeInterop
     internal static partial int VariableLayoutReflection_GetImageFormat(nint variableLayoutReflection);
 
     [LibraryImport(LibraryName)]
-    internal static partial byte* VariableLayoutReflection_GetSemanticName(nint variableLayoutReflection);
+    internal static partial char* VariableLayoutReflection_GetSemanticName(nint variableLayoutReflection);
 
     [LibraryImport(LibraryName)]
     internal static partial nuint VariableLayoutReflection_GetSemanticIndex(nint variableLayoutReflection);
@@ -477,7 +475,7 @@ internal static unsafe partial class SlangNativeInterop
     internal static partial nint FunctionReflection_GetNative(nint functionReflection);
 
     [LibraryImport(LibraryName)]
-    internal static partial byte* FunctionReflection_GetName(nint functionReflection);
+    internal static partial char* FunctionReflection_GetName(nint functionReflection);
 
     [LibraryImport(LibraryName)]
     internal static partial nint FunctionReflection_GetReturnType(nint functionReflection);
@@ -506,7 +504,7 @@ internal static unsafe partial class SlangNativeInterop
     [LibraryImport(LibraryName)]
     internal static partial nint FunctionReflection_FindAttributeByName(
         nint functionReflection, 
-        byte* name);
+        char* name);
 
     [LibraryImport(LibraryName)]
     internal static partial nint FunctionReflection_GetGenericContainer(nint functionReflection);
@@ -551,10 +549,10 @@ internal static unsafe partial class SlangNativeInterop
     internal static partial nint EntryPointReflection_AsFunction(nint entryPointReflection);
 
     [LibraryImport(LibraryName)]
-    internal static partial byte* EntryPointReflection_GetName(nint entryPointReflection);
+    internal static partial char* EntryPointReflection_GetName(nint entryPointReflection);
 
     [LibraryImport(LibraryName)]
-    internal static partial byte* EntryPointReflection_GetNameOverride(nint entryPointReflection);
+    internal static partial char* EntryPointReflection_GetNameOverride(nint entryPointReflection);
 
     [LibraryImport(LibraryName)]
     internal static partial uint EntryPointReflection_GetParameterCount(nint entryPointReflection);
@@ -609,7 +607,7 @@ internal static unsafe partial class SlangNativeInterop
     internal static partial nint GenericReflection_GetNative(nint genRefReflection);
 
     [LibraryImport(LibraryName)]
-    internal static partial byte* GenericReflection_GetName(nint genRefReflection);
+    internal static partial char* GenericReflection_GetName(nint genRefReflection);
 
     [LibraryImport(LibraryName)]
     internal static partial uint GenericReflection_GetTypeParameterCount(nint genRefReflection);
@@ -671,7 +669,7 @@ internal static unsafe partial class SlangNativeInterop
     internal static partial nint TypeParameterReflection_GetNative(nint typeParameterReflection);
 
     [LibraryImport(LibraryName)]
-    internal static partial byte* TypeParameterReflection_GetName(nint typeParameterReflection);
+    internal static partial char* TypeParameterReflection_GetName(nint typeParameterReflection);
 
     [LibraryImport(LibraryName)]
     internal static partial uint TypeParameterReflection_GetIndex(nint typeParameterReflection);
@@ -695,7 +693,7 @@ internal static unsafe partial class SlangNativeInterop
     internal static partial nint Attribute_GetNative(nint attributeReflection);
 
     [LibraryImport(LibraryName)]
-    internal static partial byte* Attribute_GetName(nint attributeReflection);
+    internal static partial char* Attribute_GetName(nint attributeReflection);
 
     [LibraryImport(LibraryName)]
     internal static partial uint Attribute_GetArgumentCount(nint attributeReflection);
@@ -718,7 +716,7 @@ internal static unsafe partial class SlangNativeInterop
         float* value);
 
     [LibraryImport(LibraryName)]
-    internal static partial byte* Attribute_GetArgumentValueString(
+    internal static partial char* Attribute_GetArgumentValueString(
         nint attributeReflection, 
         uint index);
 
@@ -736,7 +734,7 @@ internal static unsafe partial class SlangNativeInterop
     internal static partial int Modifier_GetID(nint modifier);
 
     [LibraryImport(LibraryName)]
-    internal static partial byte* Modifier_GetName(nint modifier);
+    internal static partial char* Modifier_GetName(nint modifier);
 
     #endregion
 }
@@ -780,7 +778,7 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static EntryPointReflectionHandle Module_FindEntryPoint(
         nint parentModule,
-        byte* entryPointName)
+        char* entryPointName)
     {
         var handle = SlangNativeInterop.Module_FindEntryPoint(parentModule, entryPointName);
         return new EntryPointReflectionHandle(handle);
@@ -837,9 +835,7 @@ internal static unsafe partial class StrongTypeInterop
     /// <summary>
     /// Finds type parameter with strongly-typed handle.
     /// </summary>
-    internal static TypeParameterReflectionHandle ShaderReflection_FindTypeParameter(
-        nint shaderReflection,
-        byte* name)
+    internal static TypeParameterReflectionHandle ShaderReflection_FindTypeParameter(nint shaderReflection, char* name)
     {
         var handle = SlangNativeInterop.ShaderReflection_FindTypeParameter(shaderReflection, name);
         return new TypeParameterReflectionHandle(handle);
@@ -872,7 +868,7 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static EntryPointReflectionHandle ShaderReflection_FindEntryPointByName(
         nint shaderReflection,
-        byte* name)
+        char* name)
     {
         var handle = SlangNativeInterop.ShaderReflection_FindEntryPointByName(shaderReflection, name);
         return new EntryPointReflectionHandle(handle);
@@ -883,7 +879,7 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static TypeReflectionHandle ShaderReflection_FindTypeByName(
         nint shaderReflection,
-        byte* name)
+        char* name)
     {
         var handle = SlangNativeInterop.ShaderReflection_FindTypeByName(shaderReflection, name);
         return new TypeReflectionHandle(handle);
@@ -894,7 +890,7 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static FunctionReflectionHandle ShaderReflection_FindFunctionByName(
         nint shaderReflection,
-        byte* name)
+        char* name)
     {
         var handle = SlangNativeInterop.ShaderReflection_FindFunctionByName(shaderReflection, name);
         return new FunctionReflectionHandle(handle);
@@ -906,7 +902,7 @@ internal static unsafe partial class StrongTypeInterop
     internal static FunctionReflectionHandle ShaderReflection_FindFunctionByNameInType(
         nint shaderReflection,
         nint type,
-        byte* name)
+        char* name)
     {
         var handle = SlangNativeInterop.ShaderReflection_FindFunctionByNameInType(shaderReflection, type, name);
         return new FunctionReflectionHandle(handle);
@@ -918,7 +914,7 @@ internal static unsafe partial class StrongTypeInterop
     internal static VariableReflectionHandle ShaderReflection_FindVarByNameInType(
         nint shaderReflection,
         nint type,
-        byte* name)
+        char* name)
     {
         var handle = SlangNativeInterop.ShaderReflection_FindVarByNameInType(shaderReflection, type, name);
         return new VariableReflectionHandle(handle);
@@ -1025,7 +1021,7 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static AttributeReflectionHandle TypeReflection_FindAttributeByName(
         nint typeReflection,
-        byte* name)
+        char* name)
     {
         var handle = SlangNativeInterop.TypeReflection_FindAttributeByName(typeReflection, name);
         return new AttributeReflectionHandle(handle);
@@ -1160,7 +1156,7 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static AttributeReflectionHandle VariableReflection_FindAttributeByName(
         nint variableReflection,
-        byte* name)
+        char* name)
     {
         var handle = SlangNativeInterop.VariableReflection_FindAttributeByName(variableReflection, name);
         return new AttributeReflectionHandle(handle);
@@ -1171,7 +1167,7 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static AttributeReflectionHandle VariableReflection_FindUserAttributeByName(
         nint variableReflection,
-        byte* name)
+        char* name)
     {
         var handle = SlangNativeInterop.VariableReflection_FindUserAttributeByName(variableReflection, name);
         return new AttributeReflectionHandle(handle);
@@ -1311,7 +1307,7 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static AttributeReflectionHandle FunctionReflection_FindAttributeByName(
         nint functionReflection,
-        byte* name)
+        char* name)
     {
         var handle = SlangNativeInterop.FunctionReflection_FindAttributeByName(functionReflection, name);
         return new AttributeReflectionHandle(handle);

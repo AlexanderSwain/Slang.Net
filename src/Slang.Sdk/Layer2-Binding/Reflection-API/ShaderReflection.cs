@@ -35,15 +35,17 @@ namespace Slang.Sdk.Binding
 
         internal TypeParameterReflection FindTypeParameter(string name)
         {
-            var namePtr = ToUtf8(name);
-            try
-            {
-                return new TypeParameterReflection(this, Call(() => StrongTypeInterop.ShaderReflection_FindTypeParameter(Handle, namePtr)));
-            }
-            finally
-            {
-                FreeUtf8(namePtr);
-            }
+
+            return new TypeParameterReflection(
+                this,
+                Call(() =>
+                {
+                    fixed (char* pName = name)
+                    {
+                        return StrongTypeInterop.ShaderReflection_FindTypeParameter(Handle, pName);
+                    }
+                }
+            ));
         }
 
         internal VariableLayoutReflection GetParameterByIndex(uint index)
@@ -63,15 +65,16 @@ namespace Slang.Sdk.Binding
 
         internal EntryPointReflection FindEntryPointByName(string name)
         {
-            var namePtr = ToUtf8(name);
-            try
-            {
-                return new EntryPointReflection(this, Call(() => StrongTypeInterop.ShaderReflection_FindEntryPointByName(Handle, namePtr)));
-            }
-            finally
-            {
-                FreeUtf8(namePtr);
-            }
+            return new EntryPointReflection(
+                this, 
+                Call(() => 
+                {
+                    fixed (char* pName = name)
+                    {
+                        return StrongTypeInterop.ShaderReflection_FindEntryPointByName(Handle, pName);
+                    }
+                }
+            ));
         }
 
         internal uint GetGlobalConstantBufferBinding()
@@ -86,54 +89,58 @@ namespace Slang.Sdk.Binding
 
         internal TypeReflection FindTypeByName(string name)
         {
-            var namePtr = ToUtf8(name);
-            try
-            {
-                return new TypeReflection(this, Call(() => StrongTypeInterop.ShaderReflection_FindTypeByName(Handle, namePtr)));
-            }
-            finally
-            {
-                FreeUtf8(namePtr);
-            }
+            return new TypeReflection(
+                this, 
+                Call(() => 
+                {
+                    fixed (char* pName = name)
+                    {
+                        return StrongTypeInterop.ShaderReflection_FindTypeByName(Handle, pName);
+                    }
+                }
+            ));
         }
 
         internal FunctionReflection FindFunctionByName(string name)
         {
-            var namePtr = ToUtf8(name);
-            try
-            {
-                return new FunctionReflection(this, Call(() => StrongTypeInterop.ShaderReflection_FindFunctionByName(Handle, namePtr)));
-            }
-            finally
-            {
-                FreeUtf8(namePtr);
-            }
+            return new FunctionReflection(
+                this,
+                Call(() => 
+                {
+                    fixed (char* namePtr = name)
+                    {
+                        return StrongTypeInterop.ShaderReflection_FindFunctionByName(Handle, namePtr);
+                    }
+                }
+            ));
         }
 
         internal FunctionReflection FindFunctionByNameInType(TypeReflection type, string name)
         {
-            var namePtr = ToUtf8(name);
-            try
-            {
-                return new FunctionReflection(this, Call(() => StrongTypeInterop.ShaderReflection_FindFunctionByNameInType(Handle, type.Handle, namePtr)));
-            }
-            finally
-            {
-                FreeUtf8(namePtr);
-            }
+            return new FunctionReflection(
+                this, 
+                Call(() => 
+                {
+                    fixed (char* pName = name)
+                    {
+                        return StrongTypeInterop.ShaderReflection_FindFunctionByNameInType(Handle, type.Handle, pName);
+                    }
+                })
+            );
         }
 
         internal VariableReflection FindVarByNameInType(TypeReflection type, string name)
         {
-            var namePtr = ToUtf8(name);
-            try
-            {
-                return new VariableReflection(this, Call(() => StrongTypeInterop.ShaderReflection_FindVarByNameInType(Handle, type.Handle, namePtr)));
-            }
-            finally
-            {
-                FreeUtf8(namePtr);
-            }
+            return new VariableReflection(
+                this, 
+                Call(() => 
+                {
+                    fixed (char* pName = name)
+                    {
+                        return StrongTypeInterop.ShaderReflection_FindVarByNameInType(Handle, type.Handle, pName);
+                    }
+                }
+            ));
         }
 
         internal TypeLayoutReflection GetTypeLayout(TypeReflection type, int layoutRules)
@@ -158,7 +165,7 @@ namespace Slang.Sdk.Binding
 
         internal string? GetHashedString(uint index)
         {
-            return Call(() => FromUtf8(SlangNativeInterop.ShaderReflection_GetHashedString(Handle, index)));
+            return Call(() => new string(SlangNativeInterop.ShaderReflection_GetHashedString(Handle, index)));
         }
 
         internal TypeLayoutReflection GetGlobalParamsTypeLayout()
@@ -175,9 +182,9 @@ namespace Slang.Sdk.Binding
         {
             return Call(() =>
             {
-                byte* output;
+                char* output = null;
                 SlangNativeInterop.ShaderReflection_ToJson(Handle, &output);
-                return FromUtf8(output);
+                return new string(output);
             });
         }
     }

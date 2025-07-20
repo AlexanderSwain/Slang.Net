@@ -23,7 +23,7 @@ namespace Slang.Sdk.Binding
 
         internal string? GetName()
         {
-            return Call(() => FromUtf8(SlangNativeInterop.Attribute_GetName(Handle)));
+            return Call(() => new string(SlangNativeInterop.Attribute_GetName(Handle)));
         }
 
         internal uint GetArgumentCount()
@@ -58,7 +58,7 @@ namespace Slang.Sdk.Binding
 
         internal string? GetArgumentValueString(uint index)
         {
-            return Call(() => FromUtf8(SlangNativeInterop.Attribute_GetArgumentValueString(Handle, index)));
+            return Call(() => new string(SlangNativeInterop.Attribute_GetArgumentValueString(Handle, index)));
         }
     }
 }
