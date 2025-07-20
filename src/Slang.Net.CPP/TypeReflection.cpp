@@ -66,16 +66,19 @@ namespace Slang::Cpp
         if (!m_NativeTypeReflection) return nullptr;
         void* unwrapped = TypeReflection_UnwrapArray(m_NativeTypeReflection);
         return unwrapped ? gcnew TypeReflection(unwrapped) : nullptr;
-    }    System::UIntPtr TypeReflection::ElementCount::get()
+    }    
+    System::UIntPtr TypeReflection::ElementCount::get()
     {
         if (!m_NativeTypeReflection) return System::UIntPtr::Zero;
         return System::UIntPtr(TypeReflection_GetElementCount(m_NativeTypeReflection));
-    }    System::UIntPtr TypeReflection::TotalArrayElementCount::get()
+    }    
+    System::UIntPtr TypeReflection::TotalArrayElementCount::get()
     {
         if (!m_NativeTypeReflection) return System::UIntPtr::Zero;
         // Note: This function may not be available in native interface, using ElementCount for now
         return System::UIntPtr(TypeReflection_GetElementCount(m_NativeTypeReflection));
-    }TypeReflection^ TypeReflection::ElementType::get()
+    }
+    TypeReflection^ TypeReflection::ElementType::get()
     {
         if (!m_NativeTypeReflection) return nullptr;
         void* elementType = SlangNative::TypeReflection_GetElementType(m_NativeTypeReflection);

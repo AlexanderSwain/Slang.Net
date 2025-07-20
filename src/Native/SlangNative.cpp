@@ -26,7 +26,7 @@ namespace SlangNative
     }
 
     // Session API
-    extern "C" SLANGNATIVE_API void* CreateSession(
+    extern "C" SLANGNATIVE_API void* Session_Create(
         void* options, int optionsLength,
         void* macros, int macrosLength,
         void* models, int modelsLength,
@@ -43,8 +43,16 @@ namespace SlangNative
         }
     }
 
+    extern "C" SLANGNATIVE_API void Session_Release(void* session)
+    {
+        if (!session) return;
+
+        Native::SessionCLI* sessionCLI = (Native::SessionCLI*)session;
+        delete sessionCLI;
+    }
+
     // Module API
-    extern "C" SLANGNATIVE_API void* CreateModule(void* parentSession, const char* moduleName, const char* modulePath, const char* shaderSource)
+    extern "C" SLANGNATIVE_API void* Module_Create(void* parentSession, const char* moduleName, const char* modulePath, const char* shaderSource)
     {
         try
         {
@@ -57,7 +65,15 @@ namespace SlangNative
         }
     }
 
-    extern "C" SLANGNATIVE_API void* FindEntryPoint(void* parentModule, const char* entryPointName)
+    extern "C" SLANGNATIVE_API void Module_Release(void* module)
+    {
+        if (!module) return;
+
+        Native::ModuleCLI* moduleCLI = (Native::ModuleCLI*)module;
+        delete moduleCLI;
+    }
+
+    extern "C" SLANGNATIVE_API void* Module_FindEntryPoint(void* parentModule, const char* entryPointName)
     {
         try 
         {
@@ -70,7 +86,7 @@ namespace SlangNative
         }
     }
 
-    extern "C" SLANGNATIVE_API void GetParameterInfo(void* parentEntryPoint, void** outParameterInfo, int* outParameterCount)
+    extern "C" SLANGNATIVE_API void Module_GetParameterInfo(void* parentEntryPoint, void** outParameterInfo, int* outParameterCount)
     {
         EntryPointCLI* entryPoint = (EntryPointCLI*)parentEntryPoint;
 		*outParameterInfo = entryPoint->getParameterInfoArray();
@@ -78,7 +94,7 @@ namespace SlangNative
     }
 
     // Program API
-    extern "C" SLANGNATIVE_API void* CreateProgram(void* parentModule)
+    extern "C" SLANGNATIVE_API void* Program_Create(void* parentModule)
     {
         try
         {
@@ -91,7 +107,15 @@ namespace SlangNative
         }
     }
 
-    extern "C" SLANGNATIVE_API int32_t Compile(void* program, unsigned int entryPointIndex, unsigned int targetIndex, const char** output)
+    extern "C" SLANGNATIVE_API void Program_Release(void* program)
+    {
+        if (!program) return;
+
+        Native::ProgramCLI* programCLI = (Native::ProgramCLI*)program;
+        delete programCLI;
+    }
+
+    extern "C" SLANGNATIVE_API int32_t Program_CompileProgram(void* program, unsigned int entryPointIndex, unsigned int targetIndex, const char** output)
     {
         try
         {
@@ -104,7 +128,7 @@ namespace SlangNative
         }
     }
 
-    extern "C" SLANGNATIVE_API void* GetProgramReflection(void* program, unsigned int targetIndex)
+    extern "C" SLANGNATIVE_API void* Program_GetProgramReflection(void* program, unsigned int targetIndex)
     {
         if (!program) return nullptr;
         try 

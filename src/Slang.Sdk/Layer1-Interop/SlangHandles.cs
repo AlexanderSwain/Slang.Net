@@ -1,3 +1,4 @@
+using static Slang.Sdk.Interop.SlangNativeInterop;
 using System.Runtime.InteropServices;
 
 namespace Slang.Sdk.Interop;
@@ -7,21 +8,27 @@ namespace Slang.Sdk.Interop;
 /// </summary>
 public abstract class SlangHandle : SafeHandle
 {
-    protected SlangHandle() : base(IntPtr.Zero, true)
-    {
-    }
-
-    protected SlangHandle(nint handle, bool ownsHandle) : base(handle, ownsHandle)
-    {
-        SetHandle(handle);
-    }
-
-    public override bool IsInvalid => handle == IntPtr.Zero;
-
     /// <summary>
     /// Gets the native handle as an nint.
     /// </summary>
     public nint Handle => handle;
+
+    public override bool IsInvalid => handle == IntPtr.Zero;
+
+    protected SlangHandle() : base(IntPtr.Zero, true/*Always 1 SafeHandle per Slang object*/)
+    {
+    }
+
+    protected SlangHandle(nint handle) : base(IntPtr.Zero, true/*Always 1 SafeHandle per Slang object*/)
+    {
+        base.SetHandle(handle);
+    }
+
+    // Expose the SetHandle method as internal.
+    internal new void SetHandle(nint handle)
+    {
+        base.SetHandle(handle);
+    }
 
     /// <summary>
     /// Implicitly converts the safe handle to an nint.
@@ -30,21 +37,28 @@ public abstract class SlangHandle : SafeHandle
     {
         return slangHandle?.handle ?? IntPtr.Zero;
     }
+
+    public override string ToString()
+    {
+        return $"{GetType().Name}{{ Handle = 0x{Handle:X} }}";
+    }
 }
 
+#region Compilation API
 /// <summary>
 /// Safe handle for Slang session objects.
 /// </summary>
-public sealed class SlangSessionHandle : SlangHandle
+public sealed class SessionHandle : SlangHandle
 {
-    public SlangSessionHandle() { }
+    public SessionHandle() { }
 
-    public SlangSessionHandle(nint handle) : base(handle, true) { }
+    public SessionHandle(nint handle) : base(handle) { }
 
     protected override bool ReleaseHandle()
     {
-        // Sessions are typically cleaned up automatically by Slang
-        // But we could add explicit cleanup here if needed
+        // Currently does nothing since it only contain fields that are managed by Slang
+        // In a future update, maybe cascade delete the children
+        Session_Release(Handle);
         return true;
     }
 }
@@ -52,15 +66,17 @@ public sealed class SlangSessionHandle : SlangHandle
 /// <summary>
 /// Safe handle for Slang module objects.
 /// </summary>
-public sealed class SlangModuleHandle : SlangHandle
+public sealed class ModuleHandle : SlangHandle
 {
-    public SlangModuleHandle() { }
+    public ModuleHandle() { }
 
-    public SlangModuleHandle(nint handle) : base(handle, true) { }
+    public ModuleHandle(nint handle) : base(handle) { }
 
     protected override bool ReleaseHandle()
     {
-        // Modules are typically cleaned up automatically by Slang
+        // Currently does nothing since it only contain fields that are managed by Slang
+        // In a future update, maybe cascade delete the children
+        Module_Release(Handle);
         return true;
     }
 }
@@ -68,135 +84,220 @@ public sealed class SlangModuleHandle : SlangHandle
 /// <summary>
 /// Safe handle for Slang program objects.
 /// </summary>
-public sealed class SlangProgramHandle : SlangHandle
+public sealed class ProgramHandle : SlangHandle
 {
-    public SlangProgramHandle() { }
+    public ProgramHandle() { }
 
-    public SlangProgramHandle(nint handle) : base(handle, true) { }
+    public ProgramHandle(nint handle) : base(handle) { }
 
     protected override bool ReleaseHandle()
     {
-        // Programs are typically cleaned up automatically by Slang
+        // Currently does nothing since it only contain fields that are managed by Slang
+        // In a future update, maybe cascade delete the children
+        Program_Release(Handle);
+        return true;
+    }
+}
+
+#endregion
+
+#region Reflection API
+/// <summary>
+/// Safe handle for Slang Attribute objects.
+/// </summary>
+public sealed class AttributeReflectionHandle : SlangHandle
+{
+    public AttributeReflectionHandle() { }
+
+    public AttributeReflectionHandle(nint handle) : base(handle) { }
+
+    protected override bool ReleaseHandle()
+    {
+        // Currently does nothing since it only contain fields that are managed by Slang
+        // In a future update, maybe cascade delete the children
+        Attribute_Release(Handle);
         return true;
     }
 }
 
 /// <summary>
-/// Safe handle for Slang reflection objects that need explicit release.
+/// Safe handle for Slang EntryPoint objects.
 /// </summary>
-public sealed class SlangReflectionHandle : SlangHandle
+public sealed class EntryPointReflectionHandle : SlangHandle
 {
-    private readonly Action<nint>? _releaseAction;
+    public EntryPointReflectionHandle() { }
 
-    public SlangReflectionHandle() { }
-
-    public SlangReflectionHandle(nint handle, Action<nint>? releaseAction = null) : base(handle, true)
-    {
-        _releaseAction = releaseAction;
-    }
+    public EntryPointReflectionHandle(nint handle) : base(handle) { }
 
     protected override bool ReleaseHandle()
     {
-        if (_releaseAction != null && handle != IntPtr.Zero)
-        {
-            _releaseAction(handle);
-        }
+        // Currently does nothing since it only contain fields that are managed by Slang
+        // In a future update, maybe cascade delete the children
+        EntryPointReflection_Release(Handle);
         return true;
     }
+}
 
-    /// <summary>
-    /// Creates a safe handle for a shader reflection object.
-    /// </summary>
-    public static SlangReflectionHandle ForShaderReflection(nint handle)
-    {
-        return new SlangReflectionHandle(handle, SlangNativeInterop.ShaderReflection_Release);
-    }
+/// <summary>
+/// Safe handle for Slang Function objects.
+/// </summary>
+public sealed class FunctionReflectionHandle : SlangHandle
+{
+    public FunctionReflectionHandle() { }
 
-    /// <summary>
-    /// Creates a safe handle for a type reflection object.
-    /// </summary>
-    public static SlangReflectionHandle ForTypeReflection(nint handle)
-    {
-        return new SlangReflectionHandle(handle, SlangNativeInterop.TypeReflection_Release);
-    }
+    public FunctionReflectionHandle(nint handle) : base(handle) { }
 
-    /// <summary>
-    /// Creates a safe handle for a type layout reflection object.
-    /// </summary>
-    public static SlangReflectionHandle ForTypeLayoutReflection(nint handle)
+    protected override bool ReleaseHandle()
     {
-        return new SlangReflectionHandle(handle, SlangNativeInterop.TypeLayoutReflection_Release);
-    }
-
-    /// <summary>
-    /// Creates a safe handle for a variable reflection object.
-    /// </summary>
-    public static SlangReflectionHandle ForVariableReflection(nint handle)
-    {
-        return new SlangReflectionHandle(handle, SlangNativeInterop.VariableReflection_Release);
-    }
-
-    /// <summary>
-    /// Creates a safe handle for a variable layout reflection object.
-    /// </summary>
-    public static SlangReflectionHandle ForVariableLayoutReflection(nint handle)
-    {
-        return new SlangReflectionHandle(handle, SlangNativeInterop.VariableLayoutReflection_Release);
-    }
-
-    /// <summary>
-    /// Creates a safe handle for a function reflection object.
-    /// </summary>
-    public static SlangReflectionHandle ForFunctionReflection(nint handle)
-    {
-        return new SlangReflectionHandle(handle, SlangNativeInterop.FunctionReflection_Release);
-    }
-
-    /// <summary>
-    /// Creates a safe handle for an entry point reflection object.
-    /// </summary>
-    public static SlangReflectionHandle ForEntryPointReflection(nint handle)
-    {
-        return new SlangReflectionHandle(handle, SlangNativeInterop.EntryPointReflection_Release);
-    }
-
-    /// <summary>
-    /// Creates a safe handle for a generic reflection object.
-    /// </summary>
-    public static SlangReflectionHandle ForGenericReflection(nint handle)
-    {
-        return new SlangReflectionHandle(handle, SlangNativeInterop.GenericReflection_Release);
-    }
-
-    /// <summary>
-    /// Creates a safe handle for a type parameter reflection object.
-    /// </summary>
-    public static SlangReflectionHandle ForTypeParameterReflection(nint handle)
-    {
-        return new SlangReflectionHandle(handle, SlangNativeInterop.TypeParameterReflection_Release);
-    }
-
-    /// <summary>
-    /// Creates a safe handle for an attribute reflection object.
-    /// </summary>
-    public static SlangReflectionHandle ForAttribute(nint handle)
-    {
-        return new SlangReflectionHandle(handle, SlangNativeInterop.Attribute_Release);
-    }
-
-    /// <summary>
-    /// Creates a safe handle for a modifier object.
-    /// </summary>
-    public static SlangReflectionHandle ForModifier(nint handle)
-    {
-        return new SlangReflectionHandle(handle, SlangNativeInterop.Modifier_Release);
-    }
-
-    /// <summary>
-    /// Creates a handle without automatic release (for objects that don't need explicit cleanup).
-    /// </summary>
-    public static SlangReflectionHandle WithoutRelease(nint handle)
-    {
-        return new SlangReflectionHandle(handle, null);
+        // Currently does nothing since it only contain fields that are managed by Slang
+        // In a future update, maybe cascade delete the children
+        FunctionReflection_Release(Handle);
+        return true;
     }
 }
+
+/// <summary>
+/// Safe handle for Slang Generic objects.
+/// </summary>
+public sealed class GenericReflectionHandle : SlangHandle
+{
+    public GenericReflectionHandle() { }
+
+    public GenericReflectionHandle(nint handle) : base(handle) { }
+
+    protected override bool ReleaseHandle()
+    {
+        // Currently does nothing since it only contain fields that are managed by Slang
+        // In a future update, maybe cascade delete the children
+        GenericReflection_Release(Handle);
+        return true;
+    }
+}
+
+/// <summary>
+/// Safe handle for Slang Modifier objects.
+/// </summary>
+public sealed class ModifierReflectionHandle : SlangHandle
+{
+    public ModifierReflectionHandle() { }
+
+    public ModifierReflectionHandle(nint handle) : base(handle) { }
+
+    protected override bool ReleaseHandle()
+    {
+        // Currently does nothing since it only contain fields that are managed by Slang
+        // In a future update, maybe cascade delete the children
+        Modifier_Release(Handle);
+        return true;
+    }
+}
+
+/// <summary>
+/// Safe handle for Slang ShaderReflection objects.
+/// </summary>
+public sealed class ShaderReflectionHandle : SlangHandle
+{
+    public ShaderReflectionHandle() { }
+
+    public ShaderReflectionHandle(nint handle) : base(handle) { }
+
+    protected override bool ReleaseHandle()
+    {
+        // Currently does nothing since it only contain fields that are managed by Slang
+        // In a future update, maybe cascade delete the children
+        ShaderReflection_Release(Handle);
+        return true;
+    }
+}
+
+/// <summary>
+/// Safe handle for Slang TypeLayout objects.
+/// </summary>
+public sealed class TypeLayoutReflectionHandle : SlangHandle
+{
+    public TypeLayoutReflectionHandle() { }
+
+    public TypeLayoutReflectionHandle(nint handle) : base(handle) { }
+
+    protected override bool ReleaseHandle()
+    {
+        // Currently does nothing since it only contain fields that are managed by Slang
+        // In a future update, maybe cascade delete the children
+        TypeLayoutReflection_Release(Handle);
+        return true;
+    }
+}
+
+/// <summary>
+/// Safe handle for Slang TypeParameter objects.
+/// </summary>
+public sealed class TypeParameterReflectionHandle : SlangHandle
+{
+    public TypeParameterReflectionHandle() { }
+
+    public TypeParameterReflectionHandle(nint handle) : base(handle) { }
+
+    protected override bool ReleaseHandle()
+    {
+        // Currently does nothing since it only contain fields that are managed by Slang
+        // In a future update, maybe cascade delete the children
+        TypeParameterReflection_Release(Handle);
+        return true;
+    }
+}
+
+/// <summary>
+/// Safe handle for Slang TypeReflection objects.
+/// </summary>
+public sealed class TypeReflectionHandle : SlangHandle
+{
+    public TypeReflectionHandle() { }
+
+    public TypeReflectionHandle(nint handle) : base(handle) { }
+
+    protected override bool ReleaseHandle()
+    {
+        // Currently does nothing since it only contain fields that are managed by Slang
+        // In a future update, maybe cascade delete the children
+        TypeReflection_Release(Handle);
+        return true;
+    }
+}
+
+/// <summary>
+/// Safe handle for Slang VariableLayout objects.
+/// </summary>
+public sealed class VariableLayoutReflectionHandle : SlangHandle
+{
+    public VariableLayoutReflectionHandle() { }
+
+    public VariableLayoutReflectionHandle(nint handle) : base(handle) { }
+
+    protected override bool ReleaseHandle()
+    {
+        // Currently does nothing since it only contain fields that are managed by Slang
+        // In a future update, maybe cascade delete the children
+        VariableLayoutReflection_Release(Handle);
+        return true;
+    }
+}
+
+/// <summary>
+/// Safe handle for Slang Variable objects.
+/// </summary>
+public sealed class VariableReflectionHandle : SlangHandle
+{
+    public VariableReflectionHandle() { }
+
+    public VariableReflectionHandle(nint handle) : base(handle) { }
+
+    protected override bool ReleaseHandle()
+    {
+        // Currently does nothing since it only contain fields that are managed by Slang
+        // In a future update, maybe cascade delete the children
+        VariableReflection_Release(Handle);
+        return true;
+    }
+}
+
+#endregion

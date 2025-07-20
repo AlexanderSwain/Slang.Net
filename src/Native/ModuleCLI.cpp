@@ -34,6 +34,11 @@ Native::ModuleCLI::ModuleCLI(SessionCLI* parent, const char* moduleName, const c
     setEntryPoints();
 }
 
+Native::ModuleCLI::~ModuleCLI()
+{
+    // Does nothing, kept for consistency and in case a future update requires something to be disposed (such as children like EntryPoints).
+}
+
 void Native::ModuleCLI::setEntryPoints()
 {
     unsigned int entryPointCount = m_slangModule->getDefinedEntryPointCount();
@@ -44,15 +49,6 @@ void Native::ModuleCLI::setEntryPoints()
     for (unsigned int i = 0; i < entryPointCount; i++)
     {
         m_slangModule->getDefinedEntryPoint(i, &m_entryPoints[i]);
-	}
-}
-
-Native::ModuleCLI::~ModuleCLI()
-{
-    if (m_slangModule)
-    {
-        m_slangModule->Release();
-        m_slangModule = nullptr;
 	}
 }
 

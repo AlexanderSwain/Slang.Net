@@ -23,7 +23,9 @@ namespace Slang::Cpp
         {
             throw gcnew System::Exception("There was a problem generating an error message.");
         }
-    }    // Constructor with parameters implementation
+    }    
+    
+    // Constructor with parameters implementation
     Slang::Cpp::Module::Module(Session^ parent, System::String^ moduleName, System::String^ modulePath, System::String^ shaderSource)
     {
         void* nativeParent = parent->getNative();

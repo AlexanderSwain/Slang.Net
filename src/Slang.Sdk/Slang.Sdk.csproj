@@ -23,7 +23,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Folder Include="Layer2-Binding\" />
 		<Folder Include="Layer3-Pretty\" />
 	</ItemGroup>
 

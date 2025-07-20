@@ -100,7 +100,7 @@ Native::SessionCLI::SessionCLI(
 // Destructor implementation
 Native::SessionCLI::~SessionCLI()
 {
-    // Clean up resources if needed
+    // Does nothing, kept for consistency and in case a future update requires something to be disposed (such as children).
 }
 
 slang::IGlobalSession* Native::SessionCLI::GetGlobalSession()

@@ -61,7 +61,7 @@ namespace Slang::Cpp
     System::String^ Slang::Cpp::Program::Compile(unsigned int entryPointIndex, unsigned int targetIndex)
     {
         const char* result = nullptr;
-        int32_t compileResult = SlangNative::Compile(m_NativeProgram, entryPointIndex, targetIndex, &result);
+        int32_t compileResult = SlangNative::CompileProgram(m_NativeProgram, entryPointIndex, targetIndex, &result);
         const char* errorMessage = SlangNative::SlangNative_GetLastError();
 
         if (compileResult < 0)
