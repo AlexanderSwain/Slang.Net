@@ -1,5 +1,5 @@
 ﻿using Slang.Sdk.Interop;
-using static Slang.Sdk.Interop.SlangNativeInterop;
+using static Slang.Sdk.Interop.StrongTypeInterop;
 
 namespace Slang.Sdk.Binding
 {
@@ -14,41 +14,29 @@ namespace Slang.Sdk.Binding
             Handle = handle;
         }
 
-        internal TypeKind Kind
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        internal uint FieldCount
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        internal VariableReflection GetFieldByIndex(uint index)
+        internal TypeKind GetKind()
         {
             throw new NotImplementedException();
         }
 
-        internal bool IsArray
+        internal uint GetFieldCount()
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            throw new NotImplementedException();
+        }
+
+        internal VariableReflection GetFieldByIndex(uint index)
+        {
+            return new VariableReflection(this, Call(() => TypeReflection_GetFieldByIndex(Handle, index)));
+        }
+
+        internal bool IsArray()
+        {
+            throw new NotImplementedException();
         }
 
         internal TypeReflection UnwrapArray()
         {
-            return new TypeReflection(
-                this,
-                Call(() => new TypeReflectionHandle(TypeReflection_UnwrapArray(Handle)))
-            );
+            return new TypeReflection(this, Call(() => TypeReflection_UnwrapArray(Handle)));
         }
     }
 }

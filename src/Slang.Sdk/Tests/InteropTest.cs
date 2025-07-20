@@ -79,6 +79,45 @@ public static class InteropTest
         }
     }
 
+    private static unsafe void StrongTypeInteropTest()
+    {
+        try
+        {
+            CompilerOption compilerOptions = new CompilerOption(
+                CompilerOption.Name.Obfuscate,
+                new CompilerOption.Value(CompilerOption.Value.Kind.Int, 1, 0, null, null)
+            );
+
+            PreprocessorMacro preprocessorMacros = new PreprocessorMacro("LIGHTING_VALUE", "2.5");
+
+            ShaderModel shaderModels = new ShaderModel(ShaderModel.CompileTarget.Hlsl, "cs_5_0");
+
+            // Test the new strongly-typed interop
+            var sessionHandle = StrongTypeInterop.Session_Create(
+                &compilerOptions, 1,
+                &preprocessorMacros, 1,
+                &shaderModels, 1,
+                null, 0
+            );
+
+            Console.WriteLine($"   StrongTypeInterop test: SessionHandle type = {sessionHandle.GetType().Name}");
+            Console.WriteLine($"   StrongTypeInterop test: Handle is invalid = {sessionHandle.IsInvalid}");
+            
+            // The handle should be disposable
+            sessionHandle.Dispose();
+            Console.WriteLine($"   StrongTypeInterop test: Handle disposed successfully");
+        }
+        catch (System.DllNotFoundException ex)
+        {
+            Console.WriteLine($"   ?? SlangNative.dll not found: {ex.Message}");
+            Console.WriteLine("   This is expected if native dependencies aren't built yet.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"   StrongTypeInterop test encountered error: {ex.Message}");
+        }
+    }
+
     /// <summary>
     /// Main example runner.
     /// </summary>
@@ -103,6 +142,11 @@ public static class InteropTest
         Console.WriteLine("4. Testing Slang session creation...");
         BasicSessionTest();
         Console.WriteLine("? Slang session test completed\n");
+
+        // Test 5: Test strongly-typed interop
+        Console.WriteLine("5. Testing strongly-typed interop...");
+        StrongTypeInteropTest();
+        Console.WriteLine("? StrongTypeInterop test completed\n");
 
         Console.WriteLine("?? All Slang.Sdk configuration tests passed!");
     }

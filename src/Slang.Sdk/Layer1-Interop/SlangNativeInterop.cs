@@ -743,5 +743,790 @@ internal static unsafe partial class SlangNativeInterop
 
 internal static unsafe partial class StrongTypeInterop
 {
+    #region Session API
 
+    /// <summary>
+    /// Creates a Slang session with strongly-typed handle.
+    /// </summary>
+    internal static SessionHandle Session_Create(
+        void* options, int optionsLength,
+        void* macros, int macrosLength,
+        void* models, int modelsLength,
+        char*[] searchPaths, int searchPathsLength)
+    {
+        var handle = SlangNativeInterop.Session_Create(options, optionsLength, macros, macrosLength, models, modelsLength, searchPaths, searchPathsLength);
+        return new SessionHandle(handle);
+    }
+
+    #endregion
+
+    #region Module API
+
+    /// <summary>
+    /// Creates a module with strongly-typed handle.
+    /// </summary>
+    internal static ModuleHandle CreateModule(
+        nint parentSession,
+        char* moduleName,
+        char* modulePath,
+        char* shaderSource)
+    {
+        var handle = SlangNativeInterop.CreateModule(parentSession, moduleName, modulePath, shaderSource);
+        return new ModuleHandle(handle);
+    }
+
+    /// <summary>
+    /// Finds an entry point with strongly-typed handle.
+    /// </summary>
+    internal static EntryPointReflectionHandle Module_FindEntryPoint(
+        nint parentModule,
+        byte* entryPointName)
+    {
+        var handle = SlangNativeInterop.Module_FindEntryPoint(parentModule, entryPointName);
+        return new EntryPointReflectionHandle(handle);
+    }
+
+    #endregion
+
+    #region Program API
+
+    /// <summary>
+    /// Creates a program with strongly-typed handle.
+    /// </summary>
+    internal static ProgramHandle Program_Create(nint parentModule)
+    {
+        var handle = SlangNativeInterop.Program_Create(parentModule);
+        return new ProgramHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets program reflection with strongly-typed handle.
+    /// </summary>
+    internal static ShaderReflectionHandle GetProgramReflection(
+        nint program,
+        uint targetIndex)
+    {
+        var handle = SlangNativeInterop.GetProgramReflection(program, targetIndex);
+        return new ShaderReflectionHandle(handle);
+    }
+
+    #endregion
+
+    #region ShaderReflection API
+
+    /// <summary>
+    /// Gets shader reflection parent with strongly-typed handle.
+    /// </summary>
+    internal static ShaderReflectionHandle ShaderReflection_GetParent(nint shaderReflection)
+    {
+        var handle = SlangNativeInterop.ShaderReflection_GetParent(shaderReflection);
+        return new ShaderReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets type parameter by index with strongly-typed handle.
+    /// </summary>
+    internal static TypeParameterReflectionHandle ShaderReflection_GetTypeParameterByIndex(
+        nint shaderReflection,
+        uint index)
+    {
+        var handle = SlangNativeInterop.ShaderReflection_GetTypeParameterByIndex(shaderReflection, index);
+        return new TypeParameterReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Finds type parameter with strongly-typed handle.
+    /// </summary>
+    internal static TypeParameterReflectionHandle ShaderReflection_FindTypeParameter(
+        nint shaderReflection,
+        byte* name)
+    {
+        var handle = SlangNativeInterop.ShaderReflection_FindTypeParameter(shaderReflection, name);
+        return new TypeParameterReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets parameter by index with strongly-typed handle.
+    /// </summary>
+    internal static VariableLayoutReflectionHandle ShaderReflection_GetParameterByIndex(
+        nint shaderReflection,
+        uint index)
+    {
+        var handle = SlangNativeInterop.ShaderReflection_GetParameterByIndex(shaderReflection, index);
+        return new VariableLayoutReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets entry point by index with strongly-typed handle.
+    /// </summary>
+    internal static EntryPointReflectionHandle ShaderReflection_GetEntryPointByIndex(
+        nint shaderReflection,
+        uint index)
+    {
+        var handle = SlangNativeInterop.ShaderReflection_GetEntryPointByIndex(shaderReflection, index);
+        return new EntryPointReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Finds entry point by name with strongly-typed handle.
+    /// </summary>
+    internal static EntryPointReflectionHandle ShaderReflection_FindEntryPointByName(
+        nint shaderReflection,
+        byte* name)
+    {
+        var handle = SlangNativeInterop.ShaderReflection_FindEntryPointByName(shaderReflection, name);
+        return new EntryPointReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Finds type by name with strongly-typed handle.
+    /// </summary>
+    internal static TypeReflectionHandle ShaderReflection_FindTypeByName(
+        nint shaderReflection,
+        byte* name)
+    {
+        var handle = SlangNativeInterop.ShaderReflection_FindTypeByName(shaderReflection, name);
+        return new TypeReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Finds function by name with strongly-typed handle.
+    /// </summary>
+    internal static FunctionReflectionHandle ShaderReflection_FindFunctionByName(
+        nint shaderReflection,
+        byte* name)
+    {
+        var handle = SlangNativeInterop.ShaderReflection_FindFunctionByName(shaderReflection, name);
+        return new FunctionReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Finds function by name in type with strongly-typed handle.
+    /// </summary>
+    internal static FunctionReflectionHandle ShaderReflection_FindFunctionByNameInType(
+        nint shaderReflection,
+        nint type,
+        byte* name)
+    {
+        var handle = SlangNativeInterop.ShaderReflection_FindFunctionByNameInType(shaderReflection, type, name);
+        return new FunctionReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Finds variable by name in type with strongly-typed handle.
+    /// </summary>
+    internal static VariableReflectionHandle ShaderReflection_FindVarByNameInType(
+        nint shaderReflection,
+        nint type,
+        byte* name)
+    {
+        var handle = SlangNativeInterop.ShaderReflection_FindVarByNameInType(shaderReflection, type, name);
+        return new VariableReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets type layout with strongly-typed handle.
+    /// </summary>
+    internal static TypeLayoutReflectionHandle ShaderReflection_GetTypeLayout(
+        nint shaderReflection,
+        nint type,
+        int layoutRules)
+    {
+        var handle = SlangNativeInterop.ShaderReflection_GetTypeLayout(shaderReflection, type, layoutRules);
+        return new TypeLayoutReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Specializes type with strongly-typed handle.
+    /// </summary>
+    internal static TypeReflectionHandle ShaderReflection_SpecializeType(
+        nint shaderReflection,
+        nint type,
+        int argCount,
+        void** args)
+    {
+        var handle = SlangNativeInterop.ShaderReflection_SpecializeType(shaderReflection, type, argCount, args);
+        return new TypeReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets global params type layout with strongly-typed handle.
+    /// </summary>
+    internal static TypeLayoutReflectionHandle ShaderReflection_GetGlobalParamsTypeLayout(nint shaderReflection)
+    {
+        var handle = SlangNativeInterop.ShaderReflection_GetGlobalParamsTypeLayout(shaderReflection);
+        return new TypeLayoutReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets global params var layout with strongly-typed handle.
+    /// </summary>
+    internal static VariableLayoutReflectionHandle ShaderReflection_GetGlobalParamsVarLayout(nint shaderReflection)
+    {
+        var handle = SlangNativeInterop.ShaderReflection_GetGlobalParamsVarLayout(shaderReflection);
+        return new VariableLayoutReflectionHandle(handle);
+    }
+
+    #endregion
+
+    #region TypeReflection API
+
+    /// <summary>
+    /// Gets type reflection field by index with strongly-typed handle.
+    /// </summary>
+    internal static VariableReflectionHandle TypeReflection_GetFieldByIndex(
+        nint typeReflection,
+        uint index)
+    {
+        var handle = SlangNativeInterop.TypeReflection_GetFieldByIndex(typeReflection, index);
+        return new VariableReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Unwraps array type with strongly-typed handle.
+    /// </summary>
+    internal static TypeReflectionHandle TypeReflection_UnwrapArray(nint typeReflection)
+    {
+        var handle = SlangNativeInterop.TypeReflection_UnwrapArray(typeReflection);
+        return new TypeReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets element type with strongly-typed handle.
+    /// </summary>
+    internal static TypeReflectionHandle TypeReflection_GetElementType(nint typeReflection)
+    {
+        var handle = SlangNativeInterop.TypeReflection_GetElementType(typeReflection);
+        return new TypeReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets resource result type with strongly-typed handle.
+    /// </summary>
+    internal static TypeReflectionHandle TypeReflection_GetResourceResultType(nint typeReflection)
+    {
+        var handle = SlangNativeInterop.TypeReflection_GetResourceResultType(typeReflection);
+        return new TypeReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets user attribute by index with strongly-typed handle.
+    /// </summary>
+    internal static AttributeReflectionHandle TypeReflection_GetUserAttributeByIndex(
+        nint typeReflection,
+        uint index)
+    {
+        var handle = SlangNativeInterop.TypeReflection_GetUserAttributeByIndex(typeReflection, index);
+        return new AttributeReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Finds attribute by name with strongly-typed handle.
+    /// </summary>
+    internal static AttributeReflectionHandle TypeReflection_FindAttributeByName(
+        nint typeReflection,
+        byte* name)
+    {
+        var handle = SlangNativeInterop.TypeReflection_FindAttributeByName(typeReflection, name);
+        return new AttributeReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Applies specializations with strongly-typed handle.
+    /// </summary>
+    internal static TypeReflectionHandle TypeReflection_ApplySpecializations(
+        nint typeReflection,
+        nint genRef)
+    {
+        var handle = SlangNativeInterop.TypeReflection_ApplySpecializations(typeReflection, genRef);
+        return new TypeReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets generic container with strongly-typed handle.
+    /// </summary>
+    internal static GenericReflectionHandle TypeReflection_GetGenericContainer(nint typeReflection)
+    {
+        var handle = SlangNativeInterop.TypeReflection_GetGenericContainer(typeReflection);
+        return new GenericReflectionHandle(handle);
+    }
+
+    #endregion
+
+    #region TypeLayoutReflection API
+
+    /// <summary>
+    /// Gets type layout type with strongly-typed handle.
+    /// </summary>
+    internal static TypeReflectionHandle TypeLayoutReflection_GetType(nint typeLayoutReflection)
+    {
+        var handle = SlangNativeInterop.TypeLayoutReflection_GetType(typeLayoutReflection);
+        return new TypeReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets type layout field by index with strongly-typed handle.
+    /// </summary>
+    internal static VariableLayoutReflectionHandle TypeLayoutReflection_GetFieldByIndex(
+        nint typeLayoutReflection,
+        uint index)
+    {
+        var handle = SlangNativeInterop.TypeLayoutReflection_GetFieldByIndex(typeLayoutReflection, index);
+        return new VariableLayoutReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets explicit counter with strongly-typed handle.
+    /// </summary>
+    internal static VariableLayoutReflectionHandle TypeLayoutReflection_GetExplicitCounter(nint typeLayoutReflection)
+    {
+        var handle = SlangNativeInterop.TypeLayoutReflection_GetExplicitCounter(typeLayoutReflection);
+        return new VariableLayoutReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Unwraps array type layout with strongly-typed handle.
+    /// </summary>
+    internal static TypeLayoutReflectionHandle TypeLayoutReflection_UnwrapArray(nint typeLayoutReflection)
+    {
+        var handle = SlangNativeInterop.TypeLayoutReflection_UnwrapArray(typeLayoutReflection);
+        return new TypeLayoutReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets element type layout with strongly-typed handle.
+    /// </summary>
+    internal static TypeLayoutReflectionHandle TypeLayoutReflection_GetElementTypeLayout(nint typeLayoutReflection)
+    {
+        var handle = SlangNativeInterop.TypeLayoutReflection_GetElementTypeLayout(typeLayoutReflection);
+        return new TypeLayoutReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets element var layout with strongly-typed handle.
+    /// </summary>
+    internal static VariableLayoutReflectionHandle TypeLayoutReflection_GetElementVarLayout(nint typeLayoutReflection)
+    {
+        var handle = SlangNativeInterop.TypeLayoutReflection_GetElementVarLayout(typeLayoutReflection);
+        return new VariableLayoutReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets container var layout with strongly-typed handle.
+    /// </summary>
+    internal static VariableLayoutReflectionHandle TypeLayoutReflection_GetContainerVarLayout(nint typeLayoutReflection)
+    {
+        var handle = SlangNativeInterop.TypeLayoutReflection_GetContainerVarLayout(typeLayoutReflection);
+        return new VariableLayoutReflectionHandle(handle);
+    }
+
+    #endregion
+
+    #region VariableReflection API
+
+    /// <summary>
+    /// Gets variable type with strongly-typed handle.
+    /// </summary>
+    internal static TypeReflectionHandle VariableReflection_GetType(nint variableReflection)
+    {
+        var handle = SlangNativeInterop.VariableReflection_GetType(variableReflection);
+        return new TypeReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Finds modifier with strongly-typed handle.
+    /// </summary>
+    internal static ModifierReflectionHandle VariableReflection_FindModifier(
+        nint variableReflection,
+        int modifierId)
+    {
+        var handle = SlangNativeInterop.VariableReflection_FindModifier(variableReflection, modifierId);
+        return new ModifierReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets user attribute by index with strongly-typed handle.
+    /// </summary>
+    internal static AttributeReflectionHandle VariableReflection_GetUserAttributeByIndex(
+        nint variableReflection,
+        uint index)
+    {
+        var handle = SlangNativeInterop.VariableReflection_GetUserAttributeByIndex(variableReflection, index);
+        return new AttributeReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Finds attribute by name with strongly-typed handle.
+    /// </summary>
+    internal static AttributeReflectionHandle VariableReflection_FindAttributeByName(
+        nint variableReflection,
+        byte* name)
+    {
+        var handle = SlangNativeInterop.VariableReflection_FindAttributeByName(variableReflection, name);
+        return new AttributeReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Finds user attribute by name with strongly-typed handle.
+    /// </summary>
+    internal static AttributeReflectionHandle VariableReflection_FindUserAttributeByName(
+        nint variableReflection,
+        byte* name)
+    {
+        var handle = SlangNativeInterop.VariableReflection_FindUserAttributeByName(variableReflection, name);
+        return new AttributeReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets generic container with strongly-typed handle.
+    /// </summary>
+    internal static GenericReflectionHandle VariableReflection_GetGenericContainer(nint variableReflection)
+    {
+        var handle = SlangNativeInterop.VariableReflection_GetGenericContainer(variableReflection);
+        return new GenericReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Applies specializations with strongly-typed handle.
+    /// </summary>
+    internal static VariableReflectionHandle VariableReflection_ApplySpecializations(
+        nint variableReflection,
+        void** specializations,
+        int count)
+    {
+        var handle = SlangNativeInterop.VariableReflection_ApplySpecializations(variableReflection, specializations, count);
+        return new VariableReflectionHandle(handle);
+    }
+
+    #endregion
+
+    #region VariableLayoutReflection API
+
+    /// <summary>
+    /// Gets variable layout variable with strongly-typed handle.
+    /// </summary>
+    internal static VariableReflectionHandle VariableLayoutReflection_GetVariable(nint variableLayoutReflection)
+    {
+        var handle = SlangNativeInterop.VariableLayoutReflection_GetVariable(variableLayoutReflection);
+        return new VariableReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Finds modifier with strongly-typed handle.
+    /// </summary>
+    internal static ModifierReflectionHandle VariableLayoutReflection_FindModifier(
+        nint variableLayoutReflection,
+        int modifierId)
+    {
+        var handle = SlangNativeInterop.VariableLayoutReflection_FindModifier(variableLayoutReflection, modifierId);
+        return new ModifierReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets type layout with strongly-typed handle.
+    /// </summary>
+    internal static TypeLayoutReflectionHandle VariableLayoutReflection_GetTypeLayout(nint variableLayoutReflection)
+    {
+        var handle = SlangNativeInterop.VariableLayoutReflection_GetTypeLayout(variableLayoutReflection);
+        return new TypeLayoutReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets type with strongly-typed handle.
+    /// </summary>
+    internal static TypeReflectionHandle VariableLayoutReflection_GetType(nint variableLayoutReflection)
+    {
+        var handle = SlangNativeInterop.VariableLayoutReflection_GetType(variableLayoutReflection);
+        return new TypeReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets space with strongly-typed handle.
+    /// </summary>
+    internal static VariableLayoutReflectionHandle VariableLayoutReflection_GetSpace(
+        nint variableLayoutReflection,
+        int category)
+    {
+        var handle = SlangNativeInterop.VariableLayoutReflection_GetSpace(variableLayoutReflection, category);
+        return new VariableLayoutReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets pending data layout with strongly-typed handle.
+    /// </summary>
+    internal static VariableLayoutReflectionHandle VariableLayoutReflection_GetPendingDataLayout(nint variableLayoutReflection)
+    {
+        var handle = SlangNativeInterop.VariableLayoutReflection_GetPendingDataLayout(variableLayoutReflection);
+        return new VariableLayoutReflectionHandle(handle);
+    }
+
+    #endregion
+
+    #region FunctionReflection API
+
+    /// <summary>
+    /// Gets function return type with strongly-typed handle.
+    /// </summary>
+    internal static TypeReflectionHandle FunctionReflection_GetReturnType(nint functionReflection)
+    {
+        var handle = SlangNativeInterop.FunctionReflection_GetReturnType(functionReflection);
+        return new TypeReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets function parameter by index with strongly-typed handle.
+    /// </summary>
+    internal static VariableReflectionHandle FunctionReflection_GetParameterByIndex(
+        nint functionReflection,
+        uint index)
+    {
+        var handle = SlangNativeInterop.FunctionReflection_GetParameterByIndex(functionReflection, index);
+        return new VariableReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Finds modifier with strongly-typed handle.
+    /// </summary>
+    internal static ModifierReflectionHandle FunctionReflection_FindModifier(
+        nint functionReflection,
+        int modifierId)
+    {
+        var handle = SlangNativeInterop.FunctionReflection_FindModifier(functionReflection, modifierId);
+        return new ModifierReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets user attribute by index with strongly-typed handle.
+    /// </summary>
+    internal static AttributeReflectionHandle FunctionReflection_GetUserAttributeByIndex(
+        nint functionReflection,
+        uint index)
+    {
+        var handle = SlangNativeInterop.FunctionReflection_GetUserAttributeByIndex(functionReflection, index);
+        return new AttributeReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Finds attribute by name with strongly-typed handle.
+    /// </summary>
+    internal static AttributeReflectionHandle FunctionReflection_FindAttributeByName(
+        nint functionReflection,
+        byte* name)
+    {
+        var handle = SlangNativeInterop.FunctionReflection_FindAttributeByName(functionReflection, name);
+        return new AttributeReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets generic container with strongly-typed handle.
+    /// </summary>
+    internal static GenericReflectionHandle FunctionReflection_GetGenericContainer(nint functionReflection)
+    {
+        var handle = SlangNativeInterop.FunctionReflection_GetGenericContainer(functionReflection);
+        return new GenericReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Applies specializations with strongly-typed handle.
+    /// </summary>
+    internal static FunctionReflectionHandle FunctionReflection_ApplySpecializations(
+        nint functionReflection,
+        nint genRef)
+    {
+        var handle = SlangNativeInterop.FunctionReflection_ApplySpecializations(functionReflection, genRef);
+        return new FunctionReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Specializes with arg types with strongly-typed handle.
+    /// </summary>
+    internal static FunctionReflectionHandle FunctionReflection_SpecializeWithArgTypes(
+        nint functionReflection,
+        uint typeCount,
+        void** types)
+    {
+        var handle = SlangNativeInterop.FunctionReflection_SpecializeWithArgTypes(functionReflection, typeCount, types);
+        return new FunctionReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets function overload with strongly-typed handle.
+    /// </summary>
+    internal static FunctionReflectionHandle FunctionReflection_GetOverload(
+        nint functionReflection,
+        uint index)
+    {
+        var handle = SlangNativeInterop.FunctionReflection_GetOverload(functionReflection, index);
+        return new FunctionReflectionHandle(handle);
+    }
+
+    #endregion
+
+    #region EntryPointReflection API
+
+    /// <summary>
+    /// Gets entry point parent with strongly-typed handle.
+    /// </summary>
+    internal static ShaderReflectionHandle EntryPointReflection_GetParent(nint entryPointReflection)
+    {
+        var handle = SlangNativeInterop.EntryPointReflection_GetParent(entryPointReflection);
+        return new ShaderReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets entry point as function with strongly-typed handle.
+    /// </summary>
+    internal static FunctionReflectionHandle EntryPointReflection_AsFunction(nint entryPointReflection)
+    {
+        var handle = SlangNativeInterop.EntryPointReflection_AsFunction(entryPointReflection);
+        return new FunctionReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets entry point parameter by index with strongly-typed handle.
+    /// </summary>
+    internal static VariableLayoutReflectionHandle EntryPointReflection_GetParameterByIndex(
+        nint entryPointReflection,
+        uint index)
+    {
+        var handle = SlangNativeInterop.EntryPointReflection_GetParameterByIndex(entryPointReflection, index);
+        return new VariableLayoutReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets entry point function with strongly-typed handle.
+    /// </summary>
+    internal static FunctionReflectionHandle EntryPointReflection_GetFunction(nint entryPointReflection)
+    {
+        var handle = SlangNativeInterop.EntryPointReflection_GetFunction(entryPointReflection);
+        return new FunctionReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets entry point var layout with strongly-typed handle.
+    /// </summary>
+    internal static VariableLayoutReflectionHandle EntryPointReflection_GetVarLayout(nint entryPointReflection)
+    {
+        var handle = SlangNativeInterop.EntryPointReflection_GetVarLayout(entryPointReflection);
+        return new VariableLayoutReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets entry point type layout with strongly-typed handle.
+    /// </summary>
+    internal static TypeLayoutReflectionHandle EntryPointReflection_GetTypeLayout(nint entryPointReflection)
+    {
+        var handle = SlangNativeInterop.EntryPointReflection_GetTypeLayout(entryPointReflection);
+        return new TypeLayoutReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets entry point result var layout with strongly-typed handle.
+    /// </summary>
+    internal static VariableLayoutReflectionHandle EntryPointReflection_GetResultVarLayout(nint entryPointReflection)
+    {
+        var handle = SlangNativeInterop.EntryPointReflection_GetResultVarLayout(entryPointReflection);
+        return new VariableLayoutReflectionHandle(handle);
+    }
+
+    #endregion
+
+    #region GenericReflection API
+
+    /// <summary>
+    /// Gets generic type parameter with strongly-typed handle.
+    /// </summary>
+    internal static VariableReflectionHandle GenericReflection_GetTypeParameter(
+        nint genRefReflection,
+        uint index)
+    {
+        var handle = SlangNativeInterop.GenericReflection_GetTypeParameter(genRefReflection, index);
+        return new VariableReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets generic value parameter with strongly-typed handle.
+    /// </summary>
+    internal static VariableReflectionHandle GenericReflection_GetValueParameter(
+        nint genRefReflection,
+        uint index)
+    {
+        var handle = SlangNativeInterop.GenericReflection_GetValueParameter(genRefReflection, index);
+        return new VariableReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets type parameter constraint type with strongly-typed handle.
+    /// </summary>
+    internal static TypeReflectionHandle GenericReflection_GetTypeParameterConstraintType(
+        nint genRefReflection,
+        nint typeParam,
+        uint index)
+    {
+        var handle = SlangNativeInterop.GenericReflection_GetTypeParameterConstraintType(genRefReflection, typeParam, index);
+        return new TypeReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets outer generic container with strongly-typed handle.
+    /// </summary>
+    internal static GenericReflectionHandle GenericReflection_GetOuterGenericContainer(nint genRefReflection)
+    {
+        var handle = SlangNativeInterop.GenericReflection_GetOuterGenericContainer(genRefReflection);
+        return new GenericReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets concrete type with strongly-typed handle.
+    /// </summary>
+    internal static TypeReflectionHandle GenericReflection_GetConcreteType(
+        nint genRefReflection,
+        nint typeParam)
+    {
+        var handle = SlangNativeInterop.GenericReflection_GetConcreteType(genRefReflection, typeParam);
+        return new TypeReflectionHandle(handle);
+    }
+
+    /// <summary>
+    /// Applies specializations with strongly-typed handle.
+    /// </summary>
+    internal static GenericReflectionHandle GenericReflection_ApplySpecializations(
+        nint genRefReflection,
+        nint genRef)
+    {
+        var handle = SlangNativeInterop.GenericReflection_ApplySpecializations(genRefReflection, genRef);
+        return new GenericReflectionHandle(handle);
+    }
+
+    #endregion
+
+    #region TypeParameterReflection API
+
+    /// <summary>
+    /// Gets constraint by index with strongly-typed handle.
+    /// </summary>
+    internal static TypeReflectionHandle TypeParameterReflection_GetConstraintByIndex(
+        nint typeParameterReflection,
+        int index)
+    {
+        var handle = SlangNativeInterop.TypeParameterReflection_GetConstraintByIndex(typeParameterReflection, index);
+        return new TypeReflectionHandle(handle);
+    }
+
+    #endregion
+
+    #region Attribute API
+
+    /// <summary>
+    /// Gets argument type with strongly-typed handle.
+    /// </summary>
+    internal static TypeReflectionHandle Attribute_GetArgumentType(
+        nint attributeReflection,
+        uint index)
+    {
+        var handle = SlangNativeInterop.Attribute_GetArgumentType(attributeReflection, index);
+        return new TypeReflectionHandle(handle);
+    }
+
+    #endregion
 }

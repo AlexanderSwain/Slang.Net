@@ -14,7 +14,6 @@ namespace Slang.Sdk.Binding
         }
 
         internal T Call<T>(Func<T> function)
-            where T : SlangHandle, new()
         {
             ObjectDisposedException.ThrowIf(Handle.IsInvalid, this);
 
@@ -24,7 +23,6 @@ namespace Slang.Sdk.Binding
                 throw new SlangException(SlangResult.Fail, $"Failed to unwrap array: {GetLastError() ?? "<No error was returned from Slang>"}");
 
             return resultHandle;
-
         }
     }
 }

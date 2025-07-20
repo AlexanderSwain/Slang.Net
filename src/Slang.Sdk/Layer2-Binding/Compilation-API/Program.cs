@@ -1,5 +1,5 @@
 ﻿using Slang.Sdk.Interop;
-using static Slang.Sdk.Interop.SlangNativeInterop;
+using static Slang.Sdk.Interop.StrongTypeInterop;
 using static Slang.Sdk.Interop.Utilities;
 
 namespace Slang.Sdk.Binding;
@@ -11,9 +11,8 @@ internal sealed unsafe class Program
     internal Program(Module parent)
     {
         Parent = parent;
-        Handle = new ProgramHandle(
-            Program_Create(Parent.Handle)
-        );
+        // Using the strongly-typed interop that returns ProgramHandle directly
+        Handle = Program_Create(Parent.Handle);
 
         if (Handle.IsInvalid)
             throw new SlangException(SlangResult.Fail, $"Failed to create Slang program: {GetLastError() ?? "<No error was returned from Slang>"}");
@@ -30,7 +29,7 @@ internal sealed unsafe class Program
         //var entryPoint = Parent.Parent.EntryPoints.ElementAt(entryPointIndex);
         var target = Parent.Parent.Targets.ElementAt((int)targetIndex);
         char* compiledSource = null;
-        SlangResult compileResult = CompileProgram(Handle, entryPointIndex, targetIndex, &compiledSource);
+        SlangResult compileResult = SlangNativeInterop.CompileProgram(Handle, entryPointIndex, targetIndex, &compiledSource);
         string? diagnostics = GetLastError();
 
         return new CompilationResult(new string(compiledSource), target, null/*EntryPoint is not yet implemented*/, compileResult, diagnostics);
@@ -40,11 +39,10 @@ internal sealed unsafe class Program
     {
         ObjectDisposedException.ThrowIf(Handle.IsInvalid, this);
 
-        ShaderReflectionHandle resultHandle = new ShaderReflectionHandle(
-            GetProgramReflection(Handle, targetIndex)
-        );
+        // Using the strongly-typed interop that returns ShaderReflectionHandle directly
+        ShaderReflectionHandle resultHandle = GetProgramReflection(Handle, targetIndex);
 
-        if (Handle.IsInvalid)
+        if (resultHandle.IsInvalid)
             throw new SlangException(SlangResult.Fail, $"Failed to get shader reflection for target index {targetIndex}: {GetLastError() ?? "<No error was returned from Slang>"}");
 
         return new ShaderReflection(this, resultHandle);
