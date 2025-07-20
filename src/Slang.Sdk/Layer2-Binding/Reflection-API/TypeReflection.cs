@@ -1,9 +1,11 @@
 ﻿using Slang.Sdk.Interop;
 using static Slang.Sdk.Interop.StrongTypeInterop;
+using static Slang.Sdk.Interop.SlangNativeInterop;
+using static Slang.Sdk.Interop.StringMarshaling;
 
 namespace Slang.Sdk.Binding
 {
-    internal class TypeReflection : Reflection
+    internal unsafe class TypeReflection : Reflection
     {
         internal override Reflection? Parent { get; }
         internal override TypeReflectionHandle Handle { get; }
@@ -16,27 +18,105 @@ namespace Slang.Sdk.Binding
 
         internal TypeKind GetKind()
         {
-            throw new NotImplementedException();
+            return (TypeKind)Call(() => SlangNativeInterop.TypeReflection_GetKind(Handle));
         }
 
         internal uint GetFieldCount()
         {
-            throw new NotImplementedException();
+            return Call(() => SlangNativeInterop.TypeReflection_GetFieldCount(Handle));
         }
 
         internal VariableReflection GetFieldByIndex(uint index)
         {
-            return new VariableReflection(this, Call(() => TypeReflection_GetFieldByIndex(Handle, index)));
+            return new VariableReflection(this, Call(() => StrongTypeInterop.TypeReflection_GetFieldByIndex(Handle, index)));
         }
 
         internal bool IsArray()
         {
-            throw new NotImplementedException();
+            return Call(() => SlangNativeInterop.TypeReflection_IsArray(Handle));
         }
 
         internal TypeReflection UnwrapArray()
         {
-            return new TypeReflection(this, Call(() => TypeReflection_UnwrapArray(Handle)));
+            return new TypeReflection(this, Call(() => StrongTypeInterop.TypeReflection_UnwrapArray(Handle)));
+        }
+
+        internal nuint GetElementCount()
+        {
+            return Call(() => SlangNativeInterop.TypeReflection_GetElementCount(Handle));
+        }
+
+        internal TypeReflection GetElementType()
+        {
+            return new TypeReflection(this, Call(() => StrongTypeInterop.TypeReflection_GetElementType(Handle)));
+        }
+
+        internal uint GetRowCount()
+        {
+            return Call(() => SlangNativeInterop.TypeReflection_GetRowCount(Handle));
+        }
+
+        internal uint GetColumnCount()
+        {
+            return Call(() => SlangNativeInterop.TypeReflection_GetColumnCount(Handle));
+        }
+
+        internal ScalarType GetScalarType()
+        {
+            return (ScalarType)Call(() => SlangNativeInterop.TypeReflection_GetScalarType(Handle));
+        }
+
+        internal TypeReflection GetResourceResultType()
+        {
+            return new TypeReflection(this, Call(() => StrongTypeInterop.TypeReflection_GetResourceResultType(Handle)));
+        }
+
+        internal int GetResourceShape()
+        {
+            return Call(() => SlangNativeInterop.TypeReflection_GetResourceShape(Handle));
+        }
+
+        internal int GetResourceAccess()
+        {
+            return Call(() => SlangNativeInterop.TypeReflection_GetResourceAccess(Handle));
+        }
+
+        internal string? GetName()
+        {
+            return Call(() => FromUtf8(SlangNativeInterop.TypeReflection_GetName(Handle)));
+        }
+
+        internal uint GetUserAttributeCount()
+        {
+            return Call(() => SlangNativeInterop.TypeReflection_GetUserAttributeCount(Handle));
+        }
+
+        internal AttributeReflection GetUserAttributeByIndex(uint index)
+        {
+            return new AttributeReflection(this, Call(() => StrongTypeInterop.TypeReflection_GetUserAttributeByIndex(Handle, index)));
+        }
+
+        internal AttributeReflection FindAttributeByName(string name)
+        {
+            var namePtr = ToUtf8(name);
+            try
+            {
+                return new AttributeReflection(this, Call(() => StrongTypeInterop.TypeReflection_FindAttributeByName(Handle, namePtr)));
+            }
+            finally
+            {
+                FreeUtf8(namePtr);
+            }
+        }
+
+        internal TypeReflection ApplySpecializations(GenericReflection genRef)
+        {
+            return new TypeReflection(this, Call(() => StrongTypeInterop.TypeReflection_ApplySpecializations(Handle, genRef.Handle)));
+        }
+
+        internal GenericReflection GetGenericContainer()
+        {
+            return new GenericReflection(this, Call(() => StrongTypeInterop.TypeReflection_GetGenericContainer(Handle)));
         }
     }
 }
