@@ -73,25 +73,142 @@ namespace SlangNative
         delete moduleCLI;
     }
 
-    extern "C" SLANGNATIVE_API void* Module_FindEntryPoint(void* parentModule, const char* entryPointName)
+    extern "C" SLANGNATIVE_API unsigned int Module_GetEntryPointCount(void* parentModule)
     {
-        try 
+        if (!parentModule)
+        {
+            g_lastError = "Argument Null: parentModule";
+            return -1;
+        }
+
+        try
+        {
+            return ((ModuleCLI*)parentModule)->getEntryPointCount();
+        }
+        catch (const std::exception& e)
+        {
+            g_lastError = e.what();
+            return -1;
+        }
+    }
+
+    extern "C" SLANGNATIVE_API void* Module_GetEntryPointByIndex(void* parentModule, unsigned int index)
+    {
+        if (!parentModule)
+        {
+            g_lastError = "Argument Null: parentModule";
+            return nullptr;
+        }
+
+        try
+        {
+            return ((ModuleCLI*)parentModule)->getEntryPointByIndex(index);
+        }
+        catch (const std::exception& e)
+        {
+            g_lastError = e.what();
+            return nullptr;
+		}
+	}
+
+    extern "C" SLANGNATIVE_API void* Module_FindEntryPointByName(void* parentModule, const char* entryPointName)
+    {
+        if (!parentModule)
+        {
+			g_lastError = "Argument Null: parentModule";
+            return nullptr;
+        }
+
+        if (!entryPointName)
+        {
+            g_lastError = "Argument Null: entryPointName";
+            return nullptr;
+        }
+
+        try
+        {
+            return ((ModuleCLI*)parentModule)->findEntryPointByName(entryPointName);
+        }
+        catch (const std::exception& e)
+        {
+            g_lastError = e.what();
+            return nullptr;
+		}
+	}
+
+	// EntryPoint API
+    extern "C" SLANGNATIVE_API void* EntryPoint_Create(void* parentModule, unsigned int entryPointIndex)
+    {
+        if (!parentModule)
+        {
+            g_lastError = "Argument Null: parentModule";
+            return nullptr;
+        }
+        try
+        {
+            return new EntryPointCLI((ModuleCLI*)parentModule, entryPointIndex);
+        }
+        catch (const std::exception& e)
+        {
+            g_lastError = e.what();
+            return nullptr;
+        }
+	}
+    extern "C" SLANGNATIVE_API void* EntryPoint_CreateByName(void* parentModule, const char* entryPointName)
+    {
+        if (!parentModule)
+        {
+            g_lastError = "Argument Null: parentModule";
+            return nullptr;
+        }
+        if (!entryPointName)
+        {
+            g_lastError = "Argument Null: entryPointName";
+            return nullptr;
+        }
+        try
         {
             return new EntryPointCLI((ModuleCLI*)parentModule, entryPointName);
         }
         catch (const std::exception& e)
         {
             g_lastError = e.what();
-			return nullptr;
+            return nullptr;
+        }
+	}
+    extern "C" SLANGNATIVE_API void EntryPoint_Release(void* entryPoint)
+    {
+        if (!entryPoint) return;
+        Native::EntryPointCLI* entryPointCLI = (Native::EntryPointCLI*)entryPoint;
+        delete entryPointCLI;
+	}
+    extern "C" SLANGNATIVE_API int EntryPoint_GetIndex(void* entryPoint)
+    {
+        if (!entryPoint) return -1;
+
+        try
+        {
+            return ((EntryPointCLI*)entryPoint)->getIndex();
+        }
+        catch (const std::exception& e)
+        {
+            g_lastError = e.what();
+            return -1;
         }
     }
-
-    extern "C" SLANGNATIVE_API void Module_GetParameterInfo(void* parentEntryPoint, void** outParameterInfo, int* outParameterCount)
+    extern "C" SLANGNATIVE_API const char* EntryPoint_GetName(void* entryPoint)
     {
-        EntryPointCLI* entryPoint = (EntryPointCLI*)parentEntryPoint;
-		*outParameterInfo = entryPoint->getParameterInfoArray();
-        *outParameterCount = entryPoint->getParameterCount();
-    }
+        if (!entryPoint) return nullptr;
+        try
+        {
+            return ((EntryPointCLI*)entryPoint)->getName();
+        }
+        catch (const std::exception& e)
+        {
+            g_lastError = e.what();
+            return nullptr;
+		}
+	}
 
     // Program API
     extern "C" SLANGNATIVE_API void* Program_Create(void* parentModule)

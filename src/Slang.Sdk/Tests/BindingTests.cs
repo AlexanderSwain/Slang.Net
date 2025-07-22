@@ -21,7 +21,7 @@ namespace Slang.Sdk.Tests
                 [new Target(Target.CompileTarget.Hlsl, "cs_5_0")],
                 ["C:\\"]);
 
-                Console.WriteLine($"[Pass]: Successfully Created Session: {session.Handle}");
+                Console.WriteLine($"[Pass]: Successfully Created Session: {session}");
             }
             catch (SlangException e)
             {

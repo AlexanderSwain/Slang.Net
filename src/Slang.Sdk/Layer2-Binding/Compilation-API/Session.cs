@@ -7,9 +7,9 @@ namespace Slang.Sdk.Binding;
 /// <summary>
 /// Represents a Slang compilation session that manages modules and compilation.
 /// </summary>
-internal unsafe sealed class Session
+internal unsafe sealed class Session : CompilationBinding
 {
-    internal SessionHandle Handle { get; }
+    internal override SessionHandle Handle { get; }
 
     internal IReadOnlyCollection<Target> Targets { get; }
 

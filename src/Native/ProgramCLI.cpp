@@ -179,7 +179,13 @@ slang::IComponentType** Native::ProgramCLI::getProgramComponents()
     slang::IComponentType** programComponents = new slang::IComponentType*[componentCount];
 
 	// Fill the program components with entry points
-    slang::IEntryPoint** entryPoints = m_parent->getEntryPoints();
+    slang::IEntryPoint** entryPoints = new slang::IEntryPoint*[entryPointCount];
+
+    for (unsigned int i = 0; i < entryPointCount; i++)
+    {
+        entryPoints[i] = m_parent->getEntryPointByIndex(i)->getNative();
+	}
+
     for (unsigned int i = 0; i < entryPointCount; i++)
     {
         if (i < componentCount) // Ensure we do not write out of bounds

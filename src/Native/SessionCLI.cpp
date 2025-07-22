@@ -90,7 +90,7 @@ Native::SessionCLI::SessionCLI(
     }
 
     Slang::ComPtr<slang::ISession> session;
-    SlangResult createResult = GetGlobalSession()->createSession(sessionDesc, session.writeRef());session->
+    SlangResult createResult = GetGlobalSession()->createSession(sessionDesc, session.writeRef());
     m_session = session;
     
     if (SLANG_FAILED(createResult))

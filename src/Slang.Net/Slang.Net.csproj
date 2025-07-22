@@ -5,18 +5,18 @@
 		<Nullable>enable</Nullable>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 		<Platforms>All</Platforms>
-		<PackageId>Slang.Sdk</PackageId>
-		<PackageVersion>0.0.3</PackageVersion>
-		<Title>Slang.Net - .NET Bindings for the Slang Shader Language</Title>
+		<Title>Slang.Sdk - .Net binding for the Slang Compilation Api and Reflection Api</Title>
 		<Description>A .NET class library providing bindings for the Slang shader language compiler, supporting cross-platform shader development.</Description>
 		<Authors>Aqqorn</Authors>
 		<Copyright>Copyright (c) 2025 Aqqorn</Copyright>
 		<PackageLicenseExpression>Apache-2.0 WITH LLVM-exception</PackageLicenseExpression>
+		<PackageId>Slang.Sdk</PackageId>
+		<PackageVersion>0.0.3</PackageVersion>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<RepositoryType>git</RepositoryType>
-		<PackageTags>slang;slangc;slang.net;shader;shading;language;graphics;hlsl;glsl;vulkan;cross-platform</PackageTags>
+		<PackageTags>slang;slangc;slang.net;slang.sdk;shader;shading;language;graphics;hlsl;glsl;vulkan;cross-platform</PackageTags>
 		<PackageIcon>icon.png</PackageIcon>
 		<RepositoryUrl>https://github.com/AlexanderSwain/Slang.Net.git</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
 		<PackageOutputPath>$(ProjectDir)Builds\$(Configuration)\</PackageOutputPath>
 		<OutputPath>$(ProjectDir)bin\$(Configuration)\</OutputPath>
 	</PropertyGroup>

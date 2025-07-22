@@ -1,15 +1,16 @@
-﻿using Slang;
+﻿using Slang.Sdk;
+using Slang.Sdk.Interop;
 
 public class Program
 {
     public static void Main(string[] args)
     {
         // Create a session with compiler options and search paths
-        SessionBuilder builder = new SessionBuilder()
-            .AddCompilerOption(CompilerOptionName.WarningsAsErrors, new CompilerOptionValue(CompilerOptionValueKind.Int, 0, 0, "all", null))
-            .AddCompilerOption(CompilerOptionName.Obfuscate, new CompilerOptionValue(CompilerOptionValueKind.Int, 1, 0, null, null))
+        Session.Builder builder = new Session.Builder()
+            .AddCompilerOption(CompilerOption.Name.WarningsAsErrors, new CompilerOption.Value(CompilerOption.Value.Kind.Int, 0, 0, "all", null))
+            .AddCompilerOption(CompilerOption.Name.Obfuscate, new CompilerOption.Value(CompilerOption.Value.Kind.Int, 1, 0, null, null))
             .AddPreprocessorMacro("LIGHTING_SCALER", "12")
-            .AddShaderModel(CompileTarget.SLANG_HLSL, "cs_5_0")
+            .AddTarget(Targets.Hlsl.cs_5_0)
             .AddSearchPath($@"{AppDomain.CurrentDomain.BaseDirectory}");
 
         // Create the session
@@ -19,7 +20,7 @@ public class Program
         Module module = session.LoadModule("AverageColor.slang");
 
         // Access the shader program from the module
-        ShaderReflection program = module.Program.GetReflection(0);
+        ShaderReflection program = module.Program.GetReflection(Targets.Hlsl.cs_5_0);
 
         // Print the number of entry points in the shader program
         var entryPoint = program.EntryPoints.Where(x => x.Name == "CS").First();

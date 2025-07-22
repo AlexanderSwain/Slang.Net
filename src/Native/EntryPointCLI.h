@@ -20,29 +20,23 @@ namespace Native
 	{
 	public:
 		// Constructor with parameters (example)
+		EntryPointCLI(ModuleCLI* parent, unsigned index);
 		EntryPointCLI(ModuleCLI* parent, const char* entryPointName);
 
 		// Destructor
 		~EntryPointCLI();
 
-		ParameterInfoCLI* getParameterInfoArray();
-		unsigned int getParameterCount();
-
 		// Properties
-		slang::IModule* getParent() const;
-		const char* getName();
-		int getIndex() const;
-		SlangStage getStage() const;
+		ModuleCLI* getParent();
 		slang::IEntryPoint* getNative();
+		int getIndex();
+		const char* getName();
 
 	private:
-		slang::IEntryPoint* m_entryPoint = nullptr;
-		slang::IModule* m_parent = nullptr;
-		std::string m_name;
+		ModuleCLI* m_parent = nullptr;
+		slang::IEntryPoint* m_native = nullptr;
 		int m_index = -1;
-		SlangStage m_stage = SLANG_STAGE_NONE;
-		ParameterInfoCLI* m_parameterInfoArray;
-		unsigned int m_parameterCount = 0;
+		const char* m_name = nullptr;
 	};
 }
 

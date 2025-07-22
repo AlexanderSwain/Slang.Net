@@ -30,8 +30,6 @@ Native::ModuleCLI::ModuleCLI(SessionCLI* parent, const char* moduleName, const c
     }
     
     m_slangModule = slangModule;
-
-    setEntryPoints();
 }
 
 Native::ModuleCLI::~ModuleCLI()
@@ -39,17 +37,31 @@ Native::ModuleCLI::~ModuleCLI()
     // Does nothing, kept for consistency and in case a future update requires something to be disposed (such as children like EntryPoints).
 }
 
-void Native::ModuleCLI::setEntryPoints()
+unsigned int Native::ModuleCLI::getEntryPointCount()
 {
-    unsigned int entryPointCount = m_slangModule->getDefinedEntryPointCount();
-	m_entryPointCount = entryPointCount;
+    return m_slangModule->getDefinedEntryPointCount();
+}
 
-	m_entryPoints = new slang::IEntryPoint*[m_entryPointCount];
-
-    for (unsigned int i = 0; i < entryPointCount; i++)
+Native::EntryPointCLI* Native::ModuleCLI::getEntryPointByIndex(unsigned index)
+{
+    if (!m_entryPoints)
     {
-        m_slangModule->getDefinedEntryPoint(i, &m_entryPoints[i]);
-	}
+        slang::IEntryPoint** entryPoints = new slang::IEntryPoint*[m_entryPointCount];
+
+        for (unsigned int i = 0; i < m_entryPointCount; i++)
+        {
+            m_entryPoints[i] = new Native::EntryPointCLI(this, i);
+        }
+    }
+
+    return m_entryPoints[index];
+}
+
+Native::EntryPointCLI* Native::ModuleCLI::findEntryPointByName(const char* name)
+{
+    // Memory leak here, but this method is unused anyways.
+    // Decided to keep it for consistency with slang api.
+	return new Native::EntryPointCLI(this, name);
 }
 
 slang::ISession* Native::ModuleCLI::getParent()
@@ -60,14 +72,4 @@ slang::ISession* Native::ModuleCLI::getParent()
 slang::IModule* Native::ModuleCLI::getNative()
 {
     return m_slangModule;
-}
-
-slang::IEntryPoint** Native::ModuleCLI::getEntryPoints()
-{
-    return m_entryPoints;
-}
-
-unsigned int Native::ModuleCLI::getEntryPointCount()
-{
-    return m_entryPointCount;
 }

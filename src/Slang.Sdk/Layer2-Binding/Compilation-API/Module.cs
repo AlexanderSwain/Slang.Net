@@ -4,10 +4,10 @@ using static Slang.Sdk.Interop.Utilities;
 
 namespace Slang.Sdk.Binding;
 
-internal unsafe sealed class Module
+internal unsafe sealed class Module : CompilationBinding
 {
     internal Session Parent { get; }
-    internal Interop.ModuleHandle Handle { get; }
+    internal override Interop.ModuleHandle Handle { get; }
 
     public Module(Session parent, string moduleName, string modulePath, string shaderSource)
     {

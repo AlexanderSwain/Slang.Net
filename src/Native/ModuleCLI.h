@@ -3,6 +3,8 @@
 #include "slang-com-ptr.h"
 #include "slang-com-helper.h"
 #include "SessionCLI.h"
+#include "EntryPointCLI.h"
+#include <string>
 
 #ifdef SLANGNATIVE_EXPORTS
 #define SLANGNATIVE_API __declspec(dllexport)
@@ -23,14 +25,15 @@ namespace Native
 
 		slang::ISession* getParent();
 		slang::IModule* getNative();
-		slang::IEntryPoint** getEntryPoints();
 		unsigned int getEntryPointCount();
+		Native::EntryPointCLI* getEntryPointByIndex(unsigned index);
+		Native::EntryPointCLI* findEntryPointByName(const char* name);
 
 	private:
-		void setEntryPoints();
+
 		slang::ISession* m_parent;
 		slang::IModule* m_slangModule;
-		slang::IEntryPoint** m_entryPoints;
+		Native::EntryPointCLI** m_entryPoints;
 		unsigned int m_entryPointCount;
 	};
 }

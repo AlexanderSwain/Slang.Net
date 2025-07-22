@@ -1,4 +1,5 @@
-﻿using Slang.Sdk.Interop;
+﻿using Slang.Sdk.Binding;
+using Slang.Sdk.Interop;
 
 namespace Slang.Sdk
 {
@@ -26,6 +27,11 @@ namespace Slang.Sdk
                 throw new ArgumentException($"Target {target} was not included in Session {session}. Use Session.Builder.AddTarget(target) to include it.", nameof(target));
 
             return _Reflection ??= new ShaderReflection(this, Binding.GetReflection(targetIndex.Value));
+        }
+
+        public CompilationResult Compile(Target target)
+        {
+
         }
         #endregion
     }

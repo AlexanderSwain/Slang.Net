@@ -15,12 +15,53 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>slang;slangc;slang.sdk;shader;shading;language;graphics;hlsl;glsl;vulkan;cross-platform</PackageTags>
+		<PackageIcon>icon.png</PackageIcon>
 		<RepositoryUrl>https://github.com/AlexanderSwain/Slang.Net.git</RepositoryUrl>
 		<PackageOutputPath>$(ProjectDir)Builds\$(Configuration)\</PackageOutputPath>
 		<OutputPath>$(ProjectDir)bin\$(Configuration)\</OutputPath>
 		<OutputType>Exe</OutputType>
 		<Platforms>AnyCPU;x64;ARM64</Platforms>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	</PropertyGroup>
+
+	<!-- Pre-build target to clear NuGet package cache for this specific package -->
+	<Target Name="ClearNuGetPackageCache" BeforeTargets="Build">
+		<Message Text="Clearing NuGet package cache for $(PackageId) v$(PackageVersion)..." Importance="high" />
+		
+		<!-- Get NuGet global packages folder path -->
+		<PropertyGroup>
+			<NuGetGlobalPackagesFolder>$([System.Environment]::GetFolderPath(SpecialFolder.UserProfile))\.nuget\packages</NuGetGlobalPackagesFolder>
+			<PackageCacheFolder>$(NuGetGlobalPackagesFolder)\$(PackageId.ToLowerInvariant())</PackageCacheFolder>
+		</PropertyGroup>
+		
+		<!-- Remove specific package folder if it exists -->
+		<RemoveDir Directories="$(PackageCacheFolder)" Condition="Exists('$(PackageCacheFolder)')" />
+		
+		<!-- Also clear from temp/http-cache for this package -->
+		<PropertyGroup>
+			<NuGetTempFolder>$([System.Environment]::GetEnvironmentVariable('TEMP'))\NuGetScratch</NuGetTempFolder>
+			<NuGetHttpCacheFolder>$([System.Environment]::GetFolderPath(SpecialFolder.LocalApplicationData))\NuGet\v3-cache</NuGetHttpCacheFolder>
+		</PropertyGroup>
+		
+		<ItemGroup>
+			<PackageTempFiles Include="$(NuGetTempFolder)\**\*$(PackageId)*" />
+			<PackageHttpCacheFiles Include="$(NuGetHttpCacheFolder)\**\*$(PackageId)*" />
+		</ItemGroup>
+		
+		<Delete Files="@(PackageTempFiles)" ContinueOnError="true" />
+		<Delete Files="@(PackageHttpCacheFiles)" ContinueOnError="true" />
+		
+		<Message Text="Cleared NuGet cache for $(PackageId) package." Importance="high" />
+	</Target>
+
+	<!-- Include README.md and icon.png in package -->
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="\" />
+		<None Update="icon.png">
+			<PackagePath>\</PackagePath>
+			<Pack>True</Pack>
+		</None>
+	</ItemGroup>
 
 	<!-- Exclude test program from library builds -->
 	<ItemGroup Condition="'$(OutputType)' == 'Library'">
@@ -28,7 +69,7 @@
 	</ItemGroup>
 
 	<!-- Platform-specific native dependencies for x64 -->
-	<ItemGroup Condition="'$(Platform)' == 'x64' Or '$(Platform)' == 'AnyCPU'">
+	<ItemGroup>
 		<Content Include="..\Native\bin\$(Configuration)\x64\gfx.dll" Condition="Exists('..\Native\bin\$(Configuration)\x64\gfx.dll')">
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-x64\native\gfx.dll</PackagePath>
@@ -77,7 +118,7 @@
 	</ItemGroup>
 
 	<!-- Platform-specific native dependencies for ARM64 -->
-	<ItemGroup Condition="'$(Platform)' == 'ARM64' Or '$(Platform)' == 'AnyCPU'">
+	<ItemGroup>
 		<Content Include="..\Native\bin\$(Configuration)\ARM64\gfx.dll" Condition="Exists('..\Native\bin\$(Configuration)\ARM64\gfx.dll')">
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-ARM64\native\gfx.dll</PackagePath>

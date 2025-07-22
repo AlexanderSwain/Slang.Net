@@ -29,8 +29,16 @@ namespace SlangNative
     // Module API
     extern "C" SLANGNATIVE_API void* Module_Create(void* parentSession, const char* moduleName, const char* modulePath, const char* shaderSource);
     extern "C" SLANGNATIVE_API void Module_Release(void* module);
-    extern "C" SLANGNATIVE_API void* Module_FindEntryPoint(void* parentModule, const char* entryPointName);
-    extern "C" SLANGNATIVE_API void Module_GetParameterInfo(void* parentEntryPoint, void** outParameterInfo, int* outParameterCount);
+	extern "C" SLANGNATIVE_API unsigned int Module_GetEntryPointCount(void* parentModule);
+    extern "C" SLANGNATIVE_API void* Module_GetEntryPointByIndex(void* parentModule, unsigned int index);
+	extern "C" SLANGNATIVE_API void* Module_FindEntryPointByName(void* parentModule, const char* entryPointName);
+
+	// EntryPoint API
+	extern "C" SLANGNATIVE_API void* EntryPoint_Create(void* parentModule, unsigned int entryPointIndex);
+    extern "C" SLANGNATIVE_API void* EntryPoint_CreateByName(void* parentModule, const char* entryPointName);
+    extern "C" SLANGNATIVE_API void EntryPoint_Release(void* entryPoint);
+	extern "C" SLANGNATIVE_API int EntryPoint_GetIndex(void* entryPoint);
+	extern "C" SLANGNATIVE_API const char* EntryPoint_GetName(void* entryPoint);
 
     // Program API
     extern "C" SLANGNATIVE_API void* Program_Create(void* parentModule);

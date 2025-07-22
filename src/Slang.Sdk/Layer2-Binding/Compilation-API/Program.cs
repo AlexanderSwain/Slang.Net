@@ -3,10 +3,10 @@ using static Slang.Sdk.Interop.StrongTypeInterop;
 using static Slang.Sdk.Interop.Utilities;
 
 namespace Slang.Sdk.Binding;
-internal sealed unsafe class Program
+internal sealed unsafe class Program : CompilationBinding
 {
     internal Module Parent { get; }
-    internal ProgramHandle Handle { get; }
+    internal override ProgramHandle Handle { get; }
 
     internal Program(Module parent)
     {
