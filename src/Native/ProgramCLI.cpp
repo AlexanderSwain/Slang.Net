@@ -86,7 +86,7 @@ SlangResult Native::ProgramCLI::GetCompiled(unsigned int entryPointIndex, unsign
             entryPointIndex,
             targetIndex,
             targetCode.writeRef(),
-            diagnosticsBlob.writeRef());   
+            diagnosticsBlob.writeRef());
         if (diagnosticsBlob != nullptr)
         {
             std::string diagnosticsText = std::string((const char*)diagnosticsBlob->getBufferPointer());

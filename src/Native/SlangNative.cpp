@@ -34,7 +34,7 @@ namespace SlangNative
     {
         try
         {
-            return new SessionCLI((CompilerOptionCLI*)options, optionsLength, (PreprocessorMacroDescCLI*)macros, macrosLength, (ShaderModelCLI*)models, modelsLength, searchPaths, searchPathsLength);
+            return new SessionCLI((CompilerOptionCLI*)options, optionsLength, (PreprocessorMacroDescCLI*)macros, macrosLength, (TargetCLI*)models, modelsLength, searchPaths, searchPathsLength);
         }
         catch (const std::exception& e)
         {

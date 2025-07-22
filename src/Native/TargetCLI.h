@@ -10,15 +10,15 @@
 
 namespace Native
 {
-	struct SLANGNATIVE_API ShaderModelCLI
+	struct SLANGNATIVE_API TargetCLI
 	{
 	private:
 		CompileTargetCLI _Target;
 		const char* _Profile;
 
 	public:
-		ShaderModelCLI();
-		ShaderModelCLI(CompileTargetCLI target, const char* profile);
+		TargetCLI();
+		TargetCLI(CompileTargetCLI target, const char* profile);
 
 		CompileTargetCLI getTarget();
 

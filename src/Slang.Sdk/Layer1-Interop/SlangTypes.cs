@@ -371,12 +371,12 @@ public struct PreprocessorMacro : IDisposable
     }
 }
 
-public struct ShaderModel : IDisposable
+public struct Target : IDisposable
 {
     public CompileTarget target;
     public IntPtr profile;
 
-    public ShaderModel(CompileTarget target, string profile)
+    internal Target(CompileTarget target, string profile)
     {
         this.target = target;
         this.profile = Marshal.StringToHGlobalAnsi(profile);

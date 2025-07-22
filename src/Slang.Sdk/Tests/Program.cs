@@ -2,7 +2,7 @@ using Slang.Sdk.Examples;
 using Slang.Sdk.Interop;
 using Slang.Sdk.Tests;
 
-namespace Slang.Sdk
+namespace Slang.Sdk.Test
 {
     internal class Program
     {

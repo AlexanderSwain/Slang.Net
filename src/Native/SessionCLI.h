@@ -4,7 +4,7 @@
 #include "slang-com-helper.h"
 #include "CompilerOptionCLI.h"
 #include "PreprocessorMacroDescCLI.h"
-#include "ShaderModelCLI.h"
+#include "TargetCLI.h"
 
 namespace Native
 {
@@ -15,7 +15,7 @@ namespace Native
 		SessionCLI(
 			CompilerOptionCLI* options, int optionsLength,
 			PreprocessorMacroDescCLI* macros, int macrosLength,
-			ShaderModelCLI* models, int modelsLength,
+			TargetCLI* models, int modelsLength,
 			char** searchPaths, int searchPathsLength);
 
 		// Destructor

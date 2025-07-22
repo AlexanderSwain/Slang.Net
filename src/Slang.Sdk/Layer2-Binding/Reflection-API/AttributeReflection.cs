@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Slang.Sdk.Interop;
-using static Slang.Sdk.Interop.StrongTypeInterop;
-using static Slang.Sdk.Interop.SlangNativeInterop;
-using static Slang.Sdk.Interop.StringMarshaling;
+﻿using Slang.Sdk.Interop;
 
 namespace Slang.Sdk.Binding
 {

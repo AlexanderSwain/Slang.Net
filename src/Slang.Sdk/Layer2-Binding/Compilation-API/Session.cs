@@ -11,20 +11,20 @@ internal unsafe sealed class Session
 {
     internal SessionHandle Handle { get; }
 
-    internal IReadOnlyCollection<ShaderModel> Targets { get; }
+    internal IReadOnlyCollection<Target> Targets { get; }
 
     /// <summary>
     /// Creates a new Slang session with the specified configuration.
     /// </summary>
     /// <param name="configuration">The session configuration.</param>
     /// <exception cref="SlangException">Thrown if session creation fails.</exception>
-    internal Session(CompilerOption[] options, PreprocessorMacro[] macros, ShaderModel[] models, string[] searchPaths)
+    internal Session(CompilerOption[] options, PreprocessorMacro[] macros, Target[] models, string[] searchPaths)
     {
         Targets = models;
 
         fixed (CompilerOption* optionsPtr = options)
         fixed (PreprocessorMacro* macrosPtr = macros)
-        fixed (ShaderModel* modelsPtr = models)
+        fixed (Target* modelsPtr = models)
         {
             Handle = Session_Create(
                 optionsPtr, options.Length,

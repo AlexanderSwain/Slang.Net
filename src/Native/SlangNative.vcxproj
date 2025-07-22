@@ -332,10 +332,10 @@
     <ClCompile Include="SessionCLI.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ShaderModelCLI.h" />
+    <ClInclude Include="TargetCLI.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ShaderModelCLI.cpp" />
+    <ClCompile Include="TargetCLI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SlangNative.h" />

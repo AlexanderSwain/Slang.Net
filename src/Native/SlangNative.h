@@ -1,7 +1,7 @@
 #pragma once
 #include "CompilerOptionCLI.h"
 #include "PreprocessorMacroDescCLI.h"
-#include "ShaderModelCLI.h"
+#include "TargetCLI.h"
 #include "ParameterInfoCLI.h"
 #include "TypeDef.h"
 

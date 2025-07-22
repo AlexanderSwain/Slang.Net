@@ -22,10 +22,6 @@
 		<Platforms>AnyCPU;x64;ARM64</Platforms>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<Folder Include="Layer3-Pretty\" />
-	</ItemGroup>
-
 	<!-- Exclude test program from library builds -->
 	<ItemGroup Condition="'$(OutputType)' == 'Library'">
 		<Compile Remove="Program.cs" />

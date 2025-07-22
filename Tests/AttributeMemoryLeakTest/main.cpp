@@ -94,8 +94,8 @@ public:
             const_cast<char*>("../")
         };
 
-        Native::ShaderModelCLI models[] = {
-            Native::ShaderModelCLI(Native::CompileTargetCLI::SLANG_HLSL, "cs_5_0"),
+        Native::TargetCLI models[] = {
+            Native::TargetCLI(Native::CompileTargetCLI::SLANG_HLSL, "cs_5_0"),
 		};
         
         session = CreateSession(

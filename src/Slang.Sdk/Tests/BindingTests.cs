@@ -18,7 +18,7 @@ namespace Slang.Sdk.Tests
                 Session session = new Session(
                 [new CompilerOption(CompilerOption.Name.WarningsAsErrors, new CompilerOption.Value(CompilerOption.Value.Kind.String, 0, 0, "All", null))],
                 [new PreprocessorMacro("LIGHTING_SCALER", "1.0")],
-                [new ShaderModel(ShaderModel.CompileTarget.Hlsl, "cs_5_0")],
+                [new Target(Target.CompileTarget.Hlsl, "cs_5_0")],
                 ["C:\\"]);
 
                 Console.WriteLine($"[Pass]: Successfully Created Session: {session.Handle}");

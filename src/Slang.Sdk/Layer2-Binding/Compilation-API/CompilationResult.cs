@@ -15,7 +15,7 @@ public class CompilationResult
     /// <summary>
     /// The target compilation format.
     /// </summary>
-    public ShaderModel Target { get; }
+    public Target Target { get; }
 
     /// <summary>
     /// The entry point that was compiled.
@@ -32,7 +32,7 @@ public class CompilationResult
     /// </summary>
     public string? Diagnostics { get; }
 
-    public CompilationResult(string source, ShaderModel target, string entryPoint, SlangResult result, string? diagnostics = null)
+    public CompilationResult(string source, Target target, string entryPoint, SlangResult result, string? diagnostics = null)
     {
         Source = source;
         Target = target;

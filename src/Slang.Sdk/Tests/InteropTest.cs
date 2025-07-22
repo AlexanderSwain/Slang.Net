@@ -1,7 +1,7 @@
 using Slang.Sdk.Interop;
 using System.Runtime.InteropServices;
 
-namespace Slang.Sdk.Examples;
+namespace Slang.Sdk.Test;
 
 /// <summary>
 /// Example demonstrating basic usage of the Slang.Sdk interop layer.
@@ -48,7 +48,7 @@ public static class InteropTest
 
             PreprocessorMacro preprocessorMacros = new PreprocessorMacro("LIGHTING_VALUE", "2.5");
 
-            ShaderModel shaderModels = new ShaderModel(ShaderModel.CompileTarget.Hlsl, "cs_5_0");
+            Target shaderModels = new Target(Target.CompileTarget.Hlsl, "cs_5_0");
 
             var sessionHandle = SlangNativeInterop.Session_Create(
                 &compilerOptions, 1,
@@ -90,7 +90,7 @@ public static class InteropTest
 
             PreprocessorMacro preprocessorMacros = new PreprocessorMacro("LIGHTING_VALUE", "2.5");
 
-            ShaderModel shaderModels = new ShaderModel(ShaderModel.CompileTarget.Hlsl, "cs_5_0");
+            Target shaderModels = new Target(Target.CompileTarget.Hlsl, "cs_5_0");
 
             // Test the new strongly-typed interop
             var sessionHandle = StrongTypeInterop.Session_Create(

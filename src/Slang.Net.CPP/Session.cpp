@@ -51,11 +51,11 @@ namespace Slang::Cpp
         }
             
         int modelsLength = models->Length;
-        Native::ShaderModelCLI* nativeModels = new Native::ShaderModelCLI[modelsLength];
+        Native::TargetCLI* nativeModels = new Native::TargetCLI[modelsLength];
         for (int i = 0; i < modelsLength; ++i)        
         {
 			const char* profile = Slang::Cpp::StringUtilities::FromString(models[i]->getProfile());
-            nativeModels[i] = Native::ShaderModelCLI((Native::CompileTargetCLI)models[i]->getTarget(), profile); // or marshal as needed
+            nativeModels[i] = Native::TargetCLI((Native::CompileTargetCLI)models[i]->getTarget(), profile); // or marshal as needed
         }
             
         int searchPathsLength = searchPaths->Length;

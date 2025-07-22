@@ -9,7 +9,7 @@ slang::IGlobalSession* Native::SessionCLI::s_context = nullptr;
 Native::SessionCLI::SessionCLI(
     CompilerOptionCLI* options, int optionsLength,
     PreprocessorMacroDescCLI* macros, int macrosLength, 
-    ShaderModelCLI* models, int modelsLength,
+    TargetCLI* models, int modelsLength,
     char** searchPaths, int searchPathsLength)
 {
     slang::SessionDesc sessionDesc = {};
@@ -20,7 +20,7 @@ Native::SessionCLI::SessionCLI(
 
     for (int i = 0; i < modelsLength; i++)
     {
-        ShaderModelCLI model = models[i];
+        TargetCLI model = models[i];
 
         slang::TargetDesc targetDesc = {};
         targetDesc.format = (SlangCompileTarget)model.getTarget();
@@ -90,7 +90,7 @@ Native::SessionCLI::SessionCLI(
     }
 
     Slang::ComPtr<slang::ISession> session;
-    SlangResult createResult = GetGlobalSession()->createSession(sessionDesc, session.writeRef());
+    SlangResult createResult = GetGlobalSession()->createSession(sessionDesc, session.writeRef());session->
     m_session = session;
     
     if (SLANG_FAILED(createResult))
