@@ -16,8 +16,8 @@ namespace Slang.Sdk
         #endregion
 
         #region Pretty
-        Reflection? _Reflection;
-        Reflection GetReflection(Target target)
+        ShaderReflection? _Reflection;
+        public ShaderReflection GetReflection(Target target)
         {
             var session = Parent.Parent;
             uint? targetIndex = session.Targets.IndexOf(target);
@@ -25,7 +25,7 @@ namespace Slang.Sdk
             if (targetIndex is null)
                 throw new ArgumentException($"Target {target} was not included in Session {session}. Use Session.Builder.AddTarget(target) to include it.", nameof(target));
 
-            _Reflection ??= new Reflection(this, Binding.GetReflection(targetIndex.Value));
+            return _Reflection ??= new ShaderReflection(this, Binding.GetReflection(targetIndex.Value));
         }
         #endregion
     }

@@ -1,4 +1,3 @@
-using Slang.Sdk.Examples;
 using Slang.Sdk.Interop;
 using Slang.Sdk.Tests;
 

@@ -18,5 +18,12 @@ namespace Slang.Sdk
             Binding = binding;
         }
         #endregion
+
+        #region Pretty
+
+        public int ID => Binding.GetID();
+        public string? Name => Binding.GetName();
+
+        #endregion
     }
 }
