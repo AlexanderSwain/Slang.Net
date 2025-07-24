@@ -82,6 +82,24 @@ public sealed class ModuleHandle : SlangHandle
 }
 
 /// <summary>
+/// Safe handle for Slang entry point objects.
+/// </summary>
+public sealed class EntryPointHandle : SlangHandle
+{
+    public EntryPointHandle() { }
+
+    public EntryPointHandle(nint handle) : base(handle) { }
+
+    protected override bool ReleaseHandle()
+    {
+        // Currently does nothing since it only contain fields that are managed by Slang
+        // In a future update, maybe cascade delete the children
+        EntryPoint_Release(Handle);
+        return true;
+    }
+}
+
+/// <summary>
 /// Safe handle for Slang program objects.
 /// </summary>
 public sealed class ProgramHandle : SlangHandle

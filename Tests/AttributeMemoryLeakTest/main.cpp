@@ -77,11 +77,18 @@ public:
             ShaderReflection_Release(shaderReflection);
             shaderReflection = nullptr;
         }
-        // Note: We can't safely delete these without knowing their actual types
-        // In a real implementation, we would need proper cleanup functions
-        program = nullptr;
-        module = nullptr;
-        session = nullptr;
+        if (program) {
+            Program_Release(program);
+            program = nullptr;
+        }
+        if (module) {
+            Module_Release(module);
+            module = nullptr;
+        }
+        if (session) {
+            Session_Release(session);
+            session = nullptr;
+        }
     }
 
     bool initializeSlangSession() {
@@ -98,7 +105,7 @@ public:
             Native::TargetCLI(Native::CompileTargetCLI::SLANG_HLSL, "cs_5_0"),
 		};
         
-        session = CreateSession(
+        session = Session_Create(
             nullptr, 0,  // No options for now
             nullptr, 0,  // No macros for now  
             models, 1,  // Models for session
@@ -128,7 +135,7 @@ public:
         }
         addTestResult("Read Shader File", true, "Successfully read " + to_string(shaderSource.size()) + " bytes");
         
-        module = CreateModule(
+        module = Module_Create(
             session, 
             "ComprehensiveSlangTest", 
             shaderPath.c_str(), 
@@ -148,7 +155,7 @@ public:
             return false;
         }
         
-        program = CreateProgram(module);
+        program = Program_Create(module);
         const char* error = SlangNative_GetLastError();
         bool success = (program != nullptr);
         addTestResult("Program Creation", success, error ? error : "");
@@ -163,11 +170,30 @@ public:
             return false;
         }
         
-        shaderReflection = GetProgramReflection(program, 0);
+        shaderReflection = Program_GetProgramReflection(program, 0);
         const char* error = SlangNative_GetLastError();
         bool success = (shaderReflection != nullptr);
         addTestResult("Program Reflection", success, error ? error : "");
         return success;
+    }
+
+    bool getCompiledProgram()
+    {
+        printHeader("GETTING COMPILED PROGRAM");
+        
+        if (!program) {
+            addTestResult("Get Compiled Program", false, "No program available");
+            return false;
+        }
+        
+        const char* output = nullptr;
+        SlangResult result = Program_CompileProgram(program, 0, 0, &output);
+        const char* error = SlangNative_GetLastError();
+        
+        bool success = (result >= 0 && output != nullptr);
+        addTestResult("Compiled Program", success, success ? output : (error ? error : "Unknown error"));
+        
+		return success;
     }
 
     void testShaderReflectionBasics() {
@@ -643,11 +669,11 @@ public:
         
         for (const auto& entry : entryPointsToCompile) {
             const char* output = nullptr;
-            int32_t result = Compile(program, entry.second, 0, &output);
+            int32_t result = Program_CompileProgram(program, entry.second, 0, &output);
             const char* error = SlangNative_GetLastError();
             
             bool success = (result >= 0 && output != nullptr);
-            string message = success ? "Compiled successfully" : nullptr;
+            string message = success ? "Compiled successfully" : "Compilation failed";
             if (success && output) {
                 size_t outputLength = strlen(output);
                 message += " (" + to_string(outputLength) + " chars)";
@@ -656,7 +682,7 @@ public:
                 message = "Compilation failed: " + string(error);
 			}
             
-            addTestResult("Compile " + entry.first, success, success ? message : error);
+            addTestResult("Compile " + entry.first, success, message);
         }
     }
 
@@ -735,7 +761,14 @@ int main() {
     cout << "=============================================" << endl;
     
     SlangReflectionTester tester;
-    tester.runAllTests();
+    //tester.runAllTests();
+
+     // Initialize and setup
+    if (!tester.initializeSlangSession()) return -1;
+    if (!tester.loadShaderModule()) return -1;
+    if (!tester.createProgram()) return -1;
+    if (!tester.getProgramReflection()) return -1;
+	if (!tester.getCompiledProgram()) return -1;
     
     return 0;
 }

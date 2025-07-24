@@ -65,6 +65,19 @@ namespace SlangNative
         }
     }
 
+    extern "C" SLANGNATIVE_API void* Module_Import(void* parentSession, const char* moduleName)
+    {
+        try
+        {
+            return new ModuleCLI((SessionCLI*)parentSession, moduleName);
+        }
+        catch (const std::exception& e)
+        {
+            g_lastError = e.what();
+            return nullptr;
+        }
+    }
+
     extern "C" SLANGNATIVE_API void Module_Release(void* module)
     {
         if (!module) return;

@@ -34,25 +34,55 @@ internal static unsafe partial class SlangNativeInterop
     #region Module API
 
     [LibraryImport(LibraryName)]
-    internal static partial nint CreateModule(
+    internal static partial nint Module_Create(
         nint parentSession, 
         char* moduleName,
         char* modulePath,
         char* shaderSource);
 
     [LibraryImport(LibraryName)]
+    internal static partial nint Module_Import(
+    nint parentSession,
+    char* moduleName);
+
+    [LibraryImport(LibraryName)]
     internal static partial void Module_Release(nint module);
 
     [LibraryImport(LibraryName)]
-    internal static partial nint Module_FindEntryPoint(
+    internal static partial uint Module_GetEntryPointCount(nint parentModule);
+
+    [LibraryImport(LibraryName)]
+    internal static partial nint Module_GetEntryPointByIndex(
+        nint parentModule, 
+        uint index);
+
+    [LibraryImport(LibraryName)]
+    internal static partial nint Module_FindEntryPointByName(
+        nint parentModule, 
+        char* entryPointName);
+
+    #endregion
+
+    #region EntryPoint API
+
+    [LibraryImport(LibraryName)]
+    internal static partial nint EntryPoint_Create(
+        nint parentModule, 
+        uint entryPointIndex);
+
+    [LibraryImport(LibraryName)]
+    internal static partial nint EntryPoint_CreateByName(
         nint parentModule, 
         char* entryPointName);
 
     [LibraryImport(LibraryName)]
-    internal static partial void Module_GetParameterInfo(
-        nint parentEntryPoint, 
-        void** outParameterInfo, 
-        int* outParameterCount);
+    internal static partial void EntryPoint_Release(nint entryPoint);
+
+    [LibraryImport(LibraryName)]
+    internal static partial int EntryPoint_GetIndex(nint entryPoint);
+
+    [LibraryImport(LibraryName)]
+    internal static partial char* EntryPoint_GetName(nint entryPoint);
 
     #endregion
 
@@ -65,14 +95,14 @@ internal static unsafe partial class SlangNativeInterop
     internal static partial void Program_Release(nint program);
 
     [LibraryImport(LibraryName)]
-    internal static partial SlangResult CompileProgram(
+    internal static partial SlangResult Program_CompileProgram(
         nint program,
         uint entryPointIndex,
         uint targetIndex,
         char** output);
 
     [LibraryImport(LibraryName)]
-    internal static partial nint GetProgramReflection(
+    internal static partial nint Program_GetProgramReflection(
         nint program, 
         uint targetIndex);
 
@@ -763,25 +793,73 @@ internal static unsafe partial class StrongTypeInterop
     /// <summary>
     /// Creates a module with strongly-typed handle.
     /// </summary>
-    internal static ModuleHandle CreateModule(
+    internal static ModuleHandle Module_Create(
         nint parentSession,
         char* moduleName,
         char* modulePath,
         char* shaderSource)
     {
-        var handle = SlangNativeInterop.CreateModule(parentSession, moduleName, modulePath, shaderSource);
+        var handle = SlangNativeInterop.Module_Create(parentSession, moduleName, modulePath, shaderSource);
         return new ModuleHandle(handle);
     }
 
     /// <summary>
-    /// Finds an entry point with strongly-typed handle.
+    /// Creates a module with strongly-typed handle.
     /// </summary>
-    internal static EntryPointReflectionHandle Module_FindEntryPoint(
+    internal static ModuleHandle Module_Import(
+        nint parentSession,
+        char* moduleName)
+    {
+        var handle = SlangNativeInterop.Module_Import(parentSession, moduleName);
+        return new ModuleHandle(handle);
+    }
+
+    /// <summary>
+    /// Gets entry point by index with strongly-typed handle.
+    /// </summary>
+    internal static EntryPointHandle Module_GetEntryPointByIndex(
+        nint parentModule,
+        uint index)
+    {
+        var handle = SlangNativeInterop.Module_GetEntryPointByIndex(parentModule, index);
+        return new EntryPointHandle(handle);
+    }
+
+    /// <summary>
+    /// Finds entry point by name with strongly-typed handle.
+    /// </summary>
+    internal static EntryPointHandle Module_FindEntryPointByName(
         nint parentModule,
         char* entryPointName)
     {
-        var handle = SlangNativeInterop.Module_FindEntryPoint(parentModule, entryPointName);
-        return new EntryPointReflectionHandle(handle);
+        var handle = SlangNativeInterop.Module_FindEntryPointByName(parentModule, entryPointName);
+        return new EntryPointHandle(handle);
+    }
+
+    #endregion
+
+    #region EntryPoint API
+
+    /// <summary>
+    /// Creates an entry point with strongly-typed handle.
+    /// </summary>
+    internal static EntryPointHandle EntryPoint_Create(
+        nint parentModule,
+        uint entryPointIndex)
+    {
+        var handle = SlangNativeInterop.EntryPoint_Create(parentModule, entryPointIndex);
+        return new EntryPointHandle(handle);
+    }
+
+    /// <summary>
+    /// Creates an entry point by name with strongly-typed handle.
+    /// </summary>
+    internal static EntryPointHandle EntryPoint_CreateByName(
+        nint parentModule,
+        char* entryPointName)
+    {
+        var handle = SlangNativeInterop.EntryPoint_CreateByName(parentModule, entryPointName);
+        return new EntryPointHandle(handle);
     }
 
     #endregion
@@ -800,11 +878,11 @@ internal static unsafe partial class StrongTypeInterop
     /// <summary>
     /// Gets program reflection with strongly-typed handle.
     /// </summary>
-    internal static ShaderReflectionHandle GetProgramReflection(
+    internal static ShaderReflectionHandle Program_GetProgramReflection(
         nint program,
         uint targetIndex)
     {
-        var handle = SlangNativeInterop.GetProgramReflection(program, targetIndex);
+        var handle = SlangNativeInterop.Program_GetProgramReflection(program, targetIndex);
         return new ShaderReflectionHandle(handle);
     }
 

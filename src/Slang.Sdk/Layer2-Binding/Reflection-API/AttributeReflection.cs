@@ -1,4 +1,5 @@
 ﻿using Slang.Sdk.Interop;
+using static Slang.Sdk.Interop.Utilities;
 
 namespace Slang.Sdk.Binding
 {
@@ -15,7 +16,7 @@ namespace Slang.Sdk.Binding
 
         internal string? GetName()
         {
-            return Call(() => new string(SlangNativeInterop.Attribute_GetName(Handle)));
+            return Call(() => FromCharPtr(SlangNativeInterop.Attribute_GetName(Handle)));
         }
 
         internal uint GetArgumentCount()
@@ -50,7 +51,7 @@ namespace Slang.Sdk.Binding
 
         internal string? GetArgumentValueString(uint index)
         {
-            return Call(() => new string(SlangNativeInterop.Attribute_GetArgumentValueString(Handle, index)));
+            return Call(() => FromCharPtr(SlangNativeInterop.Attribute_GetArgumentValueString(Handle, index)));
         }
     }
 }

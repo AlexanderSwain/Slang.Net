@@ -4,9 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Slang.Sdk.Interop;
-using static Slang.Sdk.Interop.StrongTypeInterop;
-using static Slang.Sdk.Interop.SlangNativeInterop;
-using static Slang.Sdk.Interop.StringMarshaling;
+using static Slang.Sdk.Interop.Utilities;
 
 namespace Slang.Sdk.Binding
 {
@@ -23,7 +21,7 @@ namespace Slang.Sdk.Binding
 
         internal string? GetName()
         {
-            return Call(() => new string(SlangNativeInterop.GenericReflection_GetName(Handle)));
+            return Call(() => FromCharPtr(SlangNativeInterop.GenericReflection_GetName(Handle)));
         }
 
         internal uint GetTypeParameterCount()

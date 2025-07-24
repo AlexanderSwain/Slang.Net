@@ -12,6 +12,7 @@ internal unsafe sealed class Session : CompilationBinding
     internal override SessionHandle Handle { get; }
 
     internal IReadOnlyCollection<Target> Targets { get; }
+    internal string[] SearchPaths { get; }
 
     /// <summary>
     /// Creates a new Slang session with the specified configuration.
@@ -21,6 +22,7 @@ internal unsafe sealed class Session : CompilationBinding
     internal Session(CompilerOption[] options, PreprocessorMacro[] macros, Target[] models, string[] searchPaths)
     {
         Targets = models;
+        SearchPaths = searchPaths;
 
         fixed (CompilerOption* optionsPtr = options)
         fixed (PreprocessorMacro* macrosPtr = macros)

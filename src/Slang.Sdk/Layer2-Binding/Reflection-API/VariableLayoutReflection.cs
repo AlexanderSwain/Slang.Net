@@ -4,9 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Slang.Sdk.Interop;
-using static Slang.Sdk.Interop.StrongTypeInterop;
-using static Slang.Sdk.Interop.SlangNativeInterop;
-using static Slang.Sdk.Interop.StringMarshaling;
+using static Slang.Sdk.Interop.Utilities;
 
 namespace Slang.Sdk.Binding
 {
@@ -28,7 +26,7 @@ namespace Slang.Sdk.Binding
 
         internal string? GetName()
         {
-            return Call(() => new string(SlangNativeInterop.VariableLayoutReflection_GetName(Handle)));
+            return Call(() => FromCharPtr(SlangNativeInterop.VariableLayoutReflection_GetName(Handle)));
         }
 
         internal ModifierReflection FindModifier(int modifierId)
@@ -88,7 +86,7 @@ namespace Slang.Sdk.Binding
 
         internal string? GetSemanticName()
         {
-            return Call(() => new string(SlangNativeInterop.VariableLayoutReflection_GetSemanticName(Handle)));
+            return Call(() => FromCharPtr(SlangNativeInterop.VariableLayoutReflection_GetSemanticName(Handle)));
         }
 
         internal nuint GetSemanticIndex()

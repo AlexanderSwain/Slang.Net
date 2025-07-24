@@ -17,8 +17,11 @@ namespace Native
 	class SLANGNATIVE_API ModuleCLI
 	{
 	public:
-		// Constructor with parameters (example)
+		// Constructor module from source
 		ModuleCLI(SessionCLI* parent, const char* moduleName, const char* modulePath, const char* shaderSource);
+
+		// Module import constructor
+		ModuleCLI(SessionCLI* parent, const char* moduleName);
 
 		// Destructor
 		~ModuleCLI();

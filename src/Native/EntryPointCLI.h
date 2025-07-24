@@ -2,7 +2,6 @@
 #include "slang.h"
 #include "slang-com-ptr.h"
 #include "slang-com-helper.h"
-#include "ModuleCLI.h"
 #include "ParameterInfoCLI.h"
 #include <map>
 #include <string>
@@ -13,6 +12,11 @@
 #define SLANGNATIVE_API __declspec(dllimport)
 #endif
 
+// Forward declaration to avoid circular dependency
+namespace Native
+{
+    class ModuleCLI;
+}
 
 namespace Native
 {

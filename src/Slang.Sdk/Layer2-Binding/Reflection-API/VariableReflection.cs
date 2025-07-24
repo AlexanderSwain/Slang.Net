@@ -23,7 +23,7 @@ namespace Slang.Sdk.Binding
 
         internal string? GetName()
         {
-            return Call(() => new string(SlangNativeInterop.VariableReflection_GetName(Handle)));
+            return Call(() => FromUtf8((byte*)SlangNativeInterop.VariableReflection_GetName(Handle)));
         }
 
         internal new TypeReflection GetType()
@@ -52,9 +52,14 @@ namespace Slang.Sdk.Binding
                 this, 
                 Call(() => 
                 {
-                    fixed (char* pName = name)
+                    byte* pName = ToUtf8(name);
+                    try
                     {
-                        return StrongTypeInterop.VariableReflection_FindAttributeByName(Handle, pName);
+                        return StrongTypeInterop.VariableReflection_FindAttributeByName(Handle, (char*)pName);
+                    }
+                    finally
+                    {
+                        FreeUtf8(pName);
                     }
                 }
             ));
@@ -66,9 +71,14 @@ namespace Slang.Sdk.Binding
                 this, 
                 Call(() => 
                 {
-                    fixed (char* pName = name)
+                    byte* pName = ToUtf8(name);
+                    try
                     {
-                        return StrongTypeInterop.VariableReflection_FindUserAttributeByName(Handle, pName);
+                        return StrongTypeInterop.VariableReflection_FindUserAttributeByName(Handle, (char*)pName);
+                    }
+                    finally
+                    {
+                        FreeUtf8(pName);
                     }
                 }
             ));

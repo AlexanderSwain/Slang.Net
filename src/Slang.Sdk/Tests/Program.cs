@@ -13,6 +13,7 @@ namespace Slang.Sdk.Test
             {
                 InteropTest.RunExamples();
                 BindingTests.RunAllTests();
+                PrettyTests.RunAllTests();
             }
             catch (Exception ex)
             {

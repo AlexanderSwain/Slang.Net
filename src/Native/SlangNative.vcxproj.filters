@@ -133,7 +133,7 @@
       <Filter>Reflection</Filter>
     </ClInclude>
     <ClInclude Include="TargetCLI.h">
-      <Filter>Header Files</Filter>
+      <Filter>Slang Structs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -60,7 +60,7 @@ public static class InteropTest
             if (sessionHandle == IntPtr.Zero)
             {
                 var errorPtr = SlangNativeInterop.SlangNative_GetLastError();
-                var errorMessage = new string(SlangNativeInterop.SlangNative_GetLastError());
+                var errorMessage = StringMarshaling.FromUtf8((byte*)errorPtr);
                 Console.WriteLine($"   Session creation failed (expected): {errorMessage ?? "Unknown error"}");
             }
             else

@@ -12,10 +12,16 @@ namespace Slang.Sdk
         public Session Parent { get; }
         internal Binding.Module Binding { get; }
 
+        internal Module(Session parent, string moduleName, string modulePath, string moduleSource)
+        {
+            Parent = parent;
+            Binding = new Binding.Module(Parent.Binding, moduleName, modulePath, moduleSource);
+        }
+
         internal Module(Session parent, string moduleName)
         {
             Parent = parent;
-            Binding = new Binding.Module(Parent.Binding, moduleName, null, null);
+            Binding = new Binding.Module(Parent.Binding, moduleName);
         }
         #endregion
 

@@ -61,15 +61,21 @@
 			<PackagePath>\</PackagePath>
 			<Pack>True</Pack>
 		</None>
+		<None Update="Tests\Shaders\AverageColor.slang">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 
 	<!-- Exclude test program from library builds -->
 	<ItemGroup Condition="'$(OutputType)' == 'Library'">
+		<Compile Remove="InteropTest.cs" />
+		<Compile Remove="BindingTests.cs" />
+		<Compile Remove="PrettyTests.cs" />
 		<Compile Remove="Program.cs" />
 	</ItemGroup>
 
 	<!-- Platform-specific native dependencies for x64 -->
-	<ItemGroup>
+	<ItemGroup Condition="'$(OutputType)' == 'Library' Or '$(Platform)' == 'x64' Or '$(Platform)' == 'AnyCPU'">
 		<Content Include="..\Native\bin\$(Configuration)\x64\gfx.dll" Condition="Exists('..\Native\bin\$(Configuration)\x64\gfx.dll')">
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-x64\native\gfx.dll</PackagePath>
@@ -118,7 +124,7 @@
 	</ItemGroup>
 
 	<!-- Platform-specific native dependencies for ARM64 -->
-	<ItemGroup>
+	<ItemGroup Condition="'$(OutputType)' == 'Library' Or '$(Platform)' == 'ARM64' Or '$(Platform)' == 'AnyCPU'">
 		<Content Include="..\Native\bin\$(Configuration)\ARM64\gfx.dll" Condition="Exists('..\Native\bin\$(Configuration)\ARM64\gfx.dll')">
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-ARM64\native\gfx.dll</PackagePath>
@@ -163,6 +169,9 @@
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-ARM64\native\slang-rt.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Tests\Shaders\AverageColor.slang">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
 </Project>

@@ -17,18 +17,23 @@ public class Program
         Session session = builder.Create();
 
         // Load the module from the specified file
-        Module module = session.LoadModule("AverageColor.slang");
+        Module module = session.LoadModule("AverageColor.slang", null, null);
+
+        // Get the shader program from the module
+        Slang.Sdk.Program program = module.Program;
 
         // Access the shader program from the module
-        ShaderReflection program = module.Program.GetReflection(Targets.Hlsl.cs_5_0);
+        ShaderReflection reflection = module.Program.GetReflection(Targets.Hlsl.cs_5_0);
 
-        // Print the number of entry points in the shader program
-        var entryPoint = program.EntryPoints.Where(x => x.Name == "CS").First();
+        //// Print the number of entry points in the shader program
+        //var entryPoint = program.EntryPoints.Where(x => x.Name == "CS").First();
+        //
+        //// Compile the shader program using the entry point
+        //var source = entryPoint.Compile();
 
-        // Compile the shader program using the entry point
-        var source = entryPoint.Compile();
+        var source = program.Compile(null, Targets.Hlsl.cs_5_0);
 
         // Print the generated source code length
-        Console.WriteLine(source);
+        Console.WriteLine(source.Source);
     }
 }

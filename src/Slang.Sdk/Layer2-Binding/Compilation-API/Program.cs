@@ -29,10 +29,10 @@ internal sealed unsafe class Program : CompilationBinding
         //var entryPoint = Parent.Parent.EntryPoints.ElementAt(entryPointIndex);
         var target = Parent.Parent.Targets.ElementAt((int)targetIndex);
         char* compiledSource = null;
-        SlangResult compileResult = SlangNativeInterop.CompileProgram(Handle, entryPointIndex, targetIndex, &compiledSource);
+        SlangResult compileResult = SlangNativeInterop.Program_CompileProgram(Handle, entryPointIndex, targetIndex, &compiledSource);
         string? diagnostics = GetLastError();
 
-        return new CompilationResult(new string(compiledSource), target, null/*EntryPoint is not yet implemented*/, compileResult, diagnostics);
+        return new CompilationResult(StringMarshaling.FromUtf8((byte*)compiledSource), target, null/*EntryPoint is not yet implemented*/, compileResult, diagnostics);
     }
 
     internal ShaderReflection GetReflection(uint targetIndex)
@@ -40,7 +40,7 @@ internal sealed unsafe class Program : CompilationBinding
         ObjectDisposedException.ThrowIf(Handle.IsInvalid, this);
 
         // Using the strongly-typed interop that returns ShaderReflectionHandle directly
-        ShaderReflectionHandle resultHandle = GetProgramReflection(Handle, targetIndex);
+        ShaderReflectionHandle resultHandle = Program_GetProgramReflection(Handle, targetIndex);
 
         if (resultHandle.IsInvalid)
             throw new SlangException(SlangResult.Fail, $"Failed to get shader reflection for target index {targetIndex}: {GetLastError() ?? "<No error was returned from Slang>"}");

@@ -4,9 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Slang.Sdk.Interop;
-using static Slang.Sdk.Interop.StrongTypeInterop;
-using static Slang.Sdk.Interop.SlangNativeInterop;
-using static Slang.Sdk.Interop.StringMarshaling;
+using static Slang.Sdk.Interop.Utilities;
 
 namespace Slang.Sdk.Binding
 {
@@ -34,12 +32,12 @@ namespace Slang.Sdk.Binding
 
         internal string? GetName()
         {
-            return Call(() => new string(SlangNativeInterop.EntryPointReflection_GetName(Handle)));
+            return Call(() => FromCharPtr(SlangNativeInterop.EntryPointReflection_GetName(Handle)));
         }
 
         internal string? GetNameOverride()
         {
-            return Call(() => new string(SlangNativeInterop.EntryPointReflection_GetNameOverride(Handle)));
+            return Call(() => FromCharPtr(SlangNativeInterop.EntryPointReflection_GetNameOverride(Handle)));
         }
 
         internal uint GetParameterCount()

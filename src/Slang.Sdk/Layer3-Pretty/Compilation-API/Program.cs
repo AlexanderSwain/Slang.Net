@@ -29,9 +29,15 @@ namespace Slang.Sdk
             return _Reflection ??= new ShaderReflection(this, Binding.GetReflection(targetIndex.Value));
         }
 
-        public CompilationResult Compile(Target target)
+        public CompilationResult Compile(EntryPoint entryPoint, Target target)
         {
+            var session = Parent.Parent;
+            uint? targetIndex = session.Targets.IndexOf(target);
 
+            if (targetIndex is null)
+                throw new ArgumentException($"Target {target} was not included in Session {session}. Use Session.Builder.AddTarget(target) to include it.", nameof(target));
+
+            return Binding.Compile(0/*[Fix] Hard-coded*/, targetIndex.Value);
         }
         #endregion
     }

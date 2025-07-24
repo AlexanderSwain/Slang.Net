@@ -1,8 +1,5 @@
 #include "TargetCLI.h"
 
-Native::CompileTargetCLI _Target;
-std::string _Profile;
-
 Native::TargetCLI::TargetCLI()
 	: _Target(Native::CompileTargetCLI::SLANG_TARGET_UNKNOWN2)
 	, _Profile(nullptr)

@@ -1,4 +1,5 @@
 #include "EntryPointCLI.h"
+#include "ModuleCLI.h"
 #include <map>
 #include <string>
 #include <iostream>

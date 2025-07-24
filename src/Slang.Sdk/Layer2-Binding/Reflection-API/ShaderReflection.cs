@@ -35,14 +35,18 @@ namespace Slang.Sdk.Binding
 
         internal TypeParameterReflection FindTypeParameter(string name)
         {
-
             return new TypeParameterReflection(
                 this,
                 Call(() =>
                 {
-                    fixed (char* pName = name)
+                    byte* pName = ToUtf8(name);
+                    try
                     {
-                        return StrongTypeInterop.ShaderReflection_FindTypeParameter(Handle, pName);
+                        return StrongTypeInterop.ShaderReflection_FindTypeParameter(Handle, (char*)pName);
+                    }
+                    finally
+                    {
+                        FreeUtf8(pName);
                     }
                 }
             ));
@@ -69,9 +73,14 @@ namespace Slang.Sdk.Binding
                 this, 
                 Call(() => 
                 {
-                    fixed (char* pName = name)
+                    byte* pName = ToUtf8(name);
+                    try
                     {
-                        return StrongTypeInterop.ShaderReflection_FindEntryPointByName(Handle, pName);
+                        return StrongTypeInterop.ShaderReflection_FindEntryPointByName(Handle, (char*)pName);
+                    }
+                    finally
+                    {
+                        FreeUtf8(pName);
                     }
                 }
             ));
@@ -93,9 +102,14 @@ namespace Slang.Sdk.Binding
                 this, 
                 Call(() => 
                 {
-                    fixed (char* pName = name)
+                    byte* pName = ToUtf8(name);
+                    try
                     {
-                        return StrongTypeInterop.ShaderReflection_FindTypeByName(Handle, pName);
+                        return StrongTypeInterop.ShaderReflection_FindTypeByName(Handle, (char*)pName);
+                    }
+                    finally
+                    {
+                        FreeUtf8(pName);
                     }
                 }
             ));
@@ -107,9 +121,14 @@ namespace Slang.Sdk.Binding
                 this,
                 Call(() => 
                 {
-                    fixed (char* namePtr = name)
+                    byte* pName = ToUtf8(name);
+                    try
                     {
-                        return StrongTypeInterop.ShaderReflection_FindFunctionByName(Handle, namePtr);
+                        return StrongTypeInterop.ShaderReflection_FindFunctionByName(Handle, (char*)pName);
+                    }
+                    finally
+                    {
+                        FreeUtf8(pName);
                     }
                 }
             ));
@@ -121,9 +140,14 @@ namespace Slang.Sdk.Binding
                 this, 
                 Call(() => 
                 {
-                    fixed (char* pName = name)
+                    byte* pName = ToUtf8(name);
+                    try
                     {
-                        return StrongTypeInterop.ShaderReflection_FindFunctionByNameInType(Handle, type.Handle, pName);
+                        return StrongTypeInterop.ShaderReflection_FindFunctionByNameInType(Handle, type.Handle, (char*)pName);
+                    }
+                    finally
+                    {
+                        FreeUtf8(pName);
                     }
                 })
             );
@@ -135,9 +159,14 @@ namespace Slang.Sdk.Binding
                 this, 
                 Call(() => 
                 {
-                    fixed (char* pName = name)
+                    byte* pName = ToUtf8(name);
+                    try
                     {
-                        return StrongTypeInterop.ShaderReflection_FindVarByNameInType(Handle, type.Handle, pName);
+                        return StrongTypeInterop.ShaderReflection_FindVarByNameInType(Handle, type.Handle, (char*)pName);
+                    }
+                    finally
+                    {
+                        FreeUtf8(pName);
                     }
                 }
             ));
@@ -165,7 +194,7 @@ namespace Slang.Sdk.Binding
 
         internal string? GetHashedString(uint index)
         {
-            return Call(() => new string(SlangNativeInterop.ShaderReflection_GetHashedString(Handle, index)));
+            return Call(() => FromUtf8((byte*)SlangNativeInterop.ShaderReflection_GetHashedString(Handle, index)));
         }
 
         internal TypeLayoutReflection GetGlobalParamsTypeLayout()
@@ -184,7 +213,7 @@ namespace Slang.Sdk.Binding
             {
                 char* output = null;
                 SlangNativeInterop.ShaderReflection_ToJson(Handle, &output);
-                return new string(output);
+                return FromUtf8((byte*)output);
             });
         }
     }

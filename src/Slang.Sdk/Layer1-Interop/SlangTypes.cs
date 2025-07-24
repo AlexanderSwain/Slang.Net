@@ -371,7 +371,7 @@ public struct PreprocessorMacro : IDisposable
     }
 }
 
-public struct Target : IDisposable
+public struct Target : IDisposable, IEquatable<Target>
 {
     public CompileTarget target;
     public IntPtr profile;
@@ -387,40 +387,89 @@ public struct Target : IDisposable
         Marshal.FreeHGlobal(profile);
     }
 
+    #region Equality
+    public bool Equals(Target other)
+    {
+        if (target != other.target)
+            return false;
+
+        // Compare the actual string content, not the pointer values
+        string? thisProfile = profile != IntPtr.Zero ? Marshal.PtrToStringAnsi(profile) : null;
+        string? otherProfile = other.profile != IntPtr.Zero ? Marshal.PtrToStringAnsi(other.profile) : null;
+        
+        return target == other.target && string.Equals(thisProfile, otherProfile, StringComparison.Ordinal);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is Target other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        string? profileString = profile != IntPtr.Zero ? Marshal.PtrToStringAnsi(profile) : null;
+        return HashCode.Combine(target, profileString);
+    }
+
+    public static bool operator ==(Target left, Target right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(Target left, Target right)
+    {
+        return !left.Equals(right);
+    }
+    #endregion
+
+    public override string ToString()
+    {
+        string? profileString = profile != IntPtr.Zero ? Marshal.PtrToStringAnsi(profile) : "<null>";
+        return $"Target({target}, {profileString})";
+    }
+
     /// <summary>
     /// Compilation target formats.
+    /// Corresponds to SlangCompileTarget in the native Slang API.
     /// </summary>
     public enum CompileTarget
     {
-        Unknown,
-        Hlsl,
+        TargetUnknown,
+        TargetNone,
         Glsl,
-        Metal,
+        GlslVulkanDeprecated,          //< deprecated and removed: just use `GLSL`.
+        GlslVulkanOneDescDeprecated,   //< deprecated and removed.
+        Hlsl,
         SpirV,
-        DxBytecode,
-        DxIl,
-        Cpp,
-        C,
-        Cuda,
+        SpirVAsm,
+        Dxbc,
+        DxbcAsm,
         Dxil,
-        DxilAssembly,
-        SpirVAssembly,
-        PyTorch,
-        Host,
-        PTX,
-        HostCpp,
-        HostCuda,
-        HostHostCallable,
-        CSource,
-        CppSource,
-        HostCppSource,
-        CudaSource,
-        ObjectCode,
-        ShaderSharedLibrary,
-        ShaderHostCallable,
-        Executable,
-        CSharpSource,
-        Wgsl
+        DxilAsm,
+        CSource,              ///< The C language
+        CppSource,            ///< C++ code for shader kernels.
+        HostExecutable,       ///< Standalone binary executable (for hosting CPU/OS)
+        ShaderSharedLibrary,  ///< A shared library/Dll for shader kernels (for hosting
+                              ///< CPU/OS)
+        ShaderHostCallable,   ///< A CPU target that makes the compiled shader code available
+                              ///< to be run immediately
+        CudaSource,           ///< Cuda source
+        Ptx,                  ///< PTX
+        CudaObjectCode,       ///< Object code that contains CUDA functions.
+        ObjectCode,           ///< Object code that can be used for later linking
+        HostCppSource,        ///< C++ code for host library or executable.
+        HostHostCallable,     ///< Host callable host code (ie non kernel/shader)
+        CppPytorchBinding,    ///< C++ PyTorch binding code.
+        Metal,                ///< Metal shading language
+        MetalLib,             ///< Metal library
+        MetalLibAsm,          ///< Metal library assembly
+        HostSharedLibrary,    ///< A shared library/Dll for host code (for hosting CPU/OS)
+        Wgsl,                 ///< WebGPU shading language
+        WgslSpirvAsm,         ///< SPIR-V assembly via WebGPU shading language
+        WgslSpirv,            ///< SPIR-V via WebGPU shading language
+
+        HostVm,               ///< Bytecode that can be interpreted by the Slang VM
+        TargetCountOf,
     }
 }
 

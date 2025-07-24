@@ -9,10 +9,9 @@ Native::ModuleCLI::ModuleCLI(SessionCLI* parent, const char* moduleName, const c
         Slang::ComPtr<slang::IBlob> sourceBlob;
         Slang::ComPtr<slang::IBlob> diagnosticsBlob;
 
-        // Use moduleName instead of modulePath for loadModule
-        slangModule = m_parent->loadModule(moduleName, diagnosticsBlob.writeRef());
+        //slangModule = m_parent->loadModule(moduleName, diagnosticsBlob.writeRef());
         //slangModule = m_parent->loadModuleFromSource(moduleName, modulePath, sourceBlob, diagnosticsBlob.writeRef());
-        //slangModule = m_parent->loadModuleFromSourceString(moduleName, modulePath, shaderSource, diagnosticsBlob.writeRef());
+        slangModule = m_parent->loadModuleFromSourceString(moduleName, modulePath, shaderSource, diagnosticsBlob.writeRef());
 
         // Improved diagnostics output
         if (diagnosticsBlob && diagnosticsBlob->getBufferSize() > 0)
@@ -30,11 +29,56 @@ Native::ModuleCLI::ModuleCLI(SessionCLI* parent, const char* moduleName, const c
     }
     
     m_slangModule = slangModule;
+    
+    // Initialize entry point related members
+    m_entryPointCount = m_slangModule->getDefinedEntryPointCount();
+    m_entryPoints = nullptr; // Initialize to nullptr, will be allocated on demand
+}
+
+Native::ModuleCLI::ModuleCLI(SessionCLI* parent, const char* moduleName)
+{
+    m_parent = parent->getNative();
+    Slang::ComPtr<slang::IModule> slangModule;
+    {
+        Slang::ComPtr<slang::IBlob> sourceBlob;
+        Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+
+        // import module
+        slangModule = m_parent->loadModule(moduleName, diagnosticsBlob.writeRef());
+
+        // Improved diagnostics output
+        if (diagnosticsBlob && diagnosticsBlob->getBufferSize() > 0)
+        {
+            std::string diagnosticsText = std::string((const char*)diagnosticsBlob->getBufferPointer());
+            std::string errorMessage = "There are issues in the shader source: " + diagnosticsText;
+
+            if (!slangModule)
+                throw std::runtime_error(errorMessage);
+        }
+        else if (!slangModule)
+        {
+            throw std::runtime_error("Unknown failure: Failed to create the Slang module.");
+        }
+    }
+
+    m_slangModule = slangModule;
+
+    // Initialize entry point related members
+    m_entryPointCount = m_slangModule->getDefinedEntryPointCount();
+    m_entryPoints = nullptr; // Initialize to nullptr, will be allocated on demand
 }
 
 Native::ModuleCLI::~ModuleCLI()
 {
-    // Does nothing, kept for consistency and in case a future update requires something to be disposed (such as children like EntryPoints).
+    // Clean up entry points array if allocated
+    if (m_entryPoints)
+    {
+        for (unsigned int i = 0; i < m_entryPointCount; i++)
+        {
+            delete m_entryPoints[i];
+        }
+        delete[] m_entryPoints;
+    }
 }
 
 unsigned int Native::ModuleCLI::getEntryPointCount()
@@ -44,10 +88,16 @@ unsigned int Native::ModuleCLI::getEntryPointCount()
 
 Native::EntryPointCLI* Native::ModuleCLI::getEntryPointByIndex(unsigned index)
 {
+    if (index >= m_entryPointCount)
+    {
+        throw std::out_of_range("Entry point index is out of range");
+    }
+
     if (!m_entryPoints)
     {
-        slang::IEntryPoint** entryPoints = new slang::IEntryPoint*[m_entryPointCount];
-
+        // Allocate and initialize the entry points array on first access
+        m_entryPoints = new Native::EntryPointCLI*[m_entryPointCount];
+        
         for (unsigned int i = 0; i < m_entryPointCount; i++)
         {
             m_entryPoints[i] = new Native::EntryPointCLI(this, i);
