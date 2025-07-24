@@ -11,6 +11,7 @@ namespace Slang.Sdk.Test
 
             try
             {
+                CLI_Tests.RunAllTests();
                 InteropTest.RunExamples();
                 BindingTests.RunAllTests();
                 PrettyTests.RunAllTests();

@@ -70,7 +70,7 @@ namespace Slang.Sdk
             if (moduleName is null)
                 throw new FormatException($"The specified path is not correctly formatted: {modulePath}");
             if (moduleSource is null)
-                throw new FileNotFoundException("The specified slang file was not found.", modulePath);
+                throw new FileNotFoundException($"The specified slang file was not found: {modulePath}", modulePath);
 
             return new Module(this, moduleName, modulePath, moduleSource);
         }
@@ -79,6 +79,9 @@ namespace Slang.Sdk
         {
             if (string.IsNullOrWhiteSpace(moduleName))
                 throw new ArgumentException("Module name cannot be null or empty.", nameof(moduleName));
+
+            if (string.IsNullOrWhiteSpace(modulePath))
+                throw new ArgumentException("Module path cannot be null or empty.", nameof(modulePath));
 
             if (!Binding.SearchPaths.Any())
                 throw new InvalidOperationException("");
@@ -90,8 +93,8 @@ namespace Slang.Sdk
             if (File.Exists(modulePath))
                 moduleSource = File.ReadAllText(modulePath);
 
-            if (modulePath is null || moduleSource is null)
-                throw new FileNotFoundException($"{moduleName} could not be found in any of the parent session's search paths.");
+            if (moduleSource is null)
+                throw new FileNotFoundException($"The specified slang file was not found: { modulePath}", modulePath);
 
             return new Module(this, moduleName, modulePath, moduleSource);
         }
