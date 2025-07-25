@@ -41,12 +41,49 @@ The project automatically includes the required native dependencies:
 
 - **SlangNative.dll**: The main interop library
 - **slang.dll**: Core Slang compiler
+- **slangc.exe**: Command-line Slang compiler tool
 - **gfx.dll**: Graphics abstraction layer
 - **slang-glslang.dll**: GLSL compiler support
 - **slang-llvm.dll**: LLVM backend support
 - **slang-rt.dll**: Runtime support
 
 These are automatically copied to the output directory and included in NuGet packages.
+
+## CLI Integration
+
+The `SlangCLI` class provides a convenient wrapper around the command-line `slangc.exe` tool:
+
+```csharp
+using Slang.CLI;
+
+// Simple compilation
+var result = SlangCLI.slangc(
+    target: "hlsl",
+    profile: "cs_5_0", 
+    entry: "main",
+    outputPath: "output.hlsl",
+    inputFiles: new[] { "shader.slang" }
+);
+
+if (result.ExitCode == 0)
+{
+    Console.WriteLine("Compilation successful!");
+    Console.WriteLine(result.StdOut);
+}
+else
+{
+    Console.WriteLine("Compilation failed:");
+    Console.WriteLine(result.StdErr);
+}
+```
+
+The CLI automatically discovers the `slangc.exe` location in the following order:
+1. Same directory as the assembly (development/build output)
+2. NuGet package runtime directories (`runtimes/win-x64/native/`)
+3. PATH environment variable
+4. Standard installation paths (`C:\Slang\bin\`)
+
+This ensures the CLI works seamlessly in both development and deployment scenarios without requiring manual configuration.
 
 ## Usage Examples
 

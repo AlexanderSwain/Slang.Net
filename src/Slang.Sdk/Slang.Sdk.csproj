@@ -121,6 +121,12 @@
 			<PackagePath>runtimes\win-x64\native\slang-rt.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Include="..\Native\bin\$(Configuration)\x64\slangc.exe" Condition="Exists('..\Native\bin\$(Configuration)\x64\slangc.exe')">
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-x64\native\slangc.exe</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<TargetPath>runtimes\win-x64\native\slangc.exe</TargetPath>
+		</Content>
 	</ItemGroup>
 
 	<!-- Platform-specific native dependencies for ARM64 -->
@@ -169,6 +175,12 @@
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-ARM64\native\slang-rt.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="..\Native\bin\$(Configuration)\ARM64\slangc.exe" Condition="Exists('..\Native\bin\$(Configuration)\ARM64\slangc.exe')">
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-ARM64\native\slangc.exe</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<TargetPath>runtimes\win-x64\native\slangc.exe</TargetPath>
 		</Content>
 		<Content Include="Tests\Shaders\AverageColor.slang">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

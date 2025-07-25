@@ -1,7 +1,7 @@
-﻿using Slang.Sdk.Interop;
-using Slang.Sdk.Layer3_Pretty.CLI;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text;
+using System.Runtime.InteropServices;
+using System.Reflection;
 
 namespace Slang.CLI
 {
@@ -55,11 +55,18 @@ namespace Slang.CLI
             return InvokeSlangc(args.ToString());
         }
 
+        public static ResultsCLI slangc(string args)
+        {
+            if (string.IsNullOrWhiteSpace(args))
+                throw new ArgumentException("Arguments cannot be null or empty.", nameof(args));
+            return InvokeSlangc(args);
+        }
+
         private static ResultsCLI InvokeSlangc(string args)
         {
             var startInfo = new ProcessStartInfo
             {
-                FileName = "C:\\Slang\\bin\\slangc", // Or full path if needed
+                FileName = Path.Combine(Runtime.Directory, "slangc.exe"),
                 Arguments = args,
                 WorkingDirectory = WorkingDirectory,
                 RedirectStandardOutput = true,
@@ -89,5 +96,6 @@ namespace Slang.CLI
             return result;
         }
 
+        // TODO: Implement Async feature in later version
     }
 }

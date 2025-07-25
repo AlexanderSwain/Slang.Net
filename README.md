@@ -169,6 +169,55 @@ public class Program
 
 ## Advanced Usage
 
+### CLI Integration
+
+For scenarios where you need to use the command-line `slangc` tool directly, Slang.Sdk provides a convenient wrapper:
+
+```csharp
+using Slang.CLI;
+
+// Compile a compute shader to HLSL
+var result = SlangCLI.slangc(
+    target: "hlsl",
+    profile: "cs_5_0",
+    entry: "main",
+    outputPath: "MyShader.hlsl",
+    inputFiles: new[] { "MyShader.slang" }
+);
+
+if (result.ExitCode == 0)
+{
+    Console.WriteLine("✅ Compilation successful!");
+    Console.WriteLine(result.StdOut);
+}
+else
+{
+    Console.WriteLine("❌ Compilation failed:");
+    Console.WriteLine(result.StdErr);
+}
+
+// Advanced compilation with all options
+var advancedResult = SlangCLI.slangc(
+    target: "spirv",
+    profile: "cs_6_0",
+    entry: "computeMain",
+    stage: "compute",
+    outputPath: "shader.spv",
+    includePaths: new[] { @"C:\MyShaders\Include" },
+    defines: new Dictionary<string, string> 
+    { 
+        ["MAX_LIGHTS"] = "16",
+        ["ENABLE_SHADOWS"] = "1" 
+    },
+    warningsAsErrors: true,
+    optimizationLevel: "3",
+    debugInfo: true,
+    inputFiles: new[] { "compute.slang" }
+);
+```
+
+The CLI wrapper automatically locates `slangc.exe` from the NuGet package, so no manual configuration is required.
+
 ### Compiling to Different Targets
 
 Slang.Sdk supports compilation to multiple target languages:

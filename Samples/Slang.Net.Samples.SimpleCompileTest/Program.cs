@@ -17,7 +17,7 @@ public class Program
         Session session = builder.Create();
 
         // Load the module from the specified file
-        Module module = session.LoadModule("AverageColor.slang", null, null);
+        Module module = session.LoadModule("AverageColor.slang");
 
         // Get the shader program from the module
         Slang.Sdk.Program program = module.Program;
