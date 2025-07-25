@@ -29,6 +29,12 @@ internal static unsafe partial class SlangNativeInterop
     [LibraryImport(LibraryName)]
     internal static partial void Session_Release(nint session);
 
+    [LibraryImport(LibraryName)]
+    internal static partial uint Session_GetModuleCount(nint module);
+
+    [LibraryImport(LibraryName)]
+    internal static partial nint Session_GetModuleByIndex(nint module, uint index);
+
     #endregion
 
     #region Module API
@@ -134,9 +140,7 @@ internal static unsafe partial class SlangNativeInterop
     internal static partial nint ShaderReflection_FindTypeParameter(nint shaderReflection, char* name);
 
     [LibraryImport(LibraryName)]
-    internal static partial nint ShaderReflection_GetParameterByIndex(
-        nint shaderReflection, 
-        uint index);
+    internal static partial nint ShaderReflection_GetParameterByIndex(nint shaderReflection, uint index);
 
     [LibraryImport(LibraryName)]
     internal static partial uint ShaderReflection_GetEntryPointCount(nint shaderReflection);
@@ -784,6 +788,18 @@ internal static unsafe partial class StrongTypeInterop
     {
         var handle = SlangNativeInterop.Session_Create(options, optionsLength, macros, macrosLength, models, modelsLength, searchPaths, searchPathsLength);
         return new SessionHandle(handle);
+    }
+
+    /// <summary>
+    /// Finds a previously loaded module by its index
+    /// </summary>
+    /// <param name="module"></param>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    internal static ModuleHandle Session_GetModuleByIndex(nint module, uint index)
+    {
+        var handle = SlangNativeInterop.Session_GetModuleByIndex(module, index);
+        return new ModuleHandle(handle);
     }
 
     #endregion

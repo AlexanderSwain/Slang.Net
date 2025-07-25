@@ -30,6 +30,7 @@ private:
     void* session = nullptr;
     void* module = nullptr;
     void* program = nullptr;
+    void* entryPoint = nullptr;
     void* shaderReflection = nullptr;
 
     // Helper to add test results
@@ -194,6 +195,27 @@ public:
         addTestResult("Compiled Program", success, success ? output : (error ? error : "Unknown error"));
         
 		return success;
+    }
+
+    bool getCompiledEntryPoint()
+    {
+        printHeader("GETTING COMPILED ENTRYPOINT");
+
+        entryPoint = Module_GetEntryPointByIndex(module, 0);
+
+        if (!entryPoint) {
+            addTestResult("Get Compiled EntryPoint", false, "No entryPoint available");
+            return false;
+        }
+
+        const char* output = nullptr;
+        SlangResult result = EntryPoint_Compile(program, 0, &output);
+        const char* error = SlangNative_GetLastError();
+
+        bool success = (result >= 0 && output != nullptr);
+        addTestResult("Compiled EntryPoint", success, success ? output : (error ? error : "Unknown error"));
+
+        return success;
     }
 
     void testShaderReflectionBasics() {
@@ -769,6 +791,7 @@ int main() {
     if (!tester.createProgram()) return -1;
     if (!tester.getProgramReflection()) return -1;
 	if (!tester.getCompiledProgram()) return -1;
+    if (!tester.getCompiledEntryPoint()) return -1;
     
     return 0;
 }

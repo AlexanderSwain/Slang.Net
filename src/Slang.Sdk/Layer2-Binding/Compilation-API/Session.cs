@@ -39,6 +39,16 @@ internal unsafe sealed class Session : CompilationBinding
         }
     }
 
+    internal uint GetModuleCount()
+    {
+        return Call(() => SlangNativeInterop.Session_GetModuleCount(Handle));
+    }
+
+    internal Module GetModuleByIndex(uint index)
+    {
+        return new Module(this, Call(() => StrongTypeInterop.Session_GetModuleByIndex(Handle, index)));
+    }
+
     ~Session()
     {
         Handle?.Dispose();

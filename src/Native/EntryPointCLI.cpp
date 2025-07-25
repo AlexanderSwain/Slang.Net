@@ -67,3 +67,27 @@ int Native::EntryPointCLI::getIndex()
 	// Idea to use reflection to get the index if m_index is -1
     return m_index;
 }
+
+SlangResult Native::EntryPointCLI::Compile(int targetIndex, const char** outCode)
+{
+    Slang::ComPtr<slang::IBlob> sourceBlob;
+    Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+
+    SlangResult result = m_native->getEntryPointCode(0, 0, sourceBlob.writeRef(), diagnosticsBlob.writeRef());
+
+    // Improved diagnostics output
+    if (sourceBlob && sourceBlob->getBufferSize() > 0)
+        *outCode = (const char*)sourceBlob->getBufferPointer();
+
+    // Improved diagnostics output
+    if (diagnosticsBlob && diagnosticsBlob->getBufferSize() > 0)
+    {
+        std::string diagnosticsText = std::string((const char*)diagnosticsBlob->getBufferPointer());
+        std::string errorMessage = "There are issues in the shader source: " + diagnosticsText;
+
+        if (SLANG_FAILED(result))
+            throw std::runtime_error(errorMessage);
+    }
+
+    return result;
+}

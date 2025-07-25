@@ -58,6 +58,12 @@ internal unsafe sealed class Module : CompilationBinding
         }
     }
 
+    public Module(Session parent, Interop.ModuleHandle handle)
+    {
+        Parent = parent;
+        Handle = handle;
+    }
+
     ~Module()
     {
         Handle?.Dispose();

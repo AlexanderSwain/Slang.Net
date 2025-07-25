@@ -31,3 +31,41 @@ void CS(uint3 dispatchThreadID : SV_DispatchThreadID, uint3 groupThreadID : SV_G
     // Just divide each component by the number of pixels after extracting the outputInt on the CPU
     // And you have your average color
 }
+
+cbuffer ViewProjection : register(b0)
+{
+    matrix view;
+    matrix projection;
+};
+
+cbuffer World : register(b1)
+{
+    matrix world;
+};
+
+struct VS_IN
+{
+    float4 pos : POSITION;
+    float2 tex : TEXCOORD;
+};
+
+struct PS_IN
+{
+    float4 sv_pos : SV_POSITION;
+    float4 pos : POSITION;
+    float2 tex : TEXCOORD;
+};
+
+[shader("vertex")]
+PS_IN VS(VS_IN input)
+{
+    PS_IN output = (PS_IN)0;
+
+    matrix wvp = mul(world, mul(view, projection));
+
+    output.sv_pos = mul(float4(input.pos.xy, projection[1].y, 1.0), wvp);
+    output.pos = output.sv_pos;
+    output.tex = input.tex;
+
+    return output;
+}

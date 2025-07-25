@@ -5,6 +5,13 @@
 #include "CompilerOptionCLI.h"
 #include "PreprocessorMacroDescCLI.h"
 #include "TargetCLI.h"
+#include <map>
+
+// Forward declaration to avoid circular dependency
+namespace Native
+{
+	class ModuleCLI;
+}
 
 namespace Native
 {
@@ -24,9 +31,13 @@ namespace Native
 		slang::ISession* getNative();
 		static slang::IGlobalSession* GetGlobalSession();
 
+		unsigned int getModuleCount();
+		ModuleCLI* getModuleByIndex(unsigned index);
+
 
 	private:
 		Slang::ComPtr<slang::ISession> m_session;
 		static slang::IGlobalSession* s_context;
+		std::map<unsigned int, ModuleCLI*> m_modules;
 	};
 }

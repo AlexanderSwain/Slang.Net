@@ -36,6 +36,8 @@ namespace Native
 		int getIndex();
 		const char* getName();
 
+		SlangResult Compile(int targetIndex, const char** outCode);
+
 	private:
 		ModuleCLI* m_parent = nullptr;
 		slang::IEntryPoint* m_native = nullptr;

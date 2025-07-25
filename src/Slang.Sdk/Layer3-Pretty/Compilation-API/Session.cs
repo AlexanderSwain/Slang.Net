@@ -1,17 +1,11 @@
 ﻿using Slang.Sdk.Collections;
 using Slang.Sdk.Interop;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Slang.Sdk
 {
     public partial class Session
-        : IComposition<Target>
+        : IComposition<Target>,
+        IComposition<Module>
     {
         #region Definition
         internal Binding.Session Binding { get; }
@@ -94,13 +88,16 @@ namespace Slang.Sdk
                 moduleSource = File.ReadAllText(modulePath);
 
             if (moduleSource is null)
-                throw new FileNotFoundException($"The specified slang file was not found: { modulePath}", modulePath);
+                throw new FileNotFoundException($"The specified slang file was not found: {modulePath}", modulePath);
 
             return new Module(this, moduleName, modulePath, moduleSource);
         }
 
         SlangCollection<Target>? _Targets;
         public SlangCollection<Target> Targets => _Targets ??= new SlangCollection<Target>(this);
+
+        SlangCollection<Module>? _Module;
+        public SlangCollection<Module> Modules => _Module ??= new SlangCollection<Module>(this);
         #endregion
 
         #region Composition
@@ -111,6 +108,13 @@ namespace Slang.Sdk
             return Binding.Targets.ElementAt((int)index);
         }
         uint IComposition<Target>.Count => (uint)Binding.Targets.Count;
+
+        // Modules
+        Module IComposition<Module>.GetByIndex(uint index)
+        {
+            return new Module(this, Binding.GetModuleByIndex(index));
+        }
+        uint IComposition<Module>.Count => Binding.GetModuleCount();
 
         #endregion
     }

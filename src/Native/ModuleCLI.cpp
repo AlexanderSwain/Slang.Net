@@ -68,6 +68,16 @@ Native::ModuleCLI::ModuleCLI(SessionCLI* parent, const char* moduleName)
     m_entryPoints = nullptr; // Initialize to nullptr, will be allocated on demand
 }
 
+Native::ModuleCLI::ModuleCLI(SessionCLI* parent, slang::IModule* nativeModule)
+{
+    m_parent = parent->getNative();
+    m_slangModule = nativeModule;
+
+    // Initialize entry point related members
+    m_entryPointCount = m_slangModule->getDefinedEntryPointCount();
+    m_entryPoints = nullptr; // Initialize to nullptr, will be allocated on demand
+}
+
 Native::ModuleCLI::~ModuleCLI()
 {
     // Clean up entry points array if allocated

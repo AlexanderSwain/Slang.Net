@@ -23,6 +23,12 @@ namespace Slang.Sdk
             Parent = parent;
             Binding = new Binding.Module(Parent.Binding, moduleName);
         }
+
+        internal Module(Session parent, Binding.Module binding)
+        {
+            Parent = parent;
+            Binding = binding;
+        }
         #endregion
 
         #region Pretty

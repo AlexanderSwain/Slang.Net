@@ -1,4 +1,5 @@
 #include "SessionCLI.h"
+#include "ModuleCLI.h"
 #include <vector>
 #include <iostream>
 #include <sys/stat.h>
@@ -112,6 +113,37 @@ slang::IGlobalSession* Native::SessionCLI::GetGlobalSession()
     }
 
     return s_context;
+}
+
+unsigned int Native::SessionCLI::getModuleCount()
+{
+    return m_session->getLoadedModuleCount();
+}
+
+Native::ModuleCLI* Native::SessionCLI::getModuleByIndex(unsigned index)
+{
+	unsigned int moduleCount = getModuleCount();
+    if (index >= moduleCount)
+    {
+        throw std::out_of_range("Entry point index is out of range");
+    }
+
+    // Check if the modifier is already cached
+    auto it = m_modules.find(index);
+
+    // If the modifier is already cached, return it
+    if (it != m_modules.end())
+        return it->second;
+
+    // If not cached, create a new Modifier and cache it
+    slang::IModule* nativeModule = m_session->getLoadedModule(index);
+    if (nativeModule)
+    {
+        Native::ModuleCLI* result = new Native::ModuleCLI(this, nativeModule);
+        m_modules[index] = result;
+        return result;
+    }
+    return nullptr;
 }
 
 slang::ISession* Native::SessionCLI::getNative()

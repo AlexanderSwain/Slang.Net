@@ -1,15 +1,23 @@
 ﻿using Slang.Sdk.Interop;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using static Slang.Sdk.Interop.Utilities;
 
 namespace Slang.Sdk.Binding
 {
     internal abstract class CompilationBinding
     {
         internal abstract SlangHandle Handle { get; }
+
+        internal T Call<T>(Func<T> function)
+        {
+            ObjectDisposedException.ThrowIf(Handle.IsInvalid, this);
+
+            T resultHandle = function();
+
+            if (Handle.IsInvalid)
+                throw new SlangException(SlangResult.Fail, $"Failed to unwrap array: {GetLastError() ?? "<No error was returned from Slang>"}");
+
+            return resultHandle;
+        }
 
         public override string ToString()
         {

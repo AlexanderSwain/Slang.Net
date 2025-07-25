@@ -37,6 +37,8 @@ namespace Slang.Sdk.Tests
             //// Compile the shader program using the entry point
             //var source = entryPoint.Compile();
 
+            var modules = session.Modules;
+
             var source = program.Compile(null, Targets.Hlsl.cs_5_0);
 
             // Print the generated source code length

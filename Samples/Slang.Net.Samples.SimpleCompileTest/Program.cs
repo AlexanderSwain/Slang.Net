@@ -25,6 +25,8 @@ public class Program
         // Access the shader program from the module
         ShaderReflection reflection = module.Program.GetReflection(Targets.Hlsl.cs_5_0);
 
+        var modules = session.Modules;
+
         //// Print the number of entry points in the shader program
         //var entryPoint = program.EntryPoints.Where(x => x.Name == "CS").First();
         //

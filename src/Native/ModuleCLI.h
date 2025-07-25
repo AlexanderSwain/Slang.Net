@@ -23,6 +23,9 @@ namespace Native
 		// Module import constructor
 		ModuleCLI(SessionCLI* parent, const char* moduleName);
 
+		// Module import constructor
+		ModuleCLI(SessionCLI* parent, slang::IModule* nativeModule);
+
 		// Destructor
 		~ModuleCLI();
 
