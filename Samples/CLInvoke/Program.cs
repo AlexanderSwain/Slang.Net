@@ -1,4 +1,9 @@
 ﻿using Slang.Sdk;
+using System.Text;
+
+// Fix Unicode character rendering by setting console encoding to UTF-8
+Console.OutputEncoding = Encoding.UTF8;
+Console.InputEncoding = Encoding.UTF8;
 
 Console.WriteLine("Slang CLI Invocation Sample");
 Console.WriteLine("================================\n");
@@ -19,7 +24,7 @@ try
         entry: "CS",
         inputFiles: ["AverageColor.slang"]);
 
-    Console.WriteLine($"✅ HLSL Compilation - Exit Code: {hlslResult.ExitCode}");
+    Console.WriteLine($"{(hlslResult.ExitCode == 0 ? "✅" : "❌")} HLSL Compilation - Exit Code: {hlslResult.ExitCode}");
     if (hlslResult.ExitCode == 0)
     {
         Console.WriteLine("📄 Generated HLSL (first 200 chars):");
@@ -40,12 +45,16 @@ try
         stage: "compute",
         inputFiles: ["AverageColor.slang"]);
 
-    Console.WriteLine($"✅ GLSL Compilation - Exit Code: {glslResult.ExitCode}");
+    Console.WriteLine($"{(glslResult.ExitCode == 0 ? "✅" : "❌")} GLSL Compilation - Exit Code: {glslResult.ExitCode}");
     if (glslResult.ExitCode == 0)
     {
         Console.WriteLine("📄 Generated GLSL (first 200 chars):");
         Console.WriteLine(glslResult.StdOut.Length > 200 ?
             glslResult.StdOut.Substring(0, 200) + "..." : glslResult.StdOut);
+    }
+    else if (!string.IsNullOrEmpty(glslResult.StdErr))
+    {
+        Console.WriteLine($"❌ Error: {glslResult.StdErr}");
     }
     Console.WriteLine();
 
@@ -57,7 +66,11 @@ try
         stage: "compute",
         inputFiles: ["ComponentAddition.slang"]);
 
-    Console.WriteLine($"✅ SPIR-V Compilation - Exit Code: {spirvResult.ExitCode}");
+    Console.WriteLine($"{(spirvResult.ExitCode == 0 ? "✅" : "❌")} SPIR-V Compilation - Exit Code: {spirvResult.ExitCode}");
+    if (spirvResult.ExitCode != 0 && !string.IsNullOrEmpty(spirvResult.StdErr))
+    {
+        Console.WriteLine($"❌ Error: {spirvResult.StdErr}");
+    }
     Console.WriteLine();
 
     // Test 2: Using the Builder Pattern
@@ -76,7 +89,11 @@ try
             .AddInputFile("AverageColor.slang")
             .Build());
 
-    Console.WriteLine($"✅ Builder Pattern Compilation - Exit Code: {builderResult.ExitCode}");
+    Console.WriteLine($"{(builderResult.ExitCode == 0 ? "✅" : "❌")} Builder Pattern Compilation - Exit Code: {builderResult.ExitCode}");
+    if (builderResult.ExitCode != 0 && !string.IsNullOrEmpty(builderResult.StdErr))
+    {
+        Console.WriteLine($"❌ Error: {builderResult.StdErr}");
+    }
     Console.WriteLine();
 
     // Test 3: File Output
@@ -91,13 +108,21 @@ try
         outputPath: "AverageColor_output.hlsl",
         inputFiles: ["AverageColor.slang"]);
 
-    Console.WriteLine($"✅ File Output Compilation - Exit Code: {fileOutputResult.ExitCode}");
+    Console.WriteLine($"{(fileOutputResult.ExitCode == 0 ? "✅" : "❌")} File Output Compilation - Exit Code: {fileOutputResult.ExitCode}");
+    if (fileOutputResult.ExitCode != 0 && !string.IsNullOrEmpty(fileOutputResult.StdErr))
+    {
+        Console.WriteLine($"❌ Error: {fileOutputResult.StdErr}");
+    }
 
     // Check if file was created
     if (File.Exists(Path.Combine(CLI.WorkingDirectory, "AverageColor_output.hlsl")))
     {
         var fileContent = File.ReadAllText(Path.Combine(CLI.WorkingDirectory, "AverageColor_output.hlsl"));
         Console.WriteLine($"📁 Output file created successfully ({fileContent.Length} characters)");
+    }
+    else if (fileOutputResult.ExitCode == 0)
+    {
+        Console.WriteLine($"⚠️ Warning: Compilation succeeded but output file was not found");
     }
     Console.WriteLine();
 
@@ -112,7 +137,11 @@ try
         reflectionJsonPath: "AverageColor_reflection.json",
         inputFiles: ["AverageColor.slang"]);
 
-    Console.WriteLine($"✅ Reflection JSON Generation - Exit Code: {reflectionResult.ExitCode}");
+    Console.WriteLine($"{(reflectionResult.ExitCode == 0 ? "✅" : "❌")} Reflection JSON Generation - Exit Code: {reflectionResult.ExitCode}");
+    if (reflectionResult.ExitCode != 0 && !string.IsNullOrEmpty(reflectionResult.StdErr))
+    {
+        Console.WriteLine($"❌ Error: {reflectionResult.StdErr}");
+    }
 
     // Check if reflection file was created
     if (File.Exists(Path.Combine(CLI.WorkingDirectory, "AverageColor_reflection.json")))
@@ -122,6 +151,10 @@ try
         Console.WriteLine("🔍 First 300 chars of reflection data:");
         Console.WriteLine(reflectionContent.Length > 300 ?
             reflectionContent.Substring(0, 300) + "..." : reflectionContent);
+    }
+    else if (reflectionResult.ExitCode == 0)
+    {
+        Console.WriteLine($"⚠️ Warning: Compilation succeeded but reflection JSON file was not found");
     }
     Console.WriteLine();
 
@@ -144,7 +177,11 @@ try
             .AddInputFile("AverageColor.slang")
             .Build());
 
-    Console.WriteLine($"✅ Advanced Options Compilation - Exit Code: {advancedResult.ExitCode}");
+    Console.WriteLine($"{(advancedResult.ExitCode == 0 ? "✅" : "❌")} Advanced Options Compilation - Exit Code: {advancedResult.ExitCode}");
+    if (advancedResult.ExitCode != 0 && !string.IsNullOrEmpty(advancedResult.StdErr))
+    {
+        Console.WriteLine($"❌ Error: {advancedResult.StdErr}");
+    }
     Console.WriteLine();
 
     // Test 6: Raw Command String (for experimental features)
@@ -156,7 +193,11 @@ try
         "-D EXPERIMENTAL=1 -D VERSION=100 " +
         "-- AverageColor.slang");
 
-    Console.WriteLine($"✅ Raw Command String - Exit Code: {rawCommandResult.ExitCode}");
+    Console.WriteLine($"{(rawCommandResult.ExitCode == 0 ? "✅" : "❌")} Raw Command String - Exit Code: {rawCommandResult.ExitCode}");
+    if (rawCommandResult.ExitCode != 0 && !string.IsNullOrEmpty(rawCommandResult.StdErr))
+    {
+        Console.WriteLine($"❌ Error: {rawCommandResult.StdErr}");
+    }
     Console.WriteLine();
 
     // Test 7: Error Handling & Validation
@@ -170,10 +211,14 @@ try
         entry: "CS",
         inputFiles: ["NonExistentShader.slang"]);
 
-    Console.WriteLine($"🔍 Non-existent file test - Exit Code: {errorResult.ExitCode}");
+    Console.WriteLine($"{(errorResult.ExitCode != 0 ? "✅" : "❌")} Non-existent file test - Exit Code: {errorResult.ExitCode} (Expected: Non-zero)");
     if (errorResult.ExitCode != 0)
     {
         Console.WriteLine($"📝 Expected error message: {errorResult.StdErr.Split('\n')[0]}");
+    }
+    else
+    {
+        Console.WriteLine($"❌ Unexpected: Should have failed with non-existent file");
     }
     Console.WriteLine();
 
@@ -184,10 +229,14 @@ try
         entry: "InvalidEntryPoint",
         inputFiles: ["AverageColor.slang"]);
 
-    Console.WriteLine($"🔍 Invalid entry point test - Exit Code: {invalidEntryResult.ExitCode}");
+    Console.WriteLine($"{(invalidEntryResult.ExitCode != 0 ? "✅" : "❌")} Invalid entry point test - Exit Code: {invalidEntryResult.ExitCode} (Expected: Non-zero)");
     if (invalidEntryResult.ExitCode != 0)
     {
         Console.WriteLine($"📝 Expected error message: {invalidEntryResult.StdErr.Split('\n')[0]}");
+    }
+    else
+    {
+        Console.WriteLine($"❌ Unexpected: Should have failed with invalid entry point");
     }
     Console.WriteLine();
 
@@ -204,7 +253,11 @@ try
             .AddInputFile("ComponentAddition.slang")
             .Build());
 
-    Console.WriteLine($"✅ Multiple Files with Includes - Exit Code: {multiFileResult.ExitCode}");
+    Console.WriteLine($"{(multiFileResult.ExitCode == 0 ? "✅" : "❌")} Multiple Files with Includes - Exit Code: {multiFileResult.ExitCode}");
+    if (multiFileResult.ExitCode != 0 && !string.IsNullOrEmpty(multiFileResult.StdErr))
+    {
+        Console.WriteLine($"❌ Error: {multiFileResult.StdErr}");
+    }
     Console.WriteLine();
 
     // Test 9: Different Shader Stages
@@ -217,7 +270,11 @@ try
         entry: "main",
         stage: "vertex",
         inputFiles: ["ComponentAddition.slang"]);
-    Console.WriteLine($"✅ Vertex Shader Stage - Exit Code: {vertexResult.ExitCode}");
+    Console.WriteLine($"{(vertexResult.ExitCode == 0 ? "✅" : "❌")} Vertex Shader Stage - Exit Code: {vertexResult.ExitCode}");
+    if (vertexResult.ExitCode != 0 && !string.IsNullOrEmpty(vertexResult.StdErr))
+    {
+        Console.WriteLine($"❌ Error: {vertexResult.StdErr}");
+    }
 
     var fragmentResult = CLI.slangc(
         target: "hlsl",
@@ -225,7 +282,11 @@ try
         entry: "main",
         stage: "fragment",
         inputFiles: ["ComponentAddition.slang"]);
-    Console.WriteLine($"✅ Fragment Shader Stage - Exit Code: {fragmentResult.ExitCode}");
+    Console.WriteLine($"{(fragmentResult.ExitCode == 0 ? "✅" : "❌")} Fragment Shader Stage - Exit Code: {fragmentResult.ExitCode}");
+    if (fragmentResult.ExitCode != 0 && !string.IsNullOrEmpty(fragmentResult.StdErr))
+    {
+        Console.WriteLine($"❌ Error: {fragmentResult.StdErr}");
+    }
     Console.WriteLine();
 
     // Test 10: Working Directory Demonstration
@@ -236,7 +297,7 @@ try
 
     // Change working directory temporarily
     var originalWD = CLI.WorkingDirectory;
-    CLI.WorkingDirectory = Path.GetDirectoryName(originalWD) ?? originalWD;
+    CLI.WorkingDirectory = Path.Combine(originalWD, @"Shaders\");
     Console.WriteLine($"📁 Changed Working Directory: {CLI.WorkingDirectory}");
 
     var wdResult = CLI.slangc(
@@ -245,29 +306,69 @@ try
         entry: "CS",
         inputFiles: [Path.Combine("CLInvoke", "AverageColor.slang")]);
 
-    Console.WriteLine($"✅ Different Working Directory - Exit Code: {wdResult.ExitCode}");
+    Console.WriteLine($"{(wdResult.ExitCode == 0 ? "✅" : "❌")} Different Working Directory - Exit Code: {wdResult.ExitCode}");
+    if (wdResult.ExitCode != 0 && !string.IsNullOrEmpty(wdResult.StdErr))
+    {
+        Console.WriteLine($"❌ Error: {wdResult.StdErr}");
+    }
 
     // Restore working directory
     CLI.WorkingDirectory = originalWD;
     Console.WriteLine($"📁 Restored Working Directory: {CLI.WorkingDirectory}");
     Console.WriteLine();
 
-    // Summary
+    // Summary - Calculate actual results
+    int totalTests = 0;
+    int passedTests = 0;
+    
+    // Count successful tests (exit code 0 for positive tests, non-zero for negative tests)
+    var testResults = new[]
+    {
+        ("HLSL Compilation", hlslResult.ExitCode == 0),
+        ("GLSL Compilation", glslResult.ExitCode == 0),
+        ("SPIR-V Compilation", spirvResult.ExitCode == 0),
+        ("Builder Pattern", builderResult.ExitCode == 0),
+        ("File Output", fileOutputResult.ExitCode == 0),
+        ("Reflection JSON", reflectionResult.ExitCode == 0),
+        ("Advanced Options", advancedResult.ExitCode == 0),
+        ("Raw Command String", rawCommandResult.ExitCode == 0),
+        ("Non-existent file (should fail)", errorResult.ExitCode != 0),
+        ("Invalid entry point (should fail)", invalidEntryResult.ExitCode != 0),
+        ("Multiple Files with Includes", multiFileResult.ExitCode == 0),
+        ("Vertex Shader Stage", vertexResult.ExitCode == 0),
+        ("Fragment Shader Stage", fragmentResult.ExitCode == 0),
+        ("Working Directory Control", wdResult.ExitCode == 0)
+    };
+
+    totalTests = testResults.Length;
+    passedTests = testResults.Count(t => t.Item2);
+
     Console.WriteLine("🎉 CLI Invocation Feature Summary");
     Console.WriteLine("==================================");
-    Console.WriteLine("✅ Basic compilation with target/profile/entry parameters");
-    Console.WriteLine("✅ Builder pattern for complex option configuration");
-    Console.WriteLine("✅ File output generation");
-    Console.WriteLine("✅ Reflection JSON metadata generation");
-    Console.WriteLine("✅ Optimization levels and debug information");
-    Console.WriteLine("✅ Preprocessor definitions and macros");
-    Console.WriteLine("✅ Warning control and error handling");
-    Console.WriteLine("✅ Raw command string for experimental features");
-    Console.WriteLine("✅ Multiple input files and include paths");
-    Console.WriteLine("✅ Different shader stages (compute, vertex, fragment)");
-    Console.WriteLine("✅ Working directory control");
-    Console.WriteLine("✅ Multiple target formats (HLSL, GLSL, SPIR-V)");
-    Console.WriteLine("✅ Comprehensive error handling and validation");
+    Console.WriteLine($"📊 Test Results: {passedTests}/{totalTests} tests passed ({(passedTests * 100.0 / totalTests):F1}%)");
+    Console.WriteLine();
+    
+    // Show detailed feature status
+    foreach (var (testName, passed) in testResults)
+    {
+        Console.WriteLine($"{(passed ? "✅" : "❌")} {testName}");
+    }
+    
+    Console.WriteLine();
+    Console.WriteLine("📋 Features Demonstrated:");
+    Console.WriteLine("• Basic compilation with target/profile/entry parameters");
+    Console.WriteLine("• Builder pattern for complex option configuration");
+    Console.WriteLine("• File output generation");
+    Console.WriteLine("• Reflection JSON metadata generation");
+    Console.WriteLine("• Optimization levels and debug information");
+    Console.WriteLine("• Preprocessor definitions and macros");
+    Console.WriteLine("• Warning control and error handling");
+    Console.WriteLine("• Raw command string for experimental features");
+    Console.WriteLine("• Multiple input files and include paths");
+    Console.WriteLine("• Different shader stages (compute, vertex, fragment)");
+    Console.WriteLine("• Working directory control");
+    Console.WriteLine("• Multiple target formats (HLSL, GLSL, SPIR-V)");
+    Console.WriteLine("• Comprehensive error handling and validation");
 }
 catch (Exception ex)
 {

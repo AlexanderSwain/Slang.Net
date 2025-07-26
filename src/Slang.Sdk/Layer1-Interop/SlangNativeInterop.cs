@@ -13,6 +13,7 @@ internal static unsafe partial class SlangNativeInterop
     static SlangNativeInterop()
     {
         // Register a custom DLL resolver to look in the runtime-specific directory
+        // This is required for testing Slang.Sdk as an executable
         NativeLibrary.SetDllImportResolver(typeof(SlangNativeInterop).Assembly, DllImportResolver);
     }
 

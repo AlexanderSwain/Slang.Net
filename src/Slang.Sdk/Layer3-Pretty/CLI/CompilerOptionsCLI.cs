@@ -44,7 +44,11 @@ namespace Slang.Sdk
             Append("-o", OutputPath);
             Append("-module-name", ModuleName);
             Append("-std", Std);
-            Append("-O", OptimizationLevel);
+            
+            // Handle optimization level specially - it should be -O3, -O2, etc. (no space)
+            if (!string.IsNullOrWhiteSpace(OptimizationLevel))
+                builder.Append($" -O{OptimizationLevel}");
+                
             Append("-reflection-json", ReflectionJsonPath);
 
             if (WarningsAsErrors)
