@@ -15,11 +15,11 @@ namespace Slang.Sdk.Collections
             }
         }
 
-        public T? this[string name]
+        public T this[string name]
         {
             get
             {
-                return Dict.FindByName(name);
+                return Dict.FindByName(name) ?? throw new ($"(Key: {name}) doesn't exist in collection: {this}. Use TryGetValue() instead if you need to check if the name exists.");
             }
         }
 

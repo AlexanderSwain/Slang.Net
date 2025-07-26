@@ -104,6 +104,7 @@
   <ItemGroup>
     <None Include="build.ps1" />
     <None Include="ComprehensiveSlangTest.slang" />
+    <None Include="COMPREHENSIVE_SHADER_GUIDE.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

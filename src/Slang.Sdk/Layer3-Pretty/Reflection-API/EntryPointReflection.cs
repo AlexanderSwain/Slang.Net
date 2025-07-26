@@ -8,14 +8,14 @@ using Slang.Sdk.Interop;
 
 namespace Slang.Sdk
 {
-    public unsafe class EntryPoint : Reflection,
+    public unsafe class EntryPointReflection : Reflection,
         IComposition<VariableLayout>
     {
         #region Definition
         public override Reflection? Parent { get; }
         internal override Binding.EntryPointReflection Binding { get; }
 
-        internal EntryPoint(Reflection parent, Binding.EntryPointReflection binding)
+        internal EntryPointReflection(Reflection parent, Binding.EntryPointReflection binding)
         {
             Parent = parent;
             Binding = binding;

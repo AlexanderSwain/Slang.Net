@@ -264,7 +264,15 @@ namespace SlangNative
 	{
 		try
 		{
-			return ((EntryPointCLI*)entryPoint)->Compile(targetIndex, output);
+			// [Work Around] Maybe try slang::IEntryPoint::getLayout() instead?
+			EntryPointCLI* asEntryPoint = ((EntryPointCLI*)entryPoint);
+			ModuleCLI* parent = asEntryPoint->getParent();
+			ProgramCLI* program = new ProgramCLI(parent);
+			program->GetCompiled(asEntryPoint->getIndex(), targetIndex, output);
+			delete program;
+
+			//this doesn't work for some reason, maybe because not linked or something
+			//return ((EntryPointCLI*)entryPoint)->Compile(targetIndex, output);
 		}
 		catch (const std::exception& e)
 		{

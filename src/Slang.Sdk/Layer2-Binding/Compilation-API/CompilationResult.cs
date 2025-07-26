@@ -5,34 +5,34 @@ namespace Slang.Sdk.Binding;
 /// <summary>
 /// Represents the result of a Slang compilation operation.
 /// </summary>
-public class CompilationResult
+internal class CompilationResult
 {
     /// <summary>
     /// The compiled source code.
     /// </summary>
-    public string Source { get; }
+    internal string Source { get; }
 
     /// <summary>
     /// The target compilation format.
     /// </summary>
-    public Target Target { get; }
+    internal Target Target { get; }
 
     /// <summary>
     /// The entry point that was compiled.
     /// </summary>
-    public string EntryPoint { get; }
+    internal Binding.EntryPoint EntryPoint { get; }
 
     /// <summary>
     /// Whether the compilation was successful.
     /// </summary>
-    public SlangResult Result { get; }
+    internal SlangResult Result { get; }
 
     /// <summary>
     /// Any diagnostics or error messages from compilation.
     /// </summary>
-    public string? Diagnostics { get; }
+    internal string? Diagnostics { get; }
 
-    public CompilationResult(string source, Target target, string entryPoint, SlangResult result, string? diagnostics = null)
+    internal CompilationResult(string source, Target target, Binding.EntryPoint entryPoint, SlangResult result, string? diagnostics = null)
     {
         Source = source;
         Target = target;

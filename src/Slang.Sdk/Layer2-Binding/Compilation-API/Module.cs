@@ -64,6 +64,31 @@ internal unsafe sealed class Module : CompilationBinding
         Handle = handle;
     }
 
+    internal uint GetEntryPointCount()
+    {
+        return Call(() => SlangNativeInterop.Module_GetEntryPointCount(Handle));
+    }
+
+    internal EntryPoint GetEntryPointByIndex(uint index)
+    {
+        return new EntryPoint(this, Call(() => StrongTypeInterop.Module_GetEntryPointByIndex(Handle, index)));
+    }
+
+    internal EntryPoint GetEntryPointByName(string name)
+    {
+        // Convert managed strings to UTF-8 before passing to native API
+        byte* pName = ToUtf8(name);
+        try
+        {
+            return new EntryPoint(this, Call(() => StrongTypeInterop.Module_FindEntryPointByName(Handle, (char*)pName)));
+        }
+        finally
+        {
+            // Clean up allocated UTF-8 strings
+            FreeUtf8(pName);
+        }
+    }
+
     ~Module()
     {
         Handle?.Dispose();

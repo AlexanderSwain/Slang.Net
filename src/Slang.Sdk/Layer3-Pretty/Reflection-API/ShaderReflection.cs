@@ -11,8 +11,8 @@ namespace Slang.Sdk
         IComposition<TypeParameter>,
         INamedComposition<TypeParameter>,
         IComposition<VariableLayout>,
-        IComposition<EntryPoint>,
-        INamedComposition<EntryPoint>,
+        IComposition<EntryPointReflection>,
+        INamedComposition<EntryPointReflection>,
         IComposition<string>,
         INamedComposition<Type>
     {
@@ -53,16 +53,16 @@ namespace Slang.Sdk
 
         #region IComposition<EntryPoint>
 
-        uint IComposition<EntryPoint>.Count => Binding.GetEntryPointCount();
-        EntryPoint IComposition<EntryPoint>.GetByIndex(uint index) =>
-            new EntryPoint(this, Binding.GetEntryPointByIndex(index));
+        uint IComposition<EntryPointReflection>.Count => Binding.GetEntryPointCount();
+        EntryPointReflection IComposition<EntryPointReflection>.GetByIndex(uint index) =>
+            new EntryPointReflection(this, Binding.GetEntryPointByIndex(index));
 
         #endregion
 
         #region INamedComposition<EntryPoint>
 
-        EntryPoint? INamedComposition<EntryPoint>.FindByName(string name) =>
-            new EntryPoint(this, Binding.FindEntryPointByName(name));
+        EntryPointReflection? INamedComposition<EntryPointReflection>.FindByName(string name) =>
+            new EntryPointReflection(this, Binding.FindEntryPointByName(name));
 
         #endregion
 
@@ -91,9 +91,9 @@ namespace Slang.Sdk
         public SlangCollection<VariableLayout> Parameters => 
             _Parameters ??= new SlangCollection<VariableLayout>(this);
 
-        SlangNamedCollection<EntryPoint>? _EntryPoints;
-        public SlangNamedCollection<EntryPoint> EntryPoints => 
-            _EntryPoints ??= new SlangNamedCollection<EntryPoint>(this, this);
+        SlangNamedCollection<EntryPointReflection>? _EntryPoints;
+        public SlangNamedCollection<EntryPointReflection> EntryPoints => 
+            _EntryPoints ??= new SlangNamedCollection<EntryPointReflection>(this, this);
 
         SlangCollection<string>? _HashedStrings;
         public SlangCollection<string> HashedStrings => 

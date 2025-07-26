@@ -22,7 +22,6 @@ namespace Slang.Sdk
         #endregion
 
         #region IComposition<Type> (Argument Types)
-
         uint IComposition<Type>.Count => Binding.GetArgumentCount();
         Type IComposition<Type>.GetByIndex(uint index) =>
             new Type(this, Binding.GetArgumentType(index));

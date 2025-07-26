@@ -40,6 +40,19 @@ Native::EntryPointCLI::EntryPointCLI(ModuleCLI* parent, const char* entryPointNa
     {
 		throw std::runtime_error("Failed to find entry point named: " + std::string(entryPointName));
     }
+    else
+    {
+        // Finds and sets the index
+        unsigned epCount = m_parent->getEntryPointCount();
+        for (int i = 0; i < epCount; i++)
+        {
+            if (m_native == m_parent->getEntryPointByIndex(i)->getNative())
+            {
+                m_index = i;
+                break;
+            }
+        }
+    }
 }
 Native::EntryPointCLI::~EntryPointCLI()
 {
@@ -73,7 +86,7 @@ SlangResult Native::EntryPointCLI::Compile(int targetIndex, const char** outCode
     Slang::ComPtr<slang::IBlob> sourceBlob;
     Slang::ComPtr<slang::IBlob> diagnosticsBlob;
 
-    SlangResult result = m_native->getEntryPointCode(0, 0, sourceBlob.writeRef(), diagnosticsBlob.writeRef());
+    SlangResult result = m_native->getEntryPointCode(m_index, targetIndex, sourceBlob.writeRef(), diagnosticsBlob.writeRef());
 
     // Improved diagnostics output
     if (sourceBlob && sourceBlob->getBufferSize() > 0)

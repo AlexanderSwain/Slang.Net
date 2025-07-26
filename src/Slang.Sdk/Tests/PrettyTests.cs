@@ -39,7 +39,7 @@ namespace Slang.Sdk.Tests
 
             var modules = session.Modules;
 
-            var source = program.Compile(null, Targets.Hlsl.cs_5_0);
+            var source = program.Compile(module.EntryPoints["CS"], Targets.Hlsl.cs_5_0);
 
             // Print the generated source code length
             Console.WriteLine(source.Source);

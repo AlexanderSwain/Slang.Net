@@ -24,7 +24,6 @@ namespace Slang.Sdk
         }
         #endregion
 
-
         #region IComposition<Variable> (Parameters)
 
         uint IComposition<Variable>.Count => Binding.GetParameterCount();

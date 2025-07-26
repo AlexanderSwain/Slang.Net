@@ -37,7 +37,8 @@ namespace Slang.Sdk
             if (targetIndex is null)
                 throw new ArgumentException($"Target {target} was not included in Session {session}. Use Session.Builder.AddTarget(target) to include it.", nameof(target));
 
-            return Binding.Compile(0/*[Fix] Hard-coded*/, targetIndex.Value);
+            var result = Binding.Compile((uint)entryPoint.Index, targetIndex.Value);
+            return new CompilationResult(result.Source, target, entryPoint, result.Result, result.Diagnostics);
         }
         #endregion
     }

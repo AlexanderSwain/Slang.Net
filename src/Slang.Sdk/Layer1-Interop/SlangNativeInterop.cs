@@ -90,6 +90,9 @@ internal static unsafe partial class SlangNativeInterop
     [LibraryImport(LibraryName)]
     internal static partial char* EntryPoint_GetName(nint entryPoint);
 
+    [LibraryImport(LibraryName)]
+    internal static partial SlangResult EntryPoint_Compile(nint entryPoint, int targetIndex, char** output);
+
     #endregion
 
     #region Program API

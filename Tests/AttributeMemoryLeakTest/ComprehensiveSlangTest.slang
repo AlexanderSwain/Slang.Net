@@ -1,71 +1,37 @@
-// The texture to sample
-Texture2D<float4> inputImage : register(t0);
-
-// The output buffer
-RWStructuredBuffer<uint4> outputInt : register(u0);
-//RWStructuredBuffer<float4> outputFloat : register(u1);
-
-[shader("compute")]
-[numthreads(32, 32, 1)]
-void CS(uint3 dispatchThreadID : SV_DispatchThreadID, uint3 groupThreadID : SV_GroupThreadID, uint3 groupID : SV_GroupID)
+struct v2f
 {
-    // Get the dimensions of the image
-    uint width, height;
-    inputImage.GetDimensions(width, height);
-
-    // Calculate the total number of pixels
-    uint totalPixels = width * height;
-
-    // Sample the color at the current pixel
-    float4 color = inputImage.Load(int3(dispatchThreadID.xy, 0));
-
-    // Convert the color to integers in the range 0-255
-    uint4 colorInt = uint4(color * 255);
-
-    // Add the color to the output buffer using atomic operations
-    InterlockedAdd(outputInt[0].x, colorInt.r);
-    InterlockedAdd(outputInt[0].y, colorInt.g);
-    InterlockedAdd(outputInt[0].z, colorInt.b);
-    InterlockedAdd(outputInt[0].w, colorInt.a);
-
-    // Just divide each component by the number of pixels after extracting the outputInt on the CPU
-    // And you have your average color
+    int foobar;
 }
 
-cbuffer ViewProjection : register(b0)
+int foo(int a)
 {
-    matrix view;
-    matrix projection;
-};
-
-cbuffer World : register(b1)
-{
-    matrix world;
-};
-
-struct VS_IN
-{
-    float4 pos : POSITION;
-    float2 tex : TEXCOORD;
-};
-
-struct PS_IN
-{
-    float4 sv_pos : SV_POSITION;
-    float4 pos : POSITION;
-    float2 tex : TEXCOORD;
-};
+    return a + 3;
+}
 
 [shader("vertex")]
-PS_IN VS(VS_IN input)
+v2f vert ()
 {
-    PS_IN output = (PS_IN)0;
+    v2f res;
+    res.foobar = foo(42);
+    return res;
+}
 
-    matrix wvp = mul(world, mul(view, projection));
+[shader("fragment")]
+float4 frag (v2f i) : SV_Target
+{
+    return foo(i.foobar);
+}
 
-    output.sv_pos = mul(float4(input.pos.xy, projection[1].y, 1.0), wvp);
-    output.pos = output.sv_pos;
-    output.tex = input.tex;
+[shader("vertex")]
+v2f vert2()
+{
+    v2f res;
+    res.foobar = foo(42) + 1;
+    return res;
+}
 
-    return output;
+[shader("fragment")]
+float4 frag2(v2f i) : SV_Target
+{
+    return foo(i.foobar) + 2;
 }

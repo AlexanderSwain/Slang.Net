@@ -30,7 +30,10 @@ private:
     void* session = nullptr;
     void* module = nullptr;
     void* program = nullptr;
-    void* entryPoint = nullptr;
+    void* entryPointVS = nullptr;
+    void* entryPointPS = nullptr;
+    void* entryPointVS2 = nullptr;
+    void* entryPointPS2 = nullptr;
     void* shaderReflection = nullptr;
 
     // Helper to add test results
@@ -102,14 +105,16 @@ public:
             const_cast<char*>("../")
         };
 
+        // Create targets for all shader stages used in the comprehensive shader
         Native::TargetCLI models[] = {
-            Native::TargetCLI(Native::CompileTargetCLI::SLANG_HLSL, "cs_5_0"),
+            Native::TargetCLI(Native::CompileTargetCLI::SLANG_HLSL, "vs_5_0"),  // Vertex shaders
+            Native::TargetCLI(Native::CompileTargetCLI::SLANG_HLSL, "ps_5_0"),  // Pixel shaders
 		};
         
         session = Session_Create(
             nullptr, 0,  // No options for now
             nullptr, 0,  // No macros for now  
-            models, 1,  // Models for session
+            models, 2,  // Models for session (updated count to 6)
             searchPaths, 2);
         const char* error = SlangNative_GetLastError();
         
@@ -188,7 +193,7 @@ public:
         }
         
         const char* output = nullptr;
-        SlangResult result = Program_CompileProgram(program, 0, 0, &output);
+        SlangResult result = Program_CompileProgram(program, 1, 1, &output);
         const char* error = SlangNative_GetLastError();
         
         bool success = (result >= 0 && output != nullptr);
@@ -201,15 +206,18 @@ public:
     {
         printHeader("GETTING COMPILED ENTRYPOINT");
 
-        entryPoint = Module_GetEntryPointByIndex(module, 0);
+        entryPointVS = Module_GetEntryPointByIndex(module, 0);
+        entryPointPS = Module_GetEntryPointByIndex(module, 1);
+        entryPointVS2 = Module_GetEntryPointByIndex(module, 2);
+        entryPointPS2 = Module_GetEntryPointByIndex(module, 3);
 
-        if (!entryPoint) {
+        if (!entryPointVS) {
             addTestResult("Get Compiled EntryPoint", false, "No entryPoint available");
             return false;
         }
 
         const char* output = nullptr;
-        SlangResult result = EntryPoint_Compile(program, 0, &output);
+        SlangResult result = EntryPoint_Compile(entryPointVS, 0, &output);
         const char* error = SlangNative_GetLastError();
 
         bool success = (result >= 0 && output != nullptr);

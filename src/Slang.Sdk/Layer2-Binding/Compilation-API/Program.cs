@@ -26,13 +26,15 @@ internal sealed unsafe class Program : CompilationBinding
     internal CompilationResult Compile(uint entryPointIndex, uint targetIndex)
     {
         ObjectDisposedException.ThrowIf(Handle.IsInvalid, this);
-        //var entryPoint = Parent.Parent.EntryPoints.ElementAt(entryPointIndex);
-        var target = Parent.Parent.Targets.ElementAt((int)targetIndex);
+
+        Target target = Parent.Parent.Targets.ElementAt((int)targetIndex);
+        EntryPoint entryPoint = Parent.GetEntryPointByIndex(entryPointIndex);
+
         char* compiledSource = null;
         SlangResult compileResult = SlangNativeInterop.Program_CompileProgram(Handle, entryPointIndex, targetIndex, &compiledSource);
         string? diagnostics = GetLastError();
 
-        return new CompilationResult(StringMarshaling.FromUtf8((byte*)compiledSource), target, null/*EntryPoint is not yet implemented*/, compileResult, diagnostics);
+        return new CompilationResult(StringMarshaling.FromUtf8((byte*)compiledSource) ?? throw new SlangException(SlangResult.Fail, "Failed to convert compiled source from UTF-8"), target, entryPoint, compileResult, diagnostics);
     }
 
     internal ShaderReflection GetReflection(uint targetIndex)
