@@ -10,6 +10,30 @@ internal static unsafe partial class SlangNativeInterop
 {
     private const string LibraryName = "SlangNative";
 
+    static SlangNativeInterop()
+    {
+        // Register a custom DLL resolver to look in the runtime-specific directory
+        NativeLibrary.SetDllImportResolver(typeof(SlangNativeInterop).Assembly, DllImportResolver);
+    }
+
+    private static IntPtr DllImportResolver(string libraryName, System.Reflection.Assembly assembly, DllImportSearchPath? searchPath)
+    {
+        if (libraryName == LibraryName)
+        {
+            // Use the Runtime.Directory to get the correct runtime path
+            var runtimeDirectory = Slang.Runtime.Directory;
+            var libraryPath = Path.Combine(runtimeDirectory, "SlangNative.dll");
+            
+            if (File.Exists(libraryPath))
+            {
+                return NativeLibrary.Load(libraryPath);
+            }
+        }
+        
+        // Fall back to default resolution
+        return IntPtr.Zero;
+    }
+
     #region Diagnostics
 
     [LibraryImport(LibraryName)]
