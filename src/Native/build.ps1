@@ -33,25 +33,14 @@ if (-not (Test-Path $slangSdkOutputDir)) {
     Write-Host "Created directory: $slangSdkOutputDir" -ForegroundColor Yellow
 }
 
-# Copy DLLs
-foreach ($file in (Get-ChildItem $sdkPath)) {
-    Write-Host "Copying Slang SDK DLL: $($file.Name)" -ForegroundColor Green
+# Copy all files from the Slang SDK bin directory
+$sdkBinPath = Join-Path $nativeDir "EmbeddedLLVM\slang-2025.10.3-windows\$Platform\bin\*"
+foreach ($file in (Get-ChildItem $sdkBinPath -File)) {
+    Write-Host "Copying Slang SDK file: $($file.Name)" -ForegroundColor Green
     Copy-Item -Path $file.FullName -Destination $slangSdkOutputDir
 
     if (-not $?) {
         Write-Host "Failed to copy Slang SDK file: $($file.Name)" -ForegroundColor Red
-        exit 1
-    }
-}
-
-# Copy slangc.exe and other executables
-$sdkExePath = Join-Path $nativeDir "EmbeddedLLVM\slang-2025.10.3-windows\$Platform\bin\*.exe"
-foreach ($file in (Get-ChildItem $sdkExePath)) {
-    Write-Host "Copying Slang SDK executable: $($file.Name)" -ForegroundColor Green
-    Copy-Item -Path $file.FullName -Destination $slangSdkOutputDir
-
-    if (-not $?) {
-        Write-Host "Failed to copy Slang SDK executable: $($file.Name)" -ForegroundColor Red
         exit 1
     }
 }
