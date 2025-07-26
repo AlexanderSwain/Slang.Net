@@ -170,7 +170,7 @@ try
             .SetOptimizationLevel("3")
             .SetDebugInfo(true)
             .SetWarningsAsErrors(false)
-            .DisableWarning("unused-parameter")
+            .DisableWarning("unreachable-code")
             .Define("DEBUG_MODE", "1")
             .Define("MAX_THREADS", "1024")
             .SetModuleName("AverageColorModule")
