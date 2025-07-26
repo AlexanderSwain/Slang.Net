@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Slang.CLI
+namespace Slang.Sdk
 {
-    public partial class CompilerOptionsCLI
+    public partial class SlangC_Options
     {
         public string? Target { get; set; }
         public string? Profile { get; set; }

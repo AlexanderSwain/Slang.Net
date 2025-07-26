@@ -2,9 +2,25 @@
 
 A comprehensive .NET wrapper for the Slang Shader Language compiler, providing seamless integration of shader compilation and reflection capabilities into .NET applications.
 
-> **Note:** Slang.Sdk is currently in early development. While functional, expect APIs to evolve and additional features to be added in future releases.
+> **Note:** Slang.Sdk is currently in early development. While functional, expect APIs to evolve and additional features to be added in future releases. 
 
 > **Disclaimer:** We are the developers and maintainers of this C# wrapper library only, not of the Slang shader language itself. Slang is developed and maintained by NVIDIA. This project provides .NET bindings to make Slang accessible to C# developers.
+
+## Supported Platforms
+
+- **Windows x64** - Full support
+- **Windows x86** - Unsuported due to missing support from the native slang api 
+- **Windows ARM64** - Full support
+- **Linux** - Planned for future release. Sponsorships can make this a priority.
+- **macOS** - Planned for future release. Sponsorships can make this a priority.
+
+## Release Roadmap:
+We will use `Slang api version: 2025.10.3` as the underlying native version until after v1.0.0 release. Expect at least one release at the end of every month:
+
+- **Slang.Sdk v0.0.1** (6/27/2025 Release): Proof of Concept. Limited testing. Has basic functionality but came with many known issues such as bugs and memory leaks. Windows (x64, ARM64).
+- **Slang.Sdk v0.5.0** (7/27/2025 Release): Most features are implemented. Most bugs and memory leaks fixed. Basic testing. Windows (x64, ARM64).
+- **Slang.Sdk v1.0.0** (late August Release): All native slang features implemented and abstracted. No known bugs or memory leaks. Intensive testing. We're aiming for Linux, macOS compatitbility for this release. Please help us reach this goal.
+- **Slang.Sdk v1.X.X** (late September Release): Update to latest slang version. Fix reported issues.
 
 **Sponsoring Development:**
 
@@ -22,14 +38,39 @@ If Slang.Sdk adds value to your project or organization, please consider sponsor
 
 ## Why Slang.Sdk?
 
-**Slang** is a modern shader language developed by NVIDIA that brings advanced features like generics, interfaces, and modules to shader programming. **Slang.Sdk** makes this powerful technology accessible to .NET developers with:
+Slang is purpose-built to bring **modularity**, **scalability**, and **developer-friendliness** to modern GPU programming. Whether you're building apps, games, or ML pipelines, here's why it stands out:
 
-- 🚀 **Zero Configuration**: Install via NuGet and start using immediately
-- 🎯 **Type-Safe APIs**: Strongly-typed C# interfaces for all Slang functionality
-- 📦 **Self-Contained**: Dependencies auto-downloaded during build - no external SDK required
-- 🔄 **Automatic Management**: Native resources handled automatically with proper disposal
-- 🌐 **Multi-Platform**: Works on Windows x64, x86, and ARM64 architectures
-- ⚡ **High Performance**: Direct native interop with minimal overhead
+### 🚀 Zero Configuration: 
+- Install via NuGet and start using immediately
+
+### 🎯 Type-Safe APIs: 
+- Strongly-typed C# interfaces for all Slang functionality
+
+### 🌐 Multi-Platform: 
+- Works on Windows x64, x86, and ARM64 architectures
+
+### ✨ Modular Shader Development
+- Write reusable shader libraries with clean interfaces
+- Compose shaders like software modules—no more monolithic .hlsl files!
+
+### ⚡ Performance Without Compromise
+- Targets DirectX, Vulkan, CUDA, and more via cross-compilation
+- Optimized for real-time rendering and compute workloads
+
+### 🧠 Ideal for ML and Custom Pipelines
+- Cleanly integrate with custom backends or accelerators
+- Write compute shaders that scale with data and hardware
+
+### 🔧 Designed for Tooling and Extensibility
+- Structured reflection for debugging, UI integration, and dynamic dispatch
+- Supports custom code generation and build-time tools
+
+### 🌐 Open Source and Industry-Ready
+- Actively developed with real-world use cases in mind
+- Bridges the gap between high-level app logic and GPU execution
+
+Slang doesn’t just let you write shaders—it empowers you to design **systems**. Clean, composable, and powerful. It's the shader language for developers who think architecturally.
+
 
 ## Why Choose Slang Over Traditional Shaders?
 
@@ -60,668 +101,193 @@ dotnet add package Slang.Sdk
 Or add to your project file:
 
 ```xml
-<PackageReference Include="Slang.Sdk" Version="0.0.1" />
+<PackageReference Include="Slang.Sdk" Version="0.5.0" />
 ```
 
-## Quick Start
+## slangc API
+If you just want to call slangc CLI tooling directly from C#, we got you covered:
 
-### Basic Shader Compilation
+### Set Working Directory
+- Default directory is:
+    ```csharp
+    AppDomain.CurrentDomain.BaseDirectory;
+    ```
 
+- It can be changed like this:
+    ```csharp
+    CLI.WorkingDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"\Shaders");
+    ```
+
+### Compile to StdOut
 ```csharp
-using Slang;
+using Slang.Sdk;
 
-// Create a session - the main entry point for Slang operations
-using var session = new SessionBuilder()
-    .AddSearchPath(@"C:\MyShaders")
-    .AddShaderModel(CompileTarget.SLANG_HLSL, "cs_5_0")
-    .Create();
-
-// Load and compile a shader module
-var module = session.LoadModule("MyShader.slang");
-var entryPoint = module.Program.EntryPoints.First(e => e.Name == "main");
-var compiledShader = entryPoint.Compile();
-
-Console.WriteLine("Compiled HLSL:");
-Console.WriteLine(compiledShader);
-```
-
-### Requirements
-
-- **.NET 6.0** or later
-- **Windows** (x64, x86, or ARM64)
-- **No external dependencies** - everything is included in the NuGet package
-
-## Complete Example
-
-Create a simple compute shader file `AverageColor.slang`:
-
-```hlsl
-// The texture to sample
-Texture2D<float4> inputImage : register(t0);
-
-// The output buffer
-RWStructuredBuffer<uint4> outputInt : register(u0);
-
-[shader("compute")]
-[numthreads(32, 32, 1)]
-void CS(uint3 dispatchThreadID : SV_DispatchThreadID, 
-        uint3 groupThreadID : SV_GroupThreadID, 
-        uint3 groupID : SV_GroupID)
-{
-    // Get the dimensions of the image
-    uint width, height;
-    inputImage.GetDimensions(width, height);
-
-    // Sample the color at the current pixel
-    float4 color = inputImage.Load(int3(dispatchThreadID.xy, 0));
-
-    // Convert the color to integers in the range 0-255
-    uint4 colorInt = uint4(color * 255);
-
-    // Add the color to the output buffer using atomic operations
-    InterlockedAdd(outputInt[0].x, colorInt.r);
-    InterlockedAdd(outputInt[0].y, colorInt.g);
-    InterlockedAdd(outputInt[0].z, colorInt.b);
-    InterlockedAdd(outputInt[0].w, colorInt.a);
-}
-```
-
-Use the shader in your C# application:
-
-```csharp
-using Slang;
-using System;
-using System.Linq;
-
-public class Program
-{
-    public static void Main(string[] args)
-    {
-        // Create a session with compiler options and search paths
-        using var session = new SessionBuilder()
-            .AddCompilerOption(CompilerOptionName.WarningsAsErrors, 
-                new CompilerOptionValue(CompilerOptionValueKind.Int, 0, 0, "all", null))
-            .AddCompilerOption(CompilerOptionName.Obfuscate, 
-                new CompilerOptionValue(CompilerOptionValueKind.Int, 1, 0, null, null))
-            .AddPreprocessorMacro("LIGHTING_SCALER", "12")
-            .AddShaderModel(CompileTarget.SLANG_HLSL, "cs_5_0")
-            .AddSearchPath(AppDomain.CurrentDomain.BaseDirectory)
-            .Create();
-
-        // Load the module from the specified file
-        Module module = session.LoadModule("AverageColor.slang");
-
-        // Access the shader program from the module
-        ShaderProgram program = module.Program;
-
-        // Find the compute shader entry point
-        var entryPoint = program.EntryPoints.First(x => x.Name == "CS");
-
-        // Compile the shader program using the entry point
-        var source = entryPoint.Compile();
-
-        // Print the generated source code
-        Console.WriteLine("Generated HLSL:");
-        Console.WriteLine(source);
-    }
-}
-```
-
-## Advanced Usage
-
-### CLI Integration
-
-For scenarios where you need to use the command-line `slangc` tool directly, Slang.Sdk provides a convenient wrapper:
-
-```csharp
-using Slang.CLI;
-
-// Compile a compute shader to HLSL
-var result = SlangCLI.slangc(
+// AverageColor.slang has to be in the WorkingDirectory
+var result = CLI.slangc(
     target: "hlsl",
     profile: "cs_5_0",
-    entry: "main",
-    outputPath: "MyShader.hlsl",
-    inputFiles: new[] { "MyShader.slang" }
-);
+    entry: "CS",
+    inputFiles: ["AverageColor.slang"]);
 
-if (result.ExitCode == 0)
-{
-    Console.WriteLine("✅ Compilation successful!");
-    Console.WriteLine(result.StdOut);
-}
-else
-{
-    Console.WriteLine("❌ Compilation failed:");
-    Console.WriteLine(result.StdErr);
-}
-
-// Advanced compilation with all options
-var advancedResult = SlangCLI.slangc(
-    target: "spirv",
-    profile: "cs_6_0",
-    entry: "computeMain",
-    stage: "compute",
-    outputPath: "shader.spv",
-    includePaths: new[] { @"C:\MyShaders\Include" },
-    defines: new Dictionary<string, string> 
-    { 
-        ["MAX_LIGHTS"] = "16",
-        ["ENABLE_SHADOWS"] = "1" 
-    },
-    warningsAsErrors: true,
-    optimizationLevel: "3",
-    debugInfo: true,
-    inputFiles: new[] { "compute.slang" }
-);
+// Prints the compiled shader source
+Console.WriteLine(result.StdOut);
 ```
 
-The CLI wrapper automatically locates `slangc.exe` from the NuGet package, so no manual configuration is required.
-
-### Compiling to Different Targets
-
-Slang.Sdk supports compilation to multiple target languages:
-
+### Compile to output file
 ```csharp
-using var session = new SessionBuilder()
-    .AddSearchPath(@"C:\MyShaders")
+using Slang.Sdk;
+
+// Output file will be in the WorkingDirectory
+var result = CLI.slangc(
+    target: "hlsl",
+    profile: "cs_5_0",
+    entry: "CS",
+    outputPath: "output1.hlsl",
+    inputFiles: ["AverageColor.slang"]);
+```
+
+### Too many parameters, use a builder instead
+```csharp
+SlangC_Options.Builder paramsBuilder = new SlangC_Options.Builder()
+    .SetTarget("hlsl")
+    .SetProfile("cs_5_0")
+    .SetEntry("CS")
+    .AddIncludePaths(Path.Combine(CLI.WorkingDirectory, "AverageColor.slang"));
+    
+var cliResult = CLI.slangc(paramsBuilder.Build());
+```
+
+### Using experimental parameters not yet supported by SlangC_Options
+- Pass raw parameters
+    ```csharp
+    string args = "-target spirv -profile sm_6_6 -stage compute -entry main -O 3 -g -source-embed-style auto -source-embed-language hlsl -source-embed-name MyShader -conformance myType:myInterface=myID -- 'AverageColor.slang'";
+
+    // -source-embed-style -source-embed-name flags are not currently suppored SlangC_Options, but can still be used as a raw string
+    var result = CLI.slangc(args);
+    ```
+
+## Compilation API
+
+### Finding EntryPoints and compiling them
+```csharp
+using Slang.Sdk;
+using Slang.Sdk.Interop;
+
+// Create a session - the main entry point for Slang operations also supports macros and compile options
+Session session = new Session.Builder()
+    .AddTarget(Targets.Hlsl.cs_5_0)
+    .AddSearchPath($@"{AppDomain.CurrentDomain.BaseDirectory}\Shaders\")
     .Create();
 
-var module = session.LoadModule("MyShader.slang");
-var entryPoint = module.Program.EntryPoints.First();
+// Load the module from the specified file, other overloads exists to expose most features from the native slang api
+Module module = session.LoadModule("AverageColor.slang");
 
-// Compile to HLSL (DirectX)
-session.AddShaderModel(CompileTarget.SLANG_HLSL, "cs_5_0");
-var hlslCode = entryPoint.Compile();
+// Find an entry point by name
+EntryPoint entryPoint = module.EntryPoints["CS"];
 
-// Compile to GLSL (OpenGL/Vulkan) 
-session.AddShaderModel(CompileTarget.SLANG_GLSL, "430");
-var glslCode = entryPoint.Compile();
+// Compiles that entry point for the specified target
+var result = entryPoint.Compile(Targets.Hlsl.cs_5_0);
 
-// Compile to Metal (macOS/iOS)
-session.AddShaderModel(CompileTarget.SLANG_METAL, "metal2.0");
-var metalCode = entryPoint.Compile();
+// Gets the source code from the compilation result
+Console.WriteLine(result.Source);
+```
+```csharp
+// Or you can also compile with the module's program object
+var result2 = module.Program.Compile(entryPoint, Targets.Hlsl.cs_5_0);
+```
+
+### Slang Collections
+- Native slang interface methods has been abstracted into Slang Collections
+- Slang Collections extend from IEnumerable and behaves as you'd expect in .Net
+    ```csharp
+    foreach (var entryPoint in module.EntryPoints)
+    {
+        Console.WriteLine($"Index: {entryPoint.Index}, Name: {entryPoint.Name}");
+    }
+    ```
+    ```csharp
+    module.EntryPoints.Where(entryPoint => entryPoint.Name == "CS").FirstOrDefault();
+    ```
+- SlangDictionaries expose Dictionary-like abstractions
+    - Indexer
+    ```csharp
+    EntryPoint entryPoint = module.EntryPoints["CS"];
+    ```
+    - TryGetValue
+    ```csharp
+    if (module.EntryPoints.TryGetValue("CS", out EntryPoint? entryPoint))
+    {
+        Console.WriteLine($"Found entry point: {entryPoint?.Name} at index {entryPoint?.Index}");
+    }
+    else
+    {
+        Console.WriteLine("Entry point 'CS' not found.");
+        return;
+    }
+    ```
+- SlangNamedCollection combines the best of both worlds from Slang Collections and Dictionaries
+
+### Reflection API
+
+- Need to programmatically bind shader parameters? No problem, just use the Reflection API.
+
+> **Note** As of v0.5.0, all slang reflection types (with the exception of DeclReflection and a few other minor things) has been completed and elegantly abstracted
+
+- Reflection Example
+
+    ```csharp
+    using Slang.Sdk;
+    using Slang.Sdk.Interop;
+
+    // Same as above to load the module
+
+    // Get the shader reflection for the specified target
+    ShaderReflection reflection = module.Program.GetReflection(Targets.Hlsl.cs_5_0);
+
+    // Get the shader reflection for the specified target
+    var parameters = reflection.Parameters;
+
+    // Access the shader reflection parameters
+    var shaderInputParameters = reflection.Parameters;
+    foreach (var parameter in shaderInputParameters)
+    {
+        Console.WriteLine($"Parameter Name: {parameter.Name}");
+        Console.WriteLine($"Type: {parameter.Type.Name}");
+        Console.WriteLine($"BindingIndex: {parameter.BindingIndex}, BindingSpace: {parameter.BindingSpace}");
+    }
+    ```
+
+### Using Compiler Options
+
+Control compiler options:
+
+```csharp
+var session = new Session.Builder()
+    .AddCompilerOption(CompilerOption.Name.WarningsAsErrors, new CompilerOption.Value(CompilerOption.Value.Kind.Int, 0, 0, "all", null))
+    .AddCompilerOption(CompilerOption.Name.Obfuscate, new CompilerOption.Value(CompilerOption.Value.Kind.Int, 1, 0, null, null))
+    .AddTarget(Targets.Hlsl.cs_5_0)
+    .Create();
 ```
 
 ### Using Preprocessor Macros
 
-Control compilation with preprocessor definitions:
+Control preprocessor definitions:
 
 ```csharp
-var session = new SessionBuilder()
+var session = new Session.Builder()
     .AddPreprocessorMacro("ENABLE_LIGHTING", "1")
     .AddPreprocessorMacro("MAX_LIGHTS", "16")
     .AddPreprocessorMacro("QUALITY_LEVEL", "HIGH")
+    .AddTarget(Targets.Hlsl.cs_5_0)
     .Create();
 ```
 
-### Reflection and Introspection
-
-Examine shader structure and parameters:
-
-```csharp
-var module = session.LoadModule("MyShader.slang");
-var program = module.Program;
-
-// Inspect entry points
-foreach (var entryPoint in program.EntryPoints)
-{
-    Console.WriteLine($"Entry Point: {entryPoint.Name}");
-    
-    // Get parameter information
-    var parameters = entryPoint.Parameters;
-    foreach (var param in parameters)
-    {
-        Console.WriteLine($"  Parameter: {param.Name}, Type: {param.Type}");
-    }
-}
-
-// Examine module layout
-var layout = program.Layout;
-Console.WriteLine($"Global parameters: {layout.GlobalParamsVarLayout?.TypeLayout?.Size ?? 0} bytes");
-```
-
-### Error Handling
-
-Handle compilation errors gracefully:
-
-```csharp
-try
-{
-    var session = new SessionBuilder()
-        .AddSearchPath(@"C:\MyShaders")
-        .Create();
-        
-    var module = session.LoadModule("MyShader.slang");
-    var compiledShader = module.Program.EntryPoints.First().Compile();
-}
-catch (SlangCompilationException ex)
-{
-    Console.WriteLine($"Compilation failed: {ex.Message}");
-    foreach (var diagnostic in ex.Diagnostics)
-    {
-        Console.WriteLine($"  {diagnostic.Severity}: {diagnostic.Message}");
-    }
-}
-```
-
-## API Reference
-
-### Core Classes
-
-#### `SessionBuilder`
-Factory for creating Slang compilation sessions with specific configurations.
-
-**Key Methods:**
-- `AddSearchPath(string path)` - Add directory to search for shader files
-- `AddShaderModel(CompileTarget target, string profile)` - Set compilation target
-- `AddPreprocessorMacro(string name, string value)` - Define preprocessor macro
-- `AddCompilerOption(CompilerOptionName name, CompilerOptionValue value)` - Set compiler option
-- `Create()` - Build the configured session
-
-#### `Session`
-Main interface for shader compilation operations.
-
-**Key Methods:**
-- `LoadModule(string path)` - Load a shader module from file
-- `LoadModuleFromSource(string source, string path)` - Load module from string
-- `Dispose()` - Clean up native resources
-
-#### `Module`
-Represents a compiled shader module.
-
-**Key Properties:**
-- `Program` - Access to the shader program and its entry points
-- `Name` - Module name
-- `Session` - Parent session
-
-#### `ShaderProgram`
-Contains compiled shader code and metadata.
-
-**Key Properties:**
-- `EntryPoints` - Collection of shader entry points
-- `Layout` - Program layout information for resource binding
-
-#### `EntryPoint`
-Represents a shader entry point (vertex, pixel, compute, etc.).
-
-**Key Methods:**
-- `Compile()` - Generate target language code
-- `GetCompilationResult()` - Get detailed compilation results
-
-**Key Properties:**
-- `Name` - Entry point function name
-- `Stage` - Shader stage (vertex, pixel, compute, etc.)
-- `Parameters` - Input parameters
-
-## Common Scenarios
-
-### DirectX Integration with Silk.NET
-
-```csharp
-using Silk.NET.Direct3D11;
-using Silk.NET.DXGI;
-using Slang;
-using System.Text;
-
-public class DirectXShaderManager
-{
-    private readonly ID3D11Device _device;
-    private readonly Session _slangSession;
-    
-    public DirectXShaderManager(ID3D11Device device, string shaderDirectory)
-    {
-        _device = device;
-        _slangSession = new SessionBuilder()
-            .AddSearchPath(shaderDirectory)
-            .AddShaderModel(CompileTarget.SLANG_HLSL, "vs_5_0")
-            .AddShaderModel(CompileTarget.SLANG_HLSL, "ps_5_0")
-            .AddShaderModel(CompileTarget.SLANG_HLSL, "cs_5_0")
-            .Create();
-    }
-    
-    public unsafe ComPtr<ID3D11VertexShader> CreateVertexShader(string shaderPath, string entryPoint = "VS")
-    {
-        var hlslCode = CompileShader(shaderPath, entryPoint);
-        var bytecode = CompileHLSL(hlslCode, entryPoint, "vs_5_0");
-        
-        ComPtr<ID3D11VertexShader> shader = default;
-        _device.CreateVertexShader(bytecode, (nuint)bytecode.Length, null, ref shader);
-        return shader;
-    }
-    
-    public unsafe ComPtr<ID3D11PixelShader> CreatePixelShader(string shaderPath, string entryPoint = "PS")
-    {
-        var hlslCode = CompileShader(shaderPath, entryPoint);
-        var bytecode = CompileHLSL(hlslCode, entryPoint, "ps_5_0");
-        
-        ComPtr<ID3D11PixelShader> shader = default;
-        _device.CreatePixelShader(bytecode, (nuint)bytecode.Length, null, ref shader);
-        return shader;
-    }
-    
-    public unsafe ComPtr<ID3D11ComputeShader> CreateComputeShader(string shaderPath, string entryPoint = "CS")
-    {
-        var hlslCode = CompileShader(shaderPath, entryPoint);
-        var bytecode = CompileHLSL(hlslCode, entryPoint, "cs_5_0");
-        
-        ComPtr<ID3D11ComputeShader> shader = default;
-        _device.CreateComputeShader(bytecode, (nuint)bytecode.Length, null, ref shader);
-        return shader;
-    }
-    
-    private string CompileShader(string shaderPath, string entryPoint)
-    {
-        var module = _slangSession.LoadModule(shaderPath);
-        var entry = module.Program.EntryPoints.First(e => e.Name == entryPoint);
-        return entry.Compile();
-    }
-    
-    private byte[] CompileHLSL(string hlslCode, string entryPoint, string target)
-    {
-        // Use D3DCompile or similar to compile HLSL to bytecode
-        // This is a simplified example - you'd typically use Silk.NET.Direct3D.Compilers
-        return Encoding.UTF8.GetBytes(hlslCode); // Placeholder
-    }
-}
-```
-
-### OpenGL Integration with Silk.NET
-
-```csharp
-using Silk.NET.OpenGL;
-using Slang;
-
-public class OpenGLShaderManager
-{
-    private readonly GL _gl;
-    private readonly Session _slangSession;
-    
-    public OpenGLShaderManager(GL gl, string shaderDirectory)
-    {
-        _gl = gl;
-        _slangSession = new SessionBuilder()
-            .AddSearchPath(shaderDirectory)
-            .AddShaderModel(CompileTarget.SLANG_GLSL, "460")
-            .AddPreprocessorMacro("GL_CORE_PROFILE", "1")
-            .Create();
-    }
-    
-    public uint CreateShaderProgram(string vertexShaderPath, string fragmentShaderPath)
-    {
-        var vertexShader = CreateShader(vertexShaderPath, "VS", ShaderType.VertexShader);
-        var fragmentShader = CreateShader(fragmentShaderPath, "FS", ShaderType.FragmentShader);
-        
-        var program = _gl.CreateProgram();
-        _gl.AttachShader(program, vertexShader);
-        _gl.AttachShader(program, fragmentShader);
-        _gl.LinkProgram(program);
-        
-        // Check for linking errors
-        _gl.GetProgram(program, GLEnum.LinkStatus, out var status);
-        if (status == 0)
-        {
-            var log = _gl.GetProgramInfoLog(program);
-            throw new Exception($"Shader program linking failed: {log}");
-        }
-        
-        // Cleanup individual shaders
-        _gl.DeleteShader(vertexShader);
-        _gl.DeleteShader(fragmentShader);
-        
-        return program;
-    }
-    
-    public uint CreateComputeShader(string shaderPath, string entryPoint = "CS")
-    {
-        var computeShader = CreateShader(shaderPath, entryPoint, ShaderType.ComputeShader);
-        
-        var program = _gl.CreateProgram();
-        _gl.AttachShader(program, computeShader);
-        _gl.LinkProgram(program);
-        
-        // Check for linking errors
-        _gl.GetProgram(program, GLEnum.LinkStatus, out var status);
-        if (status == 0)
-        {
-            var log = _gl.GetProgramInfoLog(program);
-            throw new Exception($"Compute shader linking failed: {log}");
-        }
-        
-        _gl.DeleteShader(computeShader);
-        return program;
-    }
-    
-    private uint CreateShader(string shaderPath, string entryPoint, ShaderType type)
-    {
-        var module = _slangSession.LoadModule(shaderPath);
-        var entry = module.Program.EntryPoints.First(e => e.Name == entryPoint);
-        var glslCode = entry.Compile();
-        
-        var shader = _gl.CreateShader(type);
-        _gl.ShaderSource(shader, glslCode);
-        _gl.CompileShader(shader);
-        
-        // Check for compilation errors
-        _gl.GetShader(shader, GLEnum.CompileStatus, out var status);
-        if (status == 0)
-        {
-            var log = _gl.GetShaderInfoLog(shader);
-            throw new Exception($"Shader compilation failed: {log}");
-        }
-        
-        return shader;
-    }
-}
-```
-
-### Vulkan Integration with Silk.NET
-
-```csharp
-using Silk.NET.Vulkan;
-using Slang;
-using System.Text;
-
-public unsafe class VulkanShaderManager
-{
-    private readonly Vk _vk;
-    private readonly Device _device;
-    private readonly Session _slangSession;
-    
-    public VulkanShaderManager(Vk vk, Device device, string shaderDirectory)
-    {
-        _vk = vk;
-        _device = device;
-        _slangSession = new SessionBuilder()
-            .AddSearchPath(shaderDirectory)
-            .AddShaderModel(CompileTarget.SLANG_GLSL, "450")
-            .AddPreprocessorMacro("VULKAN", "1")
-            .Create();
-    }
-    
-    public ShaderModule CreateShaderModule(string shaderPath, string entryPoint)
-    {
-        // Compile Slang to GLSL
-        var module = _slangSession.LoadModule(shaderPath);
-        var entry = module.Program.EntryPoints.First(e => e.Name == entryPoint);
-        var glslCode = entry.Compile();
-        
-        // Compile GLSL to SPIR-V (you'd typically use a tool like glslang or shaderc)
-        var spirvBytecode = CompileGLSLToSpirV(glslCode);
-        
-        fixed (byte* pCode = spirvBytecode)
-        {
-            var createInfo = new ShaderModuleCreateInfo
-            {
-                SType = StructureType.ShaderModuleCreateInfo,
-                CodeSize = (nuint)spirvBytecode.Length,
-                PCode = (uint*)pCode
-            };
-            
-            ShaderModule shaderModule;
-            var result = _vk.CreateShaderModule(_device, &createInfo, null, &shaderModule);
-            
-            if (result != Result.Success)
-                throw new Exception($"Failed to create shader module: {result}");
-                
-            return shaderModule;
-        }
-    }
-    
-    public PipelineShaderStageCreateInfo CreateShaderStage(
-        string shaderPath, 
-        string entryPoint, 
-        ShaderStageFlags stage)
-    {
-        var shaderModule = CreateShaderModule(shaderPath, entryPoint);
-        
-        return new PipelineShaderStageCreateInfo
-        {
-            SType = StructureType.PipelineShaderStageCreateInfo,
-            Stage = stage,
-            Module = shaderModule,
-            PName = (byte*)Marshal.StringToHGlobalAnsi(entryPoint)
-        };
-    }
-    
-    public ComputePipelineCreateInfo CreateComputePipeline(
-        string shaderPath, 
-        string entryPoint = "CS",
-        PipelineLayout layout = default)
-    {
-        var shaderStage = CreateShaderStage(shaderPath, entryPoint, ShaderStageFlags.ComputeBit);
-        
-        return new ComputePipelineCreateInfo
-        {
-            SType = StructureType.ComputePipelineCreateInfo,
-            Stage = shaderStage,
-            Layout = layout
-        };
-    }
-    
-    private byte[] CompileGLSLToSpirV(string glslCode)
-    {
-        // This is a placeholder - you'd typically use:
-        // - Silk.NET.Shaderc for runtime compilation
-        // - Or pre-compile shaders using glslang/shaderc tools
-        // - Or use SPIRV-Cross for more advanced scenarios
-        
-        throw new NotImplementedException("GLSL to SPIR-V compilation requires additional tools like shaderc");
-    }
-}
-```
-
-### Cross-Platform Shader Pipeline
-
-```csharp
-public class CrossPlatformShaderManager
-{
-    private readonly Session _slangSession;
-    
-    public CrossPlatformShaderManager(string shaderDirectory)
-    {
-        _slangSession = new SessionBuilder()
-            .AddSearchPath(shaderDirectory)
-            .Create();
-    }
-    
-    public CompiledShaderResult CompileForTarget(
-        string shaderPath, 
-        string entryPoint,
-        GraphicsAPI targetAPI,
-        string shaderModel = null)
-    {
-        var (target, profile) = targetAPI switch
-        {
-            GraphicsAPI.DirectX11 => (CompileTarget.SLANG_HLSL, shaderModel ?? "vs_5_0"),
-            GraphicsAPI.DirectX12 => (CompileTarget.SLANG_HLSL, shaderModel ?? "vs_6_0"),
-            GraphicsAPI.OpenGL => (CompileTarget.SLANG_GLSL, shaderModel ?? "460"),
-            GraphicsAPI.Vulkan => (CompileTarget.SLANG_GLSL, shaderModel ?? "450"),
-            GraphicsAPI.Metal => (CompileTarget.SLANG_METAL, shaderModel ?? "metal2.0"),
-            _ => throw new ArgumentException($"Unsupported graphics API: {targetAPI}")
-        };
-        
-        // Configure session for target
-        var session = new SessionBuilder()
-            .AddSearchPath(_slangSession.SearchPaths.First())
-            .AddShaderModel(target, profile)
-            .Create();
-            
-        var module = session.LoadModule(shaderPath);
-        var entry = module.Program.EntryPoints.First(e => e.Name == entryPoint);
-        var compiledCode = entry.Compile();
-        
-        return new CompiledShaderResult
-        {
-            SourceCode = compiledCode,
-            Target = target,
-            Profile = profile,
-            EntryPoint = entryPoint
-        };
-    }
-}
-
-public enum GraphicsAPI
-{
-    DirectX11,
-    DirectX12,
-    OpenGL,
-    Vulkan,
-    Metal
-}
-
-public record CompiledShaderResult
-{
-    public string SourceCode { get; init; }
-    public CompileTarget Target { get; init; }
-    public string Profile { get; init; }
-    public string EntryPoint { get; init; }
-}
-```
-
-## Troubleshooting
-
-### Common Issues
-
-1. **"Module not found" errors**
-   - Ensure the shader file exists in the specified search paths
-   - Use absolute paths or verify the working directory is correct
-   - Check that the file extension matches (`.slang`)
-
-2. **Compilation errors**
-   - Wrap compilation calls in try-catch blocks to see detailed error messages
-   - Check that the target shader model is supported for your graphics API
-   - Verify preprocessor macros are defined correctly
-
-3. **Runtime exceptions**
-   - Ensure you're using `using` statements to properly dispose resources
-   - Check that your .NET version is 6.0 or later
-   - Verify the NuGet package was installed correctly
-
-4. **Performance issues**
-   - Cache compiled shaders to avoid recompiling the same code
-   - Use background threads for compilation when possible
-   - Consider using incremental compilation for development scenarios
-
-## Supported Platforms
-
-- **Windows x64** - Full support
-- **Windows x86** - Unsuported due to missing support from the native slang api 
-- **Windows ARM64** - Full support
-- **Linux** - Planned for future release. Sponsorships can make this a priority.
-- **macOS** - Planned for future release. Sponsorships can make this a priority.
-
-## Version History
-
-### 1.0.0 (Current)
-- Initial release with full Slang compilation support
-- Support for HLSL, GLSL, and Metal output targets
-- Comprehensive reflection and introspection APIs
-- Windows multi-architecture support (x86, x64, ARM64)
+### Complete Examples
+// Samples links and descriptions here
 
 ## Contributing
 
-As an early-stage project, we welcome community contributions to help Slang.Net grow. Found a bug or want to contribute? Visit our [GitHub repository](https://github.com/your-repo/Slang.Net) to:
+As an early-stage project, we welcome community contributions to help Slang.Net grow. Found a bug or want to contribute? Visit our [GitHub repository](https://github.com/Aqqorn/Slang.Sdk) to:
 
 - Report issues
 - Submit pull requests
@@ -743,4 +309,4 @@ This project is licensed under the same liscense as the project it is wrapping: 
 
 - **Slang Documentation**: [https://shader-slang.org/](https://shader-slang.org/)
 - **Slang GitHub**: [https://github.com/shader-slang/slang](https://github.com/shader-slang/slang)
-- **Sample Projects**: [Available in the GitHub repository](https://github.com/your-repo/Slang.Net/tree/main/Samples)
+- **Sample Projects**: [Available in the GitHub repository](https://github.com/Aqqorn/Slang.Sdk/tree/main/Samples)

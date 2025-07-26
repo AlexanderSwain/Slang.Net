@@ -1,17 +1,10 @@
-﻿using Slang.CLI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Slang.Sdk.Layer3_Pretty.CLI
+﻿namespace Slang.Sdk
 {
-    public partial class ComplierOptions
+    public partial class SlangC_Options
     {
         public class Builder
         {
-            CompilerOptionsCLI _options = new();
+            SlangC_Options _options = new();
 
             public Builder SetTarget(string? target)
             {
@@ -107,7 +100,7 @@ namespace Slang.Sdk.Layer3_Pretty.CLI
                 return this;
             }
 
-            public CompilerOptionsCLI Build()
+            public SlangC_Options Build()
             {
                 return _options;
             }

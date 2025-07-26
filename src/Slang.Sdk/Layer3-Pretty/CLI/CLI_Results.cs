@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Slang.CLI
+namespace Slang.Sdk
 {
-    public class ResultsCLI
+    public class CLI_Results
     {
         public int ExitCode { get; set; }
         public string StdOut { get; set; } = "";

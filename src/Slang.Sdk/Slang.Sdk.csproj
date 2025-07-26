@@ -53,6 +53,14 @@
 		
 		<Message Text="Cleared NuGet cache for $(PackageId) package." Importance="high" />
 	</Target>
+	<ItemGroup>
+	  <None Remove="Tests\Shaders\ComponentAddition.slang" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Content Include="Tests\Shaders\ComponentAddition.slang">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
 
 	<!-- Include README.md and icon.png in package -->
 	<ItemGroup>
@@ -61,9 +69,9 @@
 			<PackagePath>\</PackagePath>
 			<Pack>True</Pack>
 		</None>
-		<None Update="Tests\Shaders\AverageColor.slang">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
+		<Content Include="Tests\Shaders\AverageColor.slang">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
 	</ItemGroup>
 
 	<!-- Exclude test program from library builds -->
@@ -75,7 +83,7 @@
 	</ItemGroup>
 
 	<!-- Platform-specific native dependencies for x64 -->
-	<ItemGroup Condition="'$(OutputType)' == 'Library' Or '$(Platform)' == 'x64' Or '$(Platform)' == 'AnyCPU'">
+	<ItemGroup>
 		<Content Include="..\Native\bin\$(Configuration)\x64\gfx.dll" Condition="Exists('..\Native\bin\$(Configuration)\x64\gfx.dll')">
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-x64\native\gfx.dll</PackagePath>
@@ -130,7 +138,7 @@
 	</ItemGroup>
 
 	<!-- Platform-specific native dependencies for ARM64 -->
-	<ItemGroup Condition="'$(OutputType)' == 'Library' Or '$(Platform)' == 'ARM64' Or '$(Platform)' == 'AnyCPU'">
+	<ItemGroup>
 		<Content Include="..\Native\bin\$(Configuration)\ARM64\gfx.dll" Condition="Exists('..\Native\bin\$(Configuration)\ARM64\gfx.dll')">
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-ARM64\native\gfx.dll</PackagePath>
@@ -180,10 +188,7 @@
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-ARM64\native\slangc.exe</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			<TargetPath>runtimes\win-x64\native\slangc.exe</TargetPath>
-		</Content>
-		<Content Include="Tests\Shaders\AverageColor.slang">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<TargetPath>runtimes\win-ARM64\native\slangc.exe</TargetPath>
 		</Content>
 	</ItemGroup>
 </Project>

@@ -27,13 +27,7 @@ public class Program
 
         var modules = session.Modules;
 
-        //// Print the number of entry points in the shader program
-        //var entryPoint = program.EntryPoints.Where(x => x.Name == "CS").First();
-        //
-        //// Compile the shader program using the entry point
-        //var source = entryPoint.Compile();
-
-        var source = program.Compile(null, Targets.Hlsl.cs_5_0);
+        var source = program.Compile(module.EntryPoints["CS"], Targets.Hlsl.cs_5_0);
 
         // Print the generated source code length
         Console.WriteLine(source.Source);

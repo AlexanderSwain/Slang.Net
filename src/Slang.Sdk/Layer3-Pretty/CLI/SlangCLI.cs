@@ -1,15 +1,13 @@
 ﻿using System.Diagnostics;
 using System.Text;
-using System.Runtime.InteropServices;
-using System.Reflection;
 
-namespace Slang.CLI
+namespace Slang.Sdk
 {
-    public static class SlangCLI
+    public static class CLI
     {
         public static string WorkingDirectory { get; set; } = AppDomain.CurrentDomain.BaseDirectory;
 
-        public static ResultsCLI slangc(
+        public static CLI_Results slangc(
             string? target = null,
             string? profile = null,
             string? entry = null,
@@ -27,7 +25,7 @@ namespace Slang.CLI
             string? reflectionJsonPath = null,
             string[]? inputFiles = null)
         {
-            CompilerOptionsCLI args = new CompilerOptionsCLI()
+            SlangC_Options args = new SlangC_Options()
             {
                 Target = target,
                 Profile = profile,
@@ -50,23 +48,38 @@ namespace Slang.CLI
             return slangc(args);
         }
 
-        public static ResultsCLI slangc(CompilerOptionsCLI args)
+        public static CLI_Results slangc(SlangC_Options args)
         {
             return InvokeSlangc(args.ToString());
         }
 
-        public static ResultsCLI slangc(string args)
+        public static CLI_Results slangc(string args)
         {
             if (string.IsNullOrWhiteSpace(args))
                 throw new ArgumentException("Arguments cannot be null or empty.", nameof(args));
             return InvokeSlangc(args);
         }
 
-        private static ResultsCLI InvokeSlangc(string args)
+        private static CLI_Results InvokeSlangc(string args)
         {
+            var slangcPath = Path.Combine(Runtime.Directory, "slangc.exe");
+            
+            // Check if slangc.exe exists before trying to run it
+            if (!File.Exists(slangcPath))
+            {
+                return new CLI_Results
+                {
+                    ExitCode = -1,
+                    StdOut = "",
+                    StdErr = $"slangc.exe not found at expected path: {slangcPath}\n" +
+                            $"Runtime directory: {Runtime.Directory}\n" +
+                            $"Directory exists: {Directory.Exists(Runtime.Directory)}\n"
+                };
+            }
+            
             var startInfo = new ProcessStartInfo
             {
-                FileName = Path.Combine(Runtime.Directory, "slangc.exe"),
+                FileName = slangcPath,
                 Arguments = args,
                 WorkingDirectory = WorkingDirectory,
                 RedirectStandardOutput = true,
@@ -76,7 +89,7 @@ namespace Slang.CLI
             };
 
             using var process = new Process { StartInfo = startInfo };
-            var result = new ResultsCLI();
+            var result = new CLI_Results();
 
             var stdoutBuilder = new StringBuilder();
             var stderrBuilder = new StringBuilder();
@@ -84,14 +97,25 @@ namespace Slang.CLI
             process.OutputDataReceived += (_, e) => { if (e.Data != null) stdoutBuilder.AppendLine(e.Data); };
             process.ErrorDataReceived += (_, e) => { if (e.Data != null) stderrBuilder.AppendLine(e.Data); };
 
-            process.Start();
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
-            process.WaitForExit();
+            try
+            {
+                process.Start();
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+                process.WaitForExit();
 
-            result.ExitCode = process.ExitCode;
-            result.StdOut = stdoutBuilder.ToString();
-            result.StdErr = stderrBuilder.ToString();
+                result.ExitCode = process.ExitCode;
+                result.StdOut = stdoutBuilder.ToString();
+                result.StdErr = stderrBuilder.ToString();
+            }
+            catch (Exception ex)
+            {
+                result.ExitCode = -1;
+                result.StdOut = "";
+                result.StdErr = $"Failed to start slangc.exe: {ex.Message}\n" +
+                               $"Path: {slangcPath}\n" +
+                               $"Working Directory: {WorkingDirectory}";
+            }
 
             return result;
         }
