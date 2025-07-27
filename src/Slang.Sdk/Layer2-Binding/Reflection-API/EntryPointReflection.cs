@@ -30,7 +30,7 @@ namespace Slang.Sdk.Binding
             return new FunctionReflection(this, Call(() => StrongTypeInterop.EntryPointReflection_AsFunction(Handle)));
         }
 
-        internal string? GetName()
+        internal string GetName()
         {
             return Call(() => FromCharPtr(SlangNativeInterop.EntryPointReflection_GetName(Handle)));
         }

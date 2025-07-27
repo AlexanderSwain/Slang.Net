@@ -52,14 +52,6 @@
 		
 		<Message Text="Cleared NuGet cache for $(PackageId) package." Importance="high" />
 	</Target>
-	<ItemGroup>
-	  <None Remove="Tests\Shaders\ComponentAddition.slang" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Content Include="Tests\Shaders\ComponentAddition.slang">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </Content>
-	</ItemGroup>
 
 	<!-- Include README.md and icon.png in package -->
 	<ItemGroup>
@@ -68,9 +60,12 @@
 			<PackagePath>\</PackagePath>
 			<Pack>True</Pack>
 		</None>
-		<Content Include="Tests\Shaders\AverageColor.slang">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
+		<None Update="Tests\Shaders\AverageColor.slang">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Tests\Shaders\ComponentAddition.slang">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 
 	<!-- Exclude test program from library builds -->

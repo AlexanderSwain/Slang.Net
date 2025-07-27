@@ -51,6 +51,7 @@ namespace Slang.Sdk
         #region Pretty
         Program? _Program;
         public Program Program => _Program ??= new Program(this);
+        public string Name => Binding.Name;
 
         SlangNamedCollection<EntryPoint>? _EntryPoints;
         public SlangNamedCollection<EntryPoint> EntryPoints => _EntryPoints ??= new SlangNamedCollection<EntryPoint>(this, this);

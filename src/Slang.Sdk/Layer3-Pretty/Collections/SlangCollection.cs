@@ -11,6 +11,8 @@ namespace Slang.Sdk.Collections
             get => Parent.GetByIndex(index);
         }
 
+        public uint Count => Parent.Count;
+
         public uint? IndexOf(T item)
         {
             if (item == null)

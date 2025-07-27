@@ -80,16 +80,19 @@ internal static unsafe partial class SlangNativeInterop
     internal static partial void Module_Release(nint module);
 
     [LibraryImport(LibraryName)]
-    internal static partial uint Module_GetEntryPointCount(nint parentModule);
+    internal static partial char* Module_GetName(nint module);
+
+    [LibraryImport(LibraryName)]
+    internal static partial uint Module_GetEntryPointCount(nint module);
 
     [LibraryImport(LibraryName)]
     internal static partial nint Module_GetEntryPointByIndex(
-        nint parentModule, 
+        nint module, 
         uint index);
 
     [LibraryImport(LibraryName)]
     internal static partial nint Module_FindEntryPointByName(
-        nint parentModule, 
+        nint module, 
         char* entryPointName);
 
     #endregion

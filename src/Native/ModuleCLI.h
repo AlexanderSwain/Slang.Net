@@ -31,6 +31,7 @@ namespace Native
 
 		slang::ISession* getParent();
 		slang::IModule* getNative();
+		const char* getName();
 		unsigned int getEntryPointCount();
 		Native::EntryPointCLI* getEntryPointByIndex(unsigned index);
 		Native::EntryPointCLI* findEntryPointByName(const char* name);

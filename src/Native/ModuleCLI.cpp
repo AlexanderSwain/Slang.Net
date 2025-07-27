@@ -28,8 +28,6 @@ Native::ModuleCLI::ModuleCLI(SessionCLI* parent, const char* moduleName, const c
         }
     }
     
-    m_slangModule = slangModule;
-    
     // Initialize entry point related members
     m_entryPointCount = m_slangModule->getDefinedEntryPointCount();
     m_entryPoints = nullptr; // Initialize to nullptr, will be allocated on demand
@@ -89,6 +87,11 @@ Native::ModuleCLI::~ModuleCLI()
         }
         delete[] m_entryPoints;
     }
+}
+
+const char* Native::ModuleCLI::getName()
+{
+    return m_slangModule->getName();
 }
 
 unsigned int Native::ModuleCLI::getEntryPointCount()

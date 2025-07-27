@@ -1,5 +1,6 @@
 ﻿using Slang.Sdk.Binding;
 using Slang.Sdk.Collections;
+using Slang.Sdk.Interop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,12 +45,21 @@ namespace Slang.Sdk
         }
 
         public string Name
-        { 
+        {
             get
             {
-                return Binding.Name;
-            } 
+                if (Binding.Name is null)
+                    return FindName();
+                else
+                    return Binding.Name;
+            }
         }
+
+        // Delete this
+        //public Stage GetStage(Target target)
+        //{
+        //    return Reflections.Where(r => r.target == target);
+        //}
 
         public CompilationResult Compile(Interop.Target target)
         {
@@ -60,6 +70,41 @@ namespace Slang.Sdk
 
             var result = Binding.Compile((int)targetIndex);
             return new CompilationResult(result.Source, target, this, result.Result, result.Diagnostics);
+        }
+        #endregion
+
+        //Delete this
+        #region Helpers
+        private string FindName()
+        {
+            if (Name is not null)
+                return Name;
+
+            List<(Target target, EntryPointReflection reflection)> listResult = new();
+            var sessionTargets = Parent.Parent.Targets;
+            var program = Parent.Program;
+
+            foreach (var target in sessionTargets)
+            {
+                var reflection = program.GetReflection(target);
+                var entryPointReflections = reflection.EntryPoints;
+
+                // Name based approach, this one will always work
+                // Choosing the safer option until we get time to research the alternative
+                foreach (var entryPointReflection in entryPointReflections)
+                {
+                    if (this == Parent.EntryPoints[entryPointReflection.Name])
+                    {
+                        return entryPointReflection.Name;
+                    }
+                }
+
+                // Index based approach, whether this works depends on the native implementations
+                // If EntryPointReflection is in the same order as EntryPoints
+                //return entryPointReflections[(uint)Index];
+            }
+
+            throw new Exception("Failed to find name for entry point. This is likely a bug in Slang.Net, please report it.");
         }
         #endregion
     }

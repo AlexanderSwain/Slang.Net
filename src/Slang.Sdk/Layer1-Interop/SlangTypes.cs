@@ -473,6 +473,31 @@ public struct Target : IDisposable, IEquatable<Target>
     }
 }
 
+enum Stage
+{
+    None,
+    Vertex,
+    Hull,
+    Domain,
+    Geometry,
+    Fragment,
+    Compute,
+    RayGeneration,
+    Intersection,
+    AnyHit,
+    ClosestHit,
+    Miss,
+    Callable,
+    Mesh,
+    Amplification,
+    Dispatch,
+    //
+    Count,
+
+    // alias:
+    Pixel = Fragment,
+};
+
 #region Reflection Slang Types
 
 /// <summary>

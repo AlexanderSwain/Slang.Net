@@ -64,6 +64,22 @@ internal unsafe sealed class Module : CompilationBinding
         Handle = handle;
     }
 
+    public string Name
+    {
+        get
+        {
+            // Use call, for consistency with other properties
+            ObjectDisposedException.ThrowIf(Handle.IsInvalid, this);
+
+            // Using the strongly-typed interop to get the name of the module
+            char* pName = SlangNativeInterop.Module_GetName(Handle);
+            if (pName == null)
+                throw new SlangException(SlangResult.Fail, "Failed to retrieve module name: <No name was returned from Slang>");
+
+            return FromUtf8((byte*)pName) ?? throw new SlangException(SlangResult.Fail, "Failed to convert module name from UTF-8");
+        }
+    }
+
     internal uint GetEntryPointCount()
     {
         return Call(() => SlangNativeInterop.Module_GetEntryPointCount(Handle));

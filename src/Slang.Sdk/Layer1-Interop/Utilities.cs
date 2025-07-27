@@ -10,9 +10,12 @@ namespace Slang.Sdk.Interop
             return FromCharPtr(errorPtr);
         }
 
-        internal unsafe static string? FromCharPtr(char* ptr)
+        internal unsafe static string FromCharPtr(char* ptr)
         {
-            return Marshal.PtrToStringAnsi((IntPtr)ptr);
+            if (ptr == null)
+                throw new NullReferenceException();
+
+            return Marshal.PtrToStringAnsi((IntPtr)ptr)!;
         }
 
         internal unsafe static char*[] To_CStrArr(this string[] arr)

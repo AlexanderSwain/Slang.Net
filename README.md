@@ -104,7 +104,7 @@ Or add to your project file:
 <PackageReference Include="Slang.Sdk" Version="0.5.0" />
 ```
 
-## slangc API
+## slangc CLI Invocation
 If you just want to call slangc CLI tooling directly from C#, we got you covered:
 
 ### Set Working Directory

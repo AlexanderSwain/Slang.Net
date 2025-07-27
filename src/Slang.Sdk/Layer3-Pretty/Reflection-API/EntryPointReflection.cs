@@ -40,7 +40,7 @@ namespace Slang.Sdk
 
         #region Pretty
 
-        public string? Name => Binding.GetName();
+        public string Name => Binding.GetName();
         public string? NameOverride => Binding.GetNameOverride();
         public ShaderStage Stage => Binding.GetStage();
         public bool UsesAnySampleRateInput => Binding.UsesAnySampleRateInput();

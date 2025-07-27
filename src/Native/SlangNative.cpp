@@ -123,36 +123,16 @@ namespace SlangNative
 		delete moduleCLI;
 	}
 
-	extern "C" SLANGNATIVE_API unsigned int Module_GetEntryPointCount(void* parentModule)
+	extern "C" SLANGNATIVE_API const char* Module_GetName(void* module)
 	{
-		if (!parentModule)
+		if (!module)
 		{
-			g_lastError = "Argument Null: parentModule";
-			return -1;
-		}
-
-		try
-		{
-			return ((ModuleCLI*)parentModule)->getEntryPointCount();
-		}
-		catch (const std::exception& e)
-		{
-			g_lastError = e.what();
-			return -1;
-		}
-	}
-
-	extern "C" SLANGNATIVE_API void* Module_GetEntryPointByIndex(void* parentModule, unsigned int index)
-	{
-		if (!parentModule)
-		{
-			g_lastError = "Argument Null: parentModule";
+			g_lastError = "Argument Null: module";
 			return nullptr;
 		}
-
 		try
 		{
-			return ((ModuleCLI*)parentModule)->getEntryPointByIndex(index);
+			return ((ModuleCLI*)module)->getName();
 		}
 		catch (const std::exception& e)
 		{
@@ -161,11 +141,49 @@ namespace SlangNative
 		}
 	}
 
-	extern "C" SLANGNATIVE_API void* Module_FindEntryPointByName(void* parentModule, const char* entryPointName)
+	extern "C" SLANGNATIVE_API unsigned int Module_GetEntryPointCount(void* module)
 	{
-		if (!parentModule)
+		if (!module)
 		{
-			g_lastError = "Argument Null: parentModule";
+			g_lastError = "Argument Null: module";
+			return -1;
+		}
+
+		try
+		{
+			return ((ModuleCLI*)module)->getEntryPointCount();
+		}
+		catch (const std::exception& e)
+		{
+			g_lastError = e.what();
+			return -1;
+		}
+	}
+
+	extern "C" SLANGNATIVE_API void* Module_GetEntryPointByIndex(void* module, unsigned int index)
+	{
+		if (!module)
+		{
+			g_lastError = "Argument Null: module";
+			return nullptr;
+		}
+
+		try
+		{
+			return ((ModuleCLI*)module)->getEntryPointByIndex(index);
+		}
+		catch (const std::exception& e)
+		{
+			g_lastError = e.what();
+			return nullptr;
+		}
+	}
+
+	extern "C" SLANGNATIVE_API void* Module_FindEntryPointByName(void* module, const char* entryPointName)
+	{
+		if (!module)
+		{
+			g_lastError = "Argument Null: module";
 			return nullptr;
 		}
 
@@ -177,7 +195,7 @@ namespace SlangNative
 
 		try
 		{
-			return ((ModuleCLI*)parentModule)->findEntryPointByName(entryPointName);
+			return ((ModuleCLI*)module)->findEntryPointByName(entryPointName);
 		}
 		catch (const std::exception& e)
 		{

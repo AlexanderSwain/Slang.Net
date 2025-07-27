@@ -18,6 +18,5 @@
 		<None Update="ComponentAddition.slang">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
-		<ProjectReference Include="..\..\src\Slang.Sdk\Slang.Sdk.csproj" />
 	</ItemGroup>
 </Project>

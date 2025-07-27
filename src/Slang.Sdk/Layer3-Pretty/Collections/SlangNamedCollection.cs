@@ -23,6 +23,8 @@ namespace Slang.Sdk.Collections
             }
         }
 
+        public uint Count => List.Count;
+
         public uint? IndexOf(T item)
         {
             if (item == null)
