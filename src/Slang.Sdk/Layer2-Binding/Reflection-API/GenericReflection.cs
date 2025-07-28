@@ -19,69 +19,81 @@ namespace Slang.Sdk.Binding
             Handle = handle;
         }
 
-        internal string? GetName()
+        internal string GetName()
         {
-            return Call(() => FromCharPtr(SlangNativeInterop.GenericReflection_GetName(Handle)));
+            string? error = null;
+            return Call(() => SlangNativeInterop.GenericReflection_GetName(Handle, out error), () => error);
         }
 
         internal uint GetTypeParameterCount()
         {
-            return Call(() => SlangNativeInterop.GenericReflection_GetTypeParameterCount(Handle));
+            string? error = null;
+            return Call(() => SlangNativeInterop.GenericReflection_GetTypeParameterCount(Handle, out error), () => error);
         }
 
         internal VariableReflection GetTypeParameter(uint index)
         {
-            return new VariableReflection(this, Call(() => StrongTypeInterop.GenericReflection_GetTypeParameter(Handle, index)));
+            string? error = null;
+            return new VariableReflection(this, Call(() => StrongTypeInterop.GenericReflection_GetTypeParameter(Handle, index, out error), () => error));
         }
 
         internal uint GetValueParameterCount()
         {
-            return Call(() => SlangNativeInterop.GenericReflection_GetValueParameterCount(Handle));
+            string? error = null;
+            return Call(() => SlangNativeInterop.GenericReflection_GetValueParameterCount(Handle, out error), () => error);
         }
 
         internal VariableReflection GetValueParameter(uint index)
         {
-            return new VariableReflection(this, Call(() => StrongTypeInterop.GenericReflection_GetValueParameter(Handle, index)));
+            string? error = null;
+            return new VariableReflection(this, Call(() => StrongTypeInterop.GenericReflection_GetValueParameter(Handle, index, out error), () => error));
         }
 
         internal uint GetTypeParameterConstraintCount(TypeParameterReflection typeParam)
         {
-            return Call(() => SlangNativeInterop.GenericReflection_GetTypeParameterConstraintCount(Handle, typeParam.Handle));
+            string? error = null;
+            return Call(() => SlangNativeInterop.GenericReflection_GetTypeParameterConstraintCount(Handle, typeParam.Handle, out error), () => error);
         }
 
         internal TypeReflection GetTypeParameterConstraintType(TypeParameterReflection typeParam, uint index)
         {
-            return new TypeReflection(this, Call(() => StrongTypeInterop.GenericReflection_GetTypeParameterConstraintType(Handle, typeParam.Handle, index)));
+            string? error = null;
+            return new TypeReflection(this, Call(() => StrongTypeInterop.GenericReflection_GetTypeParameterConstraintType(Handle, typeParam.Handle, index, out error), () => error));
         }
 
         internal int GetInnerKind()
         {
-            return Call(() => SlangNativeInterop.GenericReflection_GetInnerKind(Handle));
+            string? error = null;
+            return Call(() => SlangNativeInterop.GenericReflection_GetInnerKind(Handle, out error), () => error);
         }
 
         internal GenericReflection GetOuterGenericContainer()
         {
-            return new GenericReflection(this, Call(() => StrongTypeInterop.GenericReflection_GetOuterGenericContainer(Handle)));
+            string? error = null;
+            return new GenericReflection(this, Call(() => StrongTypeInterop.GenericReflection_GetOuterGenericContainer(Handle, out error), () => error));
         }
 
         internal TypeReflection GetConcreteType(TypeParameterReflection typeParam)
         {
-            return new TypeReflection(this, Call(() => StrongTypeInterop.GenericReflection_GetConcreteType(Handle, typeParam.Handle)));
+            string? error = null;
+            return new TypeReflection(this, Call(() => StrongTypeInterop.GenericReflection_GetConcreteType(Handle, typeParam.Handle, out error), () => error));
         }
 
         internal long GetConcreteIntVal(VariableReflection valueParam)
         {
+            string? error = null;
             return Call(() =>
             {
                 long value;
-                SlangNativeInterop.GenericReflection_GetConcreteIntVal(Handle, valueParam.Handle, &value);
+                SlangNativeInterop.GenericReflection_GetConcreteIntVal(Handle, valueParam.Handle, &value, out error);
                 return value;
-            });
+            }, () => error);
         }
 
         internal GenericReflection ApplySpecializations(GenericReflection genRef)
         {
-            return new GenericReflection(this, Call(() => StrongTypeInterop.GenericReflection_ApplySpecializations(Handle, genRef.Handle)));
+            string? error = null;
+            return new GenericReflection(this, Call(() => StrongTypeInterop.GenericReflection_ApplySpecializations(Handle, genRef.Handle, out error), () => error));
         }
     }
 }

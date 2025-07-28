@@ -23,7 +23,7 @@ namespace Slang.Sdk.Tests
             Session session = builder.Create();
 
             // Load the module from the specified file
-            Module module = session.LoadModule("AverageColor", $@"{ AppDomain.CurrentDomain.BaseDirectory}Tests\Shaders\AverageColor.slang");
+            Module module = session.LoadModule("AverageColor", $@"{ AppDomain.CurrentDomain.BaseDirectory }Tests\Shaders\AverageColor.slang");
 
             // Get the shader program from the module
             Program program = module.Program;

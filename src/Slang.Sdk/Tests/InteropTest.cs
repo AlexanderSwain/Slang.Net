@@ -54,14 +54,12 @@ public static class InteropTest
                 &compilerOptions, 1,
                 &preprocessorMacros, 1,
                 &shaderModels, 1,
-                null, 0
-            );
+                null, 0,
+                out var error);
 
             if (sessionHandle == IntPtr.Zero)
             {
-                var errorPtr = SlangNativeInterop.SlangNative_GetLastError();
-                var errorMessage = StringMarshaling.FromUtf8((byte*)errorPtr);
-                Console.WriteLine($"   Session creation failed (expected): {errorMessage ?? "Unknown error"}");
+                Console.WriteLine($"   Session creation failed (expected): {error ?? "Unknown error"}");
             }
             else
             {
@@ -97,8 +95,8 @@ public static class InteropTest
                 &compilerOptions, 1,
                 &preprocessorMacros, 1,
                 &shaderModels, 1,
-                null, 0
-            );
+                null, 0,
+                out var error);
 
             Console.WriteLine($"   StrongTypeInterop test: SessionHandle type = {sessionHandle.GetType().Name}");
             Console.WriteLine($"   StrongTypeInterop test: Handle is invalid = {sessionHandle.IsInvalid}");

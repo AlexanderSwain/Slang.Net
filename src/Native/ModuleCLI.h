@@ -41,7 +41,6 @@ namespace Native
 		slang::ISession* m_parent;
 		slang::IModule* m_slangModule;
 		Native::EntryPointCLI** m_entryPoints;
-		unsigned int m_entryPointCount;
 	};
 }
 

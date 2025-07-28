@@ -20,201 +20,149 @@ namespace Slang.Sdk.Binding
 
         internal uint GetParameterCount()
         {
-            return Call(() => SlangNativeInterop.ShaderReflection_GetParameterCount(Handle));
+            string? error = null;
+            return Call(() => SlangNativeInterop.ShaderReflection_GetParameterCount(Handle, out error), () => error);
         }
 
         internal uint GetTypeParameterCount()
         {
-            return Call(() => SlangNativeInterop.ShaderReflection_GetTypeParameterCount(Handle));
+            string? error = null;
+            return Call(() => SlangNativeInterop.ShaderReflection_GetTypeParameterCount(Handle, out error), () => error);
         }
 
         internal TypeParameterReflection GetTypeParameterByIndex(uint index)
         {
-            return new TypeParameterReflection(this, Call(() => StrongTypeInterop.ShaderReflection_GetTypeParameterByIndex(Handle, index)));
+            string? error = null;
+            return new TypeParameterReflection(this, Call(() => StrongTypeInterop.ShaderReflection_GetTypeParameterByIndex(Handle, index, out error), () => error));
         }
 
         internal TypeParameterReflection FindTypeParameter(string name)
         {
+            string? error = null;
             return new TypeParameterReflection(
                 this,
-                Call(() =>
-                {
-                    byte* pName = ToUtf8(name);
-                    try
-                    {
-                        return StrongTypeInterop.ShaderReflection_FindTypeParameter(Handle, (char*)pName);
-                    }
-                    finally
-                    {
-                        FreeUtf8(pName);
-                    }
-                }
-            ));
+                Call(() => StrongTypeInterop.ShaderReflection_FindTypeParameter(Handle, name, out error), () => error));
         }
 
         internal VariableLayoutReflection GetParameterByIndex(uint index)
         {
-            return new VariableLayoutReflection(this, Call(() => StrongTypeInterop.ShaderReflection_GetParameterByIndex(Handle, index)));
+            string? error = null;
+            return new VariableLayoutReflection(this, Call(() => StrongTypeInterop.ShaderReflection_GetParameterByIndex(Handle, index, out error), () => error));
         }
 
         internal uint GetEntryPointCount()
         {
-            return Call(() => SlangNativeInterop.ShaderReflection_GetEntryPointCount(Handle));
+            string? error = null;
+            return Call(() => SlangNativeInterop.ShaderReflection_GetEntryPointCount(Handle, out error), () => error);
         }
 
         internal EntryPointReflection GetEntryPointByIndex(uint index)
         {
-            return new EntryPointReflection(this, Call(() => StrongTypeInterop.ShaderReflection_GetEntryPointByIndex(Handle, index)));
+            string? error = null;
+            return new EntryPointReflection(this, Call(() => StrongTypeInterop.ShaderReflection_GetEntryPointByIndex(Handle, index, out error), () => error));
         }
 
         internal EntryPointReflection FindEntryPointByName(string name)
         {
+            string? error = null;
             return new EntryPointReflection(
-                this, 
-                Call(() => 
-                {
-                    byte* pName = ToUtf8(name);
-                    try
-                    {
-                        return StrongTypeInterop.ShaderReflection_FindEntryPointByName(Handle, (char*)pName);
-                    }
-                    finally
-                    {
-                        FreeUtf8(pName);
-                    }
-                }
-            ));
+                this,
+                Call(() => StrongTypeInterop.ShaderReflection_FindEntryPointByName(Handle, name, out error), () => error));
         }
 
         internal uint GetGlobalConstantBufferBinding()
         {
-            return Call(() => SlangNativeInterop.ShaderReflection_GetGlobalConstantBufferBinding(Handle));
+            string? error = null;
+            return Call(() => SlangNativeInterop.ShaderReflection_GetGlobalConstantBufferBinding(Handle, out error), () => error);
         }
 
         internal nuint GetGlobalConstantBufferSize()
         {
-            return Call(() => SlangNativeInterop.ShaderReflection_GetGlobalConstantBufferSize(Handle));
+            string? error = null;
+            return Call(() => SlangNativeInterop.ShaderReflection_GetGlobalConstantBufferSize(Handle, out error), () => error);
         }
 
         internal TypeReflection FindTypeByName(string name)
         {
-            return new TypeReflection(
-                this, 
-                Call(() => 
-                {
-                    byte* pName = ToUtf8(name);
-                    try
-                    {
-                        return StrongTypeInterop.ShaderReflection_FindTypeByName(Handle, (char*)pName);
-                    }
-                    finally
-                    {
-                        FreeUtf8(pName);
-                    }
-                }
-            ));
+            string? error = null;
+            return new TypeReflection(this, Call(() => StrongTypeInterop.ShaderReflection_FindTypeByName(Handle, name, out error), () => error));
         }
 
         internal FunctionReflection FindFunctionByName(string name)
         {
+            string? error = null;
             return new FunctionReflection(
                 this,
-                Call(() => 
-                {
-                    byte* pName = ToUtf8(name);
-                    try
-                    {
-                        return StrongTypeInterop.ShaderReflection_FindFunctionByName(Handle, (char*)pName);
-                    }
-                    finally
-                    {
-                        FreeUtf8(pName);
-                    }
-                }
-            ));
+                Call(() => StrongTypeInterop.ShaderReflection_FindFunctionByName(Handle, name, out error), () => error));
         }
 
         internal FunctionReflection FindFunctionByNameInType(TypeReflection type, string name)
         {
+            string? error = null;
             return new FunctionReflection(
-                this, 
-                Call(() => 
-                {
-                    byte* pName = ToUtf8(name);
-                    try
-                    {
-                        return StrongTypeInterop.ShaderReflection_FindFunctionByNameInType(Handle, type.Handle, (char*)pName);
-                    }
-                    finally
-                    {
-                        FreeUtf8(pName);
-                    }
-                })
-            );
+                this,
+                Call(() => StrongTypeInterop.ShaderReflection_FindFunctionByNameInType(Handle, type.Handle, name, out error), () => error));
         }
 
         internal VariableReflection FindVarByNameInType(TypeReflection type, string name)
         {
+            string? error = null;
             return new VariableReflection(
-                this, 
-                Call(() => 
-                {
-                    byte* pName = ToUtf8(name);
-                    try
-                    {
-                        return StrongTypeInterop.ShaderReflection_FindVarByNameInType(Handle, type.Handle, (char*)pName);
-                    }
-                    finally
-                    {
-                        FreeUtf8(pName);
-                    }
-                }
-            ));
+                this,
+                Call(() => StrongTypeInterop.ShaderReflection_FindVarByNameInType(Handle, type.Handle, name, out error), () => error));
         }
 
         internal TypeLayoutReflection GetTypeLayout(TypeReflection type, int layoutRules)
         {
-            return new TypeLayoutReflection(this, Call(() => StrongTypeInterop.ShaderReflection_GetTypeLayout(Handle, type.Handle, layoutRules)));
+            string? error = null;
+            return new TypeLayoutReflection(this, Call(() => StrongTypeInterop.ShaderReflection_GetTypeLayout(Handle, type.Handle, layoutRules, out error), () => error));
         }
 
         internal TypeReflection SpecializeType(TypeReflection type, int argCount, void** args)
         {
-            return new TypeReflection(this, Call(() => StrongTypeInterop.ShaderReflection_SpecializeType(Handle, type.Handle, argCount, args)));
+            string? error = null;
+            return new TypeReflection(this, Call(() => StrongTypeInterop.ShaderReflection_SpecializeType(Handle, type.Handle, argCount, args, out error), () => error));
         }
 
         internal bool IsSubType(TypeReflection subType, TypeReflection superType)
         {
-            return Call(() => SlangNativeInterop.ShaderReflection_IsSubType(Handle, subType.Handle, superType.Handle));
+            string? error = null;
+            return Call(() => SlangNativeInterop.ShaderReflection_IsSubType(Handle, subType.Handle, superType.Handle, out error), () => error);
         }
 
         internal uint GetHashedStringCount()
         {
-            return Call(() => SlangNativeInterop.ShaderReflection_GetHashedStringCount(Handle));
+            string? error = null;
+            return Call(() => SlangNativeInterop.ShaderReflection_GetHashedStringCount(Handle, out error), () => error);
         }
 
         internal string? GetHashedString(uint index)
         {
-            return Call(() => FromUtf8((byte*)SlangNativeInterop.ShaderReflection_GetHashedString(Handle, index)));
+            string? error = null;
+            // Test string?
+            return Call(() => SlangNativeInterop.ShaderReflection_GetHashedString(Handle, index, out error), () => error);
         }
 
         internal TypeLayoutReflection GetGlobalParamsTypeLayout()
         {
-            return new TypeLayoutReflection(this, Call(() => StrongTypeInterop.ShaderReflection_GetGlobalParamsTypeLayout(Handle)));
+            string? error = null;
+            return new TypeLayoutReflection(this, Call(() => StrongTypeInterop.ShaderReflection_GetGlobalParamsTypeLayout(Handle, out error), () => error));
         }
 
         internal VariableLayoutReflection GetGlobalParamsVarLayout()
         {
-            return new VariableLayoutReflection(this, Call(() => StrongTypeInterop.ShaderReflection_GetGlobalParamsVarLayout(Handle)));
+            string? error = null;
+            return new VariableLayoutReflection(this, Call(() => StrongTypeInterop.ShaderReflection_GetGlobalParamsVarLayout(Handle, out error), () => error));
         }
 
         internal string? ToJson()
         {
+            string? error = null;
             return Call(() =>
             {
-                char* output = null;
-                SlangNativeInterop.ShaderReflection_ToJson(Handle, &output);
-                return FromUtf8((byte*)output);
-            });
+                SlangNativeInterop.ShaderReflection_ToJson(Handle, out string output, out error);
+                return output;
+            }, () => error);
         }
     }
 }

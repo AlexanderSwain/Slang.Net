@@ -62,7 +62,7 @@ namespace Slang.Sdk
 
         private static CLI_Results InvokeSlangc(string args)
         {
-            var slangcPath = Path.Combine(Runtime.Directory, "slangc.exe");
+            var slangcPath = Path.Combine(Runtime.CLI_Directory, "slangc.exe");
             
             // Check if slangc.exe exists before trying to run it
             if (!File.Exists(slangcPath))
@@ -72,8 +72,8 @@ namespace Slang.Sdk
                     ExitCode = -1,
                     StdOut = "",
                     StdErr = $"slangc.exe not found at expected path: {slangcPath}\n" +
-                            $"Runtime directory: {Runtime.Directory}\n" +
-                            $"Directory exists: {Directory.Exists(Runtime.Directory)}\n"
+                            $"Runtime directory: {Runtime.CLI_Directory}\n" +
+                            $"Directory exists: {Directory.Exists(Runtime.CLI_Directory)}\n"
                 };
             }
             

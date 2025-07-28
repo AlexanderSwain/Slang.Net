@@ -21,87 +21,104 @@ namespace Slang.Sdk.Binding
 
         internal VariableReflection GetVariable()
         {
-            return new VariableReflection(this, Call(() => StrongTypeInterop.VariableLayoutReflection_GetVariable(Handle)));
+            string? error = null;
+            return new VariableReflection(this, Call(() => StrongTypeInterop.VariableLayoutReflection_GetVariable(Handle, out error), () => error));
         }
 
-        internal string? GetName()
+        internal string GetName()
         {
-            return Call(() => FromCharPtr(SlangNativeInterop.VariableLayoutReflection_GetName(Handle)));
+            string? error = null;
+            return Call(() => SlangNativeInterop.VariableLayoutReflection_GetName(Handle, out error), () => error);
         }
 
         internal ModifierReflection FindModifier(int modifierId)
         {
-            return new ModifierReflection(this, Call(() => StrongTypeInterop.VariableLayoutReflection_FindModifier(Handle, modifierId)));
+            string? error = null;
+            return new ModifierReflection(this, Call(() => StrongTypeInterop.VariableLayoutReflection_FindModifier(Handle, modifierId, out error), () => error));
         }
 
         internal TypeLayoutReflection GetTypeLayout()
         {
-            return new TypeLayoutReflection(this, Call(() => StrongTypeInterop.VariableLayoutReflection_GetTypeLayout(Handle)));
+            string? error = null;
+            return new TypeLayoutReflection(this, Call(() => StrongTypeInterop.VariableLayoutReflection_GetTypeLayout(Handle, out error), () => error));
         }
 
         internal ParameterCategory GetCategory()
         {
-            return (ParameterCategory)Call(() => SlangNativeInterop.VariableLayoutReflection_GetCategory(Handle));
+            string? error = null;
+            return (ParameterCategory)Call(() => SlangNativeInterop.VariableLayoutReflection_GetCategory(Handle, out error), () => error);
         }
 
         internal uint GetCategoryCount()
         {
-            return Call(() => SlangNativeInterop.VariableLayoutReflection_GetCategoryCount(Handle));
+            string? error = null;
+            return Call(() => SlangNativeInterop.VariableLayoutReflection_GetCategoryCount(Handle, out error), () => error);
         }
 
         internal ParameterCategory GetCategoryByIndex(uint index)
         {
-            return (ParameterCategory)Call(() => SlangNativeInterop.VariableLayoutReflection_GetCategoryByIndex(Handle, index));
+            string? error = null;
+            return (ParameterCategory)Call(() => SlangNativeInterop.VariableLayoutReflection_GetCategoryByIndex(Handle, index, out error), () => error);
         }
 
         internal nuint GetOffset(ParameterCategory category)
         {
-            return Call(() => SlangNativeInterop.VariableLayoutReflection_GetOffset(Handle, (int)category));
+            string? error = null;
+            return Call(() => SlangNativeInterop.VariableLayoutReflection_GetOffset(Handle, (int)category, out error), () => error);
         }
 
         internal new TypeReflection GetType()
         {
-            return new TypeReflection(this, Call(() => StrongTypeInterop.VariableLayoutReflection_GetType(Handle)));
+            string? error = null;
+            return new TypeReflection(this, Call(() => StrongTypeInterop.VariableLayoutReflection_GetType(Handle, out error), () => error));
         }
 
         internal uint GetBindingIndex()
         {
-            return Call(() => SlangNativeInterop.VariableLayoutReflection_GetBindingIndex(Handle));
+            string? error = null;
+            return Call(() => SlangNativeInterop.VariableLayoutReflection_GetBindingIndex(Handle, out error), () => error);
         }
 
         internal uint GetBindingSpace()
         {
-            return Call(() => SlangNativeInterop.VariableLayoutReflection_GetBindingSpace(Handle));
+            string? error = null;
+            return Call(() => SlangNativeInterop.VariableLayoutReflection_GetBindingSpace(Handle, out error), () => error);
         }
 
         internal VariableLayoutReflection GetSpace(ParameterCategory category)
         {
-            return new VariableLayoutReflection(this, Call(() => StrongTypeInterop.VariableLayoutReflection_GetSpace(Handle, (int)category)));
+            string? error = null;
+            return new VariableLayoutReflection(this, Call(() => StrongTypeInterop.VariableLayoutReflection_GetSpace(Handle, (int)category, out error), () => error));
         }
 
         internal int GetImageFormat()
         {
-            return Call(() => SlangNativeInterop.VariableLayoutReflection_GetImageFormat(Handle));
+            string? error = null;
+            return Call(() => SlangNativeInterop.VariableLayoutReflection_GetImageFormat(Handle, out error), () => error);
         }
 
-        internal string? GetSemanticName()
+        internal string GetSemanticName()
         {
-            return Call(() => FromCharPtr(SlangNativeInterop.VariableLayoutReflection_GetSemanticName(Handle)));
+            string? error = null;
+            return Call(() => SlangNativeInterop.VariableLayoutReflection_GetSemanticName(Handle, out error), () => error);
         }
 
         internal nuint GetSemanticIndex()
         {
-            return Call(() => SlangNativeInterop.VariableLayoutReflection_GetSemanticIndex(Handle));
+            string? error = null;
+            return Call(() => SlangNativeInterop.VariableLayoutReflection_GetSemanticIndex(Handle, out error), () => error);
         }
 
         internal uint GetStage()
         {
-            return Call(() => SlangNativeInterop.VariableLayoutReflection_GetStage(Handle));
+            string? error = null;
+            return Call(() => SlangNativeInterop.VariableLayoutReflection_GetStage(Handle, out error), () => error);
         }
 
         internal VariableLayoutReflection GetPendingDataLayout()
         {
-            return new VariableLayoutReflection(this, Call(() => StrongTypeInterop.VariableLayoutReflection_GetPendingDataLayout(Handle)));
+            string? error = null;
+            return new VariableLayoutReflection(this, Call(() => StrongTypeInterop.VariableLayoutReflection_GetPendingDataLayout(Handle, out error), () => error));
         }
     }
 }

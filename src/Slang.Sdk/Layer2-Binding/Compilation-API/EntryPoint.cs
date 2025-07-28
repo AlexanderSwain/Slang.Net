@@ -1,7 +1,4 @@
 ﻿using Slang.Sdk.Interop;
-using System;
-using static Slang.Sdk.Interop.Utilities;
-using static Slang.Sdk.Interop.StringMarshaling;
 
 namespace Slang.Sdk.Binding
 {
@@ -15,29 +12,20 @@ namespace Slang.Sdk.Binding
             Parent = parent;
 
             // Using the strongly-typed interop that returns EntryPointHandle directly
-            Handle = StrongTypeInterop.EntryPoint_Create(Parent.Handle, index);
+            Handle = StrongTypeInterop.EntryPoint_Create(Parent.Handle, index, out var error);
 
             if (Handle.IsInvalid)
-                throw new SlangException(SlangResult.Fail, $"Failed to create Slang entry point: {GetLastError() ?? "<No error was returned from Slang>"}");
+                throw new SlangException(SlangResult.Fail, $"Failed to create Slang entry point: {error ?? "<No error was returned from Slang>"}");
         }
 
         public EntryPoint(Module parent, string name)
         {
             Parent = parent;
-            // Convert managed strings to UTF-8 before passing to native API
-            byte* pName = ToUtf8(name);
-            try
-            {
-                // Using the strongly-typed interop that returns EntryPointHandle directly
-                Handle = StrongTypeInterop.EntryPoint_CreateByName(Parent.Handle, (char*)pName);
-                if (Handle.IsInvalid)
-                    throw new SlangException(SlangResult.Fail, $"Failed to create Slang entry point: {GetLastError() ?? "<No error was returned from Slang>"}");
-            }
-            finally
-            {
-                // Clean up allocated UTF-8 strings
-                FreeUtf8(pName);
-            }
+
+            // Using the strongly-typed interop that returns EntryPointHandle directly
+            Handle = StrongTypeInterop.EntryPoint_CreateByName(Parent.Handle, name, out var error);
+            if (Handle.IsInvalid)
+                throw new SlangException(SlangResult.Fail, $"Failed to create Slang entry point: {error ?? "<No error was returned from Slang>"}");
         }
 
         public EntryPoint(Module parent, Interop.EntryPointHandle handle)
@@ -54,23 +42,26 @@ namespace Slang.Sdk.Binding
                 ObjectDisposedException.ThrowIf(Handle.IsInvalid, this);
 
                 // Using the strongly-typed interop to get the index of the entry point
-                return SlangNativeInterop.EntryPoint_GetIndex(Handle);
+                var result = SlangNativeInterop.EntryPoint_GetIndex(Handle, out var error);
+                if (error != null)
+                    throw new SlangException(SlangResult.Fail, $"Failed to get an EntryPoint's index: {error ?? "<No error was returned from Slang>"}");
+
+                return result;
             }
         }
 
-        public string Name
+        public string? Name
         {
             get
             {
                 // Use call, for consistency with other properties
                 ObjectDisposedException.ThrowIf(Handle.IsInvalid, this);
 
-                // Using the strongly-typed interop to get the name of the entry point
-                char* pName = SlangNativeInterop.EntryPoint_GetName(Handle);
-                if (pName == null)
-                    throw new SlangException(SlangResult.Fail, "Failed to retrieve entry point name: <No name was returned from Slang>");
+                var result = SlangNativeInterop.EntryPoint_GetName(Handle, out var error);
+                if (error != null)
+                    throw new SlangException(SlangResult.Fail, $"Failed to get an EntryPoint's name: {error ?? "<No error was returned from Slang>"}");
 
-                return FromUtf8((byte*)pName) ?? throw new SlangException(SlangResult.Fail, "Failed to convert entry point name from UTF-8");
+                return result;
             }
         }
 
@@ -79,15 +70,45 @@ namespace Slang.Sdk.Binding
             // Use call, for consistency with other properties
             ObjectDisposedException.ThrowIf(Handle.IsInvalid, this);
             var target = Parent.Parent.Targets.ElementAt((int)targetIndex);
-            char* compiledSource = null;
-            SlangResult compileResult = SlangNativeInterop.EntryPoint_Compile(Handle, targetIndex, &compiledSource);
-            string? diagnostics = GetLastError();
-            return new CompilationResult(StringMarshaling.FromUtf8((byte*)compiledSource) ?? throw new SlangException(SlangResult.Fail, "Failed to convert compiled source from UTF-8"), target, this, compileResult, diagnostics);
+            SlangResult compileResult = SlangNativeInterop.EntryPoint_Compile(Handle, targetIndex, out string compiledSource, out var error);
+            return new CompilationResult(compiledSource ?? throw new SlangException(SlangResult.Fail, "Failed to convert compiled source from UTF-8"), target, this, compileResult, error);
         }
 
         ~EntryPoint()
         {
             Handle?.Dispose();
         }
+
+        #region Equality
+        public static bool operator ==(EntryPoint? left, EntryPoint? right)
+        {
+            if (ReferenceEquals(left, right)) return true;
+            if (left is null || right is null) return false;
+            return left.Handle == right.Handle;
+        }
+
+        public static bool operator !=(EntryPoint? left, EntryPoint? right)
+        {
+            if (ReferenceEquals(left, right)) return false;
+            if (left is null || right is null) return true;
+            return left.Handle != right.Handle;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is EntryPoint entryPoint) return Equals(entryPoint);
+            return false;
+        }
+
+        public bool Equals(EntryPoint? other)
+        {
+            return this == other;
+        }
+
+        public override int GetHashCode()
+        {
+            return Handle.GetHashCode();
+        }
+        #endregion
     }
 }

@@ -42,7 +42,7 @@ namespace Native
 		ModuleCLI* m_parent = nullptr;
 		slang::IEntryPoint* m_native = nullptr;
 		int m_index = -1;
-		const char* m_name = nullptr;
+		std::string m_name = "";
 	};
 }
 

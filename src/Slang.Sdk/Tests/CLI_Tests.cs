@@ -17,7 +17,7 @@
             // Test that Runtime.Directory detection handles architecture correctly
             try
             {
-                string runtimeDirectory = Slang.Runtime.Directory;
+                string runtimeDirectory = Slang.Runtime.CLI_Directory;
                 Console.WriteLine($"📁 Runtime Directory: {runtimeDirectory}");
                 
                 // Verify the directory exists

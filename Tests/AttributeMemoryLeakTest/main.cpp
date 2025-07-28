@@ -193,8 +193,9 @@ public:
         }
         
         const char* output = nullptr;
-        SlangResult result = Program_CompileProgram(program, 1, 1, &output);
-        const char* error = SlangNative_GetLastError();
+        const char* error = nullptr;
+        SlangResult result = Program_CompileProgram(program, 1, 1, &output, &error);
+        //const char* error = SlangNative_GetLastError();
         
         bool success = (result >= 0 && output != nullptr);
         addTestResult("Compiled Program", success, success ? output : (error ? error : "Unknown error"));
@@ -699,8 +700,8 @@ public:
         
         for (const auto& entry : entryPointsToCompile) {
             const char* output = nullptr;
-            int32_t result = Program_CompileProgram(program, entry.second, 0, &output);
-            const char* error = SlangNative_GetLastError();
+            const char* error = nullptr;
+            int32_t result = Program_CompileProgram(program, entry.second, 0, &output, &error);
             
             bool success = (result >= 0 && output != nullptr);
             string message = success ? "Compiled successfully" : "Compilation failed";

@@ -12,794 +12,794 @@ internal static unsafe partial class SlangNativeInterop
 
     static SlangNativeInterop()
     {
+        IntPtr DllImportResolver(string libraryName, System.Reflection.Assembly assembly, DllImportSearchPath? searchPath)
+        {
+            if (libraryName == LibraryName)
+            {
+                // Use the Runtime.Directory to get the correct runtime path
+                var runtimeDirectory = Slang.Runtime.SlangNative_Directory;
+                var libraryPath = Path.Combine(runtimeDirectory, "SlangNative.dll");
+
+                if (File.Exists(libraryPath))
+                {
+                    return NativeLibrary.Load(libraryPath);
+                }
+            }
+
+            // Fall back to default resolution
+            return IntPtr.Zero;
+        }
+
         // Register a custom DLL resolver to look in the runtime-specific directory
         // This is required for testing Slang.Sdk as an executable
         NativeLibrary.SetDllImportResolver(typeof(SlangNativeInterop).Assembly, DllImportResolver);
     }
 
-    private static IntPtr DllImportResolver(string libraryName, System.Reflection.Assembly assembly, DllImportSearchPath? searchPath)
-    {
-        if (libraryName == LibraryName)
-        {
-            // Use the Runtime.Directory to get the correct runtime path
-            var runtimeDirectory = Slang.Runtime.Directory;
-            var libraryPath = Path.Combine(runtimeDirectory, "SlangNative.dll");
-            
-            if (File.Exists(libraryPath))
-            {
-                return NativeLibrary.Load(libraryPath);
-            }
-        }
-        
-        // Fall back to default resolution
-        return IntPtr.Zero;
-    }
-
-    #region Diagnostics
-
-    [LibraryImport(LibraryName)]
-    internal static partial char* SlangNative_GetLastError();
-
-    #endregion
-
     #region Session API
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint Session_Create(
         void* options, int optionsLength,
         void* macros, int macrosLength,
         void* models, int modelsLength,
-        char*[] searchPaths, int searchPathsLength);
+        string[] searchPaths, int searchPathsLength, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial void Session_Release(nint session);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial void Session_Release(nint session, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial uint Session_GetModuleCount(nint module);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial uint Session_GetModuleCount(nint module, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint Session_GetModuleByIndex(nint module, uint index);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint Session_GetModuleByIndex(nint module, uint index, out string error);
+
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint Session_GetNative(nint session, out string error);
 
     #endregion
 
     #region Module API
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint Module_Create(
         nint parentSession, 
-        char* moduleName,
-        char* modulePath,
-        char* shaderSource);
+        string moduleName,
+        string modulePath,
+        string shaderSource, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint Module_Import(
     nint parentSession,
-    char* moduleName);
+    string moduleName, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial void Module_Release(nint module);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial void Module_Release(nint mod, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial char* Module_GetName(nint module);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial string Module_GetName(nint mod, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial uint Module_GetEntryPointCount(nint module);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial uint Module_GetEntryPointCount(nint mod, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint Module_GetEntryPointByIndex(
-        nint module, 
-        uint index);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint Module_GetEntryPointByIndex(nint mod, uint index, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint Module_FindEntryPointByName(
-        nint module, 
-        char* entryPointName);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint Module_FindEntryPointByName(nint mod, string entryPointName, out string error);
+
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint Module_GetNative(nint mod, out string error);
 
     #endregion
 
     #region EntryPoint API
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint EntryPoint_Create(
         nint parentModule, 
-        uint entryPointIndex);
+        uint entryPointIndex, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint EntryPoint_CreateByName(
         nint parentModule, 
-        char* entryPointName);
+        string entryPointName, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial void EntryPoint_Release(nint entryPoint);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial void EntryPoint_Release(nint entryPoint, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial int EntryPoint_GetIndex(nint entryPoint);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial int EntryPoint_GetIndex(nint entryPoint, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial char* EntryPoint_GetName(nint entryPoint);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial string EntryPoint_GetName(nint entryPoint, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial SlangResult EntryPoint_Compile(nint entryPoint, int targetIndex, char** output);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial SlangResult EntryPoint_Compile(nint entryPoint, int targetIndex, out string output, out string error);
 
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint EntryPoint_GetNative(nint entryPoint, out string error);
     #endregion
 
     #region Program API
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint Program_Create(nint parentModule);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint Program_Create(nint parentModule, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial void Program_Release(nint program);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial void Program_Release(nint program, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial SlangResult Program_CompileProgram(
         nint program,
         uint entryPointIndex,
         uint targetIndex,
-        char** output);
+        out string output, 
+        out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint Program_GetProgramReflection(
         nint program, 
-        uint targetIndex);
+        uint targetIndex, out string error);
 
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint Program_GetNative(nint program, out string error);   
     #endregion
 
     #region ShaderReflection API
 
-    [LibraryImport(LibraryName)]
-    internal static partial void ShaderReflection_Release(nint shaderReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial void ShaderReflection_Release(nint shaderReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint ShaderReflection_GetParent(nint shaderReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint ShaderReflection_GetParent(nint shaderReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint ShaderReflection_GetNative(nint shaderReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial uint ShaderReflection_GetParameterCount(nint shaderReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial uint ShaderReflection_GetParameterCount(nint shaderReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial uint ShaderReflection_GetTypeParameterCount(nint shaderReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial uint ShaderReflection_GetTypeParameterCount(nint shaderReflection);
-
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint ShaderReflection_GetTypeParameterByIndex(
         nint shaderReflection, 
-        uint index);
+        uint index, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint ShaderReflection_FindTypeParameter(nint shaderReflection, char* name);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint ShaderReflection_FindTypeParameter(nint shaderReflection, string name, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint ShaderReflection_GetParameterByIndex(nint shaderReflection, uint index);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint ShaderReflection_GetParameterByIndex(nint shaderReflection, uint index, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial uint ShaderReflection_GetEntryPointCount(nint shaderReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial uint ShaderReflection_GetEntryPointCount(nint shaderReflection, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint ShaderReflection_GetEntryPointByIndex(
         nint shaderReflection, 
-        uint index);
+        uint index, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint ShaderReflection_FindEntryPointByName(
         nint shaderReflection, 
-        char* name);
+        string name, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial uint ShaderReflection_GetGlobalConstantBufferBinding(nint shaderReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial uint ShaderReflection_GetGlobalConstantBufferBinding(nint shaderReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nuint ShaderReflection_GetGlobalConstantBufferSize(nint shaderReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nuint ShaderReflection_GetGlobalConstantBufferSize(nint shaderReflection, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint ShaderReflection_FindTypeByName(
         nint shaderReflection, 
-        char* name);
+        string name, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint ShaderReflection_FindFunctionByName(
         nint shaderReflection, 
-        char* name);
+        string name, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint ShaderReflection_FindFunctionByNameInType(
         nint shaderReflection, 
         nint type, 
-        char* name);
+        string name, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint ShaderReflection_FindVarByNameInType(
         nint shaderReflection, 
         nint type, 
-        char* name);
+        string name, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint ShaderReflection_GetTypeLayout(
         nint shaderReflection, 
         nint type, 
-        int layoutRules);
+        int layoutRules, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint ShaderReflection_SpecializeType(
         nint shaderReflection, 
         nint type, 
         int argCount, 
-        void** args);
+        void** args, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     [return: MarshalAs(UnmanagedType.U1)]
     internal static partial bool ShaderReflection_IsSubType(
         nint shaderReflection, 
         nint subType, 
-        nint superType);
+        nint superType, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial uint ShaderReflection_GetHashedStringCount(nint shaderReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial uint ShaderReflection_GetHashedStringCount(nint shaderReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial char* ShaderReflection_GetHashedString(
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial string? ShaderReflection_GetHashedString(
         nint shaderReflection, 
-        uint index);
+        uint index, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint ShaderReflection_GetGlobalParamsTypeLayout(nint shaderReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint ShaderReflection_GetGlobalParamsTypeLayout(nint shaderReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint ShaderReflection_GetGlobalParamsVarLayout(nint shaderReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint ShaderReflection_GetGlobalParamsVarLayout(nint shaderReflection, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial int ShaderReflection_ToJson(
         nint shaderReflection, 
-        char** output);
+        out string output, out string error);
+
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint ShaderReflection_GetNative(nint shaderReflection, out string error);
 
     #endregion
 
     #region TypeReflection API
 
-    [LibraryImport(LibraryName)]
-    internal static partial void TypeReflection_Release(nint typeReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial void TypeReflection_Release(nint typeReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint TypeReflection_GetNative(nint typeReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial int TypeReflection_GetKind(nint typeReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial int TypeReflection_GetKind(nint typeReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial uint TypeReflection_GetFieldCount(nint typeReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial uint TypeReflection_GetFieldCount(nint typeReflection);
-
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint TypeReflection_GetFieldByIndex(
         nint typeReflection, 
-        uint index);
+        uint index, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     [return: MarshalAs(UnmanagedType.U1)]
-    internal static partial bool TypeReflection_IsArray(nint typeReflection);
+    internal static partial bool TypeReflection_IsArray(nint typeReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint TypeReflection_UnwrapArray(nint typeReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint TypeReflection_UnwrapArray(nint typeReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nuint TypeReflection_GetElementCount(nint typeReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nuint TypeReflection_GetElementCount(nint typeReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint TypeReflection_GetElementType(nint typeReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint TypeReflection_GetElementType(nint typeReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial uint TypeReflection_GetRowCount(nint typeReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial uint TypeReflection_GetRowCount(nint typeReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial uint TypeReflection_GetColumnCount(nint typeReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial uint TypeReflection_GetColumnCount(nint typeReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial int TypeReflection_GetScalarType(nint typeReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial int TypeReflection_GetScalarType(nint typeReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint TypeReflection_GetResourceResultType(nint typeReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint TypeReflection_GetResourceResultType(nint typeReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial int TypeReflection_GetResourceShape(nint typeReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial int TypeReflection_GetResourceShape(nint typeReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial int TypeReflection_GetResourceAccess(nint typeReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial int TypeReflection_GetResourceAccess(nint typeReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial char* TypeReflection_GetName(nint typeReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial string TypeReflection_GetName(nint typeReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial uint TypeReflection_GetUserAttributeCount(nint typeReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial uint TypeReflection_GetUserAttributeCount(nint typeReflection, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint TypeReflection_GetUserAttributeByIndex(
         nint typeReflection, 
-        uint index);
+        uint index, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint TypeReflection_FindAttributeByName(
         nint typeReflection, 
-        char* name);
+        string name, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint TypeReflection_ApplySpecializations(
         nint typeReflection, 
-        nint genRef);
+        nint genRef, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint TypeReflection_GetGenericContainer(nint typeReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint TypeReflection_GetGenericContainer(nint typeReflection, out string error);
+
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint TypeReflection_GetNative(nint typeReflection, out string error);
 
     #endregion
 
     #region TypeLayoutReflection API
 
-    [LibraryImport(LibraryName)]
-    internal static partial void TypeLayoutReflection_Release(nint typeLayoutReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial void TypeLayoutReflection_Release(nint typeLayoutReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint TypeLayoutReflection_GetNative(nint typeLayoutReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint TypeLayoutReflection_GetType(nint typeLayoutReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint TypeLayoutReflection_GetType(nint typeLayoutReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial int TypeLayoutReflection_GetKind(nint typeLayoutReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial int TypeLayoutReflection_GetKind(nint typeLayoutReflection);
-
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nuint TypeLayoutReflection_GetSize(
         nint typeLayoutReflection, 
-        int category);
+        int category, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nuint TypeLayoutReflection_GetStride(
         nint typeLayoutReflection, 
-        int category);
+        int category, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial int TypeLayoutReflection_GetAlignment(
         nint typeLayoutReflection, 
-        int category);
+        int category, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial uint TypeLayoutReflection_GetFieldCount(nint typeLayoutReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial uint TypeLayoutReflection_GetFieldCount(nint typeLayoutReflection, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint TypeLayoutReflection_GetFieldByIndex(
         nint typeLayoutReflection, 
-        uint index);
+        uint index, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial int TypeLayoutReflection_FindFieldIndexByName(
         nint typeLayoutReflection, 
-        char* name);
+        string name, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint TypeLayoutReflection_GetExplicitCounter(nint typeLayoutReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint TypeLayoutReflection_GetExplicitCounter(nint typeLayoutReflection, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     [return: MarshalAs(UnmanagedType.U1)]
-    internal static partial bool TypeLayoutReflection_IsArray(nint typeLayoutReflection);
+    internal static partial bool TypeLayoutReflection_IsArray(nint typeLayoutReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint TypeLayoutReflection_UnwrapArray(nint typeLayoutReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint TypeLayoutReflection_UnwrapArray(nint typeLayoutReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nuint TypeLayoutReflection_GetElementCount(nint typeLayoutReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nuint TypeLayoutReflection_GetElementCount(nint typeLayoutReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nuint TypeLayoutReflection_GetTotalArrayElementCount(nint typeLayoutReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nuint TypeLayoutReflection_GetTotalArrayElementCount(nint typeLayoutReflection, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nuint TypeLayoutReflection_GetElementStride(
         nint typeLayoutReflection, 
-        int category);
+        int category, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint TypeLayoutReflection_GetElementTypeLayout(nint typeLayoutReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint TypeLayoutReflection_GetElementTypeLayout(nint typeLayoutReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint TypeLayoutReflection_GetElementVarLayout(nint typeLayoutReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint TypeLayoutReflection_GetElementVarLayout(nint typeLayoutReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint TypeLayoutReflection_GetContainerVarLayout(nint typeLayoutReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint TypeLayoutReflection_GetContainerVarLayout(nint typeLayoutReflection, out string error);
+
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint TypeLayoutReflection_GetNative(nint typeLayoutReflection, out string error);
 
     #endregion
 
     #region VariableReflection API
 
-    [LibraryImport(LibraryName)]
-    internal static partial void VariableReflection_Release(nint variableReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial void VariableReflection_Release(nint variableReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint VariableReflection_GetNative(nint variableReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial string VariableReflection_GetName(nint variableReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial char* VariableReflection_GetName(nint variableReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint VariableReflection_GetType(nint variableReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint VariableReflection_GetType(nint variableReflection);
-
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint VariableReflection_FindModifier(
         nint variableReflection, 
-        int modifierId);
+        int modifierId, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial uint VariableReflection_GetUserAttributeCount(nint variableReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial uint VariableReflection_GetUserAttributeCount(nint variableReflection, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint VariableReflection_GetUserAttributeByIndex(
         nint variableReflection, 
-        uint index);
+        uint index, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint VariableReflection_FindAttributeByName(
         nint variableReflection, 
-        char* name);
+        string name, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint VariableReflection_FindUserAttributeByName(
         nint variableReflection, 
-        char* name);
+        string name, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     [return: MarshalAs(UnmanagedType.U1)]
-    internal static partial bool VariableReflection_HasDefaultValue(nint variableReflection);
+    internal static partial bool VariableReflection_HasDefaultValue(nint variableReflection, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial int VariableReflection_GetDefaultValueInt(
         nint variableReflection, 
-        long* value);
+        long* value, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint VariableReflection_GetGenericContainer(nint variableReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint VariableReflection_GetGenericContainer(nint variableReflection, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint VariableReflection_ApplySpecializations(
         nint variableReflection, 
         void** specializations, 
-        int count);
+        int count, out string error);
+
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint VariableReflection_GetNative(nint variableReflection, out string error);
 
     #endregion
 
     #region VariableLayoutReflection API
 
-    [LibraryImport(LibraryName)]
-    internal static partial void VariableLayoutReflection_Release(nint variableLayoutReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial void VariableLayoutReflection_Release(nint variableLayoutReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint VariableLayoutReflection_GetNative(nint variableLayoutReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint VariableLayoutReflection_GetVariable(nint variableLayoutReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint VariableLayoutReflection_GetVariable(nint variableLayoutReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial string VariableLayoutReflection_GetName(nint variableLayoutReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial char* VariableLayoutReflection_GetName(nint variableLayoutReflection);
-
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint VariableLayoutReflection_FindModifier(
         nint variableLayoutReflection, 
-        int modifierId);
+        int modifierId, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint VariableLayoutReflection_GetTypeLayout(nint variableLayoutReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint VariableLayoutReflection_GetTypeLayout(nint variableLayoutReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial int VariableLayoutReflection_GetCategory(nint variableLayoutReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial int VariableLayoutReflection_GetCategory(nint variableLayoutReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial uint VariableLayoutReflection_GetCategoryCount(nint variableLayoutReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial uint VariableLayoutReflection_GetCategoryCount(nint variableLayoutReflection, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial int VariableLayoutReflection_GetCategoryByIndex(
         nint variableLayoutReflection, 
-        uint index);
+        uint index, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nuint VariableLayoutReflection_GetOffset(
         nint variableLayoutReflection, 
-        int category);
+        int category, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint VariableLayoutReflection_GetType(nint variableLayoutReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint VariableLayoutReflection_GetType(nint variableLayoutReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial uint VariableLayoutReflection_GetBindingIndex(nint variableLayoutReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial uint VariableLayoutReflection_GetBindingIndex(nint variableLayoutReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial uint VariableLayoutReflection_GetBindingSpace(nint variableLayoutReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial uint VariableLayoutReflection_GetBindingSpace(nint variableLayoutReflection, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint VariableLayoutReflection_GetSpace(
         nint variableLayoutReflection, 
-        int category);
+        int category, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial int VariableLayoutReflection_GetImageFormat(nint variableLayoutReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial int VariableLayoutReflection_GetImageFormat(nint variableLayoutReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial char* VariableLayoutReflection_GetSemanticName(nint variableLayoutReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial string VariableLayoutReflection_GetSemanticName(nint variableLayoutReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nuint VariableLayoutReflection_GetSemanticIndex(nint variableLayoutReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nuint VariableLayoutReflection_GetSemanticIndex(nint variableLayoutReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial uint VariableLayoutReflection_GetStage(nint variableLayoutReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial uint VariableLayoutReflection_GetStage(nint variableLayoutReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint VariableLayoutReflection_GetPendingDataLayout(nint variableLayoutReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint VariableLayoutReflection_GetPendingDataLayout(nint variableLayoutReflection, out string error);
+
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint VariableLayoutReflection_GetNative(nint variableLayoutReflection, out string error);
 
     #endregion
 
     #region FunctionReflection API
 
-    [LibraryImport(LibraryName)]
-    internal static partial void FunctionReflection_Release(nint functionReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial void FunctionReflection_Release(nint functionReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint FunctionReflection_GetNative(nint functionReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial string FunctionReflection_GetName(nint functionReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial char* FunctionReflection_GetName(nint functionReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint FunctionReflection_GetReturnType(nint functionReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint FunctionReflection_GetReturnType(nint functionReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial uint FunctionReflection_GetParameterCount(nint functionReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial uint FunctionReflection_GetParameterCount(nint functionReflection);
-
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint FunctionReflection_GetParameterByIndex(
         nint functionReflection, 
-        uint index);
+        uint index, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint FunctionReflection_FindModifier(
         nint functionReflection, 
-        int modifierId);
+        int modifierId, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial uint FunctionReflection_GetUserAttributeCount(nint functionReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial uint FunctionReflection_GetUserAttributeCount(nint functionReflection, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint FunctionReflection_GetUserAttributeByIndex(
         nint functionReflection, 
-        uint index);
+        uint index, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint FunctionReflection_FindAttributeByName(
         nint functionReflection, 
-        char* name);
+        string name, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint FunctionReflection_GetGenericContainer(nint functionReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint FunctionReflection_GetGenericContainer(nint functionReflection, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint FunctionReflection_ApplySpecializations(
         nint functionReflection, 
-        nint genRef);
+        nint genRef, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint FunctionReflection_SpecializeWithArgTypes(
         nint functionReflection, 
         uint typeCount, 
-        void** types);
+        void** types, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     [return: MarshalAs(UnmanagedType.U1)]
-    internal static partial bool FunctionReflection_IsOverloaded(nint functionReflection);
+    internal static partial bool FunctionReflection_IsOverloaded(nint functionReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial uint FunctionReflection_GetOverloadCount(nint functionReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial uint FunctionReflection_GetOverloadCount(nint functionReflection, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint FunctionReflection_GetOverload(
         nint functionReflection, 
-        uint index);
+        uint index, out string error);
+
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint FunctionReflection_GetNative(nint functionReflection, out string error);
 
     #endregion
 
     #region EntryPointReflection API
 
-    [LibraryImport(LibraryName)]
-    internal static partial void EntryPointReflection_Release(nint entryPointReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial void EntryPointReflection_Release(nint entryPointReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint EntryPointReflection_GetNative(nint entryPointReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint EntryPointReflection_GetParent(nint entryPointReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint EntryPointReflection_GetParent(nint entryPointReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint EntryPointReflection_AsFunction(nint entryPointReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint EntryPointReflection_AsFunction(nint entryPointReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial string EntryPointReflection_GetName(nint entryPointReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial char* EntryPointReflection_GetName(nint entryPointReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial string? EntryPointReflection_GetNameOverride(nint entryPointReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial char* EntryPointReflection_GetNameOverride(nint entryPointReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial uint EntryPointReflection_GetParameterCount(nint entryPointReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial uint EntryPointReflection_GetParameterCount(nint entryPointReflection);
-
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint EntryPointReflection_GetParameterByIndex(
         nint entryPointReflection, 
-        uint index);
+        uint index, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint EntryPointReflection_GetFunction(nint entryPointReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint EntryPointReflection_GetFunction(nint entryPointReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial int EntryPointReflection_GetStage(nint entryPointReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial int EntryPointReflection_GetStage(nint entryPointReflection, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial void EntryPointReflection_GetComputeThreadGroupSize(
         nint entryPointReflection, 
         uint axisCount, 
-        ulong* outSizeAlongAxis);
+        ulong* outSizeAlongAxis, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial int EntryPointReflection_GetComputeWaveSize(
         nint entryPointReflection, 
-        ulong* outWaveSize);
+        ulong* outWaveSize, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     [return: MarshalAs(UnmanagedType.U1)]
-    internal static partial bool EntryPointReflection_UsesAnySampleRateInput(nint entryPointReflection);
+    internal static partial bool EntryPointReflection_UsesAnySampleRateInput(nint entryPointReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint EntryPointReflection_GetVarLayout(nint entryPointReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint EntryPointReflection_GetVarLayout(nint entryPointReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint EntryPointReflection_GetTypeLayout(nint entryPointReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint EntryPointReflection_GetTypeLayout(nint entryPointReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint EntryPointReflection_GetResultVarLayout(nint entryPointReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint EntryPointReflection_GetResultVarLayout(nint entryPointReflection, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     [return: MarshalAs(UnmanagedType.U1)]
-    internal static partial bool EntryPointReflection_HasDefaultConstantBuffer(nint entryPointReflection);
+    internal static partial bool EntryPointReflection_HasDefaultConstantBuffer(nint entryPointReflection, out string error);
+
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint EntryPointReflection_GetNative(nint entryPointReflection, out string error);
 
     #endregion
 
     #region GenericReflection API
 
-    [LibraryImport(LibraryName)]
-    internal static partial void GenericReflection_Release(nint genRefReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial void GenericReflection_Release(nint genRefReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint GenericReflection_GetNative(nint genRefReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial string GenericReflection_GetName(nint genRefReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial char* GenericReflection_GetName(nint genRefReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial uint GenericReflection_GetTypeParameterCount(nint genRefReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial uint GenericReflection_GetTypeParameterCount(nint genRefReflection);
-
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint GenericReflection_GetTypeParameter(
         nint genRefReflection, 
-        uint index);
+        uint index, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial uint GenericReflection_GetValueParameterCount(nint genRefReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial uint GenericReflection_GetValueParameterCount(nint genRefReflection, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint GenericReflection_GetValueParameter(
         nint genRefReflection, 
-        uint index);
+        uint index, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial uint GenericReflection_GetTypeParameterConstraintCount(
         nint genRefReflection, 
-        nint typeParam);
+        nint typeParam, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint GenericReflection_GetTypeParameterConstraintType(
         nint genRefReflection, 
         nint typeParam, 
-        uint index);
+        uint index, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial int GenericReflection_GetInnerKind(nint genRefReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial int GenericReflection_GetInnerKind(nint genRefReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint GenericReflection_GetOuterGenericContainer(nint genRefReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint GenericReflection_GetOuterGenericContainer(nint genRefReflection, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint GenericReflection_GetConcreteType(
         nint genRefReflection, 
-        nint typeParam);
+        nint typeParam, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial int GenericReflection_GetConcreteIntVal(
         nint genRefReflection, 
         nint valueParam, 
-        long* value);
+        long* value, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint GenericReflection_ApplySpecializations(
         nint genRefReflection, 
-        nint genRef);
+        nint genRef, out string error);
+
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint GenericReflection_GetNative(nint genRefReflection, out string error);
 
     #endregion
 
     #region TypeParameterReflection API
 
-    [LibraryImport(LibraryName)]
-    internal static partial void TypeParameterReflection_Release(nint typeParameterReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial void TypeParameterReflection_Release(nint typeParameterReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint TypeParameterReflection_GetNative(nint typeParameterReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial string TypeParameterReflection_GetName(nint typeParameterReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial char* TypeParameterReflection_GetName(nint typeParameterReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial uint TypeParameterReflection_GetIndex(nint typeParameterReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial uint TypeParameterReflection_GetIndex(nint typeParameterReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial uint TypeParameterReflection_GetConstraintCount(nint typeParameterReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial uint TypeParameterReflection_GetConstraintCount(nint typeParameterReflection);
-
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint TypeParameterReflection_GetConstraintByIndex(
         nint typeParameterReflection, 
-        int index);
+        int index, out string error);
+
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint TypeParameterReflection_GetNative(nint typeParameterReflection, out string error);
 
     #endregion
 
     #region Attribute API
 
-    [LibraryImport(LibraryName)]
-    internal static partial void Attribute_Release(nint attributeReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial void Attribute_Release(nint attributeReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint Attribute_GetNative(nint attributeReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial string? Attribute_GetName(nint attributeReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial char* Attribute_GetName(nint attributeReflection);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial uint Attribute_GetArgumentCount(nint attributeReflection, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial uint Attribute_GetArgumentCount(nint attributeReflection);
-
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint Attribute_GetArgumentType(
         nint attributeReflection, 
-        uint index);
+        uint index, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial int Attribute_GetArgumentValueInt(
         nint attributeReflection, 
         uint index, 
-        int* value);
+        int* value, out string error);
 
-    [LibraryImport(LibraryName)]
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial int Attribute_GetArgumentValueFloat(
         nint attributeReflection, 
         uint index, 
-        float* value);
+        float* value, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial char* Attribute_GetArgumentValueString(
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial string? Attribute_GetArgumentValueString(
         nint attributeReflection, 
-        uint index);
+        uint index, out string error);
+
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint Attribute_GetNative(nint attributeReflection, out string error);
 
     #endregion
 
     #region Modifier API
 
-    [LibraryImport(LibraryName)]
-    internal static partial void Modifier_Release(nint modifier);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial void Modifier_Release(nint modifier, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial nint Modifier_GetNative(nint modifier);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial int Modifier_GetID(nint modifier, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial int Modifier_GetID(nint modifier);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial string Modifier_GetName(nint modifier, out string error);
 
-    [LibraryImport(LibraryName)]
-    internal static partial char* Modifier_GetName(nint modifier);
+    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial nint Modifier_GetNative(nint modifier, out string error);
 
     #endregion
 }
@@ -815,9 +815,10 @@ internal static unsafe partial class StrongTypeInterop
         void* options, int optionsLength,
         void* macros, int macrosLength,
         void* models, int modelsLength,
-        char*[] searchPaths, int searchPathsLength)
+        string[] searchPaths, int searchPathsLength,
+        out string error)
     {
-        var handle = SlangNativeInterop.Session_Create(options, optionsLength, macros, macrosLength, models, modelsLength, searchPaths, searchPathsLength);
+        var handle = SlangNativeInterop.Session_Create(options, optionsLength, macros, macrosLength, models, modelsLength, searchPaths, searchPathsLength, out error);
         return new SessionHandle(handle);
     }
 
@@ -827,9 +828,9 @@ internal static unsafe partial class StrongTypeInterop
     /// <param name="module"></param>
     /// <param name="index"></param>
     /// <returns></returns>
-    internal static ModuleHandle Session_GetModuleByIndex(nint module, uint index)
+    internal static ModuleHandle Session_GetModuleByIndex(nint module, uint index, out string error)
     {
-        var handle = SlangNativeInterop.Session_GetModuleByIndex(module, index);
+        var handle = SlangNativeInterop.Session_GetModuleByIndex(module, index, out error);
         return new ModuleHandle(handle);
     }
 
@@ -842,11 +843,12 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static ModuleHandle Module_Create(
         nint parentSession,
-        char* moduleName,
-        char* modulePath,
-        char* shaderSource)
+        string moduleName,
+        string modulePath,
+        string shaderSource,
+        out string error)
     {
-        var handle = SlangNativeInterop.Module_Create(parentSession, moduleName, modulePath, shaderSource);
+        var handle = SlangNativeInterop.Module_Create(parentSession, moduleName, modulePath, shaderSource, out error);
         return new ModuleHandle(handle);
     }
 
@@ -855,9 +857,10 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static ModuleHandle Module_Import(
         nint parentSession,
-        char* moduleName)
+        string moduleName,
+        out string error)
     {
-        var handle = SlangNativeInterop.Module_Import(parentSession, moduleName);
+        var handle = SlangNativeInterop.Module_Import(parentSession, moduleName, out error);
         return new ModuleHandle(handle);
     }
 
@@ -866,9 +869,10 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static EntryPointHandle Module_GetEntryPointByIndex(
         nint parentModule,
-        uint index)
+        uint index,
+        out string error)
     {
-        var handle = SlangNativeInterop.Module_GetEntryPointByIndex(parentModule, index);
+        var handle = SlangNativeInterop.Module_GetEntryPointByIndex(parentModule, index, out error);
         return new EntryPointHandle(handle);
     }
 
@@ -877,9 +881,10 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static EntryPointHandle Module_FindEntryPointByName(
         nint parentModule,
-        char* entryPointName)
+        string entryPointName,
+        out string error)
     {
-        var handle = SlangNativeInterop.Module_FindEntryPointByName(parentModule, entryPointName);
+        var handle = SlangNativeInterop.Module_FindEntryPointByName(parentModule, entryPointName, out error);
         return new EntryPointHandle(handle);
     }
 
@@ -892,9 +897,10 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static EntryPointHandle EntryPoint_Create(
         nint parentModule,
-        uint entryPointIndex)
+        uint entryPointIndex,
+        out string error)
     {
-        var handle = SlangNativeInterop.EntryPoint_Create(parentModule, entryPointIndex);
+        var handle = SlangNativeInterop.EntryPoint_Create(parentModule, entryPointIndex, out error);
         return new EntryPointHandle(handle);
     }
 
@@ -903,9 +909,10 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static EntryPointHandle EntryPoint_CreateByName(
         nint parentModule,
-        char* entryPointName)
+        string entryPointName,
+        out string error)
     {
-        var handle = SlangNativeInterop.EntryPoint_CreateByName(parentModule, entryPointName);
+        var handle = SlangNativeInterop.EntryPoint_CreateByName(parentModule, entryPointName, out error);
         return new EntryPointHandle(handle);
     }
 
@@ -916,9 +923,9 @@ internal static unsafe partial class StrongTypeInterop
     /// <summary>
     /// Creates a program with strongly-typed handle.
     /// </summary>
-    internal static ProgramHandle Program_Create(nint parentModule)
+    internal static ProgramHandle Program_Create(nint parentModule, out string error)
     {
-        var handle = SlangNativeInterop.Program_Create(parentModule);
+        var handle = SlangNativeInterop.Program_Create(parentModule, out error);
         return new ProgramHandle(handle);
     }
 
@@ -927,9 +934,10 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static ShaderReflectionHandle Program_GetProgramReflection(
         nint program,
-        uint targetIndex)
+        uint targetIndex, 
+        out string error)
     {
-        var handle = SlangNativeInterop.Program_GetProgramReflection(program, targetIndex);
+        var handle = SlangNativeInterop.Program_GetProgramReflection(program, targetIndex, out error);
         return new ShaderReflectionHandle(handle);
     }
 
@@ -940,9 +948,11 @@ internal static unsafe partial class StrongTypeInterop
     /// <summary>
     /// Gets shader reflection parent with strongly-typed handle.
     /// </summary>
-    internal static ShaderReflectionHandle ShaderReflection_GetParent(nint shaderReflection)
+    internal static ShaderReflectionHandle ShaderReflection_GetParent(
+        nint shaderReflection,
+        out string error)
     {
-        var handle = SlangNativeInterop.ShaderReflection_GetParent(shaderReflection);
+        var handle = SlangNativeInterop.ShaderReflection_GetParent(shaderReflection, out error);
         return new ShaderReflectionHandle(handle);
     }
 
@@ -951,18 +961,22 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static TypeParameterReflectionHandle ShaderReflection_GetTypeParameterByIndex(
         nint shaderReflection,
-        uint index)
+        uint index,
+        out string error)
     {
-        var handle = SlangNativeInterop.ShaderReflection_GetTypeParameterByIndex(shaderReflection, index);
+        var handle = SlangNativeInterop.ShaderReflection_GetTypeParameterByIndex(shaderReflection, index, out error);
         return new TypeParameterReflectionHandle(handle);
     }
 
     /// <summary>
     /// Finds type parameter with strongly-typed handle.
     /// </summary>
-    internal static TypeParameterReflectionHandle ShaderReflection_FindTypeParameter(nint shaderReflection, char* name)
+    internal static TypeParameterReflectionHandle ShaderReflection_FindTypeParameter(
+        nint shaderReflection, 
+        string name, 
+        out string error)
     {
-        var handle = SlangNativeInterop.ShaderReflection_FindTypeParameter(shaderReflection, name);
+        var handle = SlangNativeInterop.ShaderReflection_FindTypeParameter(shaderReflection, name, out error);
         return new TypeParameterReflectionHandle(handle);
     }
 
@@ -971,9 +985,10 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static VariableLayoutReflectionHandle ShaderReflection_GetParameterByIndex(
         nint shaderReflection,
-        uint index)
+        uint index,
+        out string error)
     {
-        var handle = SlangNativeInterop.ShaderReflection_GetParameterByIndex(shaderReflection, index);
+        var handle = SlangNativeInterop.ShaderReflection_GetParameterByIndex(shaderReflection, index, out error);
         return new VariableLayoutReflectionHandle(handle);
     }
 
@@ -982,9 +997,10 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static EntryPointReflectionHandle ShaderReflection_GetEntryPointByIndex(
         nint shaderReflection,
-        uint index)
+        uint index,
+        out string error)
     {
-        var handle = SlangNativeInterop.ShaderReflection_GetEntryPointByIndex(shaderReflection, index);
+        var handle = SlangNativeInterop.ShaderReflection_GetEntryPointByIndex(shaderReflection, index, out error);
         return new EntryPointReflectionHandle(handle);
     }
 
@@ -993,9 +1009,10 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static EntryPointReflectionHandle ShaderReflection_FindEntryPointByName(
         nint shaderReflection,
-        char* name)
+        string name,
+        out string error)
     {
-        var handle = SlangNativeInterop.ShaderReflection_FindEntryPointByName(shaderReflection, name);
+        var handle = SlangNativeInterop.ShaderReflection_FindEntryPointByName(shaderReflection, name, out error);
         return new EntryPointReflectionHandle(handle);
     }
 
@@ -1004,9 +1021,10 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static TypeReflectionHandle ShaderReflection_FindTypeByName(
         nint shaderReflection,
-        char* name)
+        string name,
+        out string error)
     {
-        var handle = SlangNativeInterop.ShaderReflection_FindTypeByName(shaderReflection, name);
+        var handle = SlangNativeInterop.ShaderReflection_FindTypeByName(shaderReflection, name, out error);
         return new TypeReflectionHandle(handle);
     }
 
@@ -1015,9 +1033,10 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static FunctionReflectionHandle ShaderReflection_FindFunctionByName(
         nint shaderReflection,
-        char* name)
+        string name,
+        out string error)
     {
-        var handle = SlangNativeInterop.ShaderReflection_FindFunctionByName(shaderReflection, name);
+        var handle = SlangNativeInterop.ShaderReflection_FindFunctionByName(shaderReflection, name, out error);
         return new FunctionReflectionHandle(handle);
     }
 
@@ -1027,9 +1046,10 @@ internal static unsafe partial class StrongTypeInterop
     internal static FunctionReflectionHandle ShaderReflection_FindFunctionByNameInType(
         nint shaderReflection,
         nint type,
-        char* name)
+        string name,
+        out string error)
     {
-        var handle = SlangNativeInterop.ShaderReflection_FindFunctionByNameInType(shaderReflection, type, name);
+        var handle = SlangNativeInterop.ShaderReflection_FindFunctionByNameInType(shaderReflection, type, name, out error);
         return new FunctionReflectionHandle(handle);
     }
 
@@ -1039,9 +1059,10 @@ internal static unsafe partial class StrongTypeInterop
     internal static VariableReflectionHandle ShaderReflection_FindVarByNameInType(
         nint shaderReflection,
         nint type,
-        char* name)
+        string name,
+        out string error)
     {
-        var handle = SlangNativeInterop.ShaderReflection_FindVarByNameInType(shaderReflection, type, name);
+        var handle = SlangNativeInterop.ShaderReflection_FindVarByNameInType(shaderReflection, type, name, out error);
         return new VariableReflectionHandle(handle);
     }
 
@@ -1051,9 +1072,10 @@ internal static unsafe partial class StrongTypeInterop
     internal static TypeLayoutReflectionHandle ShaderReflection_GetTypeLayout(
         nint shaderReflection,
         nint type,
-        int layoutRules)
+        int layoutRules,
+        out string error)
     {
-        var handle = SlangNativeInterop.ShaderReflection_GetTypeLayout(shaderReflection, type, layoutRules);
+        var handle = SlangNativeInterop.ShaderReflection_GetTypeLayout(shaderReflection, type, layoutRules, out error);
         return new TypeLayoutReflectionHandle(handle);
     }
 
@@ -1064,27 +1086,32 @@ internal static unsafe partial class StrongTypeInterop
         nint shaderReflection,
         nint type,
         int argCount,
-        void** args)
+        void** args,
+        out string error)
     {
-        var handle = SlangNativeInterop.ShaderReflection_SpecializeType(shaderReflection, type, argCount, args);
+        var handle = SlangNativeInterop.ShaderReflection_SpecializeType(shaderReflection, type, argCount, args, out error);
         return new TypeReflectionHandle(handle);
     }
 
     /// <summary>
     /// Gets global params type layout with strongly-typed handle.
     /// </summary>
-    internal static TypeLayoutReflectionHandle ShaderReflection_GetGlobalParamsTypeLayout(nint shaderReflection)
+    internal static TypeLayoutReflectionHandle ShaderReflection_GetGlobalParamsTypeLayout(
+        nint shaderReflection,
+        out string error)
     {
-        var handle = SlangNativeInterop.ShaderReflection_GetGlobalParamsTypeLayout(shaderReflection);
+        var handle = SlangNativeInterop.ShaderReflection_GetGlobalParamsTypeLayout(shaderReflection, out error);
         return new TypeLayoutReflectionHandle(handle);
     }
 
     /// <summary>
     /// Gets global params var layout with strongly-typed handle.
     /// </summary>
-    internal static VariableLayoutReflectionHandle ShaderReflection_GetGlobalParamsVarLayout(nint shaderReflection)
+    internal static VariableLayoutReflectionHandle ShaderReflection_GetGlobalParamsVarLayout(
+        nint shaderReflection,
+        out string error)
     {
-        var handle = SlangNativeInterop.ShaderReflection_GetGlobalParamsVarLayout(shaderReflection);
+        var handle = SlangNativeInterop.ShaderReflection_GetGlobalParamsVarLayout(shaderReflection, out error);
         return new VariableLayoutReflectionHandle(handle);
     }
 
@@ -1097,36 +1124,43 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static VariableReflectionHandle TypeReflection_GetFieldByIndex(
         nint typeReflection,
-        uint index)
+        uint index,
+        out string error)
     {
-        var handle = SlangNativeInterop.TypeReflection_GetFieldByIndex(typeReflection, index);
+        var handle = SlangNativeInterop.TypeReflection_GetFieldByIndex(typeReflection, index, out error);
         return new VariableReflectionHandle(handle);
     }
 
     /// <summary>
     /// Unwraps array type with strongly-typed handle.
     /// </summary>
-    internal static TypeReflectionHandle TypeReflection_UnwrapArray(nint typeReflection)
+    internal static TypeReflectionHandle TypeReflection_UnwrapArray(
+        nint typeReflection,
+        out string error)
     {
-        var handle = SlangNativeInterop.TypeReflection_UnwrapArray(typeReflection);
+        var handle = SlangNativeInterop.TypeReflection_UnwrapArray(typeReflection, out error);
         return new TypeReflectionHandle(handle);
     }
 
     /// <summary>
     /// Gets element type with strongly-typed handle.
     /// </summary>
-    internal static TypeReflectionHandle TypeReflection_GetElementType(nint typeReflection)
+    internal static TypeReflectionHandle TypeReflection_GetElementType(
+        nint typeReflection,
+        out string error)
     {
-        var handle = SlangNativeInterop.TypeReflection_GetElementType(typeReflection);
+        var handle = SlangNativeInterop.TypeReflection_GetElementType(typeReflection, out error);
         return new TypeReflectionHandle(handle);
     }
 
     /// <summary>
     /// Gets resource result type with strongly-typed handle.
     /// </summary>
-    internal static TypeReflectionHandle TypeReflection_GetResourceResultType(nint typeReflection)
+    internal static TypeReflectionHandle TypeReflection_GetResourceResultType(
+        nint typeReflection,
+        out string error)
     {
-        var handle = SlangNativeInterop.TypeReflection_GetResourceResultType(typeReflection);
+        var handle = SlangNativeInterop.TypeReflection_GetResourceResultType(typeReflection, out error);
         return new TypeReflectionHandle(handle);
     }
 
@@ -1135,9 +1169,10 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static AttributeReflectionHandle TypeReflection_GetUserAttributeByIndex(
         nint typeReflection,
-        uint index)
+        uint index,
+        out string error)
     {
-        var handle = SlangNativeInterop.TypeReflection_GetUserAttributeByIndex(typeReflection, index);
+        var handle = SlangNativeInterop.TypeReflection_GetUserAttributeByIndex(typeReflection, index, out error);
         return new AttributeReflectionHandle(handle);
     }
 
@@ -1146,9 +1181,10 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static AttributeReflectionHandle TypeReflection_FindAttributeByName(
         nint typeReflection,
-        char* name)
+        string name,
+        out string error)
     {
-        var handle = SlangNativeInterop.TypeReflection_FindAttributeByName(typeReflection, name);
+        var handle = SlangNativeInterop.TypeReflection_FindAttributeByName(typeReflection, name, out error);
         return new AttributeReflectionHandle(handle);
     }
 
@@ -1157,18 +1193,21 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static TypeReflectionHandle TypeReflection_ApplySpecializations(
         nint typeReflection,
-        nint genRef)
+        nint genRef,
+        out string error)
     {
-        var handle = SlangNativeInterop.TypeReflection_ApplySpecializations(typeReflection, genRef);
+        var handle = SlangNativeInterop.TypeReflection_ApplySpecializations(typeReflection, genRef, out error);
         return new TypeReflectionHandle(handle);
     }
 
     /// <summary>
     /// Gets generic container with strongly-typed handle.
     /// </summary>
-    internal static GenericReflectionHandle TypeReflection_GetGenericContainer(nint typeReflection)
+    internal static GenericReflectionHandle TypeReflection_GetGenericContainer(
+        nint typeReflection,
+        out string error)
     {
-        var handle = SlangNativeInterop.TypeReflection_GetGenericContainer(typeReflection);
+        var handle = SlangNativeInterop.TypeReflection_GetGenericContainer(typeReflection, out error);
         return new GenericReflectionHandle(handle);
     }
 
@@ -1179,9 +1218,11 @@ internal static unsafe partial class StrongTypeInterop
     /// <summary>
     /// Gets type layout type with strongly-typed handle.
     /// </summary>
-    internal static TypeReflectionHandle TypeLayoutReflection_GetType(nint typeLayoutReflection)
+    internal static TypeReflectionHandle TypeLayoutReflection_GetType(
+        nint typeLayoutReflection,
+        out string error)
     {
-        var handle = SlangNativeInterop.TypeLayoutReflection_GetType(typeLayoutReflection);
+        var handle = SlangNativeInterop.TypeLayoutReflection_GetType(typeLayoutReflection, out error);
         return new TypeReflectionHandle(handle);
     }
 
@@ -1190,54 +1231,65 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static VariableLayoutReflectionHandle TypeLayoutReflection_GetFieldByIndex(
         nint typeLayoutReflection,
-        uint index)
+        uint index,
+        out string error)
     {
-        var handle = SlangNativeInterop.TypeLayoutReflection_GetFieldByIndex(typeLayoutReflection, index);
+        var handle = SlangNativeInterop.TypeLayoutReflection_GetFieldByIndex(typeLayoutReflection, index, out error);
         return new VariableLayoutReflectionHandle(handle);
     }
 
     /// <summary>
     /// Gets explicit counter with strongly-typed handle.
     /// </summary>
-    internal static VariableLayoutReflectionHandle TypeLayoutReflection_GetExplicitCounter(nint typeLayoutReflection)
+    internal static VariableLayoutReflectionHandle TypeLayoutReflection_GetExplicitCounter(
+        nint typeLayoutReflection,
+        out string error)
     {
-        var handle = SlangNativeInterop.TypeLayoutReflection_GetExplicitCounter(typeLayoutReflection);
+        var handle = SlangNativeInterop.TypeLayoutReflection_GetExplicitCounter(typeLayoutReflection, out error);
         return new VariableLayoutReflectionHandle(handle);
     }
 
     /// <summary>
     /// Unwraps array type layout with strongly-typed handle.
     /// </summary>
-    internal static TypeLayoutReflectionHandle TypeLayoutReflection_UnwrapArray(nint typeLayoutReflection)
+    internal static TypeLayoutReflectionHandle TypeLayoutReflection_UnwrapArray(
+        nint typeLayoutReflection,
+        out string error)
     {
-        var handle = SlangNativeInterop.TypeLayoutReflection_UnwrapArray(typeLayoutReflection);
+        var handle = SlangNativeInterop.TypeLayoutReflection_UnwrapArray(typeLayoutReflection, out error);
         return new TypeLayoutReflectionHandle(handle);
     }
 
     /// <summary>
     /// Gets element type layout with strongly-typed handle.
     /// </summary>
-    internal static TypeLayoutReflectionHandle TypeLayoutReflection_GetElementTypeLayout(nint typeLayoutReflection)
+    internal static TypeLayoutReflectionHandle TypeLayoutReflection_GetElementTypeLayout(
+        nint typeLayoutReflection,
+        out string error)
     {
-        var handle = SlangNativeInterop.TypeLayoutReflection_GetElementTypeLayout(typeLayoutReflection);
+        var handle = SlangNativeInterop.TypeLayoutReflection_GetElementTypeLayout(typeLayoutReflection, out error);
         return new TypeLayoutReflectionHandle(handle);
     }
 
     /// <summary>
     /// Gets element var layout with strongly-typed handle.
     /// </summary>
-    internal static VariableLayoutReflectionHandle TypeLayoutReflection_GetElementVarLayout(nint typeLayoutReflection)
+    internal static VariableLayoutReflectionHandle TypeLayoutReflection_GetElementVarLayout(
+        nint typeLayoutReflection,
+        out string error)
     {
-        var handle = SlangNativeInterop.TypeLayoutReflection_GetElementVarLayout(typeLayoutReflection);
+        var handle = SlangNativeInterop.TypeLayoutReflection_GetElementVarLayout(typeLayoutReflection, out error);
         return new VariableLayoutReflectionHandle(handle);
     }
 
     /// <summary>
     /// Gets container var layout with strongly-typed handle.
     /// </summary>
-    internal static VariableLayoutReflectionHandle TypeLayoutReflection_GetContainerVarLayout(nint typeLayoutReflection)
+    internal static VariableLayoutReflectionHandle TypeLayoutReflection_GetContainerVarLayout(
+        nint typeLayoutReflection,
+        out string error)
     {
-        var handle = SlangNativeInterop.TypeLayoutReflection_GetContainerVarLayout(typeLayoutReflection);
+        var handle = SlangNativeInterop.TypeLayoutReflection_GetContainerVarLayout(typeLayoutReflection, out error);
         return new VariableLayoutReflectionHandle(handle);
     }
 
@@ -1248,9 +1300,11 @@ internal static unsafe partial class StrongTypeInterop
     /// <summary>
     /// Gets variable type with strongly-typed handle.
     /// </summary>
-    internal static TypeReflectionHandle VariableReflection_GetType(nint variableReflection)
+    internal static TypeReflectionHandle VariableReflection_GetType(
+        nint variableReflection,
+        out string error)
     {
-        var handle = SlangNativeInterop.VariableReflection_GetType(variableReflection);
+        var handle = SlangNativeInterop.VariableReflection_GetType(variableReflection, out error);
         return new TypeReflectionHandle(handle);
     }
 
@@ -1259,9 +1313,10 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static ModifierReflectionHandle VariableReflection_FindModifier(
         nint variableReflection,
-        int modifierId)
+        int modifierId,
+        out string error)
     {
-        var handle = SlangNativeInterop.VariableReflection_FindModifier(variableReflection, modifierId);
+        var handle = SlangNativeInterop.VariableReflection_FindModifier(variableReflection, modifierId, out error);
         return new ModifierReflectionHandle(handle);
     }
 
@@ -1270,9 +1325,10 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static AttributeReflectionHandle VariableReflection_GetUserAttributeByIndex(
         nint variableReflection,
-        uint index)
+        uint index,
+        out string error)
     {
-        var handle = SlangNativeInterop.VariableReflection_GetUserAttributeByIndex(variableReflection, index);
+        var handle = SlangNativeInterop.VariableReflection_GetUserAttributeByIndex(variableReflection, index, out error);
         return new AttributeReflectionHandle(handle);
     }
 
@@ -1281,9 +1337,10 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static AttributeReflectionHandle VariableReflection_FindAttributeByName(
         nint variableReflection,
-        char* name)
+        string name,
+        out string error)
     {
-        var handle = SlangNativeInterop.VariableReflection_FindAttributeByName(variableReflection, name);
+        var handle = SlangNativeInterop.VariableReflection_FindAttributeByName(variableReflection, name, out error);
         return new AttributeReflectionHandle(handle);
     }
 
@@ -1292,18 +1349,21 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static AttributeReflectionHandle VariableReflection_FindUserAttributeByName(
         nint variableReflection,
-        char* name)
+        string name,
+        out string error)
     {
-        var handle = SlangNativeInterop.VariableReflection_FindUserAttributeByName(variableReflection, name);
+        var handle = SlangNativeInterop.VariableReflection_FindUserAttributeByName(variableReflection, name, out error);
         return new AttributeReflectionHandle(handle);
     }
 
     /// <summary>
     /// Gets generic container with strongly-typed handle.
     /// </summary>
-    internal static GenericReflectionHandle VariableReflection_GetGenericContainer(nint variableReflection)
+    internal static GenericReflectionHandle VariableReflection_GetGenericContainer(
+        nint variableReflection,
+        out string error)
     {
-        var handle = SlangNativeInterop.VariableReflection_GetGenericContainer(variableReflection);
+        var handle = SlangNativeInterop.VariableReflection_GetGenericContainer(variableReflection, out error);
         return new GenericReflectionHandle(handle);
     }
 
@@ -1313,9 +1373,10 @@ internal static unsafe partial class StrongTypeInterop
     internal static VariableReflectionHandle VariableReflection_ApplySpecializations(
         nint variableReflection,
         void** specializations,
-        int count)
+        int count,
+        out string error)
     {
-        var handle = SlangNativeInterop.VariableReflection_ApplySpecializations(variableReflection, specializations, count);
+        var handle = SlangNativeInterop.VariableReflection_ApplySpecializations(variableReflection, specializations, count, out error);
         return new VariableReflectionHandle(handle);
     }
 
@@ -1326,9 +1387,11 @@ internal static unsafe partial class StrongTypeInterop
     /// <summary>
     /// Gets variable layout variable with strongly-typed handle.
     /// </summary>
-    internal static VariableReflectionHandle VariableLayoutReflection_GetVariable(nint variableLayoutReflection)
+    internal static VariableReflectionHandle VariableLayoutReflection_GetVariable(
+        nint variableLayoutReflection,
+        out string error)
     {
-        var handle = SlangNativeInterop.VariableLayoutReflection_GetVariable(variableLayoutReflection);
+        var handle = SlangNativeInterop.VariableLayoutReflection_GetVariable(variableLayoutReflection, out error);
         return new VariableReflectionHandle(handle);
     }
 
@@ -1337,27 +1400,32 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static ModifierReflectionHandle VariableLayoutReflection_FindModifier(
         nint variableLayoutReflection,
-        int modifierId)
+        int modifierId,
+        out string error)
     {
-        var handle = SlangNativeInterop.VariableLayoutReflection_FindModifier(variableLayoutReflection, modifierId);
+        var handle = SlangNativeInterop.VariableLayoutReflection_FindModifier(variableLayoutReflection, modifierId, out error);
         return new ModifierReflectionHandle(handle);
     }
 
     /// <summary>
     /// Gets type layout with strongly-typed handle.
     /// </summary>
-    internal static TypeLayoutReflectionHandle VariableLayoutReflection_GetTypeLayout(nint variableLayoutReflection)
+    internal static TypeLayoutReflectionHandle VariableLayoutReflection_GetTypeLayout(
+        nint variableLayoutReflection,
+        out string error)
     {
-        var handle = SlangNativeInterop.VariableLayoutReflection_GetTypeLayout(variableLayoutReflection);
+        var handle = SlangNativeInterop.VariableLayoutReflection_GetTypeLayout(variableLayoutReflection, out error);
         return new TypeLayoutReflectionHandle(handle);
     }
 
     /// <summary>
     /// Gets type with strongly-typed handle.
     /// </summary>
-    internal static TypeReflectionHandle VariableLayoutReflection_GetType(nint variableLayoutReflection)
+    internal static TypeReflectionHandle VariableLayoutReflection_GetType(
+        nint variableLayoutReflection,
+        out string error)
     {
-        var handle = SlangNativeInterop.VariableLayoutReflection_GetType(variableLayoutReflection);
+        var handle = SlangNativeInterop.VariableLayoutReflection_GetType(variableLayoutReflection, out error);
         return new TypeReflectionHandle(handle);
     }
 
@@ -1366,18 +1434,21 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static VariableLayoutReflectionHandle VariableLayoutReflection_GetSpace(
         nint variableLayoutReflection,
-        int category)
+        int category,
+        out string error)
     {
-        var handle = SlangNativeInterop.VariableLayoutReflection_GetSpace(variableLayoutReflection, category);
+        var handle = SlangNativeInterop.VariableLayoutReflection_GetSpace(variableLayoutReflection, category, out error);
         return new VariableLayoutReflectionHandle(handle);
     }
 
     /// <summary>
     /// Gets pending data layout with strongly-typed handle.
     /// </summary>
-    internal static VariableLayoutReflectionHandle VariableLayoutReflection_GetPendingDataLayout(nint variableLayoutReflection)
+    internal static VariableLayoutReflectionHandle VariableLayoutReflection_GetPendingDataLayout(
+        nint variableLayoutReflection,
+        out string error)
     {
-        var handle = SlangNativeInterop.VariableLayoutReflection_GetPendingDataLayout(variableLayoutReflection);
+        var handle = SlangNativeInterop.VariableLayoutReflection_GetPendingDataLayout(variableLayoutReflection, out error);
         return new VariableLayoutReflectionHandle(handle);
     }
 
@@ -1388,9 +1459,11 @@ internal static unsafe partial class StrongTypeInterop
     /// <summary>
     /// Gets function return type with strongly-typed handle.
     /// </summary>
-    internal static TypeReflectionHandle FunctionReflection_GetReturnType(nint functionReflection)
+    internal static TypeReflectionHandle FunctionReflection_GetReturnType(
+        nint functionReflection,
+        out string error)
     {
-        var handle = SlangNativeInterop.FunctionReflection_GetReturnType(functionReflection);
+        var handle = SlangNativeInterop.FunctionReflection_GetReturnType(functionReflection, out error);
         return new TypeReflectionHandle(handle);
     }
 
@@ -1399,9 +1472,10 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static VariableReflectionHandle FunctionReflection_GetParameterByIndex(
         nint functionReflection,
-        uint index)
+        uint index,
+        out string error)
     {
-        var handle = SlangNativeInterop.FunctionReflection_GetParameterByIndex(functionReflection, index);
+        var handle = SlangNativeInterop.FunctionReflection_GetParameterByIndex(functionReflection, index, out error);
         return new VariableReflectionHandle(handle);
     }
 
@@ -1410,9 +1484,10 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static ModifierReflectionHandle FunctionReflection_FindModifier(
         nint functionReflection,
-        int modifierId)
+        int modifierId,
+        out string error)
     {
-        var handle = SlangNativeInterop.FunctionReflection_FindModifier(functionReflection, modifierId);
+        var handle = SlangNativeInterop.FunctionReflection_FindModifier(functionReflection, modifierId, out error);
         return new ModifierReflectionHandle(handle);
     }
 
@@ -1421,9 +1496,10 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static AttributeReflectionHandle FunctionReflection_GetUserAttributeByIndex(
         nint functionReflection,
-        uint index)
+        uint index,
+        out string error)
     {
-        var handle = SlangNativeInterop.FunctionReflection_GetUserAttributeByIndex(functionReflection, index);
+        var handle = SlangNativeInterop.FunctionReflection_GetUserAttributeByIndex(functionReflection, index, out error);
         return new AttributeReflectionHandle(handle);
     }
 
@@ -1432,18 +1508,21 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static AttributeReflectionHandle FunctionReflection_FindAttributeByName(
         nint functionReflection,
-        char* name)
+        string name,
+        out string error)
     {
-        var handle = SlangNativeInterop.FunctionReflection_FindAttributeByName(functionReflection, name);
+        var handle = SlangNativeInterop.FunctionReflection_FindAttributeByName(functionReflection, name, out error);
         return new AttributeReflectionHandle(handle);
     }
 
     /// <summary>
     /// Gets generic container with strongly-typed handle.
     /// </summary>
-    internal static GenericReflectionHandle FunctionReflection_GetGenericContainer(nint functionReflection)
+    internal static GenericReflectionHandle FunctionReflection_GetGenericContainer(
+        nint functionReflection,
+        out string error)
     {
-        var handle = SlangNativeInterop.FunctionReflection_GetGenericContainer(functionReflection);
+        var handle = SlangNativeInterop.FunctionReflection_GetGenericContainer(functionReflection, out error);
         return new GenericReflectionHandle(handle);
     }
 
@@ -1452,9 +1531,10 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static FunctionReflectionHandle FunctionReflection_ApplySpecializations(
         nint functionReflection,
-        nint genRef)
+        nint genRef,
+        out string error)
     {
-        var handle = SlangNativeInterop.FunctionReflection_ApplySpecializations(functionReflection, genRef);
+        var handle = SlangNativeInterop.FunctionReflection_ApplySpecializations(functionReflection, genRef, out error);
         return new FunctionReflectionHandle(handle);
     }
 
@@ -1464,9 +1544,10 @@ internal static unsafe partial class StrongTypeInterop
     internal static FunctionReflectionHandle FunctionReflection_SpecializeWithArgTypes(
         nint functionReflection,
         uint typeCount,
-        void** types)
+        void** types,
+        out string error)
     {
-        var handle = SlangNativeInterop.FunctionReflection_SpecializeWithArgTypes(functionReflection, typeCount, types);
+        var handle = SlangNativeInterop.FunctionReflection_SpecializeWithArgTypes(functionReflection, typeCount, types, out error);
         return new FunctionReflectionHandle(handle);
     }
 
@@ -1475,9 +1556,10 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static FunctionReflectionHandle FunctionReflection_GetOverload(
         nint functionReflection,
-        uint index)
+        uint index,
+        out string error)
     {
-        var handle = SlangNativeInterop.FunctionReflection_GetOverload(functionReflection, index);
+        var handle = SlangNativeInterop.FunctionReflection_GetOverload(functionReflection, index, out error);
         return new FunctionReflectionHandle(handle);
     }
 
@@ -1488,18 +1570,22 @@ internal static unsafe partial class StrongTypeInterop
     /// <summary>
     /// Gets entry point parent with strongly-typed handle.
     /// </summary>
-    internal static ShaderReflectionHandle EntryPointReflection_GetParent(nint entryPointReflection)
+    internal static ShaderReflectionHandle EntryPointReflection_GetParent(
+        nint entryPointReflection,
+        out string error)
     {
-        var handle = SlangNativeInterop.EntryPointReflection_GetParent(entryPointReflection);
+        var handle = SlangNativeInterop.EntryPointReflection_GetParent(entryPointReflection, out error);
         return new ShaderReflectionHandle(handle);
     }
 
     /// <summary>
     /// Gets entry point as function with strongly-typed handle.
     /// </summary>
-    internal static FunctionReflectionHandle EntryPointReflection_AsFunction(nint entryPointReflection)
+    internal static FunctionReflectionHandle EntryPointReflection_AsFunction(
+        nint entryPointReflection,
+        out string error)
     {
-        var handle = SlangNativeInterop.EntryPointReflection_AsFunction(entryPointReflection);
+        var handle = SlangNativeInterop.EntryPointReflection_AsFunction(entryPointReflection, out error);
         return new FunctionReflectionHandle(handle);
     }
 
@@ -1508,45 +1594,54 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static VariableLayoutReflectionHandle EntryPointReflection_GetParameterByIndex(
         nint entryPointReflection,
-        uint index)
+        uint index,
+        out string error)
     {
-        var handle = SlangNativeInterop.EntryPointReflection_GetParameterByIndex(entryPointReflection, index);
+        var handle = SlangNativeInterop.EntryPointReflection_GetParameterByIndex(entryPointReflection, index, out error);
         return new VariableLayoutReflectionHandle(handle);
     }
 
     /// <summary>
     /// Gets entry point function with strongly-typed handle.
     /// </summary>
-    internal static FunctionReflectionHandle EntryPointReflection_GetFunction(nint entryPointReflection)
+    internal static FunctionReflectionHandle EntryPointReflection_GetFunction(
+        nint entryPointReflection,
+        out string error)
     {
-        var handle = SlangNativeInterop.EntryPointReflection_GetFunction(entryPointReflection);
+        var handle = SlangNativeInterop.EntryPointReflection_GetFunction(entryPointReflection, out error);
         return new FunctionReflectionHandle(handle);
     }
 
     /// <summary>
     /// Gets entry point var layout with strongly-typed handle.
     /// </summary>
-    internal static VariableLayoutReflectionHandle EntryPointReflection_GetVarLayout(nint entryPointReflection)
+    internal static VariableLayoutReflectionHandle EntryPointReflection_GetVarLayout(
+        nint entryPointReflection,
+        out string error)
     {
-        var handle = SlangNativeInterop.EntryPointReflection_GetVarLayout(entryPointReflection);
+        var handle = SlangNativeInterop.EntryPointReflection_GetVarLayout(entryPointReflection, out error);
         return new VariableLayoutReflectionHandle(handle);
     }
 
     /// <summary>
     /// Gets entry point type layout with strongly-typed handle.
     /// </summary>
-    internal static TypeLayoutReflectionHandle EntryPointReflection_GetTypeLayout(nint entryPointReflection)
+    internal static TypeLayoutReflectionHandle EntryPointReflection_GetTypeLayout(
+        nint entryPointReflection,
+        out string error)
     {
-        var handle = SlangNativeInterop.EntryPointReflection_GetTypeLayout(entryPointReflection);
+        var handle = SlangNativeInterop.EntryPointReflection_GetTypeLayout(entryPointReflection, out error);
         return new TypeLayoutReflectionHandle(handle);
     }
 
     /// <summary>
     /// Gets entry point result var layout with strongly-typed handle.
     /// </summary>
-    internal static VariableLayoutReflectionHandle EntryPointReflection_GetResultVarLayout(nint entryPointReflection)
+    internal static VariableLayoutReflectionHandle EntryPointReflection_GetResultVarLayout(
+        nint entryPointReflection,
+        out string error)
     {
-        var handle = SlangNativeInterop.EntryPointReflection_GetResultVarLayout(entryPointReflection);
+        var handle = SlangNativeInterop.EntryPointReflection_GetResultVarLayout(entryPointReflection, out error);
         return new VariableLayoutReflectionHandle(handle);
     }
 
@@ -1559,9 +1654,10 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static VariableReflectionHandle GenericReflection_GetTypeParameter(
         nint genRefReflection,
-        uint index)
+        uint index,
+        out string error)
     {
-        var handle = SlangNativeInterop.GenericReflection_GetTypeParameter(genRefReflection, index);
+        var handle = SlangNativeInterop.GenericReflection_GetTypeParameter(genRefReflection, index, out error);
         return new VariableReflectionHandle(handle);
     }
 
@@ -1570,9 +1666,10 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static VariableReflectionHandle GenericReflection_GetValueParameter(
         nint genRefReflection,
-        uint index)
+        uint index,
+        out string error)
     {
-        var handle = SlangNativeInterop.GenericReflection_GetValueParameter(genRefReflection, index);
+        var handle = SlangNativeInterop.GenericReflection_GetValueParameter(genRefReflection, index, out error);
         return new VariableReflectionHandle(handle);
     }
 
@@ -1582,18 +1679,21 @@ internal static unsafe partial class StrongTypeInterop
     internal static TypeReflectionHandle GenericReflection_GetTypeParameterConstraintType(
         nint genRefReflection,
         nint typeParam,
-        uint index)
+        uint index,
+        out string error)
     {
-        var handle = SlangNativeInterop.GenericReflection_GetTypeParameterConstraintType(genRefReflection, typeParam, index);
+        var handle = SlangNativeInterop.GenericReflection_GetTypeParameterConstraintType(genRefReflection, typeParam, index, out error);
         return new TypeReflectionHandle(handle);
     }
 
     /// <summary>
     /// Gets outer generic container with strongly-typed handle.
     /// </summary>
-    internal static GenericReflectionHandle GenericReflection_GetOuterGenericContainer(nint genRefReflection)
+    internal static GenericReflectionHandle GenericReflection_GetOuterGenericContainer(
+        nint genRefReflection,
+        out string error)
     {
-        var handle = SlangNativeInterop.GenericReflection_GetOuterGenericContainer(genRefReflection);
+        var handle = SlangNativeInterop.GenericReflection_GetOuterGenericContainer(genRefReflection, out error);
         return new GenericReflectionHandle(handle);
     }
 
@@ -1602,9 +1702,10 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static TypeReflectionHandle GenericReflection_GetConcreteType(
         nint genRefReflection,
-        nint typeParam)
+        nint typeParam,
+        out string error)
     {
-        var handle = SlangNativeInterop.GenericReflection_GetConcreteType(genRefReflection, typeParam);
+        var handle = SlangNativeInterop.GenericReflection_GetConcreteType(genRefReflection, typeParam, out error);
         return new TypeReflectionHandle(handle);
     }
 
@@ -1613,9 +1714,10 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static GenericReflectionHandle GenericReflection_ApplySpecializations(
         nint genRefReflection,
-        nint genRef)
+        nint genRef,
+        out string error)
     {
-        var handle = SlangNativeInterop.GenericReflection_ApplySpecializations(genRefReflection, genRef);
+        var handle = SlangNativeInterop.GenericReflection_ApplySpecializations(genRefReflection, genRef, out error);
         return new GenericReflectionHandle(handle);
     }
 
@@ -1628,9 +1730,10 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static TypeReflectionHandle TypeParameterReflection_GetConstraintByIndex(
         nint typeParameterReflection,
-        int index)
+        int index,
+        out string error)
     {
-        var handle = SlangNativeInterop.TypeParameterReflection_GetConstraintByIndex(typeParameterReflection, index);
+        var handle = SlangNativeInterop.TypeParameterReflection_GetConstraintByIndex(typeParameterReflection, index, out error);
         return new TypeReflectionHandle(handle);
     }
 
@@ -1643,9 +1746,10 @@ internal static unsafe partial class StrongTypeInterop
     /// </summary>
     internal static TypeReflectionHandle Attribute_GetArgumentType(
         nint attributeReflection,
-        uint index)
+        uint index,
+        out string error)
     {
-        var handle = SlangNativeInterop.Attribute_GetArgumentType(attributeReflection, index);
+        var handle = SlangNativeInterop.Attribute_GetArgumentType(attributeReflection, index, out error);
         return new TypeReflectionHandle(handle);
     }
 

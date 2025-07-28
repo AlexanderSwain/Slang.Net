@@ -6,12 +6,13 @@ namespace Slang.Sdk.Interop;
 /// <summary>
 /// Base class for safe handles to native Slang objects.
 /// </summary>
-public abstract class SlangHandle : SafeHandle
+public abstract class SlangHandle : SafeHandle, IEquatable<SlangHandle>
 {
     /// <summary>
     /// Gets the native handle as an nint.
     /// </summary>
     public nint Handle => handle;
+    public abstract nint NativeHandle { get; }
 
     public override bool IsInvalid => handle == IntPtr.Zero;
 
@@ -38,6 +39,38 @@ public abstract class SlangHandle : SafeHandle
         return slangHandle?.handle ?? IntPtr.Zero;
     }
 
+    #region Equalality
+    public static bool operator ==(SlangHandle? left, SlangHandle? right)
+    {
+        if (ReferenceEquals(left, right)) return true;
+        if (left is null || right is null) return false;
+        return left.NativeHandle == right.NativeHandle;
+    }
+
+    public static bool operator !=(SlangHandle? left, SlangHandle? right)
+    {
+        if (ReferenceEquals(left, right)) return false;
+        if (left is null || right is null) return true;
+        return left.NativeHandle != right.NativeHandle;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is SlangHandle handle) return Equals(handle); 
+        return false;
+    }
+
+    public bool Equals(SlangHandle? other)
+    {
+        return this == other;
+    }
+
+    public override int GetHashCode()
+    {
+        return NativeHandle.GetHashCode();
+    }
+    #endregion
+
     public override string ToString()
     {
         return $"{GetType().Name}{{ Handle = 0x{Handle:X} }}";
@@ -50,6 +83,7 @@ public abstract class SlangHandle : SafeHandle
 /// </summary>
 public sealed class SessionHandle : SlangHandle
 {
+    public override nint NativeHandle => SlangNativeInterop.Session_GetNative(Handle, out var _);
     public SessionHandle() { }
 
     public SessionHandle(nint handle) : base(handle) { }
@@ -58,7 +92,7 @@ public sealed class SessionHandle : SlangHandle
     {
         // Currently does nothing since it only contain fields that are managed by Slang
         // In a future update, maybe cascade delete the children
-        Session_Release(Handle);
+        Session_Release(Handle, out var _);
         return true;
     }
 }
@@ -68,6 +102,7 @@ public sealed class SessionHandle : SlangHandle
 /// </summary>
 public sealed class ModuleHandle : SlangHandle
 {
+    public override nint NativeHandle => SlangNativeInterop.Module_GetNative(Handle, out var _);
     public ModuleHandle() { }
 
     public ModuleHandle(nint handle) : base(handle) { }
@@ -76,7 +111,7 @@ public sealed class ModuleHandle : SlangHandle
     {
         // Currently does nothing since it only contain fields that are managed by Slang
         // In a future update, maybe cascade delete the children
-        Module_Release(Handle);
+        Module_Release(Handle, out var _);
         return true;
     }
 }
@@ -86,6 +121,7 @@ public sealed class ModuleHandle : SlangHandle
 /// </summary>
 public sealed class EntryPointHandle : SlangHandle
 {
+    public override nint NativeHandle => SlangNativeInterop.EntryPoint_GetNative(Handle, out var _);
     public EntryPointHandle() { }
 
     public EntryPointHandle(nint handle) : base(handle) { }
@@ -94,7 +130,7 @@ public sealed class EntryPointHandle : SlangHandle
     {
         // Currently does nothing since it only contain fields that are managed by Slang
         // In a future update, maybe cascade delete the children
-        EntryPoint_Release(Handle);
+        EntryPoint_Release(Handle, out var _);
         return true;
     }
 }
@@ -104,6 +140,7 @@ public sealed class EntryPointHandle : SlangHandle
 /// </summary>
 public sealed class ProgramHandle : SlangHandle
 {
+    public override nint NativeHandle => SlangNativeInterop.Program_GetNative(Handle, out var _);
     public ProgramHandle() { }
 
     public ProgramHandle(nint handle) : base(handle) { }
@@ -112,7 +149,7 @@ public sealed class ProgramHandle : SlangHandle
     {
         // Currently does nothing since it only contain fields that are managed by Slang
         // In a future update, maybe cascade delete the children
-        Program_Release(Handle);
+        Program_Release(Handle, out var _);
         return true;
     }
 }
@@ -125,6 +162,7 @@ public sealed class ProgramHandle : SlangHandle
 /// </summary>
 public sealed class AttributeReflectionHandle : SlangHandle
 {
+    public override nint NativeHandle => SlangNativeInterop.Attribute_GetNative(Handle, out var _);
     public AttributeReflectionHandle() { }
 
     public AttributeReflectionHandle(nint handle) : base(handle) { }
@@ -133,7 +171,7 @@ public sealed class AttributeReflectionHandle : SlangHandle
     {
         // Currently does nothing since it only contain fields that are managed by Slang
         // In a future update, maybe cascade delete the children
-        Attribute_Release(Handle);
+        Attribute_Release(Handle, out var _);
         return true;
     }
 }
@@ -143,6 +181,7 @@ public sealed class AttributeReflectionHandle : SlangHandle
 /// </summary>
 public sealed class EntryPointReflectionHandle : SlangHandle
 {
+    public override nint NativeHandle => SlangNativeInterop.EntryPointReflection_GetNative(Handle, out var _);
     public EntryPointReflectionHandle() { }
 
     public EntryPointReflectionHandle(nint handle) : base(handle) { }
@@ -151,7 +190,7 @@ public sealed class EntryPointReflectionHandle : SlangHandle
     {
         // Currently does nothing since it only contain fields that are managed by Slang
         // In a future update, maybe cascade delete the children
-        EntryPointReflection_Release(Handle);
+        EntryPointReflection_Release(Handle, out var _);
         return true;
     }
 }
@@ -161,6 +200,7 @@ public sealed class EntryPointReflectionHandle : SlangHandle
 /// </summary>
 public sealed class FunctionReflectionHandle : SlangHandle
 {
+    public override nint NativeHandle => SlangNativeInterop.FunctionReflection_GetNative(Handle, out var _);
     public FunctionReflectionHandle() { }
 
     public FunctionReflectionHandle(nint handle) : base(handle) { }
@@ -169,7 +209,7 @@ public sealed class FunctionReflectionHandle : SlangHandle
     {
         // Currently does nothing since it only contain fields that are managed by Slang
         // In a future update, maybe cascade delete the children
-        FunctionReflection_Release(Handle);
+        FunctionReflection_Release(Handle, out var _);
         return true;
     }
 }
@@ -179,6 +219,7 @@ public sealed class FunctionReflectionHandle : SlangHandle
 /// </summary>
 public sealed class GenericReflectionHandle : SlangHandle
 {
+    public override nint NativeHandle => SlangNativeInterop.GenericReflection_GetNative(Handle, out var _);
     public GenericReflectionHandle() { }
 
     public GenericReflectionHandle(nint handle) : base(handle) { }
@@ -187,7 +228,7 @@ public sealed class GenericReflectionHandle : SlangHandle
     {
         // Currently does nothing since it only contain fields that are managed by Slang
         // In a future update, maybe cascade delete the children
-        GenericReflection_Release(Handle);
+        GenericReflection_Release(Handle, out var _);
         return true;
     }
 }
@@ -197,6 +238,7 @@ public sealed class GenericReflectionHandle : SlangHandle
 /// </summary>
 public sealed class ModifierReflectionHandle : SlangHandle
 {
+    public override nint NativeHandle => SlangNativeInterop.Modifier_GetNative(Handle, out var _);
     public ModifierReflectionHandle() { }
 
     public ModifierReflectionHandle(nint handle) : base(handle) { }
@@ -205,7 +247,7 @@ public sealed class ModifierReflectionHandle : SlangHandle
     {
         // Currently does nothing since it only contain fields that are managed by Slang
         // In a future update, maybe cascade delete the children
-        Modifier_Release(Handle);
+        Modifier_Release(Handle, out var _);
         return true;
     }
 }
@@ -215,6 +257,7 @@ public sealed class ModifierReflectionHandle : SlangHandle
 /// </summary>
 public sealed class ShaderReflectionHandle : SlangHandle
 {
+    public override nint NativeHandle => SlangNativeInterop.ShaderReflection_GetNative(Handle, out var _);
     public ShaderReflectionHandle() { }
 
     public ShaderReflectionHandle(nint handle) : base(handle) { }
@@ -223,7 +266,7 @@ public sealed class ShaderReflectionHandle : SlangHandle
     {
         // Currently does nothing since it only contain fields that are managed by Slang
         // In a future update, maybe cascade delete the children
-        ShaderReflection_Release(Handle);
+        ShaderReflection_Release(Handle, out var _);
         return true;
     }
 }
@@ -233,6 +276,7 @@ public sealed class ShaderReflectionHandle : SlangHandle
 /// </summary>
 public sealed class TypeLayoutReflectionHandle : SlangHandle
 {
+    public override nint NativeHandle => SlangNativeInterop.TypeLayoutReflection_GetNative(Handle, out var _);
     public TypeLayoutReflectionHandle() { }
 
     public TypeLayoutReflectionHandle(nint handle) : base(handle) { }
@@ -241,7 +285,7 @@ public sealed class TypeLayoutReflectionHandle : SlangHandle
     {
         // Currently does nothing since it only contain fields that are managed by Slang
         // In a future update, maybe cascade delete the children
-        TypeLayoutReflection_Release(Handle);
+        TypeLayoutReflection_Release(Handle, out var _);
         return true;
     }
 }
@@ -251,6 +295,7 @@ public sealed class TypeLayoutReflectionHandle : SlangHandle
 /// </summary>
 public sealed class TypeParameterReflectionHandle : SlangHandle
 {
+    public override nint NativeHandle => SlangNativeInterop.TypeParameterReflection_GetNative(Handle, out var _);
     public TypeParameterReflectionHandle() { }
 
     public TypeParameterReflectionHandle(nint handle) : base(handle) { }
@@ -259,7 +304,7 @@ public sealed class TypeParameterReflectionHandle : SlangHandle
     {
         // Currently does nothing since it only contain fields that are managed by Slang
         // In a future update, maybe cascade delete the children
-        TypeParameterReflection_Release(Handle);
+        TypeParameterReflection_Release(Handle, out var _);
         return true;
     }
 }
@@ -269,6 +314,7 @@ public sealed class TypeParameterReflectionHandle : SlangHandle
 /// </summary>
 public sealed class TypeReflectionHandle : SlangHandle
 {
+    public override nint NativeHandle => SlangNativeInterop.TypeReflection_GetNative(Handle, out var _);
     public TypeReflectionHandle() { }
 
     public TypeReflectionHandle(nint handle) : base(handle) { }
@@ -277,7 +323,7 @@ public sealed class TypeReflectionHandle : SlangHandle
     {
         // Currently does nothing since it only contain fields that are managed by Slang
         // In a future update, maybe cascade delete the children
-        TypeReflection_Release(Handle);
+        TypeReflection_Release(Handle, out var _);
         return true;
     }
 }
@@ -287,6 +333,7 @@ public sealed class TypeReflectionHandle : SlangHandle
 /// </summary>
 public sealed class VariableLayoutReflectionHandle : SlangHandle
 {
+    public override nint NativeHandle => SlangNativeInterop.VariableLayoutReflection_GetNative(Handle, out var _);
     public VariableLayoutReflectionHandle() { }
 
     public VariableLayoutReflectionHandle(nint handle) : base(handle) { }
@@ -295,7 +342,7 @@ public sealed class VariableLayoutReflectionHandle : SlangHandle
     {
         // Currently does nothing since it only contain fields that are managed by Slang
         // In a future update, maybe cascade delete the children
-        VariableLayoutReflection_Release(Handle);
+        VariableLayoutReflection_Release(Handle, out var _);
         return true;
     }
 }
@@ -305,6 +352,7 @@ public sealed class VariableLayoutReflectionHandle : SlangHandle
 /// </summary>
 public sealed class VariableReflectionHandle : SlangHandle
 {
+    public override nint NativeHandle => SlangNativeInterop.VariableReflection_GetNative(Handle, out var _);
     public VariableReflectionHandle() { }
 
     public VariableReflectionHandle(nint handle) : base(handle) { }
@@ -313,7 +361,7 @@ public sealed class VariableReflectionHandle : SlangHandle
     {
         // Currently does nothing since it only contain fields that are managed by Slang
         // In a future update, maybe cascade delete the children
-        VariableReflection_Release(Handle);
+        VariableReflection_Release(Handle, out var _);
         return true;
     }
 }

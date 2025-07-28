@@ -32,21 +32,24 @@ internal unsafe sealed class Session : CompilationBinding
                 optionsPtr, options.Length,
                 macrosPtr, macros.Length,
                 modelsPtr, models.Length,
-                searchPaths.To_CStrArr(), searchPaths.Length);
+                searchPaths, searchPaths.Length,
+                out var error);
 
             if (Handle.IsInvalid)
-                throw new SlangException(SlangResult.Fail, $"Failed to create Slang session: {GetLastError() ?? "<No error was returned from Slang>"}");
+                throw new SlangException(SlangResult.Fail, $"Failed to create Slang session: {error ?? "<No error was returned from Slang>"}");
         }
     }
 
     internal uint GetModuleCount()
     {
-        return Call(() => SlangNativeInterop.Session_GetModuleCount(Handle));
+        string? error = null;
+        return Call(() => SlangNativeInterop.Session_GetModuleCount(Handle, out error), () => error);
     }
 
     internal Module GetModuleByIndex(uint index)
     {
-        return new Module(this, Call(() => StrongTypeInterop.Session_GetModuleByIndex(Handle, index)));
+        string? error = null;
+        return new Module(this, Call(() => StrongTypeInterop.Session_GetModuleByIndex(Handle, index, out error), () => error));
     }
 
     ~Session()

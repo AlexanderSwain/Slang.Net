@@ -23,93 +23,104 @@ namespace Slang.Sdk.Binding
 
         internal new TypeReflection GetType()
         {
-            return new TypeReflection(this, Call(() => StrongTypeInterop.TypeLayoutReflection_GetType(Handle)));
+            string? error = null;
+            return new TypeReflection(this, Call(() => StrongTypeInterop.TypeLayoutReflection_GetType(Handle, out error), () => error));
         }
 
         internal TypeKind GetKind()
         {
-            return (TypeKind)Call(() => SlangNativeInterop.TypeLayoutReflection_GetKind(Handle));
+            string? error = null;
+            return (TypeKind)Call(() => SlangNativeInterop.TypeLayoutReflection_GetKind(Handle, out error), () => error);
         }
 
         internal nuint GetSize(ParameterCategory category)
         {
-            return Call(() => SlangNativeInterop.TypeLayoutReflection_GetSize(Handle, (int)category));
+            string? error = null;
+            return Call(() => SlangNativeInterop.TypeLayoutReflection_GetSize(Handle, (int)category, out error), () => error);
         }
 
         internal nuint GetStride(ParameterCategory category)
         {
-            return Call(() => SlangNativeInterop.TypeLayoutReflection_GetStride(Handle, (int)category));
+            string? error = null;
+            return Call(() => SlangNativeInterop.TypeLayoutReflection_GetStride(Handle, (int)category, out error), () => error);
         }
 
         internal int GetAlignment(ParameterCategory category)
         {
-            return Call(() => SlangNativeInterop.TypeLayoutReflection_GetAlignment(Handle, (int)category));
+            string? error = null;
+            return Call(() => SlangNativeInterop.TypeLayoutReflection_GetAlignment(Handle, (int)category, out error), () => error);
         }
 
         internal uint GetFieldCount()
         {
-            return Call(() => SlangNativeInterop.TypeLayoutReflection_GetFieldCount(Handle));
+            string? error = null;
+            return Call(() => SlangNativeInterop.TypeLayoutReflection_GetFieldCount(Handle, out error), () => error);
         }
 
         internal VariableLayoutReflection GetFieldByIndex(uint index)
         {
-            return new VariableLayoutReflection(this, Call(() => StrongTypeInterop.TypeLayoutReflection_GetFieldByIndex(Handle, index)));
+            string? error = null;
+            return new VariableLayoutReflection(this, Call(() => StrongTypeInterop.TypeLayoutReflection_GetFieldByIndex(Handle, index, out error), () => error));
         }
 
         internal int FindFieldIndexByName(string name)
         {
-            return Call(() =>
-            {
-                fixed (char* pName = name)
-                {
-                    return SlangNativeInterop.TypeLayoutReflection_FindFieldIndexByName(Handle, pName);
-                }
-            });
+            string? error = null;
+            return Call(() => SlangNativeInterop.TypeLayoutReflection_FindFieldIndexByName(Handle, name, out error), () => error);
         }
 
         internal VariableLayoutReflection GetExplicitCounter()
         {
-            return new VariableLayoutReflection(this, Call(() => StrongTypeInterop.TypeLayoutReflection_GetExplicitCounter(Handle)));
+            string? error = null;
+            return new VariableLayoutReflection(this, Call(() => StrongTypeInterop.TypeLayoutReflection_GetExplicitCounter(Handle, out error), () => error));
         }
 
         internal bool IsArray()
         {
-            return Call(() => SlangNativeInterop.TypeLayoutReflection_IsArray(Handle));
+            string? error = null;
+            return Call(() => SlangNativeInterop.TypeLayoutReflection_IsArray(Handle, out error), () => error);
         }
 
         internal TypeLayoutReflection UnwrapArray()
         {
-            return new TypeLayoutReflection(this, Call(() => StrongTypeInterop.TypeLayoutReflection_UnwrapArray(Handle)));
+            string? error = null;
+            return new TypeLayoutReflection(this, Call(() => StrongTypeInterop.TypeLayoutReflection_UnwrapArray(Handle, out error), () => error));
         }
 
         internal nuint GetElementCount()
         {
-            return Call(() => SlangNativeInterop.TypeLayoutReflection_GetElementCount(Handle));
+            string? error = null;
+            return Call(() => SlangNativeInterop.TypeLayoutReflection_GetElementCount(Handle, out error), () => error);
         }
 
         internal nuint GetTotalArrayElementCount()
         {
-            return Call(() => SlangNativeInterop.TypeLayoutReflection_GetTotalArrayElementCount(Handle));
+            string? error = null;
+            return Call(() => SlangNativeInterop.TypeLayoutReflection_GetTotalArrayElementCount(Handle, out error), () => error);
         }
 
         internal nuint GetElementStride(ParameterCategory category)
         {
-            return Call(() => SlangNativeInterop.TypeLayoutReflection_GetElementStride(Handle, (int)category));
+            string? error = null;
+            return Call(() => SlangNativeInterop.TypeLayoutReflection_GetElementStride(Handle, (int)category, out error), () => error);
         }
 
         internal TypeLayoutReflection GetElementTypeLayout()
         {
-            return new TypeLayoutReflection(this, Call(() => StrongTypeInterop.TypeLayoutReflection_GetElementTypeLayout(Handle)));
+            string? error = null;
+            return new TypeLayoutReflection(this, Call(() => StrongTypeInterop.TypeLayoutReflection_GetElementTypeLayout(Handle, out error), () => error));
         }
 
         internal VariableLayoutReflection GetElementVarLayout()
         {
-            return new VariableLayoutReflection(this, Call(() => StrongTypeInterop.TypeLayoutReflection_GetElementVarLayout(Handle)));
+            string? error = null;
+            return new VariableLayoutReflection(this, Call(() => StrongTypeInterop.TypeLayoutReflection_GetElementVarLayout(Handle, out error), () => error));
         }
 
         internal VariableLayoutReflection GetContainerVarLayout()
         {
-            return new VariableLayoutReflection(this, Call(() => StrongTypeInterop.TypeLayoutReflection_GetContainerVarLayout(Handle)));
+            string? error = null;
+            return new VariableLayoutReflection(this, Call(() => StrongTypeInterop.TypeLayoutReflection_GetContainerVarLayout(Handle, out error), () => error));
         }
     }
 }

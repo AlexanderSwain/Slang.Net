@@ -13,7 +13,7 @@ Native::EntryPointCLI::EntryPointCLI(ModuleCLI* parent, unsigned index)
         throw std::invalid_argument("Index is out of range!");
     }
 
-    m_name = nullptr;
+    m_name = "";
     m_index = index;
 
     m_parent = parent;
@@ -36,7 +36,7 @@ Native::EntryPointCLI::EntryPointCLI(ModuleCLI* parent, const char* entryPointNa
     m_index = -1;
 
     m_parent = parent;
-    if (SLANG_FAILED(parent->getNative()->findEntryPointByName(m_name, &m_native)))
+    if (SLANG_FAILED(parent->getNative()->findEntryPointByName(m_name.c_str(), &m_native)))
     {
 		throw std::runtime_error("Failed to find entry point named: " + std::string(entryPointName));
     }
@@ -71,8 +71,9 @@ slang::IEntryPoint* Native::EntryPointCLI::getNative()
 }
 const char* Native::EntryPointCLI::getName()
 {
-	// Idea to use reflection to get the name if m_name is null
-    return m_name;
+    if (m_name.empty())
+        return nullptr;
+    return m_name.c_str();
 }
 
 int Native::EntryPointCLI::getIndex()

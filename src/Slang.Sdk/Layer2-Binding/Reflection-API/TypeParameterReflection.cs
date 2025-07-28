@@ -19,24 +19,24 @@ namespace Slang.Sdk.Binding
             Handle = handle;
         }
 
-        internal string? GetName()
-        {
-            return Call(() => FromCharPtr(SlangNativeInterop.TypeParameterReflection_GetName(Handle)));
+        internal string GetName()
+        {string? error = null;
+            return Call(() => SlangNativeInterop.TypeParameterReflection_GetName(Handle, out error), () => error);
         }
 
         internal uint GetIndex()
-        {
-            return Call(() => SlangNativeInterop.TypeParameterReflection_GetIndex(Handle));
+        {string? error = null;
+            return Call(() => SlangNativeInterop.TypeParameterReflection_GetIndex(Handle, out error), () => error);
         }
 
         internal uint GetConstraintCount()
-        {
-            return Call(() => SlangNativeInterop.TypeParameterReflection_GetConstraintCount(Handle));
+        {string? error = null;
+            return Call(() => SlangNativeInterop.TypeParameterReflection_GetConstraintCount(Handle, out error), () => error);
         }
 
         internal TypeReflection GetConstraintByIndex(int index)
-        {
-            return new TypeReflection(this, Call(() => StrongTypeInterop.TypeParameterReflection_GetConstraintByIndex(Handle, index)));
+        {string? error = null;
+            return new TypeReflection(this, Call(() => StrongTypeInterop.TypeParameterReflection_GetConstraintByIndex(Handle, index, out error), () => error));
         }
     }
 }

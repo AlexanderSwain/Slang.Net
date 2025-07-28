@@ -21,92 +21,68 @@ namespace Slang.Sdk.Binding
             Handle = handle;
         }
 
-        internal string? GetName()
-        {
-            return Call(() => FromUtf8((byte*)SlangNativeInterop.VariableReflection_GetName(Handle)));
+        internal string GetName()
+        {string? error = null;
+            return Call(() => SlangNativeInterop.VariableReflection_GetName(Handle, out error), () => error);
         }
 
         internal new TypeReflection GetType()
-        {
-            return new TypeReflection(this, Call(() => StrongTypeInterop.VariableReflection_GetType(Handle)));
+        {string? error = null;
+            return new TypeReflection(this, Call(() => StrongTypeInterop.VariableReflection_GetType(Handle, out error), () => error));
         }
 
         internal ModifierReflection FindModifier(int modifierId)
-        {
-            return new ModifierReflection(this, Call(() => StrongTypeInterop.VariableReflection_FindModifier(Handle, modifierId)));
+        {string? error = null;
+            return new ModifierReflection(this, Call(() => StrongTypeInterop.VariableReflection_FindModifier(Handle, modifierId, out error), () => error));
         }
 
         internal uint GetUserAttributeCount()
-        {
-            return Call(() => SlangNativeInterop.VariableReflection_GetUserAttributeCount(Handle));
+        {string? error = null;
+            return Call(() => SlangNativeInterop.VariableReflection_GetUserAttributeCount(Handle, out error), () => error);
         }
 
         internal AttributeReflection GetUserAttributeByIndex(uint index)
-        {
-            return new AttributeReflection(this, Call(() => StrongTypeInterop.VariableReflection_GetUserAttributeByIndex(Handle, index)));
+        {string? error = null;
+            return new AttributeReflection(this, Call(() => StrongTypeInterop.VariableReflection_GetUserAttributeByIndex(Handle, index, out error), () => error));
         }
 
         internal AttributeReflection FindAttributeByName(string name)
-        {
+        {string? error = null;
             return new AttributeReflection(
                 this, 
-                Call(() => 
-                {
-                    byte* pName = ToUtf8(name);
-                    try
-                    {
-                        return StrongTypeInterop.VariableReflection_FindAttributeByName(Handle, (char*)pName);
-                    }
-                    finally
-                    {
-                        FreeUtf8(pName);
-                    }
-                }
-            ));
+                Call(() => StrongTypeInterop.VariableReflection_FindAttributeByName(Handle, name, out error), () => error));
         }
 
         internal AttributeReflection FindUserAttributeByName(string name)
-        {
+        {string? error = null;
             return new AttributeReflection(
                 this, 
-                Call(() => 
-                {
-                    byte* pName = ToUtf8(name);
-                    try
-                    {
-                        return StrongTypeInterop.VariableReflection_FindUserAttributeByName(Handle, (char*)pName);
-                    }
-                    finally
-                    {
-                        FreeUtf8(pName);
-                    }
-                }
-            ));
+                Call(() => StrongTypeInterop.VariableReflection_FindUserAttributeByName(Handle, name, out error), () => error));
         }
 
         internal bool HasDefaultValue()
-        {
-            return Call(() => SlangNativeInterop.VariableReflection_HasDefaultValue(Handle));
+        {string? error = null;
+            return Call(() => SlangNativeInterop.VariableReflection_HasDefaultValue(Handle, out error), () => error);
         }
 
         internal long GetDefaultValueInt()
-        {
+        {string? error = null;
             return Call(() =>
             {
                 long value;
-                SlangNativeInterop.VariableReflection_GetDefaultValueInt(Handle, &value);
+                SlangNativeInterop.VariableReflection_GetDefaultValueInt(Handle, &value, out error);
                 return value;
-            });
+            }, () => error);
         }
 
         internal GenericReflection GetGenericContainer()
-        {
-            return new GenericReflection(this, Call(() => StrongTypeInterop.VariableReflection_GetGenericContainer(Handle)));
+        {string? error = null;
+            return new GenericReflection(this, Call(() => StrongTypeInterop.VariableReflection_GetGenericContainer(Handle, out error), () => error));
         }
 
         internal VariableReflection ApplySpecializations(void** specializations, int count)
-        {
-            return new VariableReflection(this, Call(() => StrongTypeInterop.VariableReflection_ApplySpecializations(Handle, specializations, count)));
+        {string? error = null;
+            return new VariableReflection(this, Call(() => StrongTypeInterop.VariableReflection_ApplySpecializations(Handle, specializations, count, out error), () => error));
         }
     }
 }

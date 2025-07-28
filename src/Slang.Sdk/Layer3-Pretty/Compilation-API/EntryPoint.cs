@@ -4,6 +4,7 @@ using Slang.Sdk.Interop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -48,10 +49,11 @@ namespace Slang.Sdk
         {
             get
             {
-                if (Binding.Name is null)
+                var existingName = Binding.Name;
+                if (existingName is null)
                     return FindName();
                 else
-                    return Binding.Name;
+                    return existingName;
             }
         }
 
@@ -73,12 +75,44 @@ namespace Slang.Sdk
         }
         #endregion
 
-        //Delete this
+        #region Equality
+        public static bool operator ==(EntryPoint? left, EntryPoint? right)
+        {
+            if (ReferenceEquals(left, right)) return true;
+            if (left is null || right is null) return false;
+            return left.Binding == right.Binding;
+        }
+
+        public static bool operator !=(EntryPoint? left, EntryPoint? right)
+        {
+            if (ReferenceEquals(left, right)) return false;
+            if (left is null || right is null) return true;
+            return left.Binding != right.Binding;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is EntryPoint entryPoint) return Equals(entryPoint);
+            return false;
+        }
+
+        public bool Equals(EntryPoint? other)
+        {
+            return this == other;
+        }
+
+        public override int GetHashCode()
+        {
+            return Binding.GetHashCode();
+        }
+        #endregion
+
         #region Helpers
         private string FindName()
         {
-            if (Name is not null)
-                return Name;
+            var existingName = Binding.Name;
+            if (existingName is not null)
+                return existingName;
 
             List<(Target target, EntryPointReflection reflection)> listResult = new();
             var sessionTargets = Parent.Parent.Targets;

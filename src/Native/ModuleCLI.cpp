@@ -21,15 +21,16 @@ Native::ModuleCLI::ModuleCLI(SessionCLI* parent, const char* moduleName, const c
 
             if (!slangModule)
                 throw std::runtime_error(errorMessage);
+            else
+                std::cout << diagnosticsText << std::endl;
         }
         else if (!slangModule)
         {
             throw std::runtime_error("Unknown failure: Failed to create the Slang module.");
         }
     }
-    
-    // Initialize entry point related members
-    m_entryPointCount = m_slangModule->getDefinedEntryPointCount();
+
+    m_slangModule = slangModule;
     m_entryPoints = nullptr; // Initialize to nullptr, will be allocated on demand
 }
 
@@ -60,9 +61,6 @@ Native::ModuleCLI::ModuleCLI(SessionCLI* parent, const char* moduleName)
     }
 
     m_slangModule = slangModule;
-
-    // Initialize entry point related members
-    m_entryPointCount = m_slangModule->getDefinedEntryPointCount();
     m_entryPoints = nullptr; // Initialize to nullptr, will be allocated on demand
 }
 
@@ -70,9 +68,6 @@ Native::ModuleCLI::ModuleCLI(SessionCLI* parent, slang::IModule* nativeModule)
 {
     m_parent = parent->getNative();
     m_slangModule = nativeModule;
-
-    // Initialize entry point related members
-    m_entryPointCount = m_slangModule->getDefinedEntryPointCount();
     m_entryPoints = nullptr; // Initialize to nullptr, will be allocated on demand
 }
 
@@ -81,7 +76,8 @@ Native::ModuleCLI::~ModuleCLI()
     // Clean up entry points array if allocated
     if (m_entryPoints)
     {
-        for (unsigned int i = 0; i < m_entryPointCount; i++)
+        unsigned int entryPointCount = getEntryPointCount();
+        for (unsigned int i = 0; i < entryPointCount; i++)
         {
             delete m_entryPoints[i];
         }
@@ -101,7 +97,8 @@ unsigned int Native::ModuleCLI::getEntryPointCount()
 
 Native::EntryPointCLI* Native::ModuleCLI::getEntryPointByIndex(unsigned index)
 {
-    if (index >= m_entryPointCount)
+    unsigned int entryPointCount = getEntryPointCount();
+    if (index >= entryPointCount)
     {
         throw std::out_of_range("Entry point index is out of range");
     }
@@ -109,9 +106,9 @@ Native::EntryPointCLI* Native::ModuleCLI::getEntryPointByIndex(unsigned index)
     if (!m_entryPoints)
     {
         // Allocate and initialize the entry points array on first access
-        m_entryPoints = new Native::EntryPointCLI*[m_entryPointCount];
+        m_entryPoints = new Native::EntryPointCLI*[entryPointCount];
         
-        for (unsigned int i = 0; i < m_entryPointCount; i++)
+        for (unsigned int i = 0; i < entryPointCount; i++)
         {
             m_entryPoints[i] = new Native::EntryPointCLI(this, i);
         }

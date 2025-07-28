@@ -13,14 +13,14 @@ namespace Slang.Sdk.Binding
             Handle?.Dispose();
         }
 
-        internal T Call<T>(Func<T> function)
+        internal T Call<T>(Func<T> function, Func<string?> error)
         {
             ObjectDisposedException.ThrowIf(Handle.IsInvalid, this);
 
             T resultHandle = function();
 
             if (Handle.IsInvalid)
-                throw new SlangException(SlangResult.Fail, $"Failed to unwrap array: {GetLastError() ?? "<No error was returned from Slang>"}");
+                throw new SlangException(SlangResult.Fail, $"Failed to unwrap array: {error() ?? "<No error was returned from Slang>"}");
 
             return resultHandle;
         }

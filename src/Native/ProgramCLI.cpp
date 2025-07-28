@@ -87,20 +87,19 @@ SlangResult Native::ProgramCLI::GetCompiled(unsigned int entryPointIndex, unsign
             targetIndex,
             targetCode.writeRef(),
             diagnosticsBlob.writeRef());
-        if (diagnosticsBlob != nullptr)
+        // Improved diagnostics output
+        if (diagnosticsBlob && diagnosticsBlob->getBufferSize() > 0)
         {
             std::string diagnosticsText = std::string((const char*)diagnosticsBlob->getBufferPointer());
-			std::string errorMessage = "Failed to get entry point code. Diagnostics: " + diagnosticsText;
+            std::string errorMessage = "There are issues in the shader source: " + diagnosticsText;
 
             if (SLANG_FAILED(result))
-            {
                 throw std::runtime_error(errorMessage);
-            }
             else
-            {
                 std::cout << diagnosticsText << std::endl;
-			}
         }
+        if (!targetCode)
+            throw std::runtime_error("Error when compiling a program. No slang diagnostics were returned. Probably target with the specified index does not exist.");
 
         *output = (const char*)targetCode->getBufferPointer();
         return result;

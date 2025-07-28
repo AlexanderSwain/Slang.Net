@@ -12,10 +12,10 @@ internal sealed unsafe class Program : CompilationBinding
     {
         Parent = parent;
         // Using the strongly-typed interop that returns ProgramHandle directly
-        Handle = Program_Create(Parent.Handle);
+        Handle = Program_Create(Parent.Handle, out var error);
 
         if (Handle.IsInvalid)
-            throw new SlangException(SlangResult.Fail, $"Failed to create Slang program: {GetLastError() ?? "<No error was returned from Slang>"}");
+            throw new SlangException(SlangResult.Fail, $"Failed to create Slang program: {error ?? "<No error was returned from Slang>"}");
     }
 
     ~Program()
@@ -30,11 +30,9 @@ internal sealed unsafe class Program : CompilationBinding
         Target target = Parent.Parent.Targets.ElementAt((int)targetIndex);
         EntryPoint entryPoint = Parent.GetEntryPointByIndex(entryPointIndex);
 
-        char* compiledSource = null;
-        SlangResult compileResult = SlangNativeInterop.Program_CompileProgram(Handle, entryPointIndex, targetIndex, &compiledSource);
-        string? diagnostics = GetLastError();
+        SlangResult compileResult = SlangNativeInterop.Program_CompileProgram(Handle, entryPointIndex, targetIndex, out string compiledSource, out string error);
 
-        return new CompilationResult(StringMarshaling.FromUtf8((byte*)compiledSource) ?? throw new SlangException(SlangResult.Fail, "Failed to convert compiled source from UTF-8"), target, entryPoint, compileResult, diagnostics);
+        return new CompilationResult(compiledSource ?? throw new SlangException(SlangResult.Fail, "Failed to convert compiled source from UTF-8"), target, entryPoint, compileResult, error);
     }
 
     internal ShaderReflection GetReflection(uint targetIndex)
@@ -42,10 +40,10 @@ internal sealed unsafe class Program : CompilationBinding
         ObjectDisposedException.ThrowIf(Handle.IsInvalid, this);
 
         // Using the strongly-typed interop that returns ShaderReflectionHandle directly
-        ShaderReflectionHandle resultHandle = Program_GetProgramReflection(Handle, targetIndex);
+        ShaderReflectionHandle resultHandle = Program_GetProgramReflection(Handle, targetIndex, out var error);
 
         if (resultHandle.IsInvalid)
-            throw new SlangException(SlangResult.Fail, $"Failed to get shader reflection for target index {targetIndex}: {GetLastError() ?? "<No error was returned from Slang>"}");
+            throw new SlangException(SlangResult.Fail, $"Failed to get shader reflection for target index {targetIndex}: {error ?? "<No error was returned from Slang>"}");
 
         return new ShaderReflection(this, resultHandle);
     }

@@ -4,12 +4,6 @@ namespace Slang.Sdk.Interop
 {
     internal static class Utilities
     {
-        internal unsafe static string? GetLastError()
-        {
-            var errorPtr = SlangNativeInterop.SlangNative_GetLastError();
-            return FromCharPtr(errorPtr);
-        }
-
         internal unsafe static string FromCharPtr(char* ptr)
         {
             if (ptr == null)

@@ -21,12 +21,15 @@ namespace Slang.Sdk.Binding
 
         internal int GetID()
         {
-            return Call(() => SlangNativeInterop.Modifier_GetID(Handle));
+            string? error = null;
+            return Call(() => SlangNativeInterop.Modifier_GetID(Handle, out error), () => error);
         }
 
-        internal string? GetName()
+        internal string GetName()
         {
-            return Call(() => FromCharPtr(SlangNativeInterop.Modifier_GetName(Handle)));
+            string? error = null;
+            return Call(() => SlangNativeInterop.Modifier_GetName(Handle, out error), () => error);
+
         }
     }
 }

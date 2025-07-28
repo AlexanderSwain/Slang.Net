@@ -13,27 +13,12 @@ internal unsafe sealed class Module : CompilationBinding
     public Module(Session parent, string moduleName, string modulePath, string shaderSource)
     {
         Parent = parent;
-        
-        // Convert managed strings to UTF-8 before passing to native API
-        byte* pName = ToUtf8(moduleName);
-        byte* pPath = ToUtf8(modulePath);
-        byte* pSource = ToUtf8(shaderSource);
-        
-        try
-        {
-            // Using the strongly-typed interop that returns ModuleHandle directly
-            Handle = Module_Create(Parent.Handle, (char*)pName, (char*)pPath, (char*)pSource);
 
-            if (Handle.IsInvalid)
-                throw new SlangException(SlangResult.Fail, $"Failed to create Slang module: {GetLastError() ?? "<No error was returned from Slang>"}");
-        }
-        finally
-        {
-            // Clean up allocated UTF-8 strings
-            FreeUtf8(pName);
-            FreeUtf8(pPath);
-            FreeUtf8(pSource);
-        }
+        // Using the strongly-typed interop that returns ModuleHandle directly
+        Handle = Module_Create(Parent.Handle, moduleName, modulePath, shaderSource, out var error);
+
+        if (Handle.IsInvalid)
+            throw new SlangException(SlangResult.Fail, $"Failed to create Slang module: {error ?? "<No error was returned from Slang>"}");
     }
 
     public Module(Session parent, string moduleName)
@@ -43,19 +28,10 @@ internal unsafe sealed class Module : CompilationBinding
         // Convert managed strings to UTF-8 before passing to native API
         byte* pName = ToUtf8(moduleName);
 
-        try
-        {
-            // Using the strongly-typed interop that returns ModuleHandle directly
-            Handle = Module_Import(Parent.Handle, (char*)pName);
+        Handle = Module_Import(Parent.Handle, moduleName, out var error);
 
-            if (Handle.IsInvalid)
-                throw new SlangException(SlangResult.Fail, $"Failed to create Slang module: {GetLastError() ?? "<No error was returned from Slang>"}");
-        }
-        finally
-        {
-            // Clean up allocated UTF-8 strings
-            FreeUtf8(pName);
-        }
+        if (Handle.IsInvalid)
+            throw new SlangException(SlangResult.Fail, $"Failed to create Slang module: {error ?? "<No error was returned from Slang>"}");
     }
 
     public Module(Session parent, Interop.ModuleHandle handle)
@@ -72,37 +48,26 @@ internal unsafe sealed class Module : CompilationBinding
             ObjectDisposedException.ThrowIf(Handle.IsInvalid, this);
 
             // Using the strongly-typed interop to get the name of the module
-            char* pName = SlangNativeInterop.Module_GetName(Handle);
-            if (pName == null)
-                throw new SlangException(SlangResult.Fail, "Failed to retrieve module name: <No name was returned from Slang>");
-
-            return FromUtf8((byte*)pName) ?? throw new SlangException(SlangResult.Fail, "Failed to convert module name from UTF-8");
+            return SlangNativeInterop.Module_GetName(Handle, out var error) ?? throw new SlangException(SlangResult.Fail, error ?? "Failed to retrieve module name: <No name was returned from Slang>");
         }
     }
 
     internal uint GetEntryPointCount()
     {
-        return Call(() => SlangNativeInterop.Module_GetEntryPointCount(Handle));
+        string? error = null;
+        return Call(() => SlangNativeInterop.Module_GetEntryPointCount(Handle, out error), () => error);
     }
 
     internal EntryPoint GetEntryPointByIndex(uint index)
     {
-        return new EntryPoint(this, Call(() => StrongTypeInterop.Module_GetEntryPointByIndex(Handle, index)));
+        string? error = null;
+        return new EntryPoint(this, Call(() => StrongTypeInterop.Module_GetEntryPointByIndex(Handle, index, out error), () => error));
     }
 
     internal EntryPoint GetEntryPointByName(string name)
     {
-        // Convert managed strings to UTF-8 before passing to native API
-        byte* pName = ToUtf8(name);
-        try
-        {
-            return new EntryPoint(this, Call(() => StrongTypeInterop.Module_FindEntryPointByName(Handle, (char*)pName)));
-        }
-        finally
-        {
-            // Clean up allocated UTF-8 strings
-            FreeUtf8(pName);
-        }
+        string? error = null;
+        return new EntryPoint(this, Call(() => StrongTypeInterop.Module_FindEntryPointByName(Handle, name, out error), () => error));
     }
 
     ~Module()

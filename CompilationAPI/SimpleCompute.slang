@@ -2,10 +2,10 @@
 // Demonstrates basic compute shader structure and cross-platform compilation
 
 // Input texture (read-only)
-Texture2D<float4> inputTexture : register(t0);
+Texture2D<float4> inputTexture;
 
 // Output buffer (read-write)
-RWStructuredBuffer<float4> outputBuffer : register(u0);
+RWStructuredBuffer<float4> outputBuffer;
 
 // Compute shader entry point
 [shader("compute")]

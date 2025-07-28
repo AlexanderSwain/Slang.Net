@@ -4,12 +4,22 @@ namespace Slang
 {
     public static class Runtime
     {
-        public static string Directory
+        public static string CLI_Directory
         {
             get
             {
                 string appDirectory = AppDomain.CurrentDomain.BaseDirectory;
-                string runtimeFolder = Path.Combine(appDirectory, "runtimes", GetRuntimeFolderName(), "native");
+                string runtimeFolder = Path.Combine(appDirectory, "runtimes", GetRuntimeFolderName(GetRuntimeArchitecture(true)), "native");
+                return runtimeFolder;
+            }
+        }
+
+        public static string SlangNative_Directory
+        {
+            get
+            {
+                string appDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                string runtimeFolder = Path.Combine(appDirectory, "runtimes", GetRuntimeFolderName(GetRuntimeArchitecture(false)), "native");
                 return runtimeFolder;
             }
         }
@@ -19,13 +29,15 @@ namespace Slang
             return GetRuntime();
         }
 
-        private static string GetRuntimeFolderName()
+        public static Architecture GetRuntimeArchitecture(bool isCLI)
+        {
+            return isCLI ? RuntimeInformation.OSArchitecture : RuntimeInformation.ProcessArchitecture;
+        }
+
+        private static string GetRuntimeFolderName(Architecture architecture)
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                // Use effective architecture detection which handles ARM64 fallback
-                var architecture = RuntimeInformation.OSArchitecture;
-
                 return architecture switch
                 {
                     Architecture.X64 => "win-x64",
@@ -36,7 +48,7 @@ namespace Slang
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                return RuntimeInformation.OSArchitecture switch
+                return architecture switch
                 {
                     Architecture.X64 => "linux-x64",
                     Architecture.Arm64 => "linux-arm64",
@@ -45,7 +57,7 @@ namespace Slang
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                return RuntimeInformation.OSArchitecture switch
+                return architecture switch
                 {
                     Architecture.X64 => "osx-x64",
                     Architecture.Arm64 => "osx-arm64",
