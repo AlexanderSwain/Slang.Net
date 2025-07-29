@@ -1,4 +1,5 @@
 #include "ProgramCLI.h"
+//#include <cstdlib>  // For malloc and strcpy_s
 
 #include "TypeParameterReflection.h"
 #include "TypeReflection.h"
@@ -56,7 +57,7 @@ Native::ProgramCLI::ProgramCLI(ModuleCLI* parent)
             std::string diagnosticsText = std::string((const char*)diagnosticsBlob->getBufferPointer());
 
             if (SLANG_FAILED(result))
-            {
+			{
 				m_linkedProgram_Diagnostics = diagnosticsText;
 			}
             else
@@ -101,7 +102,24 @@ SlangResult Native::ProgramCLI::GetCompiled(unsigned int entryPointIndex, unsign
         if (!targetCode)
             throw std::runtime_error("Error when compiling a program. No slang diagnostics were returned. Probably target with the specified index does not exist.");
 
-        *output = (const char*)targetCode->getBufferPointer();
+        //// Copy the string data to memory allocated by malloc, which is what the .NET marshaller expects
+        //const char* slangOutput = (const char*)targetCode->getBufferPointer();
+        //size_t outputLength = strlen(slangOutput);
+        //
+        //// Allocate memory using malloc (which is what Utf8StringMarshaller.Free expects)
+        //char* managedOutput = (char*)malloc(outputLength + 1);
+        //if (!managedOutput)
+        //    throw std::runtime_error("Failed to allocate memory for output string");
+        //    
+        //// Copy the string content
+        //strcpy_s(managedOutput, outputLength + 1, slangOutput);
+        //
+        //*output = managedOutput;
+
+        const char* slangOutput = (const char*)targetCode->getBufferPointer();
+        *output = (new std::string(slangOutput))->c_str();
+
+        //*output = (const char*)targetCode->getBufferPointer();
         return result;
     }
 }

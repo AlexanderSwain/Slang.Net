@@ -30,7 +30,7 @@ internal sealed unsafe class Program : CompilationBinding
         Target target = Parent.Parent.Targets.ElementAt((int)targetIndex);
         EntryPoint entryPoint = Parent.GetEntryPointByIndex(entryPointIndex);
 
-        SlangResult compileResult = SlangNativeInterop.Program_CompileProgram(Handle, entryPointIndex, targetIndex, out string compiledSource, out string error);
+        SlangResult compileResult = StrongTypeInterop.Program_CompileProgram(Handle, entryPointIndex, targetIndex, out string compiledSource, out string error);
 
         return new CompilationResult(compiledSource ?? throw new SlangException(SlangResult.Fail, "Failed to convert compiled source from UTF-8"), target, entryPoint, compileResult, error);
     }

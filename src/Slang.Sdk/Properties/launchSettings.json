@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Slang.Sdk": {
+      "commandName": "Project",
+      "nativeDebugging": false
+    }
+  }
+}

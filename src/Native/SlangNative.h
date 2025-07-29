@@ -18,6 +18,9 @@ namespace SlangNative
     //Diagnostics
     extern "C" SLANGNATIVE_API const char* SlangNative_GetLastError();
 
+    //Free char**
+    extern "C" SLANGNATIVE_API void FreeChar(char** c);
+
     // Session API
     extern "C" SLANGNATIVE_API void* Session_Create(
         void* options, int optionsLength,
@@ -31,7 +34,7 @@ namespace SlangNative
     extern "C" SLANGNATIVE_API void* Session_GetNative(void* session, const char** error);
 
     // Module API
-    extern "C" SLANGNATIVE_API void* Module_Create(void* parentSession, const char* moduleName, const char* modulePath, const char* shaderSource, const char** error);
+    extern "C" SLANGNATIVE_API void* Module_Create(void* parentSession, const char* moduleName, const char* modulePath, const char* shaderSource, char** error);
     extern "C" SLANGNATIVE_API void* Module_Import(void* parentSession, const char* moduleName, const char** error);
     extern "C" SLANGNATIVE_API void Module_Release(void* parentModule, const char** error);
 	extern "C" SLANGNATIVE_API const char* Module_GetName(void* parentModule, const char** error);

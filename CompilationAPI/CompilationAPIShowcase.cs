@@ -547,7 +547,7 @@ public class CompilationAPIShowcase
         return preview;
     }
 
-    private void SaveCompilationResultsAsync(List<CompilationResult> results, string prefix)
+    private async Task SaveCompilationResultsAsync(List<CompilationResult> results, string prefix)
     {
         var outputDir = Path.Combine(_workingDirectory, $"{prefix}_results");
         Directory.CreateDirectory(outputDir);
@@ -556,7 +556,7 @@ public class CompilationAPIShowcase
         {
             var result = results[i];
             var filename = $"{prefix}_{i}.txt";
-            File.WriteAllText(Path.Combine(outputDir, filename), result.Source);
+            await File.WriteAllTextAsync(Path.Combine(outputDir, filename), result.Source);
         }
         
         Console.WriteLine($"💾 Saved {results.Count} compilation results to {outputDir}/");

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CompilationAPI": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

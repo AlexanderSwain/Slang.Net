@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace Slang.Sdk.Interop;
 
@@ -35,6 +36,11 @@ internal static unsafe partial class SlangNativeInterop
         NativeLibrary.SetDllImportResolver(typeof(SlangNativeInterop).Assembly, DllImportResolver);
     }
 
+    #region Free char**
+    [LibraryImport(LibraryName)]
+    internal static partial void FreeChar(char** c);
+    #endregion
+
     #region Session API
 
     [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
@@ -60,12 +66,13 @@ internal static unsafe partial class SlangNativeInterop
 
     #region Module API
 
-    [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
+    [LibraryImport(LibraryName)]
     internal static partial nint Module_Create(
         nint parentSession, 
-        string moduleName,
-        string modulePath,
-        string shaderSource, out string error);
+        char* moduleName,
+        char* modulePath,
+        char* shaderSource,
+        char** error);
 
     [LibraryImport(LibraryName, StringMarshalling = StringMarshalling.Utf8)]
     internal static partial nint Module_Import(
@@ -848,7 +855,22 @@ internal static unsafe partial class StrongTypeInterop
         string shaderSource,
         out string error)
     {
-        var handle = SlangNativeInterop.Module_Create(parentSession, moduleName, modulePath, shaderSource, out error);
+        nint handle;
+        char* pError = null;
+
+        var unmanagedName = Utf8StringMarshaller.ConvertToUnmanaged(moduleName);
+        var unmanagedPath = Utf8StringMarshaller.ConvertToUnmanaged(modulePath);
+        var unmanagedSource = Utf8StringMarshaller.ConvertToUnmanaged(shaderSource);
+        handle = SlangNativeInterop.Module_Create(parentSession, (char*)unmanagedName, (char*)unmanagedPath, (char*)unmanagedSource, &pError);
+
+        error = Utf8StringMarshaller.ConvertToManaged((byte*)pError)!;
+
+        // Free temporary resources
+        Utf8StringMarshaller.Free(unmanagedName);
+        Utf8StringMarshaller.Free(unmanagedPath);
+        Utf8StringMarshaller.Free(unmanagedSource);
+        SlangNativeInterop.FreeChar(&pError);
+
         return new ModuleHandle(handle);
     }
 
@@ -927,6 +949,20 @@ internal static unsafe partial class StrongTypeInterop
     {
         var handle = SlangNativeInterop.Program_Create(parentModule, out error);
         return new ProgramHandle(handle);
+    }
+
+    internal static SlangResult Program_CompileProgram(
+    nint program,
+    uint entryPointIndex,
+    uint targetIndex,
+    out string output,
+    out string error)
+    {
+        char* nativeOutput = null;
+        char** outputVariable = &nativeOutput;
+        var result = SlangNativeInterop.Program_CompileProgram(program, entryPointIndex, targetIndex, (nint)outputVariable, out error);
+        output = Marshal.PtrToStringAnsi((IntPtr)nativeOutput)!;
+        return result;
     }
 
     /// <summary>

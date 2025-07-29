@@ -9,19 +9,10 @@ namespace Slang.Sdk.Test
         {
             Console.WriteLine("=== Slang.Sdk Configuration Test ===\n");
 
-            try
-            {
-                CLI_Tests.RunAllTests();
-                InteropTest.RunExamples();
-                BindingTests.RunAllTests();
-                PrettyTests.RunAllTests();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"? Configuration test failed: {ex.Message}");
-                Console.WriteLine($"   Stack trace: {ex.StackTrace}");
-                return;
-            }
+            CLI_Tests.RunAllTests();
+            InteropTest.RunExamples();
+            BindingTests.RunAllTests();
+            PrettyTests.RunAllTests();
 
             Console.WriteLine("\nPress any key to exit...");
             Console.ReadKey();

@@ -1,4 +1,5 @@
 #include "SlangNative.h"
+#include <cstdlib>  // For malloc and strcpy_s
 #include "SessionCLI.h"
 #include "ModuleCLI.h"
 #include "EntryPointCLI.h"
@@ -15,14 +16,29 @@
 #include "VariableReflection.h"
 #include "Modifier.h"
 #include <string>
+#include <cstring>
 
 namespace SlangNative
 {
-	// Diagnostics
+	// Diagnostics - use thread_local storage for error messages to avoid memory issues
 	static thread_local std::string g_lastError;
+	
+	// Helper function to set error message safely
+	static const char* SetError(const std::string& errorMessage)
+	{
+		g_lastError = errorMessage;
+		return g_lastError.c_str();
+	}
+	
 	extern "C" SLANGNATIVE_API const char* SlangNative_GetLastError()
 	{
 		return g_lastError.c_str();
+	}
+
+	extern "C" SLANGNATIVE_API void FreeChar(char** c)
+	{
+		free(*c);
+		*c = nullptr;
 	}
 
 	// Session API
@@ -41,7 +57,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -57,7 +73,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 		}
 	}
 
@@ -65,7 +81,7 @@ namespace SlangNative
 	{
 		if (!session)
 		{
-			g_lastError = "Argument Null: session";
+			*error = SetError("Argument Null: session");
 			return -1;
 		}
 
@@ -75,7 +91,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return SLANG_FAIL;
 		}
 	}
@@ -83,7 +99,7 @@ namespace SlangNative
 	{
 		if (!session)
 		{
-			g_lastError = "Argument Null: parentModule";
+			*error = SetError("Argument Null: session");
 			return nullptr;
 		}
 
@@ -93,7 +109,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -101,7 +117,7 @@ namespace SlangNative
 	{
 		if (!session)
 		{
-			g_lastError = "Argument Null: parentModule";
+			*error = SetError("Argument Null: session");
 			return nullptr;
 		}
 
@@ -111,13 +127,13 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
 
 	// Module API
-	extern "C" SLANGNATIVE_API void* Module_Create(void* parentSession, const char* moduleName, const char* modulePath, const char* shaderSource, const char** error)
+	extern "C" SLANGNATIVE_API void* Module_Create(void* parentSession, const char* moduleName, const char* modulePath, const char* shaderSource, char** error)
 	{
 		try
 		{
@@ -125,7 +141,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = _strdup(e.what());
 			return nullptr;
 		}
 	}
@@ -138,7 +154,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -154,7 +170,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 		}
 	}
 
@@ -162,7 +178,7 @@ namespace SlangNative
 	{
 		if (!parent_module)
 		{
-			g_lastError = "Argument Null: parent_module";
+			*error = SetError("Argument Null: parent_module");
 			return nullptr;
 		}
 		try
@@ -171,7 +187,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -180,7 +196,7 @@ namespace SlangNative
 	{
 		if (!parent_module)
 		{
-			g_lastError = "Argument Null: parent_module";
+			*error = SetError("Argument Null: parent_module");
 			return -1;
 		}
 
@@ -190,7 +206,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return SLANG_FAIL;
 		}
 	}
@@ -199,7 +215,7 @@ namespace SlangNative
 	{
 		if (!parent_module)
 		{
-			g_lastError = "Argument Null: parent_module";
+			*error = SetError("Argument Null: parent_module");
 			return nullptr;
 		}
 
@@ -209,7 +225,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -218,13 +234,13 @@ namespace SlangNative
 	{
 		if (!parent_module)
 		{
-			g_lastError = "Argument Null: parent_module";
+			*error = SetError("Argument Null: parent_module");
 			return nullptr;
 		}
 
 		if (!entryPointName)
 		{
-			g_lastError = "Argument Null: entryPointName";
+			*error = SetError("Argument Null: entryPointName");
 			return nullptr;
 		}
 
@@ -234,7 +250,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -243,7 +259,7 @@ namespace SlangNative
 	{
 		if (!parent_module)
 		{
-			g_lastError = "Argument Null: parentModule";
+			*error = SetError("Argument Null: parentModule");
 			return nullptr;
 		}
 
@@ -253,7 +269,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -263,7 +279,7 @@ namespace SlangNative
 	{
 		if (!parentModule)
 		{
-			g_lastError = "Argument Null: parentModule";
+			*error = SetError("Argument Null: parentModule");
 			return nullptr;
 		}
 		try
@@ -272,7 +288,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -280,12 +296,12 @@ namespace SlangNative
 	{
 		if (!parentModule)
 		{
-			g_lastError = "Argument Null: parentModule";
+			*error = SetError("Argument Null: parentModule");
 			return nullptr;
 		}
 		if (!entryPointName)
 		{
-			g_lastError = "Argument Null: entryPointName";
+			*error = SetError("Argument Null: entryPointName");
 			return nullptr;
 		}
 		try
@@ -294,7 +310,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -308,7 +324,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 		}
 	}
 	extern "C" SLANGNATIVE_API int EntryPoint_GetIndex(void* entryPoint, const char** error)
@@ -321,7 +337,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return SLANG_FAIL;
 		}
 	}
@@ -334,7 +350,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -356,7 +372,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return SLANG_FAIL;
 		}
 	}
@@ -365,7 +381,7 @@ namespace SlangNative
 	{
 		if (!entryPoint)
 		{
-			g_lastError = "Argument Null: entryPoint";
+			*error = SetError("Argument Null: entryPoint");
 			return nullptr;
 		}
 
@@ -375,7 +391,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -389,7 +405,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -405,7 +421,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 		}
 	}
 
@@ -417,7 +433,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return SLANG_FAIL;
 		}
 	}
@@ -436,7 +452,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -445,7 +461,7 @@ namespace SlangNative
 	{
 		if (!program)
 		{
-			g_lastError = "Argument Null: program";
+			*error = SetError("Argument Null: program");
 			return nullptr;
 		}
 
@@ -455,7 +471,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -472,7 +488,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 		}
 	}
 
@@ -486,7 +502,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -501,7 +517,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -516,7 +532,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -531,7 +547,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -546,7 +562,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -561,7 +577,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -576,7 +592,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -590,7 +606,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -604,7 +620,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -619,7 +635,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -634,7 +650,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -649,7 +665,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -664,7 +680,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -679,7 +695,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -694,7 +710,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -709,7 +725,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -724,7 +740,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -739,7 +755,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return false;
 		}
 	}
@@ -754,7 +770,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -770,7 +786,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -785,7 +801,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -800,7 +816,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -814,6 +830,25 @@ namespace SlangNative
 		SlangResult result = ((Native::ShaderReflection*)shaderReflection)->toJson(&blob);
 		if (SLANG_SUCCEEDED(result))
 		{
+			/*
+			// Copy the string data to memory allocated by malloc, which is what the .NET marshaller expects
+			const char* jsonData = (const char*)blob->getBufferPointer();
+			size_t jsonLength = strlen(jsonData);
+			
+			// Allocate memory using malloc (which is what Utf8StringMarshaller.Free expects)
+			char* managedOutput = (char*)malloc(jsonLength + 1);
+			if (!managedOutput)
+			{
+				blob->release();
+				*error = (new std::string("Failed to allocate memory for JSON output string"))->c_str();
+				return SLANG_FAIL;
+			}
+				
+			// Copy the string content
+			strcpy_s(managedOutput, jsonLength + 1, jsonData);
+			
+			*output = managedOutput;
+			*/
 			*output = (const char*)blob->getBufferPointer();
 			blob->release();
 			return result;
@@ -821,7 +856,7 @@ namespace SlangNative
 		else
 		{
 			*output = nullptr;
-			*error = (new std::string("Failed to retrieve Json."))->c_str();
+			*error = SetError("Failed to retrieve Json.");
 			return result;
 		}
 	}
@@ -830,7 +865,7 @@ namespace SlangNative
 	{
 		if (!shaderReflection)
 		{
-			g_lastError = "Argument Null: shaderReflection";
+			*error = SetError("Argument Null: shaderReflection");
 			return nullptr;
 		}
 
@@ -840,7 +875,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -857,7 +892,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 		}
 	}
 
@@ -871,7 +906,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -886,7 +921,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return 0;
 		}
 	}
@@ -901,7 +936,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -916,7 +951,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return false;
 		}
 	}
@@ -931,7 +966,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -946,7 +981,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -961,7 +996,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -976,7 +1011,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -991,7 +1026,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -1006,7 +1041,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -1021,7 +1056,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1036,7 +1071,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -1051,7 +1086,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -1066,7 +1101,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1081,7 +1116,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -1096,7 +1131,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1111,7 +1146,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1125,7 +1160,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}    
@@ -1139,7 +1174,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1148,7 +1183,7 @@ namespace SlangNative
 	{
 		if (!typeReflection)
 		{
-			g_lastError = "Argument Null: shaderReflection";
+			*error = SetError("Argument Null: typeReflection");
 			return nullptr;
 		}
 
@@ -1158,7 +1193,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1175,7 +1210,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 		}
 	}
 
@@ -1189,7 +1224,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1204,7 +1239,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -1219,7 +1254,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -1234,7 +1269,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -1249,7 +1284,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -1264,7 +1299,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -1279,7 +1314,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1294,7 +1329,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -1309,7 +1344,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1324,7 +1359,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return false;
 		}
 	}
@@ -1339,7 +1374,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1354,7 +1389,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -1369,7 +1404,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -1384,7 +1419,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -1399,7 +1434,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1414,7 +1449,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1429,7 +1464,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1438,7 +1473,7 @@ namespace SlangNative
 	{
 		if (!typeLayoutReflection)
 		{
-			*error = (new std::string("Argument Null: typeLayoutReflection"))->c_str();
+			*error = SetError("Argument Null: typeLayoutReflection");
 			return nullptr;
 		}
 
@@ -1448,7 +1483,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1465,7 +1500,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 		}
 	}
 
@@ -1479,7 +1514,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1494,7 +1529,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1509,7 +1544,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1524,7 +1559,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -1539,7 +1574,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1554,7 +1589,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}    
@@ -1568,7 +1603,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}    
@@ -1582,7 +1617,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return false;
 		}
 	}    
@@ -1596,7 +1631,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return SLANG_FAIL;
 		}
 	}    
@@ -1610,7 +1645,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}    
@@ -1622,7 +1657,7 @@ namespace SlangNative
 			return ((Native::VariableReflection*)variableReflection)->applySpecializations((Native::GenericReflection*)specializations[0]);
 		}
 
-		*error = (new std::string("Failed to apply specializations."))->c_str();
+		*error = SetError("Failed to apply specializations.");
 		return nullptr;
 	}
 
@@ -1630,7 +1665,7 @@ namespace SlangNative
 	{
 		if (!variableReflection)
 		{
-			g_lastError = "Argument Null: variableReflection";
+			*error = SetError("Argument Null: variableReflection");
 			return nullptr;
 		}
 
@@ -1640,7 +1675,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1657,7 +1692,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 		}
 	}
 
@@ -1671,7 +1706,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1686,7 +1721,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1701,7 +1736,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1716,7 +1751,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1731,7 +1766,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -1746,7 +1781,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -1761,7 +1796,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -1776,7 +1811,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -1791,7 +1826,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1806,7 +1841,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -1821,7 +1856,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -1837,7 +1872,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1852,7 +1887,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -1867,7 +1902,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1882,7 +1917,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -1897,7 +1932,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -1912,7 +1947,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1921,7 +1956,7 @@ namespace SlangNative
 	{
 		if (!variableLayoutReflection)
 		{
-			g_lastError = "Argument Null: variableLayoutReflection";
+			*error = SetError("Argument Null: variableLayoutReflection");
 			return nullptr;
 		}
 
@@ -1931,7 +1966,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1948,7 +1983,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 		}
 	}
 
@@ -1962,7 +1997,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1977,7 +2012,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -1992,7 +2027,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -2007,7 +2042,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2022,7 +2057,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2037,7 +2072,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -2052,7 +2087,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2067,7 +2102,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2082,7 +2117,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2097,7 +2132,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2112,7 +2147,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2127,7 +2162,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return false;
 		}
 	}
@@ -2142,7 +2177,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -2157,7 +2192,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2166,7 +2201,7 @@ namespace SlangNative
 	{
 		if (!functionReflection)
 		{
-			g_lastError = "Argument Null: functionReflection";
+			*error = SetError("Argument Null: functionReflection");
 			return nullptr;
 		}
 
@@ -2176,7 +2211,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2194,7 +2229,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 		}
 	}
 
@@ -2208,7 +2243,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2223,7 +2258,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2238,7 +2273,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2253,7 +2288,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -2268,13 +2303,13 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
 	extern "C" SLANGNATIVE_API void* EntryPointReflection_GetFunction(void* entryPointReflection, const char** error)
 	{
-		if (!entryPointReflection) return nullptr;
+	 if (!entryPointReflection) return nullptr;
 
 		try
 		{
@@ -2282,7 +2317,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2297,7 +2332,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -2312,7 +2347,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 		}
 	}
 
@@ -2342,7 +2377,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return false;
 		}
 	}
@@ -2357,7 +2392,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2372,7 +2407,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2387,7 +2422,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2402,16 +2437,16 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return false;
-		}
-	}
+		 }
+	 }
 
 	extern "C" SLANGNATIVE_API void* EntryPointReflection_GetNative(void* entryPointReflection, const char** error)
 	{
 		if (!entryPointReflection)
 		{
-			g_lastError = "Argument Null: entryPointReflection";
+			*error = SetError("Argument Null: entryPointReflection");
 			return nullptr;
 		}
 
@@ -2421,7 +2456,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2438,7 +2473,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 		}
 	}
 
@@ -2452,7 +2487,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2467,7 +2502,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -2482,7 +2517,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2497,7 +2532,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -2512,7 +2547,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2527,7 +2562,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -2542,7 +2577,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2557,7 +2592,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -2572,7 +2607,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2587,7 +2622,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2618,7 +2653,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2627,7 +2662,7 @@ namespace SlangNative
 	{
 		if (!genRefReflection)
 		{
-			g_lastError = "Argument Null: genRefReflection";
+			*error = SetError("Argument Null: genRefReflection");
 			return nullptr;
 		}
 
@@ -2637,7 +2672,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2654,7 +2689,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 		}
 	}
 
@@ -2668,7 +2703,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2683,7 +2718,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -2698,7 +2733,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -2713,7 +2748,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2722,7 +2757,7 @@ namespace SlangNative
 	{
 		if (!typeParameterReflection)
 		{
-			g_lastError = "Argument Null: typeParameterReflection";
+			*error = SetError("Argument Null: typeParameterReflection");
 			return nullptr;
 		}
 
@@ -2732,7 +2767,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2749,7 +2784,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 		}
 	}
 
@@ -2763,7 +2798,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2778,7 +2813,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -2793,7 +2828,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2808,7 +2843,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return SLANG_FAIL;
 		}
 	}
@@ -2823,7 +2858,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return SLANG_FAIL;
 		}
 	}
@@ -2839,7 +2874,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2848,7 +2883,7 @@ namespace SlangNative
 	{
 		if (!attributeReflection)
 		{
-			g_lastError = "Argument Null: attributeReflection";
+			*error = SetError("Argument Null: attributeReflection");
 			return nullptr;
 		}
 
@@ -2858,7 +2893,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2875,7 +2910,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 		}
 	}
 
@@ -2889,7 +2924,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return -1;
 		}
 	}
@@ -2904,7 +2939,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2913,7 +2948,7 @@ namespace SlangNative
 	{
 		if (!modifier)
 		{
-			g_lastError = "Argument Null: modifier";
+			*error = SetError("Argument Null: modifier");
 			return nullptr;
 		}
 
@@ -2923,7 +2958,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = (new std::string(e.what()))->c_str();
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
