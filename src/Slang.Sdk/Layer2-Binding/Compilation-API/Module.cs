@@ -1,6 +1,4 @@
 using Slang.Sdk.Interop;
-using static Slang.Sdk.Interop.StrongTypeInterop;
-using static Slang.Sdk.Interop.Utilities;
 using static Slang.Sdk.Interop.StringMarshaling;
 
 namespace Slang.Sdk.Binding;
@@ -15,7 +13,7 @@ internal unsafe sealed class Module : CompilationBinding
         Parent = parent;
 
         // Using the strongly-typed interop that returns ModuleHandle directly
-        Handle = Module_Create(Parent.Handle, moduleName, modulePath, shaderSource, out var error);
+        Handle = StrongInterop.Module.Create(Parent.Handle, moduleName, modulePath, shaderSource, out var error);
 
         if (Handle.IsInvalid)
             throw new SlangException(SlangResult.Fail, $"Failed to create Slang module: {error ?? "<No error was returned from Slang>"}");
@@ -28,7 +26,7 @@ internal unsafe sealed class Module : CompilationBinding
         // Convert managed strings to UTF-8 before passing to native API
         byte* pName = ToUtf8(moduleName);
 
-        Handle = Module_Import(Parent.Handle, moduleName, out var error);
+        Handle = StrongInterop.Module.Import(Parent.Handle, moduleName, out var error);
 
         if (Handle.IsInvalid)
             throw new SlangException(SlangResult.Fail, $"Failed to create Slang module: {error ?? "<No error was returned from Slang>"}");
@@ -48,26 +46,26 @@ internal unsafe sealed class Module : CompilationBinding
             ObjectDisposedException.ThrowIf(Handle.IsInvalid, this);
 
             // Using the strongly-typed interop to get the name of the module
-            return SlangNativeInterop.Module_GetName(Handle, out var error) ?? throw new SlangException(SlangResult.Fail, error ?? "Failed to retrieve module name: <No name was returned from Slang>");
+            return StrongInterop.Module.GetName(Handle, out var error) ?? throw new SlangException(SlangResult.Fail, error ?? "Failed to retrieve module name: <No name was returned from Slang>");
         }
     }
 
     internal uint GetEntryPointCount()
     {
         string? error = null;
-        return Call(() => SlangNativeInterop.Module_GetEntryPointCount(Handle, out error), () => error);
+        return Call(() => StrongInterop.Module.GetEntryPointCount(Handle, out error), () => error);
     }
 
     internal EntryPoint GetEntryPointByIndex(uint index)
     {
         string? error = null;
-        return new EntryPoint(this, Call(() => StrongTypeInterop.Module_GetEntryPointByIndex(Handle, index, out error), () => error));
+        return new EntryPoint(this, Call(() => StrongInterop.Module.GetEntryPointByIndex(Handle, index, out error), () => error));
     }
 
     internal EntryPoint GetEntryPointByName(string name)
     {
         string? error = null;
-        return new EntryPoint(this, Call(() => StrongTypeInterop.Module_FindEntryPointByName(Handle, name, out error), () => error));
+        return new EntryPoint(this, Call(() => StrongInterop.Module.FindEntryPointByName(Handle, name, out error), () => error));
     }
 
     ~Module()

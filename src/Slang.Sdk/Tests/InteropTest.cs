@@ -50,7 +50,7 @@ public static class InteropTest
 
             Target shaderModels = new Target(Target.CompileTarget.Hlsl, "cs_5_0");
 
-            var sessionHandle = SlangNativeInterop.Session_Create(
+            var sessionHandle = StrongInterop.Session.Create(
                 &compilerOptions, 1,
                 &preprocessorMacros, 1,
                 &shaderModels, 1,
@@ -91,7 +91,7 @@ public static class InteropTest
             Target shaderModels = new Target(Target.CompileTarget.Hlsl, "cs_5_0");
 
             // Test the new strongly-typed interop
-            var sessionHandle = StrongTypeInterop.Session_Create(
+            var sessionHandle = StrongInterop.Session.Create(
                 &compilerOptions, 1,
                 &preprocessorMacros, 1,
                 &shaderModels, 1,

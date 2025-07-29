@@ -17,19 +17,19 @@ namespace Slang.Sdk.Binding
         internal string? GetName()
         {
             string? error = null;
-            return Call(() => SlangNativeInterop.Attribute_GetName(Handle, out error), () => error);
+            return Call(() => StrongInterop.Attribute.GetName(Handle, out error), () => error);
         }
 
         internal uint GetArgumentCount()
         {
             string? error = null;
-            return Call(() => SlangNativeInterop.Attribute_GetArgumentCount(Handle, out error), () => error);
+            return Call(() => StrongInterop.Attribute.GetArgumentCount(Handle, out error), () => error);
         }
 
         internal TypeReflection GetArgumentType(uint index)
         {
             string? error = null;
-            return new TypeReflection(this, Call(() => StrongTypeInterop.Attribute_GetArgumentType(Handle, index, out error), () => error));
+            return new TypeReflection(this, Call(() => StrongInterop.Attribute.GetArgumentType(Handle, index, out error), () => error));
         }
 
         internal int GetArgumentValueInt(uint index)
@@ -38,7 +38,7 @@ namespace Slang.Sdk.Binding
             return Call(() =>
             {
                 int value;
-                SlangNativeInterop.Attribute_GetArgumentValueInt(Handle, index, &value, out error);
+                StrongInterop.Attribute.GetArgumentValueInt(Handle, index, out value, out error);
                 return value;
             }, () => error);
         }
@@ -49,7 +49,7 @@ namespace Slang.Sdk.Binding
             return Call(() =>
             {
                 float value;
-                SlangNativeInterop.Attribute_GetArgumentValueFloat(Handle, index, &value, out error);
+                StrongInterop.Attribute.GetArgumentValueFloat(Handle, index, out value, out error);
                 return value;
             }, () => error);
         }
@@ -58,7 +58,7 @@ namespace Slang.Sdk.Binding
         {
             string? error = null;
             // Test string?
-            return Call(() => SlangNativeInterop.Attribute_GetArgumentValueString(Handle, index, out error), () => error);
+            return Call(() => StrongInterop.Attribute.GetArgumentValueString(Handle, index, out error), () => error);
         }
     }
 }

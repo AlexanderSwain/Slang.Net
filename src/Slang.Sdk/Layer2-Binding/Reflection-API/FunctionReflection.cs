@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Slang.Sdk.Interop;
-using static Slang.Sdk.Interop.StrongTypeInterop;
+using static Slang.Sdk.Interop.StrongInterop;
 using static Slang.Sdk.Interop.SlangNativeInterop;
 using static Slang.Sdk.Interop.StringMarshaling;
 
@@ -25,43 +25,43 @@ namespace Slang.Sdk.Binding
         {
             string? error = null;
             // Test string?
-            return Call(() => SlangNativeInterop.FunctionReflection_GetName(Handle, out error), () => error);
+            return Call(() => StrongInterop.FunctionReflection.GetName(Handle, out error), () => error);
         }
 
         internal TypeReflection GetReturnType()
         {
             string? error = null;
-            return new TypeReflection(this, Call(() => StrongTypeInterop.FunctionReflection_GetReturnType(Handle, out error), () => error));
+            return new TypeReflection(this, Call(() => StrongInterop.FunctionReflection.GetReturnType(Handle, out error), () => error));
         }
 
         internal uint GetParameterCount()
         {
             string? error = null;
-            return Call(() => SlangNativeInterop.FunctionReflection_GetParameterCount(Handle, out error), () => error);
+            return Call(() => StrongInterop.FunctionReflection.GetParameterCount(Handle, out error), () => error);
         }
 
         internal VariableReflection GetParameterByIndex(uint index)
         {
             string? error = null;
-            return new VariableReflection(this, Call(() => StrongTypeInterop.FunctionReflection_GetParameterByIndex(Handle, index, out error), () => error));
+            return new VariableReflection(this, Call(() => StrongInterop.FunctionReflection.GetParameterByIndex(Handle, index, out error), () => error));
         }
 
         internal ModifierReflection FindModifier(int modifierId)
         {
             string? error = null;
-            return new ModifierReflection(this, Call(() => StrongTypeInterop.FunctionReflection_FindModifier(Handle, modifierId, out error), () => error));
+            return new ModifierReflection(this, Call(() => StrongInterop.FunctionReflection.FindModifier(Handle, modifierId, out error), () => error));
         }
 
         internal uint GetUserAttributeCount()
         {
             string? error = null;
-            return Call(() => SlangNativeInterop.FunctionReflection_GetUserAttributeCount(Handle, out error), () => error);
+            return Call(() => StrongInterop.FunctionReflection.GetUserAttributeCount(Handle, out error), () => error);
         }
 
         internal AttributeReflection GetUserAttributeByIndex(uint index)
         {
             string? error = null;
-            return new AttributeReflection(this, Call(() => StrongTypeInterop.FunctionReflection_GetUserAttributeByIndex(Handle, index, out error), () => error));
+            return new AttributeReflection(this, Call(() => StrongInterop.FunctionReflection.GetUserAttributeByIndex(Handle, index, out error), () => error));
         }
 
         internal AttributeReflection FindAttributeByName(string name)
@@ -69,43 +69,43 @@ namespace Slang.Sdk.Binding
             string? error = null;
             return new AttributeReflection(
                 this,
-                Call(() => StrongTypeInterop.FunctionReflection_FindAttributeByName(Handle, name, out error), () => error));
+                Call(() => StrongInterop.FunctionReflection.FindAttributeByName(Handle, name, out error), () => error));
         }
 
         internal GenericReflection GetGenericContainer()
         {
             string? error = null;
-            return new GenericReflection(this, Call(() => StrongTypeInterop.FunctionReflection_GetGenericContainer(Handle, out error), () => error));
+            return new GenericReflection(this, Call(() => StrongInterop.FunctionReflection.GetGenericContainer(Handle, out error), () => error));
         }
 
         internal FunctionReflection ApplySpecializations(GenericReflection genRef)
         {
             string? error = null;
-            return new FunctionReflection(this, Call(() => StrongTypeInterop.FunctionReflection_ApplySpecializations(Handle, genRef.Handle, out error), () => error));
+            return new FunctionReflection(this, Call(() => StrongInterop.FunctionReflection.ApplySpecializations(Handle, genRef.Handle, out error), () => error));
         }
 
         internal FunctionReflection SpecializeWithArgTypes(uint typeCount, void** types)
         {
             string? error = null;
-            return new FunctionReflection(this, Call(() => StrongTypeInterop.FunctionReflection_SpecializeWithArgTypes(Handle, typeCount, types, out error), () => error));
+            return new FunctionReflection(this, Call(() => StrongInterop.FunctionReflection.SpecializeWithArgTypes(Handle, typeCount, types, out error), () => error));
         }
 
         internal bool IsOverloaded()
         {
             string? error = null;
-            return Call(() => SlangNativeInterop.FunctionReflection_IsOverloaded(Handle, out error), () => error);
+            return Call(() => StrongInterop.FunctionReflection.IsOverloaded(Handle, out error), () => error);
         }
 
         internal uint GetOverloadCount()
         {
             string? error = null;
-            return Call(() => SlangNativeInterop.FunctionReflection_GetOverloadCount(Handle, out error), () => error);
+            return Call(() => StrongInterop.FunctionReflection.GetOverloadCount(Handle, out error), () => error);
         }
 
         internal FunctionReflection GetOverload(uint index)
         {
             string? error = null;
-            return new FunctionReflection(this, Call(() => StrongTypeInterop.FunctionReflection_GetOverload(Handle, index, out error), () => error));
+            return new FunctionReflection(this, Call(() => StrongInterop.FunctionReflection.GetOverload(Handle, index, out error), () => error));
         }
     }
 }

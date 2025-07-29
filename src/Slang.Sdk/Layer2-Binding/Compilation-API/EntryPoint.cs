@@ -12,7 +12,7 @@ namespace Slang.Sdk.Binding
             Parent = parent;
 
             // Using the strongly-typed interop that returns EntryPointHandle directly
-            Handle = StrongTypeInterop.EntryPoint_Create(Parent.Handle, index, out var error);
+            Handle = StrongInterop.EntryPoint.Create(Parent.Handle, index, out var error);
 
             if (Handle.IsInvalid)
                 throw new SlangException(SlangResult.Fail, $"Failed to create Slang entry point: {error ?? "<No error was returned from Slang>"}");
@@ -23,7 +23,7 @@ namespace Slang.Sdk.Binding
             Parent = parent;
 
             // Using the strongly-typed interop that returns EntryPointHandle directly
-            Handle = StrongTypeInterop.EntryPoint_CreateByName(Parent.Handle, name, out var error);
+            Handle = StrongInterop.EntryPoint.CreateByName(Parent.Handle, name, out var error);
             if (Handle.IsInvalid)
                 throw new SlangException(SlangResult.Fail, $"Failed to create Slang entry point: {error ?? "<No error was returned from Slang>"}");
         }
@@ -42,7 +42,7 @@ namespace Slang.Sdk.Binding
                 ObjectDisposedException.ThrowIf(Handle.IsInvalid, this);
 
                 // Using the strongly-typed interop to get the index of the entry point
-                var result = SlangNativeInterop.EntryPoint_GetIndex(Handle, out var error);
+                var result = StrongInterop.EntryPoint.GetIndex(Handle, out var error);
                 if (error != null)
                     throw new SlangException(SlangResult.Fail, $"Failed to get an EntryPoint's index: {error ?? "<No error was returned from Slang>"}");
 
@@ -57,7 +57,7 @@ namespace Slang.Sdk.Binding
                 // Use call, for consistency with other properties
                 ObjectDisposedException.ThrowIf(Handle.IsInvalid, this);
 
-                var result = SlangNativeInterop.EntryPoint_GetName(Handle, out var error);
+                var result = StrongInterop.EntryPoint.GetName(Handle, out var error);
                 if (error != null)
                     throw new SlangException(SlangResult.Fail, $"Failed to get an EntryPoint's name: {error ?? "<No error was returned from Slang>"}");
 
@@ -70,7 +70,7 @@ namespace Slang.Sdk.Binding
             // Use call, for consistency with other properties
             ObjectDisposedException.ThrowIf(Handle.IsInvalid, this);
             var target = Parent.Parent.Targets.ElementAt((int)targetIndex);
-            SlangResult compileResult = SlangNativeInterop.EntryPoint_Compile(Handle, targetIndex, out string compiledSource, out var error);
+            SlangResult compileResult = StrongInterop.EntryPoint.Compile(Handle, targetIndex, out string compiledSource, out var error);
             return new CompilationResult(compiledSource ?? throw new SlangException(SlangResult.Fail, "Failed to convert compiled source from UTF-8"), target, this, compileResult, error);
         }
 

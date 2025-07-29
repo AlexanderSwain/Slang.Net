@@ -21,22 +21,22 @@ namespace Slang.Sdk.Binding
 
         internal string GetName()
         {string? error = null;
-            return Call(() => SlangNativeInterop.TypeParameterReflection_GetName(Handle, out error), () => error);
+            return Call(() => StrongInterop.TypeParameterReflection.GetName(Handle, out error), () => error);
         }
 
         internal uint GetIndex()
         {string? error = null;
-            return Call(() => SlangNativeInterop.TypeParameterReflection_GetIndex(Handle, out error), () => error);
+            return Call(() => StrongInterop.TypeParameterReflection.GetIndex(Handle, out error), () => error);
         }
 
         internal uint GetConstraintCount()
         {string? error = null;
-            return Call(() => SlangNativeInterop.TypeParameterReflection_GetConstraintCount(Handle, out error), () => error);
+            return Call(() => StrongInterop.TypeParameterReflection.GetConstraintCount(Handle, out error), () => error);
         }
 
         internal TypeReflection GetConstraintByIndex(int index)
         {string? error = null;
-            return new TypeReflection(this, Call(() => StrongTypeInterop.TypeParameterReflection_GetConstraintByIndex(Handle, index, out error), () => error));
+            return new TypeReflection(this, Call(() => StrongInterop.TypeParameterReflection.GetConstraintByIndex(Handle, index, out error), () => error));
         }
     }
 }

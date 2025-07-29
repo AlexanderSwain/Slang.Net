@@ -22,13 +22,13 @@ namespace Slang.Sdk.Binding
         internal int GetID()
         {
             string? error = null;
-            return Call(() => SlangNativeInterop.Modifier_GetID(Handle, out error), () => error);
+            return Call(() => StrongInterop.Modifier.GetID(Handle, out error), () => error);
         }
 
         internal string GetName()
         {
             string? error = null;
-            return Call(() => SlangNativeInterop.Modifier_GetName(Handle, out error), () => error);
+            return Call(() => StrongInterop.Modifier.GetName(Handle, out error), () => error);
 
         }
     }

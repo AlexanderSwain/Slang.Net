@@ -22,51 +22,51 @@ namespace Slang.Sdk.Binding
         internal ShaderReflection GetParent()
         {
             string? error = null;
-            var parentHandle = Call(() => StrongTypeInterop.EntryPointReflection_GetParent(Handle, out error), () => error);
+            var parentHandle = Call(() => StrongInterop.EntryPointReflection.GetParent(Handle, out error), () => error);
             return new ShaderReflection(null!, parentHandle); // Parent will be set by ShaderReflection
         }
 
         internal FunctionReflection AsFunction()
         {
             string? error = null;
-            return new FunctionReflection(this, Call(() => StrongTypeInterop.EntryPointReflection_AsFunction(Handle, out error), () => error));
+            return new FunctionReflection(this, Call(() => StrongInterop.EntryPointReflection.AsFunction(Handle, out error), () => error));
         }
 
         internal string GetName()
         {
             string? error = null;
-            return Call(() => SlangNativeInterop.EntryPointReflection_GetName(Handle, out error), () => error);
+            return Call(() => StrongInterop.EntryPointReflection.GetName(Handle, out error), () => error);
         }
 
         internal string? GetNameOverride()
         {
             string? error = null;
             // Test string?
-            return Call(() => SlangNativeInterop.EntryPointReflection_GetNameOverride(Handle, out error), () => error);
+            return Call(() => StrongInterop.EntryPointReflection.GetNameOverride(Handle, out error), () => error);
         }
 
         internal uint GetParameterCount()
         {
             string? error = null;
-            return Call(() => SlangNativeInterop.EntryPointReflection_GetParameterCount(Handle, out error), () => error);
+            return Call(() => StrongInterop.EntryPointReflection.GetParameterCount(Handle, out error), () => error);
         }
 
         internal VariableLayoutReflection GetParameterByIndex(uint index)
         {
             string? error = null;
-            return new VariableLayoutReflection(this, Call(() => StrongTypeInterop.EntryPointReflection_GetParameterByIndex(Handle, index, out error), () => error));
+            return new VariableLayoutReflection(this, Call(() => StrongInterop.EntryPointReflection.GetParameterByIndex(Handle, index, out error), () => error));
         }
 
         internal FunctionReflection GetFunction()
         {
             string? error = null;
-            return new FunctionReflection(this, Call(() => StrongTypeInterop.EntryPointReflection_GetFunction(Handle, out error), () => error));
+            return new FunctionReflection(this, Call(() => StrongInterop.EntryPointReflection.GetFunction(Handle, out error), () => error));
         }
 
         internal ShaderStage GetStage()
         {
             string? error = null;
-            return (ShaderStage)Call(() => SlangNativeInterop.EntryPointReflection_GetStage(Handle, out error), () => error);
+            return (ShaderStage)Call(() => StrongInterop.EntryPointReflection.GetStage(Handle, out error), () => error);
         }
 
         internal void GetComputeThreadGroupSize(uint axisCount, ulong* outSizeAlongAxis)
@@ -74,7 +74,7 @@ namespace Slang.Sdk.Binding
             string? error = null;
             Call(() =>
             {
-                SlangNativeInterop.EntryPointReflection_GetComputeThreadGroupSize(Handle, axisCount, outSizeAlongAxis, out error);
+                StrongInterop.EntryPointReflection.GetComputeThreadGroupSize(Handle, axisCount, outSizeAlongAxis, out error);
                 return 0;
             }, () => error);
         }
@@ -85,7 +85,7 @@ namespace Slang.Sdk.Binding
             return Call(() =>
             {
                 ulong waveSize;
-                SlangNativeInterop.EntryPointReflection_GetComputeWaveSize(Handle, &waveSize, out error);
+                StrongInterop.EntryPointReflection.GetComputeWaveSize(Handle, out waveSize, out error);
                 return waveSize;
             }, () => error);
         }
@@ -93,31 +93,31 @@ namespace Slang.Sdk.Binding
         internal bool UsesAnySampleRateInput()
         {
             string? error = null;
-            return Call(() => SlangNativeInterop.EntryPointReflection_UsesAnySampleRateInput(Handle, out error), () => error);
+            return Call(() => StrongInterop.EntryPointReflection.UsesAnySampleRateInput(Handle, out error), () => error);
         }
 
         internal VariableLayoutReflection GetVarLayout()
         {
             string? error = null;
-            return new VariableLayoutReflection(this, Call(() => StrongTypeInterop.EntryPointReflection_GetVarLayout(Handle, out error), () => error));
+            return new VariableLayoutReflection(this, Call(() => StrongInterop.EntryPointReflection.GetVarLayout(Handle, out error), () => error));
         }
 
         internal TypeLayoutReflection GetTypeLayout()
         {
             string? error = null;
-            return new TypeLayoutReflection(this, Call(() => StrongTypeInterop.EntryPointReflection_GetTypeLayout(Handle, out error), () => error));
+            return new TypeLayoutReflection(this, Call(() => StrongInterop.EntryPointReflection.GetTypeLayout(Handle, out error), () => error));
         }
 
         internal VariableLayoutReflection GetResultVarLayout()
         {
             string? error = null;
-            return new VariableLayoutReflection(this, Call(() => StrongTypeInterop.EntryPointReflection_GetResultVarLayout(Handle, out error), () => error));
+            return new VariableLayoutReflection(this, Call(() => StrongInterop.EntryPointReflection.GetResultVarLayout(Handle, out error), () => error));
         }
 
         internal bool HasDefaultConstantBuffer()
         {
             string? error = null;
-            return Call(() => SlangNativeInterop.EntryPointReflection_HasDefaultConstantBuffer(Handle, out error), () => error);
+            return Call(() => StrongInterop.EntryPointReflection.HasDefaultConstantBuffer(Handle, out error), () => error);
         }
     }
 }

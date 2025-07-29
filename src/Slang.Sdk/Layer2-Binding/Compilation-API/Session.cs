@@ -1,5 +1,5 @@
 using Slang.Sdk.Interop;
-using static Slang.Sdk.Interop.StrongTypeInterop;
+using static Slang.Sdk.Interop.StrongInterop;
 using static Slang.Sdk.Interop.Utilities;
 
 namespace Slang.Sdk.Binding;
@@ -28,7 +28,7 @@ internal unsafe sealed class Session : CompilationBinding
         fixed (PreprocessorMacro* macrosPtr = macros)
         fixed (Target* modelsPtr = models)
         {
-            Handle = Session_Create(
+            Handle = StrongInterop.Session.Create(
                 optionsPtr, options.Length,
                 macrosPtr, macros.Length,
                 modelsPtr, models.Length,
@@ -43,13 +43,13 @@ internal unsafe sealed class Session : CompilationBinding
     internal uint GetModuleCount()
     {
         string? error = null;
-        return Call(() => SlangNativeInterop.Session_GetModuleCount(Handle, out error), () => error);
+        return Call(() => StrongInterop.Session.GetModuleCount(Handle, out error), () => error);
     }
 
     internal Module GetModuleByIndex(uint index)
     {
         string? error = null;
-        return new Module(this, Call(() => StrongTypeInterop.Session_GetModuleByIndex(Handle, index, out error), () => error));
+        return new Module(this, Call(() => StrongInterop.Session.GetModuleByIndex(Handle, index, out error), () => error));
     }
 
     ~Session()

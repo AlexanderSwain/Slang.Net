@@ -1,6 +1,4 @@
 ﻿using Slang.Sdk.Interop;
-using static Slang.Sdk.Interop.StrongTypeInterop;
-using static Slang.Sdk.Interop.Utilities;
 
 namespace Slang.Sdk.Binding;
 internal sealed unsafe class Program : CompilationBinding
@@ -12,7 +10,7 @@ internal sealed unsafe class Program : CompilationBinding
     {
         Parent = parent;
         // Using the strongly-typed interop that returns ProgramHandle directly
-        Handle = Program_Create(Parent.Handle, out var error);
+        Handle = StrongInterop.Program.Create(Parent.Handle, out var error);
 
         if (Handle.IsInvalid)
             throw new SlangException(SlangResult.Fail, $"Failed to create Slang program: {error ?? "<No error was returned from Slang>"}");
@@ -30,7 +28,7 @@ internal sealed unsafe class Program : CompilationBinding
         Target target = Parent.Parent.Targets.ElementAt((int)targetIndex);
         EntryPoint entryPoint = Parent.GetEntryPointByIndex(entryPointIndex);
 
-        SlangResult compileResult = StrongTypeInterop.Program_CompileProgram(Handle, entryPointIndex, targetIndex, out string compiledSource, out string error);
+        SlangResult compileResult = StrongInterop.Program.CompileProgram(Handle, entryPointIndex, targetIndex, out string compiledSource, out string? error);
 
         return new CompilationResult(compiledSource ?? throw new SlangException(SlangResult.Fail, "Failed to convert compiled source from UTF-8"), target, entryPoint, compileResult, error);
     }
@@ -40,7 +38,7 @@ internal sealed unsafe class Program : CompilationBinding
         ObjectDisposedException.ThrowIf(Handle.IsInvalid, this);
 
         // Using the strongly-typed interop that returns ShaderReflectionHandle directly
-        ShaderReflectionHandle resultHandle = Program_GetProgramReflection(Handle, targetIndex, out var error);
+        ShaderReflectionHandle resultHandle = StrongInterop.Program.GetProgramReflection(Handle, targetIndex, out var error);
 
         if (resultHandle.IsInvalid)
             throw new SlangException(SlangResult.Fail, $"Failed to get shader reflection for target index {targetIndex}: {error ?? "<No error was returned from Slang>"}");
