@@ -146,8 +146,6 @@ VertexOutput VS(VertexInput input)
     return output;
 }
 
-// Pixel shader
-[shader("fragment")]
 float4 PS(VertexOutput input) : SV_Target
 {
 #if DEBUG_MODE

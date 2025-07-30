@@ -81,8 +81,6 @@ SlangResult Native::ProgramCLI::GetCompiled(unsigned int entryPointIndex, unsign
     Slang::ComPtr<slang::IBlob> targetCode;
     {
         Slang::ComPtr<slang::IBlob> diagnosticsBlob;
-        targetCode.writeRef();
-        diagnosticsBlob.writeRef();
         SlangResult result = m_linkedProgram->getEntryPointCode(
             entryPointIndex,
             targetIndex,

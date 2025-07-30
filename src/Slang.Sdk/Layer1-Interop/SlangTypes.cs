@@ -425,7 +425,10 @@ public struct Target : IDisposable, IEquatable<Target>
     public override string ToString()
     {
         string? profileString = profile != IntPtr.Zero ? Marshal.PtrToStringAnsi(profile) : "<null>";
-        return $"Target({target}, {profileString})";
+        string result = Targets._CustomTargets.Contains(this) ? 
+            $"Targets.Custom(Target.CompileTarget.{target}, { profileString})" :
+            $"Targets.{target}.{profileString}";
+        return result;
     }
 
     /// <summary>

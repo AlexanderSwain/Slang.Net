@@ -109,7 +109,7 @@ public class CompilationAPIShowcase
             var builder = new Session.Builder()
                 .AddTarget(Targets.Hlsl.cs_6_0)          // DirectX 12
                 .AddTarget(Targets.Glsl.v460)            // OpenGL 4.6
-                .AddTarget(Targets.SpirV.vulkan_1_2)     // Vulkan 1.2
+                //.AddTarget(Targets.SpirV.vulkan_1_2)     // Vulkan 1.2
                 .AddTarget(Targets.Metal.v2_4)           // Metal 2.4
                 .AddTarget(Targets.Wgsl.v1_0)            // WebGPU
                 .AddSearchPath(_workingDirectory);
@@ -163,7 +163,7 @@ public class CompilationAPIShowcase
         {
             // Create session with various compiler options and macros
             var builder = new Session.Builder()
-                .AddTarget(Targets.Hlsl.cs_6_0)
+                .AddTarget(Targets.Hlsl.vs_6_0)
                 .AddSearchPath(_workingDirectory)
                 // Compiler options
                 .AddCompilerOption(CompilerOption.Name.Optimization, 
@@ -191,7 +191,7 @@ public class CompilationAPIShowcase
             Console.WriteLine("      • DEBUG_MODE = 0\n");
 
             var module = session.LoadModule("ConfigurableShader.slang");
-            var result = module.Program.Compile(module.EntryPoints["PS"], Targets.Hlsl.cs_6_0);
+            var result = module.Program.Compile(module.EntryPoints["VS"], Targets.Hlsl.vs_6_0);
             
             Console.WriteLine("✅ Compilation with custom configuration successful");
             Console.WriteLine($"📏 Generated code length: {result.Source.Length} characters");
@@ -376,7 +376,7 @@ public class CompilationAPIShowcase
             // Feature 1: Session and target inspection
             Console.WriteLine("📊 Feature 1: Session and Target Inspection");
             var builder = new Session.Builder()
-                .AddTarget(Targets.Hlsl.cs_6_0)
+                .AddTarget(Targets.Hlsl.vs_6_0)
                 .AddTarget(Targets.Glsl.v460)
                 .AddTarget(Targets.SpirV.vulkan_1_2)
                 .AddSearchPath(_workingDirectory);

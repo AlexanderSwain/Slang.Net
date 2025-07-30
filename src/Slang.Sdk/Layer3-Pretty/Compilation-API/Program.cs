@@ -35,7 +35,7 @@ namespace Slang.Sdk
             uint? targetIndex = session.Targets.IndexOf(target);
 
             if (targetIndex is null)
-                throw new ArgumentException($"Target {target} was not included in Session {session}. Use Session.Builder.AddTarget(target) to include it.", nameof(target));
+                throw new ArgumentException($"Target {target} was not included in Session {session}. Use Session.Builder.AddTarget({target}) to include it.", nameof(target));
 
             var result = Binding.Compile((uint)entryPoint.Index, targetIndex.Value);
             return new CompilationResult(result.Source, target, entryPoint, result.Result, result.Diagnostics);

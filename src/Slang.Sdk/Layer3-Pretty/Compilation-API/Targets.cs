@@ -1009,7 +1009,8 @@ namespace Slang.Sdk
         }
 
         #region Custom
-        private static HashSet<Target> _CustomTargets = new();
+        // Internal for Target.ToString()
+        internal static HashSet<Target> _CustomTargets = new();
 
         /// <summary>
         /// Creates a custom target with specified compile target and profile. If it already exists, returns the existing target.
