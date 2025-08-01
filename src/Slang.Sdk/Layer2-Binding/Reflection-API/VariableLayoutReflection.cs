@@ -8,10 +8,12 @@ using static Slang.Sdk.Interop.Utilities;
 
 namespace Slang.Sdk.Binding
 {
-    internal unsafe class VariableLayoutReflection : Reflection
+    internal unsafe class VariableLayoutReflection : Reflection, IEquatable<VariableLayoutReflection>
     {
         internal override Reflection? Parent { get; }
         internal override VariableLayoutReflectionHandle Handle { get; }
+        internal override VariableLayoutReflectionHandle NativeHandle => new(StrongInterop.VariableLayoutReflection.GetNative(Handle, out var _));
+
 
         internal VariableLayoutReflection(Reflection parent, VariableLayoutReflectionHandle handle)
         {
@@ -55,7 +57,7 @@ namespace Slang.Sdk.Binding
             return Call(() => StrongInterop.VariableLayoutReflection.GetCategoryCount(Handle, out error), () => error);
         }
 
-        internal ParameterCategory GetCategoryByIndex(uint index)
+        internal ParameterCategoryStruct GetCategoryByIndex(uint index)
         {
             string? error = null;
             return (ParameterCategory)Call(() => StrongInterop.VariableLayoutReflection.GetCategoryByIndex(Handle, index, out error), () => error);
@@ -119,6 +121,11 @@ namespace Slang.Sdk.Binding
         {
             string? error = null;
             return new VariableLayoutReflection(this, Call(() => StrongInterop.VariableLayoutReflection.GetPendingDataLayout(Handle, out error), () => error));
+        }
+
+        public bool Equals(VariableLayoutReflection? other)
+        {
+            return this == other;
         }
     }
 }

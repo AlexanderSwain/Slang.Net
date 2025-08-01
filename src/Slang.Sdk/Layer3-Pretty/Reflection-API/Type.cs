@@ -8,7 +8,7 @@ using Slang.Sdk.Interop;
 
 namespace Slang.Sdk
 {
-    public class Type : Reflection,
+    public class Type : Reflection, IEquatable<Type>,
         IComposition<Variable>,
         IComposition<Attribute>,
         INamedComposition<Attribute>
@@ -53,9 +53,9 @@ namespace Slang.Sdk
         public SlangCollection<Variable> Fields => 
             _Fields ??= new SlangCollection<Variable>(this);
 
-        SlangNamedCollection<Attribute>? _UserAttributes;
-        public SlangNamedCollection<Attribute> UserAttributes => 
-            _UserAttributes ??= new SlangNamedCollection<Attribute>(this, this);
+        SlangNamedCollectionary<Attribute>? _UserAttributes;
+        public SlangNamedCollectionary<Attribute> UserAttributes => 
+            _UserAttributes ??= new SlangNamedCollectionary<Attribute>(this, this);
 
         #endregion
 
@@ -85,6 +85,13 @@ namespace Slang.Sdk
             genRef?.Binding is { } genBinding && Binding.ApplySpecializations(genBinding) is { } specialized ? 
                 new Type(this, specialized) : null;
 
+        #endregion
+
+        #region Equality
+        public bool Equals(Type? other)
+        {
+            return this == other;
+        }
         #endregion
 
     }

@@ -17,12 +17,12 @@ namespace Slang.Sdk
         /// <summary>
         /// The target compilation format.
         /// </summary>
-        public Target Target { get; }
+        public ProgramTarget Target { get; }
 
         /// <summary>
         /// The entry point that was compiled.
         /// </summary>
-        public EntryPoint EntryPoint { get; }
+        public ProgramEntryPoint? EntryPoint { get; }
 
         /// <summary>
         /// Whether the compilation was successful.
@@ -34,7 +34,7 @@ namespace Slang.Sdk
         /// </summary>
         internal string? Diagnostics { get; }
 
-        public CompilationResult(string source, Target target, EntryPoint entryPoint, SlangResult result, string? diagnostics)
+        public CompilationResult(string source, ProgramTarget target, ProgramEntryPoint? entryPoint, SlangResult result, string? diagnostics)
         {
             Source = source;
             Target = target;

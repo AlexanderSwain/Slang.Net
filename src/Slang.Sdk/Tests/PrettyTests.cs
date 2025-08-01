@@ -1,4 +1,5 @@
 ﻿using Slang.Sdk.Interop;
+using static Slang.Sdk.Interop.CompilerOption;
 
 namespace Slang.Sdk.Tests
 {
@@ -25,11 +26,14 @@ namespace Slang.Sdk.Tests
             // Load the module from the specified file
             Module module = session.LoadModule("AverageColor", $@"{ AppDomain.CurrentDomain.BaseDirectory }Tests\Shaders\AverageColor.slang");
 
+            //Testing delete this
+            //EntryPoint test = module.EntryPoints.First();
+
             // Get the shader program from the module
             Program program = module.Program;
 
             // Access the shader program from the module
-            ShaderReflection reflection = module.Program.GetReflection(Targets.Hlsl.cs_5_0);
+            ShaderReflection reflection = module.Program.Targets[Targets.Hlsl.cs_5_0].GetReflection();
 
             //// Print the number of entry points in the shader program
             //var entryPoint = program.EntryPoints.Where(x => x.Name == "CS").First();
@@ -37,9 +41,14 @@ namespace Slang.Sdk.Tests
             //// Compile the shader program using the entry point
             //var source = entryPoint.Compile();
 
+            var stage = reflection.EntryPoints.First().Stage;
+
+            var epr = reflection.EntryPoints["CS"];
+            var index = reflection.EntryPoints.IndexOf(epr);
+
             var modules = session.Modules;
 
-            var source = program.Compile(module.EntryPoints["CS"], Targets.Hlsl.cs_5_0);
+            var source = program.Targets[Targets.Hlsl.cs_5_0].Compile();
 
             // Print the generated source code length
             Console.WriteLine(source.Source);

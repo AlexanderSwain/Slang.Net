@@ -6,6 +6,7 @@ namespace Slang.Sdk.Binding
     internal abstract class CompilationBinding
     {
         internal abstract SlangHandle Handle { get; }
+        internal abstract SlangHandle NativeHandle { get; }
 
         internal T Call<T>(Func<T> function, Func<string?> error)
         {

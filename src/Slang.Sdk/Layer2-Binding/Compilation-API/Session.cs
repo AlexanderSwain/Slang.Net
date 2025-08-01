@@ -10,6 +10,8 @@ namespace Slang.Sdk.Binding;
 internal unsafe sealed class Session : CompilationBinding
 {
     internal override SessionHandle Handle { get; }
+    internal override SessionHandle NativeHandle => new(StrongInterop.Session.GetNative(Handle, out var _));
+
 
     internal IReadOnlyCollection<Target> Targets { get; }
     internal string[] SearchPaths { get; }

@@ -1,9 +1,10 @@
 ﻿using Slang.Sdk.Binding;
+using Slang.Sdk.Collections;
 using Slang.Sdk.Interop;
 
 namespace Slang.Sdk
 {
-    public class Program
+    public class Program : IComposition<ProgramTarget>, ITypedComposition<Target, ProgramTarget>, IEquatable<Program>
     {
         #region Definition
         public Module Parent { get; }
@@ -16,29 +17,61 @@ namespace Slang.Sdk
         }
         #endregion
 
-        #region Pretty
-        ShaderReflection? _Reflection;
-        public ShaderReflection GetReflection(Target target)
+        #region Typed Composision
+        ProgramTarget? ITypedComposition<Target, ProgramTarget>.Find(Target key)
         {
-            var session = Parent.Parent;
-            uint? targetIndex = session.Targets.IndexOf(target);
+            var targetIndex = Parent.Parent.Targets.IndexOf(key);
 
             if (targetIndex is null)
-                throw new ArgumentException($"Target {target} was not included in Session {session}. Use Session.Builder.AddTarget(target) to include it.", nameof(target));
+                return null;
 
-            return _Reflection ??= new ShaderReflection(this, Binding.GetReflection(targetIndex.Value));
+            return new ProgramTarget(this, key, targetIndex.Value);
         }
 
-        public CompilationResult Compile(EntryPoint entryPoint, Target target)
+        public uint Count => Parent.Parent.Targets.Count;
+        public ProgramTarget GetByIndex(uint index)
         {
-            var session = Parent.Parent;
-            uint? targetIndex = session.Targets.IndexOf(target);
+            return ((ITypedComposition<Target, ProgramTarget>)this).Find(Parent.Parent.Targets[index]) ?? 
+                throw new IndexOutOfRangeException($"No target found at index {index}.");
+        }
+        #endregion
 
-            if (targetIndex is null)
-                throw new ArgumentException($"Target {target} was not included in Session {session}. Use Session.Builder.AddTarget({target}) to include it.", nameof(target));
+        #region Pretty
+        SlangCollectionary<Target, ProgramTarget>? _Targets;
+        public SlangCollectionary<Target, ProgramTarget> Targets => _Targets ??= _Targets = new(this, this);
+        #endregion
 
-            var result = Binding.Compile((uint)entryPoint.Index, targetIndex.Value);
-            return new CompilationResult(result.Source, target, entryPoint, result.Result, result.Diagnostics);
+        #region Equality
+        public static bool operator ==(Program? left, Program? right)
+        {
+            if (ReferenceEquals(left, right)) return true;
+            if (left is null || right is null) return false;
+            if (left.Binding == right.Binding) return true;
+            return false;
+        }
+
+        public static bool operator !=(Program? left, Program? right)
+        {
+            if (ReferenceEquals(left, right)) return false;
+            if (left is null || right is null) return true;
+            if (left.Binding == right.Binding) return false;
+            return true;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is Program entryPoint) return Equals(entryPoint);
+            return false;
+        }
+
+        public bool Equals(Program? other)
+        {
+            return this == other;
+        }
+
+        public override int GetHashCode()
+        {
+            return Binding.GetHashCode();
         }
         #endregion
     }

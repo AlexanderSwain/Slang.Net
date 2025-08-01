@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Slang.Sdk.Interop;
-using static Slang.Sdk.Interop.StrongInterop;
-using static Slang.Sdk.Interop.StrongInterop;
-using static Slang.Sdk.Interop.StringMarshaling;
+﻿using Slang.Sdk.Interop;
 
 namespace Slang.Sdk.Binding
 {
-    internal unsafe class VariableReflection : Reflection
+    internal unsafe class VariableReflection : Reflection, IEquatable<VariableReflection>
     {
         internal override Reflection? Parent { get; }
         internal override VariableReflectionHandle Handle { get; }
+        internal override VariableReflectionHandle NativeHandle => new(StrongInterop.VariableReflection.GetNative(Handle, out var _));
+
 
         internal VariableReflection(Reflection parent, VariableReflectionHandle handle)
         {
@@ -94,6 +88,11 @@ namespace Slang.Sdk.Binding
         {
             string? error = null;
             return new VariableReflection(this, Call(() => StrongInterop.VariableReflection.ApplySpecializations(Handle, specializations, count, out error), () => error));
+        }
+
+        public bool Equals(VariableReflection? other)
+        {
+            return this == other;
         }
     }
 }

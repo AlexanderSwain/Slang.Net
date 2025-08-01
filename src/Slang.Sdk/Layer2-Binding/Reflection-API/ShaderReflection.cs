@@ -1,16 +1,15 @@
 ﻿using Slang.Sdk.Interop;
-using static Slang.Sdk.Interop.StrongInterop;
-using static Slang.Sdk.Interop.StrongInterop;
-using static Slang.Sdk.Interop.StringMarshaling;
 
 namespace Slang.Sdk.Binding
 {
-    internal unsafe class ShaderReflection : Reflection
+    internal unsafe class ShaderReflection : Reflection, IEquatable<ShaderReflection>
     {
         internal Program Program { get; }
 
         internal override Reflection? Parent => null;
         internal override ShaderReflectionHandle Handle { get; }
+        internal override ShaderReflectionHandle NativeHandle => new(StrongInterop.ShaderReflection.GetNative(Handle, out var _));
+
 
         internal ShaderReflection(Program program, ShaderReflectionHandle handle)
         {
@@ -163,6 +162,11 @@ namespace Slang.Sdk.Binding
                 StrongInterop.ShaderReflection.ToJson(Handle, out string output, out error);
                 return output;
             }, () => error);
+        }
+
+        public bool Equals(ShaderReflection? other)
+        {
+            return this == other;
         }
     }
 }

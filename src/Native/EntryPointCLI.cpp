@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream>
 
-Native::EntryPointCLI::EntryPointCLI(ModuleCLI* parent, unsigned index)
+Native::EntryPointCLI::EntryPointCLI (ModuleCLI* parent, unsigned index)
 {
     if (!parent) {
         throw std::invalid_argument("Parent module is null!");

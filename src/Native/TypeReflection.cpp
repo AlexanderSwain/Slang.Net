@@ -31,16 +31,25 @@ Native::TypeReflection::~TypeReflection()
 	}
 
     // Clean up unwrapped array type
-    delete m_unwrappedArray;
-    m_unwrappedArray = nullptr;
+    if (m_unwrappedArray)
+    {
+        delete m_unwrappedArray;
+        m_unwrappedArray = nullptr;
+    }
 
     // Clean up element type
-    delete m_elementType;
-    m_elementType = nullptr;
+    if (m_elementType)
+    {
+        delete m_elementType;
+        m_elementType = nullptr;
+    }
 
     // Clean up resource result type
-    delete m_resourceResultType;
-    m_resourceResultType = nullptr;
+    if (m_resourceResultType)
+    {
+        delete m_resourceResultType;
+        m_resourceResultType = nullptr;
+    }
 
     // Clean up the user attributes array
     if (m_userAttributes)
@@ -61,8 +70,11 @@ Native::TypeReflection::~TypeReflection()
     m_applySpecializationsResultsToDelete.clear();
 
     // Clean up generic container
-    delete m_genericContainer;
-    m_genericContainer = nullptr;
+    if (m_genericContainer)
+    {
+        delete m_genericContainer;
+        m_genericContainer = nullptr;
+    }
 
     // No need to delete m_native here, as it is managed by Slang
     //if (m_native)

@@ -3,10 +3,12 @@ using static Slang.Sdk.Interop.StringMarshaling;
 
 namespace Slang.Sdk.Binding;
 
-internal unsafe sealed class Module : CompilationBinding
+internal unsafe sealed class Module : CompilationBinding, IEquatable<Module>
 {
     internal Session Parent { get; }
     internal override Interop.ModuleHandle Handle { get; }
+    internal override Interop.ModuleHandle NativeHandle => new(StrongInterop.Module.GetNative(Handle, out var _));
+
 
     public Module(Session parent, string moduleName, string modulePath, string shaderSource)
     {
@@ -50,26 +52,42 @@ internal unsafe sealed class Module : CompilationBinding
         }
     }
 
-    internal uint GetEntryPointCount()
-    {
-        string? error = null;
-        return Call(() => StrongInterop.Module.GetEntryPointCount(Handle, out error), () => error);
-    }
-
-    internal EntryPoint GetEntryPointByIndex(uint index)
-    {
-        string? error = null;
-        return new EntryPoint(this, Call(() => StrongInterop.Module.GetEntryPointByIndex(Handle, index, out error), () => error));
-    }
-
-    internal EntryPoint GetEntryPointByName(string name)
-    {
-        string? error = null;
-        return new EntryPoint(this, Call(() => StrongInterop.Module.FindEntryPointByName(Handle, name, out error), () => error));
-    }
-
     ~Module()
     {
         Handle?.Dispose();
     }
+
+    #region Equality
+    public static bool operator ==(Module? left, Module? right)
+    {
+        if (ReferenceEquals(left, right)) return true;
+        if (left is null || right is null) return false;
+        if (left.NativeHandle == right.NativeHandle) return true;
+        return false;
+    }
+
+    public static bool operator !=(Module? left, Module? right)
+    {
+        if (ReferenceEquals(left, right)) return false;
+        if (left is null || right is null) return true;
+        if (left.NativeHandle == right.NativeHandle) return false;
+        return true;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is Module entryPoint) return Equals(entryPoint);
+        return false;
+    }
+
+    public bool Equals(Module? other)
+    {
+        return this == other;
+    }
+
+    public override int GetHashCode()
+    {
+        return NativeHandle.GetHashCode();
+    }
+    #endregion
 }

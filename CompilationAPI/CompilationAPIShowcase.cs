@@ -31,25 +31,25 @@ public class CompilationAPIShowcase
     public async Task RunAllDemosAsync()
     {
         PrintHeader("SLANG.NET COMPILATION API SHOWCASE");
-        
+
         // Demo 1: Basic Session and Module Loading
-        DemoBasicSessionAndModuleAsync();
-        
+        await DemoBasicSessionAndModuleAsync();
+
         // Demo 2: Multi-Target Compilation
-        DemoMultiTargetCompilationAsync();
-        
+        await DemoMultiTargetCompilationAsync();
+
         // Demo 3: Compiler Options and Preprocessor Macros
         await DemoCompilerOptionsAndMacrosAsync();
-        
+
         // Demo 4: Entry Point Discovery and Compilation
         await DemoEntryPointDiscoveryAsync();
-        
+
         // Demo 5: Error Handling and Diagnostics
         await DemoErrorHandlingAsync();
-        
+
         // Demo 6: Advanced Compilation Features
         await DemoAdvancedCompilationFeaturesAsync();
-        
+
         PrintSummary();
     }
 
@@ -58,9 +58,9 @@ public class CompilationAPIShowcase
     /// <summary>
     /// Demonstrates basic session creation and module loading
     /// </summary>
-    private void DemoBasicSessionAndModuleAsync()
+    private async Task DemoBasicSessionAndModuleAsync()
     {
-        PrintDemoHeader(1, "Basic Session and Module Loading", 
+        PrintDemoHeader(1, "Basic Session and Module Loading",
             "Shows how to create sessions, configure search paths, and load Slang modules");
 
         try
@@ -71,18 +71,19 @@ public class CompilationAPIShowcase
                 .AddSearchPath(_workingDirectory);
 
             var session = builder.Create();
-            
+
             Console.WriteLine("✅ Session created successfully");
             Console.WriteLine($"📁 Search paths: {string.Join(", ", new[] { _workingDirectory })}");
             Console.WriteLine($"🎯 Targets: {session.Targets.Count} configured");
 
             // Load a simple compute shader module
             var module = session.LoadModule("SimpleCompute.slang");
+            var program = module.Program;
             Console.WriteLine($"📦 Module loaded: {module.Name}");
-            Console.WriteLine($"📋 Entry points found: {module.EntryPoints.Count}");
-            
+            Console.WriteLine($"📋 Entry points found: {program.Targets[Targets.Hlsl.cs_5_0].EntryPoints.Count}");
+
             // List entry points (note: stages require reflection, which needs a target)
-            foreach (var entryPoint in module.EntryPoints)
+            foreach (var entryPoint in program.Targets[Targets.Hlsl.cs_5_0].EntryPoints)
             {
                 Console.WriteLine($"   • {entryPoint.Name}");
             }
@@ -98,9 +99,9 @@ public class CompilationAPIShowcase
     /// <summary>
     /// Demonstrates compilation to multiple target languages
     /// </summary>
-    private void DemoMultiTargetCompilationAsync()
+    private async Task DemoMultiTargetCompilationAsync()
     {
-        PrintDemoHeader(2, "Multi-Target Compilation", 
+        PrintDemoHeader(2, "Multi-Target Compilation",
             "Compiles the same shader to multiple target languages (HLSL, GLSL, SPIR-V, Metal, WGSL)");
 
         try
@@ -109,14 +110,14 @@ public class CompilationAPIShowcase
             var builder = new Session.Builder()
                 .AddTarget(Targets.Hlsl.cs_6_0)          // DirectX 12
                 .AddTarget(Targets.Glsl.v460)            // OpenGL 4.6
-                //.AddTarget(Targets.SpirV.vulkan_1_2)     // Vulkan 1.2
+                                                         //.AddTarget(Targets.SpirV.vulkan_1_2)     // Vulkan 1.2
                 .AddTarget(Targets.Metal.v2_4)           // Metal 2.4
                 .AddTarget(Targets.Wgsl.v1_0)            // WebGPU
                 .AddSearchPath(_workingDirectory);
 
             var session = builder.Create();
             var module = session.LoadModule("SimpleCompute.slang");
-            var computeEntry = module.EntryPoints["CS"];
+            var program = module.Program;
 
             Console.WriteLine($"🔄 Compiling to {session.Targets.Count} different targets...\n");
 
@@ -127,9 +128,9 @@ public class CompilationAPIShowcase
             {
                 try
                 {
-                    var result = module.Program.Compile(computeEntry, target);
+                    var result = program.Targets[target].Compile();
                     results.Add(result);
-                    
+
                     Console.WriteLine($"✅ {target}:");
                     Console.WriteLine($"   📏 Generated code: {result.Source.Length} characters");
                     Console.WriteLine($"   📝 Preview: {GetCodePreview(result.Source)}\n");
@@ -141,8 +142,8 @@ public class CompilationAPIShowcase
             }
 
             // Save results to files
-            SaveCompilationResultsAsync(results, "multi_target");
-            
+            await SaveCompilationResultsAsync(results, "multi_target");
+
             PrintSuccess($"Multi-target compilation completed ({results.Count} successful)");
         }
         catch (Exception ex)
@@ -156,7 +157,7 @@ public class CompilationAPIShowcase
     /// </summary>
     private async Task DemoCompilerOptionsAndMacrosAsync()
     {
-        PrintDemoHeader(3, "Compiler Options and Preprocessor Macros", 
+        PrintDemoHeader(3, "Compiler Options and Preprocessor Macros",
             "Shows how to configure compilation with various options and preprocessor definitions");
 
         try
@@ -166,7 +167,7 @@ public class CompilationAPIShowcase
                 .AddTarget(Targets.Hlsl.vs_6_0)
                 .AddSearchPath(_workingDirectory)
                 // Compiler options
-                .AddCompilerOption(CompilerOption.Name.Optimization, 
+                .AddCompilerOption(CompilerOption.Name.Optimization,
                     new CompilerOption.Value(CompilerOption.Value.Kind.Int, 2, 0, null, null)) // O2 optimization
                 .AddCompilerOption(CompilerOption.Name.WarningsAsErrors,
                     new CompilerOption.Value(CompilerOption.Value.Kind.String, 0, 0, "all", null))
@@ -179,7 +180,7 @@ public class CompilationAPIShowcase
                 .AddPreprocessorMacro("DEBUG_MODE", "0");
 
             var session = builder.Create();
-            
+
             Console.WriteLine("⚙️ Compilation Configuration:");
             Console.WriteLine("   🎛️ Optimization Level: O2");
             Console.WriteLine("   ⚠️ Warnings as Errors: Enabled");
@@ -191,8 +192,9 @@ public class CompilationAPIShowcase
             Console.WriteLine("      • DEBUG_MODE = 0\n");
 
             var module = session.LoadModule("ConfigurableShader.slang");
-            var result = module.Program.Compile(module.EntryPoints["VS"], Targets.Hlsl.vs_6_0);
-            
+            var program = module.Program;
+            var result = program.Targets[Targets.Hlsl.vs_6_0].EntryPoints["VS"].Compile();
+
             Console.WriteLine("✅ Compilation with custom configuration successful");
             Console.WriteLine($"📏 Generated code length: {result.Source.Length} characters");
             Console.WriteLine($"📝 Code preview:\n{GetCodePreview(result.Source, 5)}\n");
@@ -214,8 +216,8 @@ public class CompilationAPIShowcase
     /// </summary>
     private async Task DemoEntryPointDiscoveryAsync()
     {
-        PrintDemoHeader(4, "Entry Point Discovery and Compilation", 
-            "Discovers all entry points in a module and compiles each individually using reflection");
+        PrintDemoHeader(4, "Entry Point Discovery and Compilation",
+            "Discovers all entry points in a module and compiles each individually");
 
         try
         {
@@ -227,8 +229,9 @@ public class CompilationAPIShowcase
 
             var session = builder.Create();
             var module = session.LoadModule("MultiStageShader.slang");
-            
-            Console.WriteLine($"🔍 Discovered {module.EntryPoints.Count} entry points:\n");
+            var program = module.Program;
+
+            Console.WriteLine($"🔍 Discovered {program.Targets.Count} targets:\n");
 
             // To get stage information, we need to use reflection with a target
             // Let's try each target to see what entry points are available
@@ -236,40 +239,32 @@ public class CompilationAPIShowcase
             {
                 try
                 {
-                    var reflection = module.Program.GetReflection(target);
+                    var programTarget = program.Targets[target];
                     Console.WriteLine($"🎯 Target: {target}");
-                    Console.WriteLine($"   📋 Entry points found: {reflection.EntryPoints.Count}");
-                    
-                    foreach (var entryReflection in reflection.EntryPoints)
+                    Console.WriteLine($"   📋 Entry points found: {programTarget.EntryPoints.Count}");
+
+                    foreach (var entryPoint in programTarget.EntryPoints)
                     {
-                        Console.WriteLine($"   • {entryReflection.Name} (Stage: {entryReflection.Stage})");
-                        
+                        Console.WriteLine($"   • {entryPoint.Name} (Stage: {entryPoint.Stage})");
+
                         // Try to find the corresponding entry point in the module
-                        var moduleEntryPoint = module.EntryPoints.FirstOrDefault(ep => ep.Name == entryReflection.Name);
-                        if (moduleEntryPoint != null)
+                        try
                         {
-                            try
-                            {
-                                var result = module.Program.Compile(moduleEntryPoint, target);
-                                Console.WriteLine($"     ✅ Compiled successfully");
-                                Console.WriteLine($"     📏 Code length: {result.Source.Length} characters");
-                                
-                                // Save individual entry point
-                                var filename = $"{entryReflection.Name}_{target.ToString().Replace(":", "_")}.hlsl";
-                                await File.WriteAllTextAsync(Path.Combine(_workingDirectory, filename), result.Source);
-                                Console.WriteLine($"     💾 Saved as: {filename}");
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine($"     ❌ Compilation failed: {ex.Message}");
-                            }
+                            var result = entryPoint.Compile();
+                            Console.WriteLine($"     ✅ Compiled successfully");
+                            Console.WriteLine($"     📏 Code length: {result.Source.Length} characters");
+
+                            // Save individual entry point
+                            var filename = $"{entryPoint.Name}_{target.ToString().Replace(":", "_")}.hlsl";
+                            await File.WriteAllTextAsync(Path.Combine(_workingDirectory, filename), result.Source);
+                            Console.WriteLine($"     💾 Saved as: {filename}");
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            Console.WriteLine($"     ⚠️ Entry point not found in module");
+                            Console.WriteLine($"     ❌ Compilation failed: {ex.Message}");
                         }
+                        Console.WriteLine();
                     }
-                    Console.WriteLine();
                 }
                 catch (Exception ex)
                 {
@@ -290,7 +285,7 @@ public class CompilationAPIShowcase
     /// </summary>
     private async Task DemoErrorHandlingAsync()
     {
-        PrintDemoHeader(5, "Error Handling and Diagnostics", 
+        PrintDemoHeader(5, "Error Handling and Diagnostics",
             "Shows how to handle compilation errors and extract diagnostic information");
 
         try
@@ -300,9 +295,9 @@ public class CompilationAPIShowcase
                 .AddSearchPath(_workingDirectory);
 
             var session = builder.Create();
-            
+
             Console.WriteLine("🧪 Testing error handling scenarios:\n");
-            
+
             // Test 1: Missing file
             Console.WriteLine("📂 Test 1: Loading non-existent module");
             try
@@ -318,13 +313,14 @@ public class CompilationAPIShowcase
             {
                 Console.WriteLine($"   ⚠️ Unexpected exception type: {ex.GetType().Name}: {ex.Message}");
             }
-            
+
             // Test 2: Shader with syntax errors
             Console.WriteLine("\n🔧 Test 2: Compiling shader with syntax errors");
             try
             {
                 var errorModule = session.LoadModule("ErrorShader.slang");
-                var result = errorModule.Program.Compile(errorModule.EntryPoints.First(), Targets.Hlsl.cs_6_0);
+                var target = errorModule.Program.Targets[Targets.Hlsl.cs_6_0];
+                var result = target.EntryPoints.First().Compile();
                 Console.WriteLine("   ❌ Expected compilation error did not occur");
             }
             catch (SlangException ex)
@@ -337,15 +333,15 @@ public class CompilationAPIShowcase
             {
                 Console.WriteLine($"   ⚠️ Unexpected exception: {ex.GetType().Name}: {ex.Message}");
             }
-            
+
             // Test 3: Invalid target configuration
             Console.WriteLine("\n🎯 Test 3: Using unsupported target combination");
             try
             {
                 var validModule = session.LoadModule("SimpleCompute.slang");
                 // Try to compile compute shader with vertex shader target (should fail)
-                var unsupportedTarget = Targets.Hlsl.vs_6_0; // Vertex shader target for compute shader
-                var result = validModule.Program.Compile(validModule.EntryPoints["CS"], unsupportedTarget);
+                var unsupportedTarget = validModule.Program.Targets[Targets.Hlsl.vs_6_0]; // Vertex shader target for compute shader
+                var result = unsupportedTarget.EntryPoints["CS"].Compile();
                 Console.WriteLine("   ❌ Expected target mismatch error did not occur");
             }
             catch (Exception ex)
@@ -366,13 +362,13 @@ public class CompilationAPIShowcase
     /// </summary>
     private async Task DemoAdvancedCompilationFeaturesAsync()
     {
-        PrintDemoHeader(6, "Advanced Compilation Features", 
+        PrintDemoHeader(6, "Advanced Compilation Features",
             "Showcases advanced compilation features and session management");
 
         try
         {
             Console.WriteLine("🚀 Advanced Compilation Feature Demonstrations:\n");
-            
+
             // Feature 1: Session and target inspection
             Console.WriteLine("📊 Feature 1: Session and Target Inspection");
             var builder = new Session.Builder()
@@ -382,43 +378,44 @@ public class CompilationAPIShowcase
                 .AddSearchPath(_workingDirectory);
 
             var session = builder.Create();
-            
+
             Console.WriteLine($"   🎯 Session targets: {session.Targets.Count}");
             for (uint i = 0; i < session.Targets.Count; i++)
             {
                 var target = session.Targets[i];
                 Console.WriteLine($"      • Target {i}: {target}");
             }
-            
+
             // Load multiple modules
-            var modules = new List<Module>();
             var moduleNames = new[] { "SimpleCompute.slang", "ConfigurableShader.slang" };
-            
+            int loadedModules = 0;
+
             foreach (var moduleName in moduleNames)
             {
                 if (File.Exists(Path.Combine(_workingDirectory, moduleName)))
                 {
-                    modules.Add(session.LoadModule(moduleName));
+                    session.LoadModule(moduleName);
+                    loadedModules++;
                 }
             }
-            
-            Console.WriteLine($"\n   📦 Loaded modules: {modules.Count}");
+
+            Console.WriteLine($"\n   📦 Loaded modules: {loadedModules}");
             Console.WriteLine($"   📋 Session module count: {session.Modules.Count}");
-            
+
             // Feature 2: Batch compilation across targets
             Console.WriteLine("\n⚡ Feature 2: Batch Compilation Across Targets");
             var batchResults = new List<(string Module, string Entry, Target Target, CompilationResult Result)>();
-            
-            foreach (var module in modules)
+
+            foreach (var module in session.Modules)
             {
-                foreach (var entryPoint in module.EntryPoints)
+                foreach (var target in module.Program.Targets)
                 {
-                    foreach (var target in session.Targets)
+                    foreach (var entryPoint in target.EntryPoints)
                     {
                         try
                         {
-                            var result = module.Program.Compile(entryPoint, target);
-                            batchResults.Add((module.Name, entryPoint.Name, target, result));
+                            var result = entryPoint.Compile();
+                            batchResults.Add((module.Name, entryPoint.Name, target.Value, result));
                         }
                         catch
                         {
@@ -427,9 +424,9 @@ public class CompilationAPIShowcase
                     }
                 }
             }
-            
+
             Console.WriteLine($"   ✅ Batch compilation completed: {batchResults.Count} successful compilations");
-            
+
             // Feature 3: Compilation performance and statistics
             Console.WriteLine("\n📈 Feature 3: Compilation Statistics");
             var stats = CalculateCompilationStats(batchResults);
@@ -452,22 +449,20 @@ public class CompilationAPIShowcase
     #region Helper Methods
 
     /// <summary>
-    /// Helper method to get entry point stage information using reflection.
-    /// Note: Entry points themselves don't have stage information - you need to use 
-    /// ShaderReflection.GetEntryPointByIndex() with a specific target to get stages.
+    /// Helper method to get entry point stage information.
     /// </summary>
     private async Task<List<(string Name, string Stage, Target Target)>> GetEntryPointStagesAsync(Module module, IEnumerable<Target> targets)
     {
         var entryPointInfo = new List<(string Name, string Stage, Target Target)>();
-        
+
         foreach (var target in targets)
         {
+            var programTarget = module.Program.Targets[target];
             try
             {
-                var reflection = module.Program.GetReflection(target);
-                foreach (var entryReflection in reflection.EntryPoints)
+                foreach (var entryPoint in programTarget.EntryPoints)
                 {
-                    entryPointInfo.Add((entryReflection.Name, entryReflection.Stage.ToString(), target));
+                    entryPointInfo.Add((entryPoint.Name, entryPoint.Stage.ToString(), target));
                 }
             }
             catch
@@ -476,7 +471,7 @@ public class CompilationAPIShowcase
                 continue;
             }
         }
-        
+
         return entryPointInfo.GroupBy(x => x.Name).Select(g => g.First()).ToList();
     }
 
@@ -515,7 +510,7 @@ public class CompilationAPIShowcase
         Console.WriteLine("✅ Demo 5: Error Handling and Diagnostics");
         Console.WriteLine("✅ Demo 6: Advanced Compilation Features");
         Console.WriteLine("\n🎉 All compilation demonstrations completed successfully!");
-        
+
         Console.WriteLine("\n📁 Generated Files:");
         var outputFiles = new[]
         {
@@ -523,27 +518,27 @@ public class CompilationAPIShowcase
             "multi_target_results/",
             "Various compiled shader outputs"
         };
-        
+
         foreach (var file in outputFiles)
         {
             Console.WriteLine($"   📄 {file}");
         }
-        
+
         Console.WriteLine("\n💡 Note: Reflection API features are demonstrated in a separate ReflectionAPI sample project.");
     }
 
     private string GetCodePreview(string code, int lines = 3)
     {
         if (string.IsNullOrEmpty(code)) return "[Empty]";
-        
+
         var codeLines = code.Split('\n');
         var preview = string.Join('\n', codeLines.Take(lines));
-        
+
         if (codeLines.Length > lines)
         {
             preview += $"\n... ({codeLines.Length - lines} more lines)";
         }
-        
+
         return preview;
     }
 
@@ -551,14 +546,14 @@ public class CompilationAPIShowcase
     {
         var outputDir = Path.Combine(_workingDirectory, $"{prefix}_results");
         Directory.CreateDirectory(outputDir);
-        
+
         for (int i = 0; i < results.Count; i++)
         {
             var result = results[i];
             var filename = $"{prefix}_{i}.txt";
             await File.WriteAllTextAsync(Path.Combine(outputDir, filename), result.Source);
         }
-        
+
         Console.WriteLine($"💾 Saved {results.Count} compilation results to {outputDir}/");
     }
 
@@ -566,9 +561,9 @@ public class CompilationAPIShowcase
     {
         if (!results.Any())
             return new CompilationStats();
-            
+
         var codeLengths = results.Select(r => r.Result.Source.Length).ToList();
-        
+
         return new CompilationStats
         {
             TotalCompilations = results.Count,

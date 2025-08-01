@@ -2,33 +2,33 @@
 
 namespace Slang.Sdk.Collections
 {
-    public class SlangCollection<T> : IEnumerable<T>
+    public class SlangCollection<T> : IEnumerable<T> where T : IEquatable<T>
     {
-        internal IComposition<T> Parent { get; set; }
+        internal IComposition<T> Owner { get; set; }
 
         public T this[uint index]
         {
-            get => Parent.GetByIndex(index);
+            get => Owner.GetByIndex(index);
         }
 
-        public uint Count => Parent.Count;
+        public uint Count => Owner.Count;
 
         public uint? IndexOf(T item)
         {
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
 
-            return Parent.IndexOf(item);
+            return Owner.IndexOf(item);
         }
 
-        internal SlangCollection(IComposition<T> parent)
+        internal SlangCollection(IComposition<T> owner)
         {
-            Parent = parent;
+            Owner = owner;
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            return new SlangEnumerator<T>(Parent);
+            return new SlangEnumerator<T>(Owner);
         }
 
         IEnumerator IEnumerable.GetEnumerator()

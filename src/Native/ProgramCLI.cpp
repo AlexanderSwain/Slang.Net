@@ -15,73 +15,53 @@
 Native::ProgramCLI::ProgramCLI(ModuleCLI* parent)
 {
     m_parent = parent;
-	slang::IComponentType** programComponents = getProgramComponents();
+    m_composedProgram = m_parent->getProgramComponent();
+}
 
-    slang::IComponentType* composedProgram;
+SlangResult Native::ProgramCLI::GetCompiled(unsigned int targetIndex, const char** output)
+{
+    Slang::ComPtr<slang::IBlob> targetCode;
     {
         Slang::ComPtr<slang::IBlob> diagnosticsBlob;
-        SlangResult result = m_parent->getParent()->createCompositeComponentType(
-            programComponents,
-            m_parent->getEntryPointCount() + 1,
-            &composedProgram,
+        SlangResult result = m_composedProgram->getTargetCode(
+            targetIndex, 
+            targetCode.writeRef(), 
             diagnosticsBlob.writeRef());
 
-        if (diagnosticsBlob != nullptr)
+        if (diagnosticsBlob && diagnosticsBlob->getBufferSize() > 0)
         {
             std::string diagnosticsText = std::string((const char*)diagnosticsBlob->getBufferPointer());
+            std::string errorMessage = "There are issues in the shader source: " + diagnosticsText;
 
             if (SLANG_FAILED(result))
-                throw std::runtime_error(diagnosticsText);
+                throw std::runtime_error(errorMessage);
             else
-				std::cout << diagnosticsText << std::endl;
-        }
-
-        if (SLANG_FAILED(result))
-        {
-			std::string errorMessage = "[Failure Creating composedProgram]: Slang API failed to provide diagnostics for this error: " + std::to_string(result);
-            throw std::runtime_error(errorMessage);
-        }
-    }
-
-    m_composedProgram = composedProgram;
-
-    slang::IComponentType* linkedProgram;
-    {
-        Slang::ComPtr<slang::IBlob> diagnosticsBlob;
-        SlangResult result = composedProgram->link(
-            &linkedProgram,
-            diagnosticsBlob.writeRef());
-
-        if (diagnosticsBlob != nullptr)
-        {
-            std::string diagnosticsText = std::string((const char*)diagnosticsBlob->getBufferPointer());
-
-            if (SLANG_FAILED(result))
-			{
-				m_linkedProgram_Diagnostics = diagnosticsText;
-			}
-            else
-            {
                 std::cout << diagnosticsText << std::endl;
-			}
         }
-    }
+        if (!targetCode)
+            throw std::runtime_error("Error when compiling a program. No slang diagnostics were returned. Probably target with the specified index does not exist.");
 
-    m_linkedProgram = linkedProgram;
+		// TODO: verify that there is no memory leak here, because it looks like there is
+        const char* slangOutput = (const char*)targetCode->getBufferPointer();
+        *output = (new std::string(slangOutput))->c_str();
+
+        //*output = (const char*)targetCode->getBufferPointer();
+        return result;
+    }
 }
 
 SlangResult Native::ProgramCLI::GetCompiled(unsigned int entryPointIndex, unsigned int targetIndex, const char** output)
 {
-    if (!m_linkedProgram)
+    if (!m_composedProgram)
     {
-        std::string errorMessage = "Program is not linked. Diagnostics: " + m_linkedProgram_Diagnostics;
+        std::string errorMessage = "m_composedProgram is null";
         throw std::runtime_error(errorMessage);
     }
 
     Slang::ComPtr<slang::IBlob> targetCode;
     {
         Slang::ComPtr<slang::IBlob> diagnosticsBlob;
-        SlangResult result = m_linkedProgram->getEntryPointCode(
+        SlangResult result = m_composedProgram->getEntryPointCode(
             entryPointIndex,
             targetIndex,
             targetCode.writeRef(),
@@ -114,6 +94,7 @@ SlangResult Native::ProgramCLI::GetCompiled(unsigned int entryPointIndex, unsign
         //
         //*output = managedOutput;
 
+        // TODO: verify that there is no memory leak here, because it looks like there is
         const char* slangOutput = (const char*)targetCode->getBufferPointer();
         *output = (new std::string(slangOutput))->c_str();
 
@@ -158,11 +139,6 @@ slang::IComponentType* Native::ProgramCLI::getNative()
     return m_composedProgram;
 }
 
-slang::IComponentType* Native::ProgramCLI::getLinked()
-{
-    return m_linkedProgram;
-}
-
 Native::ModuleCLI* Native::ProgramCLI::getParent()
 {
     return m_parent;
@@ -185,7 +161,7 @@ Native::ProgramCLI::~ProgramCLI()
     //}
 }
 
-// Helpers
+// Helpers: Now obsolete thanks to GetProgramWithEntryPoints()
 slang::IComponentType** Native::ProgramCLI::getProgramComponents()
 {
     unsigned int entryPointCount = m_parent->getEntryPointCount();

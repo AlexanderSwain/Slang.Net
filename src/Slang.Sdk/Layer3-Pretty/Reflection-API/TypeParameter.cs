@@ -7,7 +7,7 @@ using Slang.Sdk.Collections;
 
 namespace Slang.Sdk
 {
-    public class TypeParameter : Reflection,
+    public class TypeParameter : Reflection, IEquatable<TypeParameter>,
         IComposition<Type>
     {
         #region Definition
@@ -42,6 +42,13 @@ namespace Slang.Sdk
         public string? Name => Binding.GetName();
         public uint Index => Binding.GetIndex();
 
+        #endregion
+
+        #region Equality
+        public bool Equals(TypeParameter? other)
+        {
+            return this == other;
+        }
         #endregion
     }
 }

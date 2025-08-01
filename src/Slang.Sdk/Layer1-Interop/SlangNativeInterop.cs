@@ -136,7 +136,14 @@ internal static unsafe partial class SlangNativeInterop
     internal static partial void Program_Release(nint program, char** error);
 
     [LibraryImport(LibraryName)]
-    internal static partial SlangResult Program_CompileProgram(
+    internal static partial SlangResult Program_CompileTarget(
+    nint program,
+    uint targetIndex,
+    char** output,
+    char** error);
+
+    [LibraryImport(LibraryName)]
+    internal static partial SlangResult Program_CompileEntryPoint(
         nint program,
         uint entryPointIndex,
         uint targetIndex,

@@ -7,7 +7,7 @@ using Slang.Sdk.Collections;
 
 namespace Slang.Sdk
 {
-    public unsafe class Variable : Reflection,
+    public unsafe class Variable : Reflection, IEquatable<Variable>,
         IComposition<Attribute>,
         INamedComposition<Attribute>
     {
@@ -39,9 +39,9 @@ namespace Slang.Sdk
 
         #region Collections
 
-        SlangNamedCollection<Attribute>? _UserAttributes;
-        public SlangNamedCollection<Attribute> UserAttributes => 
-            _UserAttributes ??= new SlangNamedCollection<Attribute>(this, this);
+        SlangNamedCollectionary<Attribute>? _UserAttributes;
+        public SlangNamedCollectionary<Attribute> UserAttributes => 
+            _UserAttributes ??= new SlangNamedCollectionary<Attribute>(this, this);
 
         #endregion
 
@@ -72,6 +72,13 @@ namespace Slang.Sdk
             }
         }
 
+        #endregion
+
+        #region Equality
+        public bool Equals(Variable? other)
+        {
+            return this == other;
+        }
         #endregion
     }
 }

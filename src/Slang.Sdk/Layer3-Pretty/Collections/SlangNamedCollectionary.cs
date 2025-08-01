@@ -2,7 +2,7 @@
 
 namespace Slang.Sdk.Collections
 {
-    public class SlangNamedCollection<T> : IEnumerable<T>
+    public class SlangNamedCollectionary<T> : IEnumerable<T> where T : IEquatable<T>
     {
         internal IComposition<T> List { get; }
         internal INamedComposition<T> Dict { get; }
@@ -49,7 +49,7 @@ namespace Slang.Sdk.Collections
             return GetEnumerator();
         }
 
-        internal SlangNamedCollection(IComposition<T> list, INamedComposition<T> dict)
+        internal SlangNamedCollectionary(IComposition<T> list, INamedComposition<T> dict)
         {
             List = list;
             Dict = dict;

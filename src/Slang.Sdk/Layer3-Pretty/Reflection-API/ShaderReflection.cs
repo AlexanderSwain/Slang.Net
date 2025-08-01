@@ -7,7 +7,7 @@ using Slang.Sdk.Collections;
 
 namespace Slang.Sdk
 {
-    public unsafe class ShaderReflection : Reflection,
+    public unsafe class ShaderReflection : Reflection, IEquatable<ShaderReflection>,
         IComposition<TypeParameter>,
         INamedComposition<TypeParameter>,
         IComposition<VariableLayout>,
@@ -83,25 +83,25 @@ namespace Slang.Sdk
 
         #region Collections
 
-        SlangNamedCollection<TypeParameter>? _TypeParameters;
-        public SlangNamedCollection<TypeParameter> TypeParameters => 
-            _TypeParameters ??= new SlangNamedCollection<TypeParameter>(this, this);
+        SlangNamedCollectionary<TypeParameter>? _TypeParameters;
+        public SlangNamedCollectionary<TypeParameter> TypeParameters => 
+            _TypeParameters ??= new SlangNamedCollectionary<TypeParameter>(this, this);
 
         SlangCollection<VariableLayout>? _Parameters;
         public SlangCollection<VariableLayout> Parameters => 
             _Parameters ??= new SlangCollection<VariableLayout>(this);
 
-        SlangNamedCollection<EntryPointReflection>? _EntryPoints;
-        public SlangNamedCollection<EntryPointReflection> EntryPoints => 
-            _EntryPoints ??= new SlangNamedCollection<EntryPointReflection>(this, this);
+        SlangNamedCollectionary<EntryPointReflection>? _EntryPoints;
+        public SlangNamedCollectionary<EntryPointReflection> EntryPoints => 
+            _EntryPoints ??= new SlangNamedCollectionary<EntryPointReflection>(this, this);
 
         SlangCollection<string>? _HashedStrings;
         public SlangCollection<string> HashedStrings => 
             _HashedStrings ??= new SlangCollection<string>(this);
 
-        SlangDictionary<Type>? _Types;
-        public SlangDictionary<Type> Types => 
-            _Types ??= new SlangDictionary<Type>(this);
+        SlangNameDictionary<Type>? _Types;
+        public SlangNameDictionary<Type> Types => 
+            _Types ??= new SlangNameDictionary<Type>(this);
 
         #endregion
 
@@ -129,6 +129,13 @@ namespace Slang.Sdk
 
         public string? ToJson() => Binding.ToJson();
 
+        #endregion
+
+        #region Equality
+        public bool Equals(ShaderReflection? other)
+        {
+            return this == other;
+        }
         #endregion
     }
 }

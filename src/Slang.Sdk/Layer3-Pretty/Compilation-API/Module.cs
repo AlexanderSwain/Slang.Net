@@ -7,9 +7,7 @@ using System.Threading.Tasks;
 
 namespace Slang.Sdk
 {
-    public class Module :
-        IComposition<EntryPoint>,
-        INamedComposition<EntryPoint>
+    public class Module : IEquatable<Module>
     {
         #region Definition
         public Session Parent { get; }
@@ -19,42 +17,55 @@ namespace Slang.Sdk
         {
             Parent = parent;
             Binding = new Binding.Module(Parent.Binding, moduleName, modulePath, moduleSource);
+            Name = moduleName;
         }
 
         internal Module(Session parent, string moduleName)
         {
             Parent = parent;
             Binding = new Binding.Module(Parent.Binding, moduleName);
-        }
-
-        internal Module(Session parent, Binding.Module binding)
-        {
-            Parent = parent;
-            Binding = binding;
-        }
-        #endregion
-
-        #region Composition<EntryPoint>
-        public uint Count => Binding.GetEntryPointCount();
-
-        public EntryPoint GetByIndex(uint index)
-        {
-            return new EntryPoint(this, Binding.GetEntryPointByIndex(index));
-        }
-
-        public EntryPoint? FindByName(string name)
-        {
-            return new EntryPoint(this, Binding.GetEntryPointByName(name));
+            Name = moduleName;
         }
         #endregion
 
         #region Pretty
         Program? _Program;
         public Program Program => _Program ??= new Program(this);
-        public string Name => Binding.Name;
+        public string Name { get; }
+        #endregion
 
-        SlangNamedCollection<EntryPoint>? _EntryPoints;
-        public SlangNamedCollection<EntryPoint> EntryPoints => _EntryPoints ??= new SlangNamedCollection<EntryPoint>(this, this);
+        #region Equality
+        public static bool operator ==(Module? left, Module? right)
+        {
+            if (ReferenceEquals(left, right)) return true;
+            if (left is null || right is null) return false;
+            if (left.Binding == right.Binding) return true;
+            return false;
+        }
+
+        public static bool operator !=(Module? left, Module? right)
+        {
+            if (ReferenceEquals(left, right)) return false;
+            if (left is null || right is null) return true;
+            if (left.Binding == right.Binding) return false;
+            return true;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is Module entryPoint) return Equals(entryPoint);
+            return false;
+        }
+
+        public bool Equals(Module? other)
+        {
+            return this == other;
+        }
+
+        public override int GetHashCode()
+        {
+            return Binding.GetHashCode();
+        }
         #endregion
     }
 }

@@ -8,6 +8,9 @@ param(
     [switch]$FromVisualStudio
 )
 
+# Slang Sdk Version
+$slangVersion = "2025.13.2"
+
 # Validate platform parameter
 $validPlatforms = @("x64", "ARM64")
 if ($validPlatforms -notcontains $Platform) {
@@ -22,10 +25,10 @@ $nativeDir = $PSScriptRoot
 
 # STEP 1: Download Slang SDK if not already present
 Write-Host "Build SlangNative(STEP 1): Downloaded Slang SDK..." -ForegroundColor DarkBlue
-& "$nativeDir\download-slang-sdk.ps1" -Platform $Platform
+& "$nativeDir\download-slang-sdk.ps1" -SlangVersion $slangVersion -Platform $Platform
 
 #Copy the Slang SDK to the output directory
-$sdkPath = Join-Path $nativeDir "EmbeddedLLVM\slang-2025.10.3-windows\$Platform\bin\*.dll"
+$sdkPath = Join-Path $nativeDir "EmbeddedLLVM\slang-$slangVersion-windows\$Platform\bin\*.dll"
 $slangSdkOutputDir = Join-Path $nativeDir "bin\$Configuration\$Platform\"
 
 if (-not (Test-Path $slangSdkOutputDir)) {
@@ -34,7 +37,7 @@ if (-not (Test-Path $slangSdkOutputDir)) {
 }
 
 # Copy all files from the Slang SDK bin directory
-$sdkBinPath = Join-Path $nativeDir "EmbeddedLLVM\slang-2025.10.3-windows\$Platform\bin\*"
+$sdkBinPath = Join-Path $nativeDir "EmbeddedLLVM\slang-$slangVersion-windows\$Platform\bin\*"
 foreach ($file in (Get-ChildItem $sdkBinPath -File)) {
     Write-Host "Copying Slang SDK file: $($file.Name)" -ForegroundColor Green
     Copy-Item -Path $file.FullName -Destination $slangSdkOutputDir

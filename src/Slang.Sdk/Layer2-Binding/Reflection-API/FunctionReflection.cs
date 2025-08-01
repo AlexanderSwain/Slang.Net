@@ -10,10 +10,12 @@ using static Slang.Sdk.Interop.StringMarshaling;
 
 namespace Slang.Sdk.Binding
 {
-    internal unsafe class FunctionReflection : Reflection
+    internal unsafe class FunctionReflection : Reflection, IEquatable<FunctionReflection>
     {
         internal override Reflection? Parent { get; }
         internal override FunctionReflectionHandle Handle { get; }
+        internal override FunctionReflectionHandle NativeHandle => new(StrongInterop.FunctionReflection.GetNative(Handle, out var _));
+
 
         internal FunctionReflection(Reflection parent, FunctionReflectionHandle handle)
         {
@@ -106,6 +108,11 @@ namespace Slang.Sdk.Binding
         {
             string? error = null;
             return new FunctionReflection(this, Call(() => StrongInterop.FunctionReflection.GetOverload(Handle, index, out error), () => error));
+        }
+
+        public bool Equals(FunctionReflection? other)
+        {
+            return this == other;
         }
     }
 }

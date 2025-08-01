@@ -5,7 +5,8 @@ namespace Slang.Sdk
 {
     public partial class Session
         : IComposition<Target>,
-        IComposition<Module>
+        IComposition<Module>,
+        INamedComposition<Module>
     {
         #region Definition
         internal Binding.Session Binding { get; }
@@ -66,7 +67,9 @@ namespace Slang.Sdk
             if (moduleSource is null)
                 throw new FileNotFoundException($"The specified slang file was not found: {modulePath}", modulePath);
 
-            return new Module(this, moduleName, modulePath, moduleSource);
+            var result = new Module(this, moduleName, modulePath, moduleSource);
+            _ModulesList.Add(result);
+            return result;
         }
 
         public Module LoadModule(string moduleName, string modulePath)
@@ -90,14 +93,16 @@ namespace Slang.Sdk
             if (moduleSource is null)
                 throw new FileNotFoundException($"The specified slang file was not found: {modulePath}", modulePath);
 
-            return new Module(this, moduleName, modulePath, moduleSource);
+            var result = new Module(this, moduleName, modulePath, moduleSource);
+            _ModulesList.Add(result);
+            return result;
         }
 
         SlangCollection<Target>? _Targets;
         public SlangCollection<Target> Targets => _Targets ??= new SlangCollection<Target>(this);
 
-        SlangCollection<Module>? _Module;
-        public SlangCollection<Module> Modules => _Module ??= new SlangCollection<Module>(this);
+        SlangNamedCollectionary<Module>? _Module;
+        public SlangNamedCollectionary<Module> Modules => _Module ??= new (this, this);
         #endregion
 
         #region Composition
@@ -110,12 +115,17 @@ namespace Slang.Sdk
         uint IComposition<Target>.Count => (uint)Binding.Targets.Count;
 
         // Modules
+        List<Module> _ModulesList = new();
+        uint IComposition<Module>.Count => (uint)_ModulesList.Count;
         Module IComposition<Module>.GetByIndex(uint index)
         {
-            return new Module(this, Binding.GetModuleByIndex(index));
+            return _ModulesList[(int)index];
         }
-        uint IComposition<Module>.Count => Binding.GetModuleCount();
 
+        Module? INamedComposition<Module>.FindByName(string name)
+        {
+            return FindModule(name);
+        }
         #endregion
     }
 }

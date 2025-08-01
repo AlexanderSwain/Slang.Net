@@ -7,7 +7,7 @@ using Slang.Sdk.Collections;
 
 namespace Slang.Sdk
 {
-    public class Generic : Reflection,
+    public class Generic : Reflection, IEquatable<Generic>,
         IComposition<Variable>
     {
         #region Definition
@@ -74,6 +74,13 @@ namespace Slang.Sdk
             Binding.ApplySpecializations(genRef.Binding) is { } specialized ?
                 new Generic(this, specialized) : null;
 
+        #endregion
+
+        #region Equality
+        public bool Equals(Generic? other)
+        {
+            return this == other;
+        }
         #endregion
     }
 }

@@ -8,10 +8,12 @@ using static Slang.Sdk.Interop.Utilities;
 
 namespace Slang.Sdk.Binding
 {
-    internal unsafe class GenericReflection : Reflection
+    internal unsafe class GenericReflection : Reflection, IEquatable<GenericReflection>
     {
         internal override Reflection? Parent { get; }
         internal override GenericReflectionHandle Handle { get; }
+        internal override GenericReflectionHandle NativeHandle => new(StrongInterop.GenericReflection.GetNative(Handle, out var _));
+
 
         internal GenericReflection(Reflection parent, GenericReflectionHandle handle)
         {
@@ -94,6 +96,11 @@ namespace Slang.Sdk.Binding
         {
             string? error = null;
             return new GenericReflection(this, Call(() => StrongInterop.GenericReflection.ApplySpecializations(Handle, genRef.Handle, out error), () => error));
+        }
+
+        public bool Equals(GenericReflection? other)
+        {
+            return this == other;
         }
     }
 }

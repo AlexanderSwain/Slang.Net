@@ -28,8 +28,11 @@ Native::TypeLayoutReflection::TypeLayoutReflection(void* native)
 Native::TypeLayoutReflection::~TypeLayoutReflection()
 {
     // Clean up the type reflection
-    delete m_type;
-    m_type = nullptr;
+    if (m_type)
+    {
+        delete m_type;
+        m_type = nullptr;
+    }
 
     // Clean up the field layouts array
     if (m_fields)
@@ -43,36 +46,61 @@ Native::TypeLayoutReflection::~TypeLayoutReflection()
     }
 
     // Clean up explicit counter
-    delete m_explicitCounter;
-    m_explicitCounter = nullptr;
+    if (m_explicitCounter)
+    {
+        delete m_explicitCounter;
+        m_explicitCounter = nullptr;
+    }
 
     // Clean up unwrapped array
-    delete m_unwrappedArray;
-    m_unwrappedArray = nullptr;
+    if (m_unwrappedArray)
+    {
+        delete m_unwrappedArray;
+        m_unwrappedArray = nullptr;
+    }
 
     // Clean up element type layout
-    delete m_elementTypeLayout;
-    m_elementTypeLayout = nullptr;
+
+    if (m_elementTypeLayout)
+    {
+        delete m_elementTypeLayout;
+        m_elementTypeLayout = nullptr;
+    }
 
     // Clean up element variable layout
-    delete m_elementVarLayout;
-    m_elementVarLayout = nullptr;
+    if (m_elementVarLayout)
+    {
+        delete m_elementVarLayout;
+        m_elementVarLayout = nullptr;
+    }
 
     // Clean up container variable layout
-    delete m_containerVarLayout;
-    m_containerVarLayout = nullptr;
+    if (m_containerVarLayout)
+    {
+        delete m_containerVarLayout;
+        m_containerVarLayout = nullptr;
+    }
 
     // Clean up resource result type
-    delete m_resourceResultType;
-    m_resourceResultType = nullptr;
+    if (m_resourceResultType)
+    {
+        delete m_resourceResultType;
+        m_resourceResultType = nullptr;
+    }
 
     // Clean up pending data type layout
-    delete m_pendingDataTypeLayout;
-    m_pendingDataTypeLayout = nullptr;
+    if (m_pendingDataTypeLayout)
+    {
+        delete m_pendingDataTypeLayout;
+        m_pendingDataTypeLayout = nullptr;
+    }
 
     // Clean up specialized type pending data variable layout
-    delete m_specializedTypePendingDataVarLayout;
-    m_specializedTypePendingDataVarLayout = nullptr;
+    if (m_specializedTypePendingDataVarLayout)
+    {
+        delete m_specializedTypePendingDataVarLayout;
+        m_specializedTypePendingDataVarLayout = nullptr;
+    }
 
     // Clean up binding range leaf type layouts
     if (m_bindingRangeLeafTypeLayouts)

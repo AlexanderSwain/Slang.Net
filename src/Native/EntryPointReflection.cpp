@@ -23,8 +23,11 @@ Native::EntryPointReflection::EntryPointReflection(Native::ShaderReflection* par
 Native::EntryPointReflection::~EntryPointReflection()
 {
     // Clean up the function reflection
-    delete m_function;
-    m_function = nullptr;
+    if (m_function)
+    {
+        delete m_function;
+        m_function = nullptr;
+    }
 
     // Clean up the parameters array
     if (m_parameters)
@@ -38,16 +41,25 @@ Native::EntryPointReflection::~EntryPointReflection()
     }
 
     // Clean up variable layout
-    delete m_varLayout;
-    m_varLayout = nullptr;
+    if (m_varLayout)
+    {
+        delete m_varLayout;
+        m_varLayout = nullptr;
+    }
 
 	// Clean up type layout
-    delete m_typeLayout;
-    m_typeLayout = nullptr;
+    if (m_typeLayout)
+    {
+        delete m_typeLayout;
+        m_typeLayout = nullptr;
+    }
 
 	// Clean up result variable layout
-    delete m_resultVarLayout;
-    m_resultVarLayout = nullptr;
+    if (m_resultVarLayout)
+    {
+        delete m_resultVarLayout;
+        m_resultVarLayout = nullptr;
+    }
 
 	// No need to delete m_native here, as it is managed by Slang
     //if (m_native)

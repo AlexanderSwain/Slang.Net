@@ -6,6 +6,7 @@ namespace Slang.Sdk.Binding
     {
         internal Module Parent { get; }
         internal override Interop.EntryPointHandle Handle { get; }
+        internal override Interop.EntryPointHandle NativeHandle => new(StrongInterop.EntryPoint.GetNative(Handle, out var _));
 
         public EntryPoint(Module parent, uint index)
         {
@@ -34,6 +35,7 @@ namespace Slang.Sdk.Binding
             Handle = handle;
         }
 
+        // TODO: Shouldn't this be uint
         public int Index
         {
             get
@@ -65,13 +67,13 @@ namespace Slang.Sdk.Binding
             }
         }
 
-        public CompilationResult Compile(int targetIndex)
+        public CompilationResult Compile(uint targetIndex)
         {
             // Use call, for consistency with other properties
             ObjectDisposedException.ThrowIf(Handle.IsInvalid, this);
             var target = Parent.Parent.Targets.ElementAt((int)targetIndex);
-            SlangResult compileResult = StrongInterop.EntryPoint.Compile(Handle, targetIndex, out string compiledSource, out var error);
-            return new CompilationResult(compiledSource ?? throw new SlangException(SlangResult.Fail, "Failed to convert compiled source from UTF-8"), target, this, compileResult, error);
+            SlangResult compileResult = StrongInterop.EntryPoint.Compile(Handle, (int)targetIndex, out string? compiledSource, out var error);
+            return new CompilationResult(compiledSource ?? throw new SlangException(SlangResult.Fail, "Failed to convert compiled source from UTF-8"), targetIndex, (uint)Index, compileResult, error);
         }
 
         ~EntryPoint()
@@ -80,6 +82,7 @@ namespace Slang.Sdk.Binding
         }
 
         #region Equality
+        //There's a problem for equality here, m_native is always nullptr, and that's being compared
         public static bool operator ==(EntryPoint? left, EntryPoint? right)
         {
             if (ReferenceEquals(left, right)) return true;

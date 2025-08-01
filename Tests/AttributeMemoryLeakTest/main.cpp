@@ -35,6 +35,7 @@ private:
     void* entryPointVS2 = nullptr;
     void* entryPointPS2 = nullptr;
     void* shaderReflection = nullptr;
+    const char* error = nullptr;
 
     // Helper to add test results
     void addTestResult(const string& testName, bool passed, const string& message = "") {
@@ -78,19 +79,19 @@ public:
 
     void cleanup() {
         if (shaderReflection) {
-            ShaderReflection_Release(shaderReflection);
+            ShaderReflection_Release(shaderReflection, &error);
             shaderReflection = nullptr;
         }
         if (program) {
-            Program_Release(program);
+            Program_Release(program, &error);
             program = nullptr;
         }
         if (module) {
-            Module_Release(module);
+            Module_Release(module, &error);
             module = nullptr;
         }
         if (session) {
-            Session_Release(session);
+            Session_Release(session, &error);
             session = nullptr;
         }
     }
@@ -115,7 +116,7 @@ public:
             nullptr, 0,  // No options for now
             nullptr, 0,  // No macros for now  
             models, 2,  // Models for session (updated count to 6)
-            searchPaths, 2);
+            searchPaths, 2, &error);
         const char* error = SlangNative_GetLastError();
         
         bool success = (session != nullptr);
@@ -141,11 +142,13 @@ public:
         }
         addTestResult("Read Shader File", true, "Successfully read " + to_string(shaderSource.size()) + " bytes");
         
+        char* err = nullptr;
         module = Module_Create(
             session, 
             "ComprehensiveSlangTest", 
             shaderPath.c_str(), 
-            shaderSource.c_str());
+            shaderSource.c_str(),
+            &err);
         const char* error = SlangNative_GetLastError();
         
         bool success = (module != nullptr);
@@ -161,7 +164,7 @@ public:
             return false;
         }
         
-        program = Program_Create(module);
+        program = Program_Create(module, &error);
         const char* error = SlangNative_GetLastError();
         bool success = (program != nullptr);
         addTestResult("Program Creation", success, error ? error : "");
@@ -176,7 +179,7 @@ public:
             return false;
         }
         
-        shaderReflection = Program_GetProgramReflection(program, 0);
+        shaderReflection = Program_GetProgramReflection(program, 0, &error);
         const char* error = SlangNative_GetLastError();
         bool success = (shaderReflection != nullptr);
         addTestResult("Program Reflection", success, error ? error : "");
@@ -207,10 +210,10 @@ public:
     {
         printHeader("GETTING COMPILED ENTRYPOINT");
 
-        entryPointVS = Module_GetEntryPointByIndex(module, 0);
-        entryPointPS = Module_GetEntryPointByIndex(module, 1);
-        entryPointVS2 = Module_GetEntryPointByIndex(module, 2);
-        entryPointPS2 = Module_GetEntryPointByIndex(module, 3);
+        entryPointVS = Module_GetEntryPointByIndex(module, 0, &error);
+        entryPointPS = Module_GetEntryPointByIndex(module, 1, &error);
+        entryPointVS2 = Module_GetEntryPointByIndex(module, 2, &error);
+        entryPointPS2 = Module_GetEntryPointByIndex(module, 3, &error);
 
         if (!entryPointVS) {
             addTestResult("Get Compiled EntryPoint", false, "No entryPoint available");
@@ -218,7 +221,7 @@ public:
         }
 
         const char* output = nullptr;
-        SlangResult result = EntryPoint_Compile(entryPointVS, 0, &output);
+        SlangResult result = EntryPoint_Compile(entryPointVS, 0, &output, &error);
         const char* error = SlangNative_GetLastError();
 
         bool success = (result >= 0 && output != nullptr);
@@ -236,27 +239,27 @@ public:
         }
         
         // Test basic counts
-        unsigned int paramCount = ShaderReflection_GetParameterCount(shaderReflection);
+        unsigned int paramCount = ShaderReflection_GetParameterCount(shaderReflection, &error);
         addTestResult("Parameter Count", paramCount >= 0, "Found " + to_string(paramCount) + " parameters");
         
-        unsigned int typeParamCount = ShaderReflection_GetTypeParameterCount(shaderReflection);
+        unsigned int typeParamCount = ShaderReflection_GetTypeParameterCount(shaderReflection, &error);
         addTestResult("Type Parameter Count", typeParamCount >= 0, "Found " + to_string(typeParamCount) + " type parameters");
         
-        unsigned int entryPointCount = ShaderReflection_GetEntryPointCount(shaderReflection);
+        unsigned int entryPointCount = ShaderReflection_GetEntryPointCount(shaderReflection, &error);
         addTestResult("Entry Point Count", entryPointCount > 0, "Found " + to_string(entryPointCount) + " entry points");
         
         // Test global constant buffer info
-        unsigned int globalBinding = ShaderReflection_GetGlobalConstantBufferBinding(shaderReflection);
-        size_t globalSize = ShaderReflection_GetGlobalConstantBufferSize(shaderReflection);
+        unsigned int globalBinding = ShaderReflection_GetGlobalConstantBufferBinding(shaderReflection, &error);
+        size_t globalSize = ShaderReflection_GetGlobalConstantBufferSize(shaderReflection, &error);
         addTestResult("Global Constant Buffer", true, "Binding: " + to_string(globalBinding) + ", Size: " + to_string(globalSize));
         
         // Test hashed strings
-        unsigned int hashedStringCount = ShaderReflection_GetHashedStringCount(shaderReflection);
+        unsigned int hashedStringCount = ShaderReflection_GetHashedStringCount(shaderReflection, &error);
         addTestResult("Hashed String Count", hashedStringCount >= 0, "Found " + to_string(hashedStringCount) + " hashed strings");
         
         // Test JSON export
         const char* jsonOutput = nullptr;
-        int jsonResult = ShaderReflection_ToJson(shaderReflection, &jsonOutput);
+        int jsonResult = ShaderReflection_ToJson(shaderReflection, &jsonOutput, &error);
         bool jsonSuccess = (jsonResult >= 0 && jsonOutput != nullptr);
         addTestResult("JSON Export", jsonSuccess, jsonSuccess ? "JSON exported successfully" : "JSON export failed");
     }
@@ -269,23 +272,23 @@ public:
             return;
         }
         
-        unsigned int entryPointCount = ShaderReflection_GetEntryPointCount(shaderReflection);
+        unsigned int entryPointCount = ShaderReflection_GetEntryPointCount(shaderReflection, &error);
         
         // Expected entry points from our comprehensive shader
         vector<string> expectedEntryPoints = { "VS", "PS", "GS", "CS", "HS", "DS", "TestAttributeFunction" };
         set<string> foundEntryPoints;
         
         for (unsigned int i = 0; i < entryPointCount; i++) {
-            void* entryPoint = ShaderReflection_GetEntryPointByIndex(shaderReflection, i);
+            void* entryPoint = ShaderReflection_GetEntryPointByIndex(shaderReflection, i, &error);
             if (!entryPoint) {
                 addTestResult("Entry Point " + to_string(i), false, "Could not get entry point");
                 continue;
             }
             
-            const char* name = EntryPointReflection_GetName(entryPoint);
-            const char* nameOverride = EntryPointReflection_GetNameOverride(entryPoint);
-            int stage = EntryPointReflection_GetStage(entryPoint);
-            unsigned int paramCount = EntryPointReflection_GetParameterCount(entryPoint);
+            const char* name = EntryPointReflection_GetName(entryPoint, &error);
+            const char* nameOverride = EntryPointReflection_GetNameOverride(entryPoint, &error);
+            int stage = EntryPointReflection_GetStage(entryPoint, &error);
+            unsigned int paramCount = EntryPointReflection_GetParameterCount(entryPoint, &error);
             
             string entryPointName = safeString(name);
             foundEntryPoints.insert(entryPointName);
@@ -297,44 +300,44 @@ public:
             // Test compute-specific properties for compute shaders
             if (entryPointName == "CS") {
                 SlangUInt threadGroupSize[3] = {0, 0, 0};
-                EntryPointReflection_GetComputeThreadGroupSize(entryPoint, 3, threadGroupSize);
+                EntryPointReflection_GetComputeThreadGroupSize(entryPoint, 3, threadGroupSize, &error);
                 addTestResult("Compute Thread Group Size", true, 
                     "(" + to_string(threadGroupSize[0]) + ", " + 
                     to_string(threadGroupSize[1]) + ", " + 
                     to_string(threadGroupSize[2]) + ")");
                 
                 SlangUInt waveSize = 0;
-                SlangResult waveResult = EntryPointReflection_GetComputeWaveSize(entryPoint, &waveSize);
+                SlangResult waveResult = EntryPointReflection_GetComputeWaveSize(entryPoint, &waveSize, &error);
                 addTestResult("Compute Wave Size", waveResult >= 0, 
                     waveResult >= 0 ? "Wave size: " + to_string(waveSize) : "Not available");
             }
             
             // Test entry point reflection properties
-            void* function = EntryPointReflection_GetFunction(entryPoint);
+            void* function = EntryPointReflection_GetFunction(entryPoint, &error);
             addTestResult("Entry Point Function", function != nullptr);
             
-            void* varLayout = EntryPointReflection_GetVarLayout(entryPoint);
+            void* varLayout = EntryPointReflection_GetVarLayout(entryPoint, &error);
             addTestResult("Entry Point VarLayout", varLayout != nullptr);
             
-            void* typeLayout = EntryPointReflection_GetTypeLayout(entryPoint);
+            void* typeLayout = EntryPointReflection_GetTypeLayout(entryPoint, &error);
             addTestResult("Entry Point TypeLayout", typeLayout != nullptr);
             
-            bool usesAnySampleRate = EntryPointReflection_UsesAnySampleRateInput(entryPoint);
-            bool hasDefaultCB = EntryPointReflection_HasDefaultConstantBuffer(entryPoint);
+            bool usesAnySampleRate = EntryPointReflection_UsesAnySampleRateInput(entryPoint, &error);
+            bool hasDefaultCB = EntryPointReflection_HasDefaultConstantBuffer(entryPoint, &error);
             addTestResult("Entry Point Properties", true, 
                 "UsesSampleRate: " + string(usesAnySampleRate ? "true" : "false") + 
                 ", HasDefaultCB: " + string(hasDefaultCB ? "true" : "false"));
             
-            EntryPointReflection_Release(entryPoint);
+            EntryPointReflection_Release(entryPoint, &error);
         }
         
         // Test finding entry points by name
         for (const string& expectedName : expectedEntryPoints) {
-            void* foundEntryPoint = ShaderReflection_FindEntryPointByName(shaderReflection, expectedName.c_str());
+            void* foundEntryPoint = ShaderReflection_FindEntryPointByName(shaderReflection, expectedName.c_str(), &error);
             bool found = (foundEntryPoint != nullptr);
             addTestResult("Find Entry Point: " + expectedName, found);
             if (foundEntryPoint) {
-                EntryPointReflection_Release(foundEntryPoint);
+                EntryPointReflection_Release(foundEntryPoint, &error);
             }
         }
         
@@ -358,16 +361,16 @@ public:
         };
         
         for (const string& typeName : expectedTypes) {
-            void* type = ShaderReflection_FindTypeByName(shaderReflection, typeName.c_str());
+            void* type = ShaderReflection_FindTypeByName(shaderReflection, typeName.c_str(), &error);
             bool found = (type != nullptr);
             addTestResult("Find Type: " + typeName, found);
             
             if (type) {
                 // Test type properties
-                const char* name = TypeReflection_GetName(type);
-                int kind = TypeReflection_GetKind(type);
-                unsigned int fieldCount = TypeReflection_GetFieldCount(type);
-                bool isArray = TypeReflection_IsArray(type);
+                const char* name = TypeReflection_GetName(type, &error);
+                int kind = TypeReflection_GetKind(type, &error);
+                unsigned int fieldCount = TypeReflection_GetFieldCount(type, &error);
+                bool isArray = TypeReflection_IsArray(type, &error);
                 
                 addTestResult("Type " + typeName + " Properties", true,
                     "Name: " + safeString(name) + ", Kind: " + to_string(kind) + 
@@ -375,18 +378,18 @@ public:
                 
                 // Test array properties if it's an array
                 if (isArray) {
-                    void* elementType = TypeReflection_GetElementType(type);
-                    size_t elementCount = TypeReflection_GetElementCount(type);
+                    void* elementType = TypeReflection_GetElementType(type, &error);
+                    size_t elementCount = TypeReflection_GetElementCount(type, &error);
                     addTestResult("Array Type Properties", elementType != nullptr,
                         "Element count: " + to_string(elementCount));
                     if (elementType) {
-                        TypeReflection_Release(elementType);
+                        TypeReflection_Release(elementType, &error);
                     }
                 }
                 
                 // Test matrix properties
-                unsigned int rowCount = TypeReflection_GetRowCount(type);
-                unsigned int colCount = TypeReflection_GetColumnCount(type);
+                unsigned int rowCount = TypeReflection_GetRowCount(type, &error);
+                unsigned int colCount = TypeReflection_GetColumnCount(type, &error);
                 if (rowCount > 1 || colCount > 1) {
                     addTestResult("Matrix Properties", true,
                         "Rows: " + to_string(rowCount) + ", Cols: " + to_string(colCount));
@@ -395,22 +398,22 @@ public:
                 // Test struct fields
                 if (fieldCount > 0) {
                     for (unsigned int i = 0; i < min(fieldCount, 10u); i++) { // Limit to first 10 fields
-                        void* field = TypeReflection_GetFieldByIndex(type, i);
+                        void* field = TypeReflection_GetFieldByIndex(type, i, &error);
                         if (field) {
-                            const char* fieldName = VariableReflection_GetName(field);
+                            const char* fieldName = VariableReflection_GetName(field, &error);
                             addTestResult("Field " + to_string(i), true, 
                                 "Name: " + safeString(fieldName));
-                            VariableReflection_Release(field);
+                            VariableReflection_Release(field, &error);
                         }
                     }
                 }
                 
                 // Test user attributes
-                unsigned int attrCount = TypeReflection_GetUserAttributeCount(type);
+                unsigned int attrCount = TypeReflection_GetUserAttributeCount(type, &error);
                 addTestResult("Type Attributes", attrCount >= 0, 
                     "Found " + to_string(attrCount) + " attributes");
                 
-                TypeReflection_Release(type);
+                TypeReflection_Release(type, &error);
             }
         }
     }
@@ -431,24 +434,24 @@ public:
         };
         
         for (const string& functionName : expectedFunctions) {
-            void* function = ShaderReflection_FindFunctionByName(shaderReflection, functionName.c_str());
+            void* function = ShaderReflection_FindFunctionByName(shaderReflection, functionName.c_str(), &error);
             bool found = (function != nullptr);
             addTestResult("Find Function: " + functionName, found);
             
             if (function) {
                 // Test function properties
-                const char* name = FunctionReflection_GetName(function);
-                unsigned int paramCount = FunctionReflection_GetParameterCount(function);
-                unsigned int attrCount = FunctionReflection_GetUserAttributeCount(function);
-                bool isOverloaded = FunctionReflection_IsOverloaded(function);
-                unsigned int overloadCount = FunctionReflection_GetOverloadCount(function);
+                const char* name = FunctionReflection_GetName(function, &error);
+                unsigned int paramCount = FunctionReflection_GetParameterCount(function, &error);
+                unsigned int attrCount = FunctionReflection_GetUserAttributeCount(function, &error);
+                bool isOverloaded = FunctionReflection_IsOverloaded(function, &error);
+                unsigned int overloadCount = FunctionReflection_GetOverloadCount(function, &error);
                 
                 addTestResult("Function " + functionName + " Properties", true,
                     "Name: " + safeString(name) + ", Params: " + to_string(paramCount) + 
                     ", Attrs: " + to_string(attrCount) + ", Overloaded: " + (isOverloaded ? "true" : "false") +
                     ", Overloads: " + to_string(overloadCount));
                 
-                FunctionReflection_Release(function);
+                FunctionReflection_Release(function, &error);
             }
         }
     }
@@ -462,46 +465,46 @@ public:
         }
         
         // Test global parameters
-        unsigned int paramCount = ShaderReflection_GetParameterCount(shaderReflection);
+        unsigned int paramCount = ShaderReflection_GetParameterCount(shaderReflection, &error);
         addTestResult("Global Parameters", paramCount >= 0, 
             "Found " + to_string(paramCount) + " global parameters");
         
         for (unsigned int i = 0; i < min(paramCount, 10u); i++) { // Limit to first 10 parameters
-            void* param = ShaderReflection_GetParameterByIndex(shaderReflection, i);
+            void* param = ShaderReflection_GetParameterByIndex(shaderReflection, i, &error);
             if (param) {
-                const char* paramName = VariableLayoutReflection_GetName(param);
-                unsigned int bindingIndex = VariableLayoutReflection_GetBindingIndex(param);
-                unsigned int bindingSpace = VariableLayoutReflection_GetBindingSpace(param);
+                const char* paramName = VariableLayoutReflection_GetName(param, &error);
+                unsigned int bindingIndex = VariableLayoutReflection_GetBindingIndex(param, &error);
+                unsigned int bindingSpace = VariableLayoutReflection_GetBindingSpace(param, &error);
                 
                 addTestResult("Global Parameter " + to_string(i), true,
                     "Name: " + safeString(paramName) + ", Binding: " + to_string(bindingIndex) + 
                     ", Space: " + to_string(bindingSpace));
                 
                 // Test variable layout properties
-                void* typeLayout = VariableLayoutReflection_GetTypeLayout(param);
+                void* typeLayout = VariableLayoutReflection_GetTypeLayout(param, &error);
                 if (typeLayout) {
-                    size_t size = TypeLayoutReflection_GetSize(typeLayout, 0); // Uniform category
+                    size_t size = TypeLayoutReflection_GetSize(typeLayout, 0, &error); // Uniform category
                     addTestResult("Parameter Type Layout", true,
                         "Size: " + to_string(size) + " bytes");
-                    TypeLayoutReflection_Release(typeLayout);
+                    TypeLayoutReflection_Release(typeLayout, &error);
                 }
                 
-                VariableLayoutReflection_Release(param);
+                VariableLayoutReflection_Release(param, &error);
             }
         }
         
         // Test global params layouts
-        void* globalParamsTypeLayout = ShaderReflection_GetGlobalParamsTypeLayout(shaderReflection);
-        void* globalParamsVarLayout = ShaderReflection_GetGlobalParamsVarLayout(shaderReflection);
+        void* globalParamsTypeLayout = ShaderReflection_GetGlobalParamsTypeLayout(shaderReflection, &error);
+        void* globalParamsVarLayout = ShaderReflection_GetGlobalParamsVarLayout(shaderReflection, &error);
         
         addTestResult("Global Params Type Layout", globalParamsTypeLayout != nullptr);
         addTestResult("Global Params Var Layout", globalParamsVarLayout != nullptr);
         
         if (globalParamsTypeLayout) {
-            TypeLayoutReflection_Release(globalParamsTypeLayout);
+            TypeLayoutReflection_Release(globalParamsTypeLayout, &error);
         }
         if (globalParamsVarLayout) {
-            VariableLayoutReflection_Release(globalParamsVarLayout);
+            VariableLayoutReflection_Release(globalParamsVarLayout, &error);
         }
     }
 
@@ -514,17 +517,17 @@ public:
         }
         
         // Test finding types with attributes
-        void* attributeStruct = ShaderReflection_FindTypeByName(shaderReflection, "MyAttributeStruct");
+        void* attributeStruct = ShaderReflection_FindTypeByName(shaderReflection, "MyAttributeStruct", &error);
         if (attributeStruct) {
-            unsigned int attrCount = TypeReflection_GetUserAttributeCount(attributeStruct);
+            unsigned int attrCount = TypeReflection_GetUserAttributeCount(attributeStruct, &error);
             addTestResult("MyAttributeStruct Attributes", attrCount > 0,
                 "Found " + to_string(attrCount) + " attributes");
             
             for (unsigned int i = 0; i < attrCount; i++) {
-                void* attr = TypeReflection_GetUserAttributeByIndex(attributeStruct, i);
+                void* attr = TypeReflection_GetUserAttributeByIndex(attributeStruct, i, &error);
                 if (attr) {
-                    const char* attrName = Attribute_GetName(attr);
-                    unsigned int argCount = Attribute_GetArgumentCount(attr);
+                    const char* attrName = Attribute_GetName(attr, &error);
+                    unsigned int argCount = Attribute_GetArgumentCount(attr, &error);
                     
                     addTestResult("Attribute " + to_string(i), true,
                         "Name: " + safeString(attrName) + ", Args: " + to_string(argCount));
@@ -532,7 +535,7 @@ public:
                     // Test attribute arguments
                     for (unsigned int j = 0; j < argCount; j++) {
                         // Test string arguments
-                        const char* stringArg = Attribute_GetArgumentValueString(attr, j);
+                        const char* stringArg = Attribute_GetArgumentValueString(attr, j, &error);
                         if (stringArg) {
                             addTestResult("Attribute String Arg " + to_string(j), true,
                                 "Value: " + safeString(stringArg));
@@ -540,7 +543,7 @@ public:
                         
                         // Test int arguments
                         int intArg = 0;
-                        SlangResult intResult = Attribute_GetArgumentValueInt(attr, j, &intArg);
+                        SlangResult intResult = Attribute_GetArgumentValueInt(attr, j, &intArg, &error);
                         if (intResult >= 0) {
                             addTestResult("Attribute Int Arg " + to_string(j), true,
                                 "Value: " + to_string(intArg));
@@ -548,28 +551,28 @@ public:
                         
                         // Test float arguments
                         float floatArg = 0.0f;
-                        SlangResult floatResult = Attribute_GetArgumentValueFloat(attr, j, &floatArg);
+                        SlangResult floatResult = Attribute_GetArgumentValueFloat(attr, j, &floatArg, &error);
                         if (floatResult >= 0) {
                             addTestResult("Attribute Float Arg " + to_string(j), true,
                                 "Value: " + to_string(floatArg));
                         }
                     }
                     
-                    Attribute_Release(attr);
+                    Attribute_Release(attr, &error);
                 }
             }
             
-            TypeReflection_Release(attributeStruct);
+            TypeReflection_Release(attributeStruct, &error);
         }
         
         // Test finding functions with attributes
-        void* utilityFunction = ShaderReflection_FindFunctionByName(shaderReflection, "utilityFunction");
+        void* utilityFunction = ShaderReflection_FindFunctionByName(shaderReflection, "utilityFunction", &error);
         if (utilityFunction) {
-            unsigned int attrCount = FunctionReflection_GetUserAttributeCount(utilityFunction);
+            unsigned int attrCount = FunctionReflection_GetUserAttributeCount(utilityFunction, &error);
             addTestResult("utilityFunction Attributes", attrCount > 0,
                 "Found " + to_string(attrCount) + " attributes");
             
-            FunctionReflection_Release(utilityFunction);
+            FunctionReflection_Release(utilityFunction, &error);
         }
     }
 
@@ -582,13 +585,13 @@ public:
         }
         
         // Test finding generic types
-        void* genericBuffer = ShaderReflection_FindTypeByName(shaderReflection, "GenericBuffer");
+        void* genericBuffer = ShaderReflection_FindTypeByName(shaderReflection, "GenericBuffer", &error);
         if (genericBuffer) {
-            void* genericContainer = TypeReflection_GetGenericContainer(genericBuffer);
+            void* genericContainer = TypeReflection_GetGenericContainer(genericBuffer, &error);
             if (genericContainer) {
-                const char* name = GenericReflection_GetName(genericContainer);
-                unsigned int typeParamCount = GenericReflection_GetTypeParameterCount(genericContainer);
-                unsigned int valueParamCount = GenericReflection_GetValueParameterCount(genericContainer);
+                const char* name = GenericReflection_GetName(genericContainer, &error);
+                unsigned int typeParamCount = GenericReflection_GetTypeParameterCount(genericContainer, &error);
+                unsigned int valueParamCount = GenericReflection_GetValueParameterCount(genericContainer, &error);
                 
                 addTestResult("Generic Container", true,
                     "Name: " + safeString(name) + ", TypeParams: " + to_string(typeParamCount) + 
@@ -596,42 +599,42 @@ public:
                 
                 // Test type parameters
                 for (unsigned int i = 0; i < typeParamCount; i++) {
-                    void* typeParam = GenericReflection_GetTypeParameter(genericContainer, i);
+                    void* typeParam = GenericReflection_GetTypeParameter(genericContainer, i, &error);
                     if (typeParam) {
-                        const char* paramName = VariableReflection_GetName(typeParam);
+                        const char* paramName = VariableReflection_GetName(typeParam, &error);
                         addTestResult("Generic Type Parameter " + to_string(i), true,
                             "Name: " + safeString(paramName));
-                        VariableReflection_Release(typeParam);
+                        VariableReflection_Release(typeParam, &error);
                     }
                 }
                 
                 // Test value parameters
                 for (unsigned int i = 0; i < valueParamCount; i++) {
-                    void* valueParam = GenericReflection_GetValueParameter(genericContainer, i);
+                    void* valueParam = GenericReflection_GetValueParameter(genericContainer, i, &error);
                     if (valueParam) {
-                        const char* paramName = VariableReflection_GetName(valueParam);
+                        const char* paramName = VariableReflection_GetName(valueParam, &error);
                         addTestResult("Generic Value Parameter " + to_string(i), true,
                             "Name: " + safeString(paramName));
-                        VariableReflection_Release(valueParam);
+                        VariableReflection_Release(valueParam, &error);
                     }
                 }
                 
-                GenericReflection_Release(genericContainer);
+                GenericReflection_Release(genericContainer, &error);
             }
             
-            TypeReflection_Release(genericBuffer);
+            TypeReflection_Release(genericBuffer, &error);
         }
         
         // Test finding generic functions
-        void* genericMax = ShaderReflection_FindFunctionByName(shaderReflection, "genericMax");
+        void* genericMax = ShaderReflection_FindFunctionByName(shaderReflection, "genericMax", &error);
         if (genericMax) {
-            void* genericContainer = FunctionReflection_GetGenericContainer(genericMax);
+            void* genericContainer = FunctionReflection_GetGenericContainer(genericMax, &error);
             if (genericContainer) {
                 addTestResult("Generic Function Container", true);
-                GenericReflection_Release(genericContainer);
+                GenericReflection_Release(genericContainer, &error);
             }
             
-            FunctionReflection_Release(genericMax);
+            FunctionReflection_Release(genericMax, &error);
         }
     }
 
@@ -644,19 +647,19 @@ public:
         }
         
         // Test type layouts by examining global parameters that should have layout information
-        unsigned int paramCount = ShaderReflection_GetParameterCount(shaderReflection);
+        unsigned int paramCount = ShaderReflection_GetParameterCount(shaderReflection, &error);
         
         for (unsigned int i = 0; i < min(paramCount, 5u); i++) { // Test first 5 parameters
-            void* param = ShaderReflection_GetParameterByIndex(shaderReflection, i);
+            void* param = ShaderReflection_GetParameterByIndex(shaderReflection, i, &error);
             if (param) {
-                const char* paramName = VariableLayoutReflection_GetName(param);
-                void* typeLayout = VariableLayoutReflection_GetTypeLayout(param);
+                const char* paramName = VariableLayoutReflection_GetName(param, &error);
+                void* typeLayout = VariableLayoutReflection_GetTypeLayout(param, &error);
                 
                 if (typeLayout) {
-                    size_t size = TypeLayoutReflection_GetSize(typeLayout, 0); // Uniform category
-                    size_t stride = TypeLayoutReflection_GetStride(typeLayout, 0);
-                    int alignment = TypeLayoutReflection_GetAlignment(typeLayout, 0);
-                    unsigned int fieldCount = TypeLayoutReflection_GetFieldCount(typeLayout);
+                    size_t size = TypeLayoutReflection_GetSize(typeLayout, 0, &error); // Uniform category
+                    size_t stride = TypeLayoutReflection_GetStride(typeLayout, 0, &error);
+                    int alignment = TypeLayoutReflection_GetAlignment(typeLayout, 0, &error);
+                    unsigned int fieldCount = TypeLayoutReflection_GetFieldCount(typeLayout, &error);
                     
                     addTestResult("Parameter Layout " + to_string(i), true,
                         "Name: " + safeString(paramName) + ", Size: " + to_string(size) + 
@@ -665,22 +668,22 @@ public:
                     
                     // Test field layouts
                     for (unsigned int j = 0; j < min(fieldCount, 3u); j++) { // Limit to first 3 fields
-                        void* fieldLayout = TypeLayoutReflection_GetFieldByIndex(typeLayout, j);
+                        void* fieldLayout = TypeLayoutReflection_GetFieldByIndex(typeLayout, j, &error);
                         if (fieldLayout) {
-                            const char* fieldName = VariableLayoutReflection_GetName(fieldLayout);
-                            size_t fieldOffset = VariableLayoutReflection_GetOffset(fieldLayout, 0);
+                            const char* fieldName = VariableLayoutReflection_GetName(fieldLayout, &error);
+                            size_t fieldOffset = VariableLayoutReflection_GetOffset(fieldLayout, 0, &error);
                             
                             addTestResult("Field Layout " + to_string(j), true,
                                 "Name: " + safeString(fieldName) + ", Offset: " + to_string(fieldOffset));
                             
-                            VariableLayoutReflection_Release(fieldLayout);
+                            VariableLayoutReflection_Release(fieldLayout, &error);
                         }
                     }
                     
-                    TypeLayoutReflection_Release(typeLayout);
+                    TypeLayoutReflection_Release(typeLayout, &error);
                 }
                 
-                VariableLayoutReflection_Release(param);
+                VariableLayoutReflection_Release(param, &error);
             }
         }
     }

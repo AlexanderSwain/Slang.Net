@@ -23,8 +23,11 @@ Native::FunctionReflection::FunctionReflection(void* native)
 Native::FunctionReflection::~FunctionReflection()
 {
     // Clean up the return type
-    delete m_returnType;
-    m_returnType = nullptr;
+    if (m_returnType)
+    {
+        delete m_returnType;
+        m_returnType = nullptr;
+    }
 
     // Clean up the parameters array
     if (m_parameters)
@@ -56,8 +59,11 @@ Native::FunctionReflection::~FunctionReflection()
 	m_modifiers.clear(); // Clear the map
 
     // Clean up generic container
-    delete m_genericContainer;
-    m_genericContainer = nullptr;
+    if (m_genericContainer)
+    {
+        delete m_genericContainer;
+        m_genericContainer = nullptr;
+    }
 
     // Clean up apply specializations results
     for (auto& item : m_applySpecializationsResultsToDelete) {

@@ -8,7 +8,7 @@ using Slang.Sdk.Interop;
 
 namespace Slang.Sdk
 {
-    public unsafe class EntryPointReflection : Reflection,
+    public unsafe class EntryPointReflection : Reflection, IEquatable<EntryPointReflection>,
         IComposition<VariableLayout>
     {
         #region Definition
@@ -39,10 +39,9 @@ namespace Slang.Sdk
         #endregion
 
         #region Pretty
-
         public string Name => Binding.GetName();
         public string? NameOverride => Binding.GetNameOverride();
-        public ShaderStage Stage => Binding.GetStage();
+        public Stage Stage => Binding.GetStage();
         public bool UsesAnySampleRateInput => Binding.UsesAnySampleRateInput();
         public bool HasDefaultConstantBuffer => Binding.HasDefaultConstantBuffer();
 
@@ -67,6 +66,13 @@ namespace Slang.Sdk
             return Binding.GetComputeWaveSize();
         }
 
+        #endregion
+
+        #region Equality
+        public bool Equals(EntryPointReflection? other)
+        {
+            return this == other;
+        }
         #endregion
     }
 }

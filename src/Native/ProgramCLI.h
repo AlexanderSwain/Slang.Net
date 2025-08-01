@@ -46,17 +46,14 @@ namespace Native
 
 		//Properties
 		slang::IComponentType* getNative();
-		slang::IComponentType* getLinked();
 		ModuleCLI* getParent();
 		SlangResult GetCompiled(unsigned int entryPointIndex, unsigned int targetIndex, const char** output);
+		SlangResult GetCompiled(unsigned int targetIndex, const char** output);
 		void* GetLayout(int targetIndex);
 
 	private:
 		ModuleCLI* m_parent = nullptr;
 		slang::IComponentType* m_composedProgram = nullptr;
-		slang::IComponentType* m_linkedProgram = nullptr;
-        std::string m_linkedProgram_Diagnostics; // Check for memory leaks for this
-		std::string m_errorBuffer; // Check to see if this is unused // Buffer to store error messages
 		slang::IComponentType** getProgramComponents();
 	};
 }

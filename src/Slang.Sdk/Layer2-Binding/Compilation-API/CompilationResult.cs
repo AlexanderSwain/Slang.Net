@@ -15,12 +15,12 @@ internal class CompilationResult
     /// <summary>
     /// The target compilation format.
     /// </summary>
-    internal Target Target { get; }
+    internal uint TargetIndex { get; }
 
     /// <summary>
     /// The entry point that was compiled.
     /// </summary>
-    internal Binding.EntryPoint EntryPoint { get; }
+    internal uint? EntryPointIndex { get; }
 
     /// <summary>
     /// Whether the compilation was successful.
@@ -32,11 +32,11 @@ internal class CompilationResult
     /// </summary>
     internal string? Diagnostics { get; }
 
-    internal CompilationResult(string source, Target target, Binding.EntryPoint entryPoint, SlangResult result, string? diagnostics = null)
+    internal CompilationResult(string source, uint targetIndex, uint? entryPointIndex, SlangResult result, string? diagnostics = null)
     {
         Source = source;
-        Target = target;
-        EntryPoint = entryPoint;
+        TargetIndex = targetIndex;
+        EntryPointIndex = entryPointIndex;
         Result = result;
         Diagnostics = diagnostics;
     }

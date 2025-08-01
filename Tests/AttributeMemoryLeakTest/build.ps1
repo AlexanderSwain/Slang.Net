@@ -8,6 +8,9 @@ param(
     [switch]$FromVisualStudio
 )
 
+# Slang Sdk Version
+$slangVersion = "2025.13.2"
+
 # Validate platform parameter
 $validPlatforms = @("x64", "ARM64")
 if ($validPlatforms -notcontains $Platform) {
@@ -29,7 +32,7 @@ $solutionDir = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $testDir = $PSScriptRoot
 $testOutputDir = "$solutionDir\bin\$Configuration\$Platform"
 $nativeOutputDir = "$solutionDir\src\Native\bin\$Configuration\$Platform"
-$nativeEmbeddedDir = "$solutionDir\src\Native\EmbeddedLLVM\slang-2025.10.3-windows\$Platform\bin"
+$nativeEmbeddedDir = "$solutionDir\src\Native\EmbeddedLLVM\slang-$slangVersion-windows\$Platform\bin"
 
 # Create output directory if it doesn't exist
 if (-not (Test-Path -Path $testOutputDir)) {

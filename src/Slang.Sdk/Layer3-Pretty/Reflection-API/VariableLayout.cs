@@ -8,8 +8,8 @@ using Slang.Sdk.Interop;
 
 namespace Slang.Sdk
 {
-    public class VariableLayout : Reflection,
-        IComposition<ParameterCategory>
+    public class VariableLayout : Reflection, IEquatable<VariableLayout>,
+        IComposition<ParameterCategoryStruct>
     {
         #region Definition
         public override Reflection? Parent { get; }
@@ -24,17 +24,17 @@ namespace Slang.Sdk
 
         #region IComposition<ParameterCategory> (Categories)
 
-        uint IComposition<ParameterCategory>.Count => Binding.GetCategoryCount();
-        ParameterCategory IComposition<ParameterCategory>.GetByIndex(uint index) =>
+        uint IComposition<ParameterCategoryStruct>.Count => Binding.GetCategoryCount();
+        ParameterCategoryStruct IComposition<ParameterCategoryStruct>.GetByIndex(uint index) =>
             Binding.GetCategoryByIndex(index);
 
         #endregion
 
         #region Collections
 
-        SlangCollection<ParameterCategory>? _Categories;
-        public SlangCollection<ParameterCategory> Categories => 
-            _Categories ??= new SlangCollection<ParameterCategory>(this);
+        SlangCollection<ParameterCategoryStruct>? _Categories;
+        public SlangCollection<ParameterCategoryStruct> Categories => 
+            _Categories ??= new SlangCollection<ParameterCategoryStruct>(this);
 
         #endregion
 
@@ -66,6 +66,13 @@ namespace Slang.Sdk
         public VariableLayout? GetSpace(ParameterCategory category) =>
             Binding.GetSpace(category) is { } space ? new VariableLayout(this, space) : null;
 
+        #endregion
+
+        #region Equality
+        public bool Equals(VariableLayout? other)
+        {
+            return this == other;
+        }
         #endregion
     }
 }

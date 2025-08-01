@@ -425,7 +425,20 @@ namespace SlangNative
 		}
 	}
 
-	extern "C" SLANGNATIVE_API int32_t Program_CompileProgram(void* program, unsigned int entryPointIndex, unsigned int targetIndex, const char** output, const char** error)
+	extern "C" SLANGNATIVE_API int32_t Program_CompileTarget(void* program, unsigned int targetIndex, const char** output, const char** error)
+	{
+		try
+		{
+			return ((ProgramCLI*)program)->GetCompiled(targetIndex, output);
+		}
+		catch (const std::exception& e)
+		{
+			*error = SetError(e.what());
+			return SLANG_FAIL;
+		}
+	}
+
+	extern "C" SLANGNATIVE_API int32_t Program_CompileEntryPoint(void* program, unsigned int entryPointIndex, unsigned int targetIndex, const char** output, const char** error)
 	{
 		try
 		{

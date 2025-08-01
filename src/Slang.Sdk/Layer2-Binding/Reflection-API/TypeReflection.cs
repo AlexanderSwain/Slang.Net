@@ -1,14 +1,13 @@
 ﻿using Slang.Sdk.Interop;
-using static Slang.Sdk.Interop.StrongInterop;
-using static Slang.Sdk.Interop.StrongInterop;
-using static Slang.Sdk.Interop.StringMarshaling;
 
 namespace Slang.Sdk.Binding
 {
-    internal unsafe class TypeReflection : Reflection
+    internal unsafe class TypeReflection : Reflection, IEquatable<TypeReflection>
     {
         internal override Reflection? Parent { get; }
         internal override TypeReflectionHandle Handle { get; }
+        internal override TypeReflectionHandle NativeHandle => new(StrongInterop.TypeReflection.GetNative(Handle, out var _));
+
 
         internal TypeReflection(Reflection parent, TypeReflectionHandle handle)
         {
@@ -130,6 +129,11 @@ namespace Slang.Sdk.Binding
         {
             string? error = null;
             return new GenericReflection(this, Call(() => StrongInterop.TypeReflection.GetGenericContainer(Handle, out error), () => error));
+        }
+
+        public bool Equals(TypeReflection? other)
+        {
+            return this == other;
         }
     }
 }

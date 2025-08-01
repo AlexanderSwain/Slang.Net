@@ -20,8 +20,11 @@ Native::VariableLayoutReflection::VariableLayoutReflection(void* native)
 Native::VariableLayoutReflection::~VariableLayoutReflection()
 {
     // Clean up m_variable 
-    delete m_variable;
-    m_variable = nullptr;
+    if (m_variable)
+    {
+        delete m_variable;
+        m_variable = nullptr;
+    }
 
     // Clean up modifiers
     for (auto& pair : m_modifiers)
@@ -31,16 +34,25 @@ Native::VariableLayoutReflection::~VariableLayoutReflection()
     m_modifiers.clear(); // Clear the map
 
     // Clean up m_typeLayout 
-    delete m_typeLayout;
-    m_typeLayout = nullptr;
+    if (m_typeLayout)
+    {
+        delete m_typeLayout;
+        m_typeLayout = nullptr;
+    }
 
     // Clean up m_type 
-    delete m_type;
-    m_type = nullptr;
+    if (m_type)
+    {
+        delete m_type;
+        m_type = nullptr;
+    }
 
     // Clean up m_pendingDataLayout 
-    delete m_pendingDataLayout;
-    m_pendingDataLayout = nullptr;
+    if (m_pendingDataLayout)
+    {
+        delete m_pendingDataLayout;
+        m_pendingDataLayout = nullptr;
+    }
 }
 
 slang::VariableLayoutReflection* Native::VariableLayoutReflection::getNative()

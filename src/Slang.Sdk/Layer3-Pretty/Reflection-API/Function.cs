@@ -7,7 +7,7 @@ using Slang.Sdk.Collections;
 
 namespace Slang.Sdk
 {
-    public unsafe class Function : Reflection,
+    public unsafe class Function : Reflection, IEquatable<Function>,
         IComposition<Variable>,
         IComposition<Attribute>,
         INamedComposition<Attribute>,
@@ -61,9 +61,9 @@ namespace Slang.Sdk
         public SlangCollection<Variable> Parameters => 
             _Parameters ??= new SlangCollection<Variable>(this);
 
-        SlangNamedCollection<Attribute>? _UserAttributes;
-        public SlangNamedCollection<Attribute> UserAttributes => 
-            _UserAttributes ??= new SlangNamedCollection<Attribute>(this, this);
+        SlangNamedCollectionary<Attribute>? _UserAttributes;
+        public SlangNamedCollectionary<Attribute> UserAttributes => 
+            _UserAttributes ??= new SlangNamedCollectionary<Attribute>(this, this);
 
         SlangCollection<Function>? _Overloads;
         public SlangCollection<Function> Overloads => 
@@ -99,6 +99,13 @@ namespace Slang.Sdk
             }
         }
 
+        #endregion
+
+        #region Equality
+        public bool Equals(Function? other)
+        {
+            return this == other;
+        }
         #endregion
     }
 }

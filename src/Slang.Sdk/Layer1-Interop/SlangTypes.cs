@@ -64,34 +64,49 @@ public enum SlangResult : int
     InternalError = -2
 }
 
-/// <summary>
-/// Shader stage types.
-/// </summary>
-public enum ShaderStage
+public struct ParameterCategoryStruct : IEquatable<ParameterCategoryStruct>
 {
-    Unknown,
-    Vertex,
-    Hull,
-    Domain,
-    Geometry,
-    Fragment,
-    Compute,
-    RayGeneration,
-    Intersection,
-    AnyHit,
-    ClosestHit,
-    Miss,
-    Callable,
-    Mesh,
-    Amplification,
-    Pixel = Fragment // Alias for DirectX terminology
+    ParameterCategory Value { get; set; }
+
+    public ParameterCategoryStruct(ParameterCategory value)
+    {
+        Value = value;
+    }
+
+    #region Equality
+    public static bool operator ==(ParameterCategoryStruct left, ParameterCategoryStruct right)
+    {
+        return left.Value == right.Value;
+    }
+
+    public static bool operator !=(ParameterCategoryStruct left, ParameterCategoryStruct right)
+    {
+        return left.Value != right.Value;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is ParameterCategoryStruct entryPoint) return Equals(entryPoint);
+        return false;
+    }
+
+    public bool Equals(ParameterCategoryStruct other)
+    {
+        return this == other;
+    }
+
+    public override int GetHashCode()
+    {
+        return Value.GetHashCode();
+    }
+    #endregion
+
+    public static implicit operator ParameterCategoryStruct(ParameterCategory value)
+    {
+        return new ParameterCategoryStruct(value);
+    }
 }
 
-
-
-/// <summary>
-/// Parameter categories for layout calculations.
-/// </summary>
 public enum ParameterCategory
 {
     None,
@@ -476,7 +491,7 @@ public struct Target : IDisposable, IEquatable<Target>
     }
 }
 
-enum Stage
+public enum Stage
 {
     None,
     Vertex,

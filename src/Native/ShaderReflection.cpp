@@ -100,12 +100,18 @@ Native::ShaderReflection::~ShaderReflection()
     m_specialize_type_results_to_delete.clear();
 
     // Clean up global params type layout
-    delete m_globalParamsTypeLayout;
-    m_globalParamsTypeLayout = nullptr;
+    if (m_globalParamsTypeLayout)
+    {
+        delete m_globalParamsTypeLayout;
+        m_globalParamsTypeLayout = nullptr;
+    }
 
     // Clean up global params variable layout
-    delete m_globalParamsVarLayout;
-    m_globalParamsVarLayout = nullptr;
+    if (m_globalParamsVarLayout)
+    {
+        delete m_globalParamsVarLayout;
+        m_globalParamsVarLayout = nullptr;
+    }
 
     // m_parent is managed by ProgramCLI, so we don't delete it here
     //if (m_parent)

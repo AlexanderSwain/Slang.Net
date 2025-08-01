@@ -3,10 +3,11 @@ using static Slang.Sdk.Interop.Utilities;
 
 namespace Slang.Sdk.Binding
 {
-    internal unsafe class AttributeReflection : Reflection
+    internal unsafe class AttributeReflection : Reflection, IEquatable<AttributeReflection>
     {
         internal override Reflection? Parent { get; }
         internal override AttributeReflectionHandle Handle { get; }
+        internal override AttributeReflectionHandle NativeHandle => new(StrongInterop.Attribute.GetNative(Handle, out var _));
 
         internal AttributeReflection(Reflection parent, AttributeReflectionHandle handle)
         {
@@ -59,6 +60,11 @@ namespace Slang.Sdk.Binding
             string? error = null;
             // Test string?
             return Call(() => StrongInterop.Attribute.GetArgumentValueString(Handle, index, out error), () => error);
+        }
+
+        public bool Equals(AttributeReflection? other)
+        {
+            return this == other;
         }
     }
 }

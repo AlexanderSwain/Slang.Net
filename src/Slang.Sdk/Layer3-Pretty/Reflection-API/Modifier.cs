@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Slang.Sdk
 {
-    public class Modifier : Reflection
+    public class Modifier : Reflection, IEquatable<Modifier>
     {
         #region Definition
         public override Reflection? Parent { get; }
@@ -24,6 +24,13 @@ namespace Slang.Sdk
         public int ID => Binding.GetID();
         public string? Name => Binding.GetName();
 
+        #endregion
+
+        #region Equality
+        public bool Equals(Modifier? other)
+        {
+            return this == other;
+        }
         #endregion
     }
 }

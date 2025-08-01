@@ -46,7 +46,8 @@ Native::GenericReflection::~GenericReflection()
     m_typeParameterConstraintsResultsToDelete.clear();
 
     // Clean up outer generic container
-    delete m_outerGenericContainer;
+    if (m_outerGenericContainer)
+        delete m_outerGenericContainer;
 
     // Clean up concrete type results results
     for (auto& result : m_concreteTypeResultsToDelete) {

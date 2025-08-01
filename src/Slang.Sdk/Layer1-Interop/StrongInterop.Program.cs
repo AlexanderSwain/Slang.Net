@@ -30,9 +30,28 @@ namespace Slang.Sdk.Interop
             }
 
             /// <summary>
-            /// Compiles a program and returns the result with strongly-typed input.
+            /// Compiles a program using the specified target and returns the result with strongly-typed input.
             /// </summary>
-            internal static SlangResult CompileProgram(
+            internal static SlangResult CompileTarget(
+                ProgramHandle program,
+                uint targetIndex,
+                out string? output,
+                out string? error)
+            {
+                char* pError = null;
+                char* pOutput = null;
+                var result = SlangNativeInterop.Program_CompileTarget(program.Handle, targetIndex, &pOutput, &pError);
+                error = Utf8StringMarshaller.ConvertToManaged((byte*)pError);
+                output = Utf8StringMarshaller.ConvertToManaged((byte*)pOutput);
+                SlangNativeInterop.FreeChar(&pError);
+                SlangNativeInterop.FreeChar(&pOutput);
+                return result;
+            }
+
+            /// <summary>
+            /// Compiles a program using the specified entry point and returns the result with strongly-typed input.
+            /// </summary>
+            internal static SlangResult CompileEntryPoint(
                 ProgramHandle program,
                 uint entryPointIndex,
                 uint targetIndex,
@@ -42,7 +61,7 @@ namespace Slang.Sdk.Interop
                 char* pError = null;
                 char* pOutput = null;
 
-                var result = SlangNativeInterop.Program_CompileProgram(program.Handle, entryPointIndex, targetIndex, &pOutput, &pError);
+                var result = SlangNativeInterop.Program_CompileEntryPoint(program.Handle, entryPointIndex, targetIndex, &pOutput, &pError);
 
                 error = Utf8StringMarshaller.ConvertToManaged((byte*)pError);
                 output = Utf8StringMarshaller.ConvertToManaged((byte*)pOutput);

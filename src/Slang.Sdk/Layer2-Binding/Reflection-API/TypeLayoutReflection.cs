@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Slang.Sdk.Interop;
-using static Slang.Sdk.Interop.StrongInterop;
-using static Slang.Sdk.Interop.StrongInterop;
-using static Slang.Sdk.Interop.StringMarshaling;
+﻿using Slang.Sdk.Interop;
 
 namespace Slang.Sdk.Binding
 {
-    internal unsafe class TypeLayoutReflection : Reflection
+    internal unsafe class TypeLayoutReflection : Reflection, IEquatable<TypeLayoutReflection>
     {
         internal override Reflection? Parent { get; }
         internal override TypeLayoutReflectionHandle Handle { get; }
+        internal override TypeLayoutReflectionHandle NativeHandle => new(StrongInterop.TypeLayoutReflection.GetNative(Handle, out var _));
+
 
         internal TypeLayoutReflection(Reflection parent, TypeLayoutReflectionHandle handle)
         {
@@ -121,6 +115,11 @@ namespace Slang.Sdk.Binding
         {
             string? error = null;
             return new VariableLayoutReflection(this, Call(() => StrongInterop.TypeLayoutReflection.GetContainerVarLayout(Handle, out error), () => error));
+        }
+
+        public bool Equals(TypeLayoutReflection? other)
+        {
+            return this == other;
         }
     }
 }

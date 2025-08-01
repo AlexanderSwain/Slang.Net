@@ -56,7 +56,8 @@ namespace SlangNative
     // Program API
     extern "C" SLANGNATIVE_API void* Program_Create(void* parentModule, const char** error);
     extern "C" SLANGNATIVE_API void Program_Release(void* program, const char** error);
-    extern "C" SLANGNATIVE_API int32_t Program_CompileProgram(void* program, unsigned int entryPointIndex, unsigned int targetIndex, const char** output, const char** error);
+    extern "C" SLANGNATIVE_API int32_t Program_CompileTarget(void* program, unsigned int targetIndex, const char** output, const char** error);
+    extern "C" SLANGNATIVE_API int32_t Program_CompileEntryPoint(void* program, unsigned int entryPointIndex, unsigned int targetIndex, const char** output, const char** error);
     extern "C" SLANGNATIVE_API void* Program_GetProgramReflection(void* program, unsigned int targetIndex, const char** error);
     extern "C" SLANGNATIVE_API void* Program_GetNative(void* program, const char** error);
 

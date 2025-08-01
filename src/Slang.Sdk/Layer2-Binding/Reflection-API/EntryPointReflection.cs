@@ -8,10 +8,12 @@ using static Slang.Sdk.Interop.Utilities;
 
 namespace Slang.Sdk.Binding
 {
-    internal unsafe class EntryPointReflection : Reflection
+    internal unsafe class EntryPointReflection : Reflection, IEquatable<EntryPointReflection>
     {
         internal override Reflection? Parent { get; }
         internal override EntryPointReflectionHandle Handle { get; }
+        internal override EntryPointReflectionHandle NativeHandle => new(StrongInterop.EntryPointReflection.GetNative(Handle, out var _));
+
 
         internal EntryPointReflection(Reflection parent, EntryPointReflectionHandle handle)
         {
@@ -63,10 +65,10 @@ namespace Slang.Sdk.Binding
             return new FunctionReflection(this, Call(() => StrongInterop.EntryPointReflection.GetFunction(Handle, out error), () => error));
         }
 
-        internal ShaderStage GetStage()
+        internal Stage GetStage()
         {
             string? error = null;
-            return (ShaderStage)Call(() => StrongInterop.EntryPointReflection.GetStage(Handle, out error), () => error);
+            return (Stage)Call(() => StrongInterop.EntryPointReflection.GetStage(Handle, out error), () => error);
         }
 
         internal void GetComputeThreadGroupSize(uint axisCount, ulong* outSizeAlongAxis)
@@ -118,6 +120,11 @@ namespace Slang.Sdk.Binding
         {
             string? error = null;
             return Call(() => StrongInterop.EntryPointReflection.HasDefaultConstantBuffer(Handle, out error), () => error);
+        }
+
+        public bool Equals(EntryPointReflection? other)
+        {
+            return this == other;
         }
     }
 }

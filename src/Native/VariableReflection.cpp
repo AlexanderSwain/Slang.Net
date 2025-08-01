@@ -15,8 +15,11 @@ Native::VariableReflection::VariableReflection(void* native)
 Native::VariableReflection::~VariableReflection()
 {
     // Clean up the type reflection
-    delete m_type;
-    m_type = nullptr;
+    if (m_type)
+    {
+        delete m_type;
+        m_type = nullptr;
+    }
 
     // Clean up modifiers
     for (auto& pair : m_modifiers)
@@ -37,8 +40,11 @@ Native::VariableReflection::~VariableReflection()
     }
 
     // Clean up generic container
-    delete m_genericContainer;
-    m_genericContainer = nullptr;
+    if (m_genericContainer)
+    {
+        delete m_genericContainer;
+        m_genericContainer = nullptr;
+    }
 
     // Clean up applySpecializations Results list
     for (auto& result : m_applySpecializationsResultsToDelete) {

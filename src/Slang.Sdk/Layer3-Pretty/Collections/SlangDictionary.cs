@@ -1,30 +1,31 @@
-﻿using System;
+﻿using Slang.Sdk.Collections;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Slang.Sdk.Collections
+namespace Slang.Sdk
 {
-    public class SlangDictionary<T>
+    public class SlangDictionary<Key, Value>
     {
-        internal INamedComposition<T> Parent { get; set; }
+        internal ITypedComposition<Key, Value> Owner { get; set; }
 
-        public T? this[string name]
+        public Value this[Key key]
         {
-            get => Parent.FindByName(name);
+            get => Owner.Find(key) ?? throw new($"(Key: {key}) doesn't exist in collection: {this}. Use TryGetValue() instead if you need to check if the key exists.");
         }
 
-        public bool TryGetValue(string name, [MaybeNullWhen(false)] out T? value)
+        public bool TryGetValue(Key key, [MaybeNullWhen(false)] out Value? value)
         {
-            value = Parent.FindByName(name);
+            value = Owner.Find(key);
             return value != null;
         }
 
-        internal SlangDictionary(INamedComposition<T> parent)
+        internal SlangDictionary(ITypedComposition<Key, Value> owner)
         {
-            Parent = parent;
+            Owner = owner;
         }
     }
 }

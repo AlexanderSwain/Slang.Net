@@ -8,7 +8,7 @@ using Slang.Sdk.Interop;
 
 namespace Slang.Sdk
 {
-    public class TypeLayout : Reflection,
+    public class TypeLayout : Reflection, IEquatable<TypeLayout>,
         IComposition<VariableLayout>
     {
         #region Definition
@@ -68,6 +68,13 @@ namespace Slang.Sdk
 
         public int FindFieldIndexByName(string name) => Binding.FindFieldIndexByName(name);
 
+        #endregion
+
+        #region Equality
+        public bool Equals(TypeLayout? other)
+        {
+            return this == other;
+        }
         #endregion
 
     }

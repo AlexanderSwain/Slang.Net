@@ -8,13 +8,11 @@ namespace Slang.Sdk.Collections
 {
     internal static class CollectionExtensions
     {
-        internal static uint? IndexOf<T>(this IComposition<T> source, T value)
+        internal static uint? IndexOf<T>(this IComposition<T> source, T value) where T : IEquatable<T>
         {
-            EqualityComparer<T> comparer = EqualityComparer<T>.Default;
-
             for (uint i = 0; i < source.Count; i++)
             {
-                if (comparer.Equals(source.GetByIndex(i), value))
+                if (source.GetByIndex(i).Equals(value))
                     return i;
             }
 

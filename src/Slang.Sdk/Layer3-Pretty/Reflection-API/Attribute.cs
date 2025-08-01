@@ -7,7 +7,7 @@ using Slang.Sdk.Collections;
 
 namespace Slang.Sdk
 {
-    public class Attribute : Reflection,
+    public class Attribute : Reflection, IEquatable<Attribute>,
         IComposition<Type>
     {
         #region Definition
@@ -43,6 +43,14 @@ namespace Slang.Sdk
         public float GetArgumentValueFloat(uint index) => Binding.GetArgumentValueFloat(index);
 
         public string? GetArgumentValueString(uint index) => Binding.GetArgumentValueString(index);
+
+        #endregion
+
+        #region Equality
+        public bool Equals(Attribute? other)
+        {
+            return this == other;
+        } 
         #endregion
     }
 }
