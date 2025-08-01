@@ -9,6 +9,16 @@ internal unsafe sealed class Module : CompilationBinding, IEquatable<Module>
     internal override Interop.ModuleHandle Handle { get; }
     internal override Interop.ModuleHandle NativeHandle => new(StrongInterop.Module.GetNative(Handle, out var _));
 
+    public Module(Session parent, CompileRequest compileRequest)
+    {
+        Parent = parent;
+
+        // Using the strongly-typed interop that returns ModuleHandle directly
+        Handle = StrongInterop.Module.Create(Parent.Handle, compileRequest.Handle, out var error);
+
+        if (Handle.IsInvalid)
+            throw new SlangException(SlangResult.Fail, $"Failed to create Slang module: {error ?? "<No error was returned from Slang>"}");
+    }
 
     public Module(Session parent, string moduleName, string modulePath, string shaderSource)
     {

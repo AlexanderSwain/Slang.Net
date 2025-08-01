@@ -64,7 +64,124 @@ internal static unsafe partial class SlangNativeInterop
 
     #endregion
 
+    #region CompileRequest API
+
+    [LibraryImport(LibraryName)]
+    internal static partial nint CompileRequest_Create(nint parentSession, char** error);
+
+    [LibraryImport(LibraryName)]
+    internal static partial void CompileRequest_Release(nint compileRequest, char** error);
+
+    [LibraryImport(LibraryName)]
+    internal static partial nint CompileRequest_GetNative(nint compileRequest, char** error);
+
+    [LibraryImport(LibraryName)]
+    internal static partial void CompileRequest_AddCodeGenTarget(nint compileRequest, int target, char** error);
+
+    [LibraryImport(LibraryName)]
+    internal static partial int CompileRequest_AddEntryPoint(
+        nint compileRequest,
+        int translationUnitIndex,
+        char* name,
+        int stage,
+        char** error);
+
+    [LibraryImport(LibraryName)]
+    internal static partial int CompileRequest_AddEntryPointEx(
+        nint compileRequest,
+        int translationUnitIndex,
+        char* name,
+        int stage,
+        int genericArgCount,
+        char*[] genericArgs,
+        char** error);
+
+    [LibraryImport(LibraryName)]
+    internal static partial void CompileRequest_AddLibraryReference(
+        nint compileRequest,
+        nint baseRequest,
+        char* libName,
+        char** error);
+
+    [LibraryImport(LibraryName)]
+    internal static partial void CompileRequest_AddPreprocessorDefine(
+        nint compileRequest,
+        char* key,
+        char* value,
+        char** error);
+
+    [LibraryImport(LibraryName)]
+    internal static partial void CompileRequest_AddRef(nint compileRequest, char** error);
+
+    [LibraryImport(LibraryName)]
+    internal static partial void CompileRequest_AddSearchPath(
+        nint compileRequest,
+        char* searchDir,
+        char** error);
+
+    [LibraryImport(LibraryName)]
+    internal static partial void CompileRequest_AddTargetCapability(
+        nint compileRequest,
+        int targetIndex,
+        int capability,
+        char** error);
+
+    [LibraryImport(LibraryName)]
+    internal static partial int CompileRequest_AddTranslationUnit(
+        nint compileRequest,
+        int language,
+        char* name,
+        char** error);
+
+    [LibraryImport(LibraryName)]
+    internal static partial void CompileRequest_AddTranslationUnitPreprocessorDefine(
+        nint compileRequest,
+        int translationUnitIndex,
+        char* key,
+        char* value,
+        char** error);
+
+    [LibraryImport(LibraryName)]
+    internal static partial void CompileRequest_AddTranslationUnitSourceBlob(
+        nint compileRequest,
+        int translationUnitIndex,
+        char* path,
+        nint sourceBlob,
+        char** error);
+
+    [LibraryImport(LibraryName)]
+    internal static partial void CompileRequest_AddTranslationUnitSourceFile(
+        nint compileRequest,
+        int translationUnitIndex,
+        char* path,
+        char** error);
+
+    [LibraryImport(LibraryName)]
+    internal static partial void CompileRequest_AddTranslationUnitSourceString(
+        nint compileRequest,
+        int translationUnitIndex,
+        char* path,
+        char* source,
+        char** error);
+
+    [LibraryImport(LibraryName)]
+    internal static partial void CompileRequest_AddTranslationUnitSourceStringSpan(
+        nint compileRequest,
+        int translationUnitIndex,
+        char* path,
+        char* sourceBegin,
+        char* sourceEnd,
+        char** error);
+
+    #endregion
+
     #region Module API
+
+    [LibraryImport(LibraryName)]
+    internal static partial nint Module_CreateFromCompileRequest(
+    nint parentSession,
+    nint compileRequest,
+    char** error);
 
     [LibraryImport(LibraryName)]
     internal static partial nint Module_Create(

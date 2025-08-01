@@ -12,6 +12,24 @@ namespace Slang.Sdk.Interop
             /// </summary>
             internal static ModuleHandle Create(
                 SessionHandle parentSession,
+                CompileRequestHandle compileRequest,
+                out string? error)
+            {
+                char* pError = null;
+                var handle = SlangNativeInterop.Module_CreateFromCompileRequest(parentSession, compileRequest, &pError);
+
+                error = Utf8StringMarshaller.ConvertToManaged((byte*)pError);
+
+                SlangNativeInterop.FreeChar(&pError);
+
+                return new ModuleHandle(handle);
+            }
+
+            /// <summary>
+            /// Creates a module with strongly-typed handle.
+            /// </summary>
+            internal static ModuleHandle Create(
+                SessionHandle parentSession,
                 string moduleName,
                 string modulePath,
                 string shaderSource,

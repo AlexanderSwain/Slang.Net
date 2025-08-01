@@ -135,6 +135,9 @@
     <ClInclude Include="TargetCLI.h">
       <Filter>Slang Structs</Filter>
     </ClInclude>
+    <ClInclude Include="CompileRequest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SlangNative.cpp">
@@ -202,6 +205,9 @@
     </ClCompile>
     <ClCompile Include="ShaderReflection.cpp">
       <Filter>Reflection</Filter>
+    </ClCompile>
+    <ClCompile Include="CompileRequest.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

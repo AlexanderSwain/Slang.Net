@@ -1,22 +1,18 @@
 #include "ModuleCLI.h"
 #include <iostream>
 
-Native::ModuleCLI::ModuleCLI(SessionCLI* parent, const char* moduleName, const char* modulePath, const char* shaderSource)
+Native::ModuleCLI::ModuleCLI(SessionCLI* parent, CompileRequestCLI* compileRequest)
 {
 	m_parent = parent->getNative();
 	unsigned int index = parent->getModuleCount();
 
 	Slang::ComPtr<ISlangBlob> diagnosticsBlob;
-	m_parent->createCompileRequest(&m_compileRequest);
-
-	// Add the shader file
-	m_compileRequest->addTranslationUnit(SLANG_SOURCE_LANGUAGE_SLANG, moduleName);
-	m_compileRequest->addTranslationUnitSourceFile(index, modulePath);
+	m_compileRequest = compileRequest;
 
 	// Compile it
-	if (m_compileRequest->compile() != SLANG_OK)
+	if (m_compileRequest->getNative()->compile() != SLANG_OK)
 	{
-		auto diagnostics = m_compileRequest->getDiagnosticOutput();
+		auto diagnostics = m_compileRequest->getNative()->getDiagnosticOutput();
 		throw std::runtime_error(std::string("Slang compile error:\n") + diagnostics);
 	}
 
@@ -28,7 +24,57 @@ Native::ModuleCLI::ModuleCLI(SessionCLI* parent, const char* moduleName, const c
 		//slangModule = m_parent->loadModule(moduleName, diagnosticsBlob.writeRef());
 		//slangModule = m_parent->loadModuleFromSource(moduleName, modulePath, sourceBlob, diagnosticsBlob.writeRef());
 		//slangModule = m_parent->loadModuleFromSourceString(moduleName, modulePath, shaderSource, diagnosticsBlob.writeRef());
-		m_compileRequest->getModule(index, slangModule.writeRef());
+		m_compileRequest->getNative()->getModule(index, slangModule.writeRef());
+
+		// Improved diagnostics output
+		if (diagnosticsBlob && diagnosticsBlob->getBufferSize() > 0)
+		{
+			std::string diagnosticsText = std::string((const char*)diagnosticsBlob->getBufferPointer());
+			std::string errorMessage = "There are issues in the shader source: " + diagnosticsText;
+
+			if (!slangModule)
+				throw std::runtime_error(errorMessage);
+			else
+				std::cout << diagnosticsText << std::endl;
+		}
+		else if (!slangModule)
+		{
+			throw std::runtime_error("Unknown failure: Failed to create the Slang module.");
+		}
+	}
+
+	m_slangModule = slangModule;
+	m_entryPoints = nullptr; // Initialize to nullptr, will be allocated on demand
+}
+
+Native::ModuleCLI::ModuleCLI(SessionCLI* parent, const char* moduleName, const char* modulePath, const char* shaderSource)
+{
+	m_parent = parent->getNative();
+	unsigned int index = parent->getModuleCount();
+
+	Slang::ComPtr<ISlangBlob> diagnosticsBlob;
+	m_compileRequest = new CompileRequestCLI(parent);
+
+	// Add the shader file
+	m_compileRequest->addTranslationUnit(SLANG_SOURCE_LANGUAGE_SLANG, moduleName);
+	m_compileRequest->addTranslationUnitSourceFile(index, modulePath);
+
+	// Compile it
+	if (m_compileRequest->getNative()->compile() != SLANG_OK)
+	{
+		auto diagnostics = m_compileRequest->getNative()->getDiagnosticOutput();
+		throw std::runtime_error(std::string("Slang compile error:\n") + diagnostics);
+	}
+
+	Slang::ComPtr<slang::IModule> slangModule;
+	{
+		Slang::ComPtr<slang::IBlob> sourceBlob;
+		Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+
+		//slangModule = m_parent->loadModule(moduleName, diagnosticsBlob.writeRef());
+		//slangModule = m_parent->loadModuleFromSource(moduleName, modulePath, sourceBlob, diagnosticsBlob.writeRef());
+		//slangModule = m_parent->loadModuleFromSourceString(moduleName, modulePath, shaderSource, diagnosticsBlob.writeRef());
+		m_compileRequest->getNative()->getModule(index, slangModule.writeRef());
 
 		// Improved diagnostics output
 		if (diagnosticsBlob && diagnosticsBlob->getBufferSize() > 0)
@@ -111,7 +157,7 @@ slang::IComponentType* Native::ModuleCLI::getProgramComponent()
 {
 	slang::IComponentType* result;
 	{
-		SlangResult getResult = m_compileRequest->getProgramWithEntryPoints(&result);
+		SlangResult getResult = m_compileRequest->getNative()->getProgramWithEntryPoints(&result);
 
 		if (SLANG_FAILED(getResult))
 		{

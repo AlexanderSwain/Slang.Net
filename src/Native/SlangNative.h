@@ -33,8 +33,28 @@ namespace SlangNative
     extern "C" SLANGNATIVE_API void* Session_GetModuleByIndex(void* session, unsigned int index, const char** error);
     extern "C" SLANGNATIVE_API void* Session_GetNative(void* session, const char** error);
 
+    // Compile Request
+    extern "C" SLANGNATIVE_API void* CompileRequest_Create(void* parentSession, const char** error);
+    extern "C" SLANGNATIVE_API void CompileRequest_Release(void* compileRequest, const char** error);
+    extern "C" SLANGNATIVE_API void* CompileRequest_GetNative(void* compileRequest, const char** error);
+    extern "C" SLANGNATIVE_API void CompileRequest_AddCodeGenTarget(void* compileRequest, int target, const char** error);
+    extern "C" SLANGNATIVE_API int32_t CompileRequest_AddEntryPoint(void* compileRequest, int translationUnitIndex, const char* name, int stage, const char** error);
+    extern "C" SLANGNATIVE_API int32_t CompileRequest_AddEntryPointEx(void* compileRequest, int translationUnitIndex, const char* name, int stage, int genericArgCount, char const** genericArgs, const char** error);
+    extern "C" SLANGNATIVE_API void CompileRequest_AddLibraryReference(void* compileRequest, void* baseRequest, const char* libName, const char** error);
+    extern "C" SLANGNATIVE_API void CompileRequest_AddPreprocessorDefine(void* compileRequest, const char* key, const char* value, const char** error);
+    extern "C" SLANGNATIVE_API void CompileRequest_AddRef(void* compileRequest, const char** error);
+    extern "C" SLANGNATIVE_API void CompileRequest_AddSearchPath(void* compileRequest, const char* searchDir, const char** error);
+    extern "C" SLANGNATIVE_API void CompileRequest_AddTargetCapability(void* compileRequest, int targetIndex, int capability, const char** error);
+    extern "C" SLANGNATIVE_API int CompileRequest_AddTranslationUnit(void* compileRequest, int language, const char* name, const char** error);
+    extern "C" SLANGNATIVE_API void CompileRequest_AddTranslationUnitPreprocessorDefine(void* compileRequest, int translationUnitIndex, const char* key, const char* value, const char** error);
+    extern "C" SLANGNATIVE_API void CompileRequest_AddTranslationUnitSourceBlob(void* compileRequest, int translationUnitIndex, const char* path, void* sourceBlob, const char** error);
+    extern "C" SLANGNATIVE_API void CompileRequest_AddTranslationUnitSourceFile(void* compileRequest, int translationUnitIndex, const char* path, const char** error);
+    extern "C" SLANGNATIVE_API void CompileRequest_AddTranslationUnitSourceString(void* compileRequest, int translationUnitIndex, const char* path, const char* source, const char** error);
+    extern "C" SLANGNATIVE_API void CompileRequest_AddTranslationUnitSourceStringSpan(void* compileRequest, int translationUnitIndex, const char* path, const char* sourceBegin, const char* sourceEnd, const char** error);
+
     // Module API
-    extern "C" SLANGNATIVE_API void* Module_Create(void* parentSession, const char* moduleName, const char* modulePath, const char* shaderSource, char** error);
+    extern "C" SLANGNATIVE_API void* Module_CreateFromCompileRequest(void* parentSession, void* compileRequest, const char** error);
+    extern "C" SLANGNATIVE_API void* Module_Create(void* parentSession, const char* moduleName, const char* modulePath, const char* shaderSource, const char** error);
     extern "C" SLANGNATIVE_API void* Module_Import(void* parentSession, const char* moduleName, const char** error);
     extern "C" SLANGNATIVE_API void Module_Release(void* parentModule, const char** error);
 	extern "C" SLANGNATIVE_API const char* Module_GetName(void* parentModule, const char** error);

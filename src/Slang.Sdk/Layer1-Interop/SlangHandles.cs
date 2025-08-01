@@ -98,6 +98,23 @@ public sealed class SessionHandle : SlangHandle
 }
 
 /// <summary>
+/// Safe handle for Slang compile request objects.
+/// </summary>
+public sealed class CompileRequestHandle : SlangHandle
+{
+    public override nint NativeHandle => StrongInterop.CompileRequest.GetNative(this, out var _);
+    public CompileRequestHandle() { }
+
+    public CompileRequestHandle(nint handle) : base(handle) { }
+
+    protected override bool ReleaseHandle()
+    {
+        StrongInterop.CompileRequest.Release(this, out var _);
+        return true;
+    }
+}
+
+/// <summary>
 /// Safe handle for Slang module objects.
 /// </summary>
 public sealed class ModuleHandle : SlangHandle

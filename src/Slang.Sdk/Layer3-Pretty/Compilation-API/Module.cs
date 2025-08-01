@@ -1,4 +1,5 @@
-﻿using Slang.Sdk.Collections;
+﻿using Slang.Sdk.Binding;
+using Slang.Sdk.Collections;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,11 +8,18 @@ using System.Threading.Tasks;
 
 namespace Slang.Sdk
 {
-    public class Module : IEquatable<Module>
+    public partial class Module : IEquatable<Module>
     {
         #region Definition
         public Session Parent { get; }
         internal Binding.Module Binding { get; }
+
+        internal Module(Session parent, Module.Builder builder)
+        {
+            Parent = parent;
+            Binding = new Binding.Module(Parent.Binding, builder.Binding);
+            Name = null;
+        }
 
         internal Module(Session parent, string moduleName, string modulePath, string moduleSource)
         {
@@ -31,7 +39,7 @@ namespace Slang.Sdk
         #region Pretty
         Program? _Program;
         public Program Program => _Program ??= new Program(this);
-        public string Name { get; }
+        public string? Name { get; }
         #endregion
 
         #region Equality

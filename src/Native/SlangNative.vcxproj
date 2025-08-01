@@ -244,6 +244,7 @@
     <ClInclude Include="BindingType.h" />
     <ClInclude Include="BufferReflection.h" />
     <ClInclude Include="CLIWrapperMacros.h" />
+    <ClInclude Include="CompileRequest.h" />
     <ClInclude Include="CompilerOptionCLI.h" />
     <ClInclude Include="DeclReflection.h" />
     <ClInclude Include="ImageFormat.h" />
@@ -264,6 +265,7 @@
   <ItemGroup>
     <ClCompile Include="Attribute.cpp" />
     <ClCompile Include="BufferReflection.cpp" />
+    <ClCompile Include="CompileRequest.cpp" />
     <ClCompile Include="CompilerOptionCLI.cpp" />
     <ClCompile Include="DeclReflection.cpp" />
     <ClCompile Include="Modifier.cpp" />

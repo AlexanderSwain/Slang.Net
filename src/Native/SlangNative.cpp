@@ -4,6 +4,7 @@
 #include "ModuleCLI.h"
 #include "EntryPointCLI.h"
 #include "ProgramCLI.h"
+#include "CompileRequest.h"
 #include "Attribute.h"
 #include "EntryPointReflection.h"
 #include "FunctionReflection.h"
@@ -132,8 +133,339 @@ namespace SlangNative
 		}
 	}
 
+	// CompileRequest API
+	extern "C" SLANGNATIVE_API void* CompileRequest_Create(void* parentSession, const char** error)
+	{
+		if (!parentSession)
+		{
+			*error = SetError("Argument Null: parentSession");
+			return nullptr;
+		}
+
+		try
+		{
+			return new CompileRequestCLI((SessionCLI*)parentSession);
+		}
+		catch (const std::exception& e)
+		{
+			*error = SetError(e.what());
+			return nullptr;
+		}
+	}
+
+	extern "C" SLANGNATIVE_API void CompileRequest_Release(void* compileRequest, const char** error)
+	{
+		if (!compileRequest) return;
+
+		try
+		{
+			Native::CompileRequestCLI* compileRequestCLI = (Native::CompileRequestCLI*)compileRequest;
+			delete compileRequestCLI;
+		}
+		catch (const std::exception& e)
+		{
+			*error = SetError(e.what());
+		}
+	}
+
+	extern "C" SLANGNATIVE_API void* CompileRequest_GetNative(void* compileRequest, const char** error)
+	{
+		if (!compileRequest)
+		{
+			*error = SetError("Argument Null: compileRequest");
+			return nullptr;
+		}
+
+		try
+		{
+			return ((CompileRequestCLI*)compileRequest)->getNative();
+		}
+		catch (const std::exception& e)
+		{
+			*error = SetError(e.what());
+			return nullptr;
+		}
+	}
+
+	extern "C" SLANGNATIVE_API void CompileRequest_AddCodeGenTarget(void* compileRequest, int target, const char** error)
+	{
+		if (!compileRequest)
+		{
+			*error = SetError("Argument Null: compileRequest");
+			return;
+		}
+
+		try
+		{
+			((CompileRequestCLI*)compileRequest)->addCodeGenTarget((SlangCompileTarget)target);
+		}
+		catch (const std::exception& e)
+		{
+			*error = SetError(e.what());
+		}
+	}
+
+	extern "C" SLANGNATIVE_API int32_t CompileRequest_AddEntryPoint(void* compileRequest, int translationUnitIndex, const char* name, int stage, const char** error)
+	{
+		if (!compileRequest)
+		{
+			*error = SetError("Argument Null: compileRequest");
+			return SLANG_FAIL;
+		}
+
+		try
+		{
+			return ((CompileRequestCLI*)compileRequest)->addEntryPoint(translationUnitIndex, name, (SlangStage)stage);
+		}
+		catch (const std::exception& e)
+		{
+			*error = SetError(e.what());
+			return SLANG_FAIL;
+		}
+	}
+
+	extern "C" SLANGNATIVE_API int32_t CompileRequest_AddEntryPointEx(void* compileRequest, int translationUnitIndex, const char* name, int stage, int genericArgCount, char const** genericArgs, const char** error)
+	{
+		if (!compileRequest)
+		{
+			*error = SetError("Argument Null: compileRequest");
+			return SLANG_FAIL;
+		}
+
+		try
+		{
+			return ((CompileRequestCLI*)compileRequest)->addEntryPointEx(translationUnitIndex, name, (SlangStage)stage, genericArgCount, genericArgs);
+		}
+		catch (const std::exception& e)
+		{
+			*error = SetError(e.what());
+			return SLANG_FAIL;
+		}
+	}
+
+	extern "C" SLANGNATIVE_API void CompileRequest_AddLibraryReference(void* compileRequest, void* baseRequest, const char* libName, const char** error)
+	{
+		if (!compileRequest)
+		{
+			*error = SetError("Argument Null: compileRequest");
+			return;
+		}
+
+		try
+		{
+			((CompileRequestCLI*)compileRequest)->addLibraryReference((SlangCompileRequest*)baseRequest, libName);
+		}
+		catch (const std::exception& e)
+		{
+			*error = SetError(e.what());
+		}
+	}
+
+	extern "C" SLANGNATIVE_API void CompileRequest_AddPreprocessorDefine(void* compileRequest, const char* key, const char* value, const char** error)
+	{
+		if (!compileRequest)
+		{
+			*error = SetError("Argument Null: compileRequest");
+			return;
+		}
+
+		try
+		{
+			((CompileRequestCLI*)compileRequest)->addPreprocessorDefine(key, value);
+		}
+		catch (const std::exception& e)
+		{
+			*error = SetError(e.what());
+		}
+	}
+
+	extern "C" SLANGNATIVE_API void CompileRequest_AddRef(void* compileRequest, const char** error)
+	{
+		if (!compileRequest)
+		{
+			*error = SetError("Argument Null: compileRequest");
+			return;
+		}
+
+		try
+		{
+			((CompileRequestCLI*)compileRequest)->addRef();
+		}
+		catch (const std::exception& e)
+		{
+			*error = SetError(e.what());
+		}
+	}
+
+	extern "C" SLANGNATIVE_API void CompileRequest_AddSearchPath(void* compileRequest, const char* searchDir, const char** error)
+	{
+		if (!compileRequest)
+		{
+			*error = SetError("Argument Null: compileRequest");
+			return;
+		}
+
+		try
+		{
+			((CompileRequestCLI*)compileRequest)->addSearchPath(searchDir);
+		}
+		catch (const std::exception& e)
+		{
+			*error = SetError(e.what());
+		}
+	}
+
+	extern "C" SLANGNATIVE_API void CompileRequest_AddTargetCapability(void* compileRequest, int targetIndex, int capability, const char** error)
+	{
+		if (!compileRequest)
+		{
+			*error = SetError("Argument Null: compileRequest");
+			return;
+		}
+
+		try
+		{
+			((CompileRequestCLI*)compileRequest)->addTargetCapability(targetIndex, (SlangCapabilityID)capability);
+		}
+		catch (const std::exception& e)
+		{
+			*error = SetError(e.what());
+		}
+	}
+
+	extern "C" SLANGNATIVE_API int CompileRequest_AddTranslationUnit(void* compileRequest, int language, const char* name, const char** error)
+	{
+		if (!compileRequest)
+		{
+			*error = SetError("Argument Null: compileRequest");
+			return -1;
+		}
+
+		try
+		{
+			return ((CompileRequestCLI*)compileRequest)->addTranslationUnit((SlangSourceLanguage)language, name);
+		}
+		catch (const std::exception& e)
+		{
+			*error = SetError(e.what());
+			return -1;
+		}
+	}
+
+	extern "C" SLANGNATIVE_API void CompileRequest_AddTranslationUnitPreprocessorDefine(void* compileRequest, int translationUnitIndex, const char* key, const char* value, const char** error)
+	{
+		if (!compileRequest)
+		{
+			*error = SetError("Argument Null: compileRequest");
+			return;
+		}
+
+		try
+		{
+			((CompileRequestCLI*)compileRequest)->addTranslationUnitPreprocessorDefine(translationUnitIndex, key, value);
+		}
+		catch (const std::exception& e)
+		{
+			*error = SetError(e.what());
+		}
+	}
+
+	extern "C" SLANGNATIVE_API void CompileRequest_AddTranslationUnitSourceBlob(void* compileRequest, int translationUnitIndex, const char* path, void* sourceBlob, const char** error)
+	{
+		if (!compileRequest)
+		{
+			*error = SetError("Argument Null: compileRequest");
+			return;
+		}
+
+		try
+		{
+			((CompileRequestCLI*)compileRequest)->addTranslationUnitSourceBlob(translationUnitIndex, path, (ISlangBlob*)sourceBlob);
+		}
+		catch (const std::exception& e)
+		{
+			*error = SetError(e.what());
+		}
+	}
+
+	extern "C" SLANGNATIVE_API void CompileRequest_AddTranslationUnitSourceFile(void* compileRequest, int translationUnitIndex, const char* path, const char** error)
+	{
+		if (!compileRequest)
+		{
+			*error = SetError("Argument Null: compileRequest");
+			return;
+		}
+
+		try
+		{
+			((CompileRequestCLI*)compileRequest)->addTranslationUnitSourceFile(translationUnitIndex, path);
+		}
+		catch (const std::exception& e)
+		{
+			*error = SetError(e.what());
+		}
+	}
+
+	extern "C" SLANGNATIVE_API void CompileRequest_AddTranslationUnitSourceString(void* compileRequest, int translationUnitIndex, const char* path, const char* source, const char** error)
+	{
+		if (!compileRequest)
+		{
+			*error = SetError("Argument Null: compileRequest");
+			return;
+		}
+
+		try
+		{
+			((CompileRequestCLI*)compileRequest)->addTranslationUnitSourceString(translationUnitIndex, path, source);
+		}
+		catch (const std::exception& e)
+		{
+			*error = SetError(e.what());
+		}
+	}
+
+	extern "C" SLANGNATIVE_API void CompileRequest_AddTranslationUnitSourceStringSpan(void* compileRequest, int translationUnitIndex, const char* path, const char* sourceBegin, const char* sourceEnd, const char** error)
+	{
+		if (!compileRequest)
+		{
+			*error = SetError("Argument Null: compileRequest");
+			return;
+		}
+
+		try
+		{
+			((CompileRequestCLI*)compileRequest)->addTranslationUnitSourceStringSpan(translationUnitIndex, path, sourceBegin, sourceEnd);
+		}
+		catch (const std::exception& e)
+		{
+			*error = SetError(e.what());
+		}
+	}
+
 	// Module API
-	extern "C" SLANGNATIVE_API void* Module_Create(void* parentSession, const char* moduleName, const char* modulePath, const char* shaderSource, char** error)
+	extern "C" SLANGNATIVE_API void* Module_CreateFromCompileRequest(void* parentSession, void* compileRequest, const char** error)
+	{
+		if (!parentSession)
+		{
+			SetError("Argument Null: parentSession");
+			return nullptr;
+		}
+		if (!compileRequest)
+		{
+			SetError("Argument Null: compileRequest");
+			return nullptr;
+		}
+		try
+		{
+			return new ModuleCLI((SessionCLI*)parentSession, (CompileRequestCLI*)compileRequest);
+		}
+		catch (const std::exception& e)
+		{
+			*error = SetError(e.what());
+			return nullptr;
+		}
+	}
+	extern "C" SLANGNATIVE_API void* Module_Create(void* parentSession, const char* moduleName, const char* modulePath, const char* shaderSource, const char** error)
 	{
 		try
 		{
@@ -141,7 +473,7 @@ namespace SlangNative
 		}
 		catch (const std::exception& e)
 		{
-			*error = _strdup(e.what());
+			*error = SetError(e.what());
 			return nullptr;
 		}
 	}
@@ -2429,7 +2761,7 @@ namespace SlangNative
 	{
 		if (!entryPointReflection) return nullptr;
 
-		try
+	 try
 		{
 			return ((Native::EntryPointReflection*)entryPointReflection)->getResultVarLayout();
 		}

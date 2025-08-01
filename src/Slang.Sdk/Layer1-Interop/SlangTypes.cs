@@ -166,6 +166,38 @@ public enum ScalarType
     UIntPtr
 }
 
+public enum CapabilityID
+{
+    Unknown = 0,
+    ShaderModel60 = 1001,
+    ShaderModel65 = 1005,
+    ShaderModel66 = 1006,
+    ShaderModel67 = 1007,
+    RayTracing = 2001,
+    Geometry = 2002,
+    MeshShaderNv = 2101,
+    MeshShaderExt = 2102,
+    WaveOps = 3001,
+    BindlessTexture = 4001,
+    BindlessResource = 4002,
+    // We ask the Slang.Net community to contribute more capabilities as needed.
+};
+
+public enum SourceLanguage
+{
+    Unknown,
+    Slang,
+    Hlsl,
+    Glsl,
+    C,
+    Cpp,
+    Cuda,
+    Spirv,
+    Metal,
+    Wgsl,
+    CountOf,
+};
+
 [StructLayout(LayoutKind.Sequential)]
 public unsafe struct CompilerOption
 {

@@ -3,6 +3,7 @@
 #include "slang-com-ptr.h"
 #include "slang-com-helper.h"
 #include "SessionCLI.h"
+#include "CompileRequest.h"
 #include "EntryPointCLI.h"
 #include <string>
 
@@ -17,6 +18,9 @@ namespace Native
 	class SLANGNATIVE_API ModuleCLI
 	{
 	public:
+		// Compile Request constructor
+		ModuleCLI(SessionCLI* parent, CompileRequestCLI* compileRequest);
+
 		// Constructor module from source
 		ModuleCLI(SessionCLI* parent, const char* moduleName, const char* modulePath, const char* shaderSource);
 
@@ -41,7 +45,7 @@ namespace Native
 
 		slang::ISession* m_parent;
 		slang::IModule* m_slangModule;
-		SlangCompileRequest* m_compileRequest;
+		Native::CompileRequestCLI* m_compileRequest;
 		Native::EntryPointCLI** m_entryPoints;
 	};
 }
