@@ -48,7 +48,7 @@ public class CompilationAPIShowcase
         await DemoErrorHandlingAsync();
 
         // Demo 6: Advanced Compilation Features
-        await DemoAdvancedModuleBuildingAsync();
+        await DemoAdvancedCompilationFeaturesAsync();
 
         PrintSummary();
     }
@@ -110,7 +110,7 @@ public class CompilationAPIShowcase
             var builder = new Session.Builder()
                 .AddTarget(Targets.Hlsl.cs_6_0)          // DirectX 12
                 .AddTarget(Targets.Glsl.v460)            // OpenGL 4.6
-                .AddTarget(Targets.SpirV.vulkan_1_2)     // Vulkan 1.2
+                                                         //.AddTarget(Targets.SpirV.vulkan_1_2)     // Vulkan 1.2
                 .AddTarget(Targets.Metal.v2_4)           // Metal 2.4
                 .AddTarget(Targets.Wgsl.v1_0)            // WebGPU
                 .AddSearchPath(_workingDirectory);
@@ -221,31 +221,40 @@ public class CompilationAPIShowcase
 
         try
         {
-            var session = new Session.Builder()
-                .AddTarget(Targets.Hlsl.cs_6_0)
-                .AddSearchPath(_workingDirectory)
-                .Create();
+            // Define target-specific sessions to avoid stage compatibility issues
+            var targetConfigs = new[]
+            {
+                new { Target = Targets.Hlsl.vs_6_0, EntryPoints = new[] { "VS" }, Stage = "vertex" },
+                new { Target = Targets.Hlsl.ps_6_0, EntryPoints = new[] { "PS" }, Stage = "fragment" },
+                new { Target = Targets.Hlsl.cs_6_0, EntryPoints = new[] { "CS" }, Stage = "compute" },
+                new { Target = Targets.Hlsl.gs_6_0, EntryPoints = new[] { "GS" }, Stage = "geometry" }
+            };
 
-            var module = session.LoadModule("MultiComputeShader.slang");
-            var program = module.Program;
+            Console.WriteLine($"🔍 Discovering entry points across {targetConfigs.Length} shader stages:\n");
 
-            Console.WriteLine($"🔍 Discovered {program.Targets.Count} targets:\n");
-
-            // To get stage information, we need to use reflection with a target
-            // Let's try each target to see what entry points are available
-            foreach (var target in session.Targets)
+            foreach (var config in targetConfigs)
             {
                 try
                 {
-                    var programTarget = program.Targets[target];
-                    Console.WriteLine($"🎯 Target: {target}");
+                    Console.WriteLine($"🎯 Target: {config.Target} (Stage: {config.Stage})");
+
+                    // Create a session with only this specific target
+                    var builder = new Session.Builder()
+                        .AddTarget(config.Target)
+                        .AddSearchPath(_workingDirectory);
+
+                    var session = builder.Create();
+                    var module = session.LoadModule("MultiStageShader.slang");
+                    var program = module.Program;
+
+                    // Get the target-specific program
+                    var programTarget = program.Targets[config.Target];
                     Console.WriteLine($"   📋 Entry points found: {programTarget.EntryPoints.Count}");
 
                     foreach (var entryPoint in programTarget.EntryPoints)
                     {
                         Console.WriteLine($"   • {entryPoint.Name} (Stage: {entryPoint.Stage})");
 
-                        // Try to find the corresponding entry point in the module
                         try
                         {
                             var result = entryPoint.Compile();
@@ -253,21 +262,54 @@ public class CompilationAPIShowcase
                             Console.WriteLine($"     📏 Code length: {result.Source.Length} characters");
 
                             // Save individual entry point
-                            var filename = $"{entryPoint.Name}_{target.ToString().Replace(":", "_")}.hlsl";
+                            var targetName = config.Target.ToString().Replace(":", "_");
+                            var filename = $"{entryPoint.Name}_{targetName}.hlsl";
                             await File.WriteAllTextAsync(Path.Combine(_workingDirectory, filename), result.Source);
                             Console.WriteLine($"     💾 Saved as: {filename}");
+
+                            // Show a snippet of the generated code
+                            var preview = result.Source.Length > 200 ? 
+                                result.Source.Substring(0, 200) + "..." : 
+                                result.Source;
+                            Console.WriteLine($"     📝 Preview: {preview.Replace('\n', ' ').Replace('\r', ' ')}");
                         }
                         catch (Exception ex)
                         {
                             Console.WriteLine($"     ❌ Compilation failed: {ex.Message}");
                         }
-                        Console.WriteLine();
                     }
+
+                    Console.WriteLine();
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"❌ Reflection failed for target {target}: {ex.Message}\n");
+                    Console.WriteLine($"❌ Failed to process target {config.Target}: {ex.Message}\n");
                 }
+            }
+
+            // Demonstrate module-level entry point discovery (without compilation)
+            Console.WriteLine("🔍 Alternative approach - Module-level entry point discovery:");
+            try
+            {
+                // Create a minimal session just for module loading
+                var discoverySession = new Session.Builder()
+                    .AddTarget(Targets.Hlsl.vs_6_0) // Just one target for discovery
+                    .AddSearchPath(_workingDirectory)
+                    .Create();
+
+                var discoveryModule = discoverySession.LoadModule("MultiStageShader.slang");
+                
+                Console.WriteLine($"📚 Module: {discoveryModule.Name}");
+                Console.WriteLine($"📍 Entry points discovered in module: {discoveryModule.EntryPoints.Count}");
+                
+                foreach (var entryPoint in discoveryModule.EntryPoints)
+                {
+                    Console.WriteLine($"   • {entryPoint.Name} (Index: {entryPoint.Index})");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Module discovery failed: {ex.Message}");
             }
 
             PrintSuccess("Entry point discovery and compilation completed");
@@ -356,91 +398,89 @@ public class CompilationAPIShowcase
     }
 
     /// <summary>
-    /// Demonstrates advanced module building with compile requests
+    /// Demonstrates advanced compilation features
     /// </summary>
-    private async Task DemoAdvancedModuleBuildingAsync()
+    private async Task DemoAdvancedCompilationFeaturesAsync()
     {
-        PrintDemoHeader(6, "Advanced Module Building with Compile Requests",
-            "Showcases Module.Builder abstraction over CompileRequest for flexible shader compilation");
+        PrintDemoHeader(6, "Advanced Compilation Features",
+            "Showcases advanced compilation features and session management");
 
         try
         {
-            Console.WriteLine("🚀 Module.Builder Demonstrations:\n");
+            Console.WriteLine("🚀 Advanced Compilation Feature Demonstrations:\n");
 
-            var session = new Session.Builder()
-                .AddTarget(Targets.Hlsl.cs_6_0)
-                .AddSearchPath(_workingDirectory)
-                .Create();
+            // Feature 1: Session and target inspection
+            Console.WriteLine("📊 Feature 1: Session and Target Inspection");
+            var builder = new Session.Builder()
+                .AddTarget(Targets.Hlsl.vs_6_0)
+                .AddTarget(Targets.Glsl.v460)
+                .AddTarget(Targets.SpirV.vulkan_1_2)
+                .AddSearchPath(_workingDirectory);
 
-            // Demo 1: File-based compilation with Module.Builder
-            Console.WriteLine("📦 Building module from MultiComputeShader.slang file");
-            if (File.Exists(Path.Combine(_workingDirectory, "MultiComputeShader.slang")))
+            var session = builder.Create();
+
+            Console.WriteLine($"   🎯 Session targets: {session.Targets.Count}");
+            for (uint i = 0; i < session.Targets.Count; i++)
             {
-                var fileBuilder = new Module.Builder(session)
-                    .AddCodeGenTarget(Target.CompileTarget.Hlsl)
-                    .AddPreprocessorDefine("MULTI_COMPUTE", "1")
-                    .AddTranslationUnit(SourceLanguage.Slang, "MultiComputeShader", out int unitIndex)
-                    .AddTranslationUnitSourceFile(unitIndex, Path.Combine(_workingDirectory, "MultiComputeShader.slang"));
-                
-                // Add some compute entry points
-                fileBuilder.AddEntryPoint(0, "GaussianBlur", Stage.Compute);
-                fileBuilder.AddEntryPoint(0, "GenerateNoise", Stage.Compute);
-
-                var module = fileBuilder.Create();
-                Console.WriteLine($"   ✅ Created module '{module.Name}' with {module.Program.Targets.First().EntryPoints.Count} entry points");
+                var target = session.Targets[i];
+                Console.WriteLine($"      • Target {i}: {target}");
             }
 
-            // Demo 2: Inline source compilation with fluent API
-            Console.WriteLine("\n🔧 Building module from inline source with fluent API");
-            string computeSource = @"
-RWTexture2D<float4> outputTexture;
+            // Load multiple modules
+            var moduleNames = new[] { "SimpleCompute.slang", "ConfigurableShader.slang" };
+            int loadedModules = 0;
 
-[shader(""compute"")]
-[numthreads(8, 8, 1)]
-void SimpleBlur(uint3 id : SV_DispatchThreadID)
-{
-    outputTexture[id.xy] = float4(0.5, 0.5, 0.5, 1.0);
-}";
-
-            var inlineModule = new Module.Builder(session)
-                .AddCodeGenTarget(Target.CompileTarget.Hlsl)
-                .AddPreprocessorDefine("INLINE_BUILD", "1")
-                .AddTranslationUnit(SourceLanguage.Slang, "inline", out var index)
-                .AddTranslationUnitSourceString(
-                    translationUnitIndex: (int)session.Modules.Count, // Simple indexing
-                    path: "inline.slang",
-                    source: computeSource)
-                .Create();
-
-            Console.WriteLine($"   ✅ Created inline module with fluent API");
-
-            // Demo 3: Multiple configurations
-            Console.WriteLine("\n⚙️ Testing different build configurations");
-            var configs = new[] { ("DEBUG", "1"), ("RELEASE", "1"), ("PROFILING", "1") };
-
-            foreach (var (key, value) in configs)
+            foreach (var moduleName in moduleNames)
             {
-                try
+                if (File.Exists(Path.Combine(_workingDirectory, moduleName)))
                 {
-                    var configModule = new Module.Builder(session)
-                        .AddCodeGenTarget(Target.CompileTarget.Hlsl)
-                        .AddPreprocessorDefine(key, value)
-                        .AddTranslationUnit(SourceLanguage.Slang, key, out var configIndex)
-                        .Create();
-
-                    Console.WriteLine($"   ✅ {key} configuration: Success");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"   ❌ {key} configuration: {ex.Message}");
+                    session.LoadModule(moduleName);
+                    loadedModules++;
                 }
             }
 
-            PrintSuccess("Advanced module building demonstration completed");
+            Console.WriteLine($"\n   📦 Loaded modules: {loadedModules}");
+            Console.WriteLine($"   📋 Session module count: {session.Modules.Count}");
+
+            // Feature 2: Batch compilation across targets
+            Console.WriteLine("\n⚡ Feature 2: Batch Compilation Across Targets");
+            var batchResults = new List<(string Module, string Entry, Target Target, CompilationResult Result)>();
+
+            foreach (var module in session.Modules)
+            {
+                foreach (var target in module.Program.Targets)
+                {
+                    foreach (var entryPoint in target.EntryPoints)
+                    {
+                        try
+                        {
+                            var result = entryPoint.Compile();
+                            batchResults.Add((module.Name, entryPoint.Name, target.Value, result));
+                        }
+                        catch
+                        {
+                            // Skip failed compilations in batch mode - some entry points may not be compatible with all targets
+                        }
+                    }
+                }
+            }
+
+            Console.WriteLine($"   ✅ Batch compilation completed: {batchResults.Count} successful compilations");
+
+            // Feature 3: Compilation performance and statistics
+            Console.WriteLine("\n📈 Feature 3: Compilation Statistics");
+            var stats = CalculateCompilationStats(batchResults);
+            Console.WriteLine($"   📊 Total compilations: {stats.TotalCompilations}");
+            Console.WriteLine($"   📏 Average code length: {stats.AverageCodeLength:F0} characters");
+            Console.WriteLine($"   📐 Min/Max code length: {stats.MinCodeLength}/{stats.MaxCodeLength}");
+            Console.WriteLine($"   🎯 Targets used: {stats.TargetsUsed}");
+            Console.WriteLine($"   📦 Modules processed: {stats.ModulesProcessed}");
+
+            PrintSuccess("Advanced compilation features demonstration completed");
         }
         catch (Exception ex)
         {
-            PrintError("Advanced module building", ex.Message);
+            PrintError("Advanced compilation features", ex.Message);
         }
     }
 

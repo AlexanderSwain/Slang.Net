@@ -15,4 +15,10 @@
     <ProjectReference Include="..\src\Slang.Sdk\Slang.Sdk.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="MultiComputeShader.slang">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

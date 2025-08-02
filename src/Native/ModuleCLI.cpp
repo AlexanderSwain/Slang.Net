@@ -6,7 +6,6 @@ Native::ModuleCLI::ModuleCLI(SessionCLI* parent, CompileRequestCLI* compileReque
 	m_parent = parent->getNative();
 	unsigned int index = parent->getModuleCount();
 
-	Slang::ComPtr<ISlangBlob> diagnosticsBlob;
 	m_compileRequest = compileRequest;
 
 	// Compile it
@@ -16,10 +15,12 @@ Native::ModuleCLI::ModuleCLI(SessionCLI* parent, CompileRequestCLI* compileReque
 		throw std::runtime_error(std::string("Slang compile error:\n") + diagnostics);
 	}
 
+	auto c = m_compileRequest->getNative()->getTranslationUnitCount();
+
 	Slang::ComPtr<slang::IModule> slangModule;
 	{
 		Slang::ComPtr<slang::IBlob> sourceBlob;
-		Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+		std::string diagnosticsBlob = std::string(m_compileRequest->getNative()->getDiagnosticOutput());
 
 		//slangModule = m_parent->loadModule(moduleName, diagnosticsBlob.writeRef());
 		//slangModule = m_parent->loadModuleFromSource(moduleName, modulePath, sourceBlob, diagnosticsBlob.writeRef());
@@ -27,15 +28,14 @@ Native::ModuleCLI::ModuleCLI(SessionCLI* parent, CompileRequestCLI* compileReque
 		m_compileRequest->getNative()->getModule(index, slangModule.writeRef());
 
 		// Improved diagnostics output
-		if (diagnosticsBlob && diagnosticsBlob->getBufferSize() > 0)
+		if (!diagnosticsBlob.empty())
 		{
-			std::string diagnosticsText = std::string((const char*)diagnosticsBlob->getBufferPointer());
-			std::string errorMessage = "There are issues in the shader source: " + diagnosticsText;
+			std::string errorMessage = "There are issues in the shader source: " + diagnosticsBlob;
 
 			if (!slangModule)
 				throw std::runtime_error(errorMessage);
 			else
-				std::cout << diagnosticsText << std::endl;
+				std::cout << diagnosticsBlob << std::endl;
 		}
 		else if (!slangModule)
 		{

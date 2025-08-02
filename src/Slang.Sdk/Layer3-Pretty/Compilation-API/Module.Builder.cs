@@ -49,9 +49,12 @@ namespace Slang.Sdk
             #endregion
 
             #region Translation Units and Source
-            public int AddTranslationUnit(SourceLanguage language, string name)
+            public Builder AddTranslationUnit(SourceLanguage language, string name, out int unitIndex)
             {
-                return Binding.AddTranslationUnit(language, name);
+                unitIndex = Binding.AddTranslationUnit(language, name);
+                if (unitIndex < -1)
+                    throw new SlangException(SlangResult.Fail, $"Failed to add translation unit: unit index is < 0. <Slang.Sdk Error Handling issue. Should have already throw an exception with a more detailed error message. Please report issue.>");
+                return this;
             }
 
             public Builder AddTranslationUnitSourceString(int translationUnitIndex, string path, string source)
