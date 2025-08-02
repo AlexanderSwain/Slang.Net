@@ -687,7 +687,7 @@ namespace SlangNative
 		}
 	}
 
-	extern "C" SLANGNATIVE_API int32_t EntryPoint_Compile(void* entryPoint, unsigned int targetIndex, const char** output, const char** error)
+	extern "C" SLANGNATIVE_API int32_t EntryPoint_Compile(void* entryPoint, unsigned int targetIndex, const void** output, int* outputSize, const char** error)
 	{
 		try
 		{
@@ -695,7 +695,7 @@ namespace SlangNative
 			EntryPointCLI* asEntryPoint = ((EntryPointCLI*)entryPoint);
 			ModuleCLI* parent = asEntryPoint->getParent();
 			ProgramCLI* program = new ProgramCLI(parent);
-			program->GetCompiled(asEntryPoint->getIndex(), targetIndex, output);
+			program->GetCompiled(asEntryPoint->getIndex(), targetIndex, output, outputSize);
 			delete program;
 
 			//Try this in a later update
@@ -757,11 +757,11 @@ namespace SlangNative
 		}
 	}
 
-	extern "C" SLANGNATIVE_API int32_t Program_CompileTarget(void* program, unsigned int targetIndex, const char** output, const char** error)
+	extern "C" SLANGNATIVE_API int32_t Program_CompileTarget(void* program, unsigned int targetIndex, const void** output, int* outputSize, const char** error)
 	{
 		try
 		{
-			return ((ProgramCLI*)program)->GetCompiled(targetIndex, output);
+			return ((ProgramCLI*)program)->GetCompiled(targetIndex, output, outputSize);
 		}
 		catch (const std::exception& e)
 		{
@@ -770,11 +770,11 @@ namespace SlangNative
 		}
 	}
 
-	extern "C" SLANGNATIVE_API int32_t Program_CompileEntryPoint(void* program, unsigned int entryPointIndex, unsigned int targetIndex, const char** output, const char** error)
+	extern "C" SLANGNATIVE_API int32_t Program_CompileEntryPoint(void* program, unsigned int entryPointIndex, unsigned int targetIndex, const void** output, int* outputSize, const char** error)
 	{
 		try
 		{
-			return ((ProgramCLI*)program)->GetCompiled(entryPointIndex, targetIndex, output);
+			return ((ProgramCLI*)program)->GetCompiled(entryPointIndex, targetIndex, output, outputSize);
 		}
 		catch (const std::exception& e)
 		{

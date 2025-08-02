@@ -113,6 +113,7 @@ public class CompilationAPIShowcase
                 .AddTarget(Targets.SpirV.vulkan_1_2)     // Vulkan 1.2
                 .AddTarget(Targets.Metal.v2_4)           // Metal 2.4
                 .AddTarget(Targets.Wgsl.v1_0)            // WebGPU
+                .AddCompilerOption(CompilerOption.Name.EmitSpirvDirectly, new(CompilerOption.Value.Kind.Int, 1, 0, null, null))
                 .AddSearchPath(_workingDirectory);
 
             var session = builder.Create();
@@ -132,8 +133,17 @@ public class CompilationAPIShowcase
                     results.Add(result);
 
                     Console.WriteLine($"✅ {target}:");
-                    Console.WriteLine($"   📏 Generated code: {result.Source.Length} characters");
-                    Console.WriteLine($"   📝 Preview: {GetCodePreview(result.Source)}\n");
+                    if (result.CompileOutputType == Target.CompileOutputType.SourceCode)
+                    {
+                        Console.WriteLine($"   📏 Generated code: {result.SourceCode!.Length} characters");
+                        Console.WriteLine($"   📝 Preview: {GetCodePreview(result.SourceCode)}\n");
+                    }
+                    else if (result.CompileOutputType == Target.CompileOutputType.ByteCode)
+                    {
+                        Console.WriteLine($"   📦 Binary size: {result.ByteCode!.Length} bytes");
+                        Console.WriteLine($"   📝 Binary preview: {BitConverter.ToString(result.ByteCode.Take(16).ToArray())}\n");
+                    }
+
                 }
                 catch (Exception ex)
                 {
@@ -196,11 +206,24 @@ public class CompilationAPIShowcase
             var result = program.Targets[Targets.Hlsl.vs_6_0].EntryPoints["VS"].Compile();
 
             Console.WriteLine("✅ Compilation with custom configuration successful");
-            Console.WriteLine($"📏 Generated code length: {result.Source.Length} characters");
-            Console.WriteLine($"📝 Code preview:\n{GetCodePreview(result.Source, 5)}\n");
+
+            if (result.CompileOutputType == Target.CompileOutputType.SourceCode)
+            {
+                Console.WriteLine($"   📏 Generated code: {result.SourceCode!.Length} characters");
+                Console.WriteLine($"   📝 Preview: {GetCodePreview(result.SourceCode)}\n");
+            }
+            else if (result.CompileOutputType == Target.CompileOutputType.ByteCode)
+            {
+                Console.WriteLine($"   📦 Binary size: {result.ByteCode!.Length} bytes");
+                Console.WriteLine($"   📝 Binary preview: {BitConverter.ToString(result.ByteCode.Take(16).ToArray())}\n");
+            }
 
             // Save the configured compilation result
-            await File.WriteAllTextAsync(Path.Combine(_workingDirectory, "configured_shader.hlsl"), result.Source);
+            if (result.CompileOutputType == Target.CompileOutputType.SourceCode)
+                await File.WriteAllTextAsync(Path.Combine(_workingDirectory, "configured_shader.hlsl"), result.SourceCode);
+            else if (result.CompileOutputType == Target.CompileOutputType.ByteCode)
+                await File.WriteAllBytesAsync(Path.Combine(_workingDirectory, "configured_shader.spv"), result.ByteCode!);
+
             Console.WriteLine("💾 Configured shader saved to configured_shader.hlsl");
 
             PrintSuccess("Compiler options and macros demo completed");
@@ -250,11 +273,21 @@ public class CompilationAPIShowcase
                         {
                             var result = entryPoint.Compile();
                             Console.WriteLine($"     ✅ Compiled successfully");
-                            Console.WriteLine($"     📏 Code length: {result.Source.Length} characters");
+                            if (result.CompileOutputType == Target.CompileOutputType.SourceCode)
+                            {
+                                Console.WriteLine($"   📏 Generated code: {result.SourceCode!.Length} characters");
+                                Console.WriteLine($"   📝 Preview: {GetCodePreview(result.SourceCode)}\n");
+                            }
+                            else if (result.CompileOutputType == Target.CompileOutputType.ByteCode)
+                            {
+                                Console.WriteLine($"   📦 Binary size: {result.ByteCode!.Length} bytes");
+                                Console.WriteLine($"   📝 Binary preview: {BitConverter.ToString(result.ByteCode.Take(16).ToArray())}\n");
+                            }
 
                             // Save individual entry point
                             var filename = $"{entryPoint.Name}_{target.ToString().Replace(":", "_")}.hlsl";
-                            await File.WriteAllTextAsync(Path.Combine(_workingDirectory, filename), result.Source);
+                            if (result.CompileOutputType == Target.CompileOutputType.SourceCode)
+                                await File.WriteAllTextAsync(Path.Combine(_workingDirectory, filename), result.SourceCode!);
                             Console.WriteLine($"     💾 Saved as: {filename}");
                         }
                         catch (Exception ex)
@@ -551,28 +584,13 @@ void SimpleBlur(uint3 id : SV_DispatchThreadID)
         {
             var result = results[i];
             var filename = $"{prefix}_{i}.txt";
-            await File.WriteAllTextAsync(Path.Combine(outputDir, filename), result.Source);
+            if (result.CompileOutputType == Target.CompileOutputType.SourceCode)
+                await File.WriteAllTextAsync(Path.Combine(_workingDirectory, "configured_shader.hlsl"), result.SourceCode);
+            else if (result.CompileOutputType == Target.CompileOutputType.ByteCode)
+                await File.WriteAllBytesAsync(Path.Combine(_workingDirectory, "configured_shader.spv"), result.ByteCode!);
         }
 
         Console.WriteLine($"💾 Saved {results.Count} compilation results to {outputDir}/");
-    }
-
-    private CompilationStats CalculateCompilationStats(List<(string Module, string Entry, Target Target, CompilationResult Result)> results)
-    {
-        if (!results.Any())
-            return new CompilationStats();
-
-        var codeLengths = results.Select(r => r.Result.Source.Length).ToList();
-
-        return new CompilationStats
-        {
-            TotalCompilations = results.Count,
-            AverageCodeLength = codeLengths.Average(),
-            MinCodeLength = codeLengths.Min(),
-            MaxCodeLength = codeLengths.Max(),
-            TargetsUsed = results.Select(r => r.Target.ToString()).Distinct().Count(),
-            ModulesProcessed = results.Select(r => r.Module).Distinct().Count()
-        };
     }
 
     #endregion

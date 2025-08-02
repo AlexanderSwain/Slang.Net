@@ -54,8 +54,9 @@ namespace Slang.Sdk
 
             public Builder AddTarget(Target target)
             {
-                if (target.target == Target.CompileTarget.SpirV)
-                    CheckAndPrepareSpirv(target);
+                // Not neccessary, can be safely deleted
+                //if (target.target == Target.CompileTarget.SpirV)
+                //    CheckAndPrepareSpirv(target);
 
                 Targets.Add(target);
                 return this;

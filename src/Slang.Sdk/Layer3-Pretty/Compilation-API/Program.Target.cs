@@ -24,7 +24,7 @@ namespace Slang.Sdk
         public CompilationResult Compile()
         {
             var cResultBinding = Parent.Binding.CompileTarget(Index);
-            return new CompilationResult(cResultBinding.Source, this, null, cResultBinding.Result, cResultBinding.Diagnostics);
+            return new CompilationResult(cResultBinding.Compiled, this, null, cResultBinding.Result, cResultBinding.Diagnostics);
         }
 
         ShaderReflection? _Reflection;

@@ -82,55 +82,55 @@
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-x64\native\gfx.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			<TargetPath>runtimes\win-x64\native\gfx.dll</TargetPath>
+			<TargetPath>gfx.dll</TargetPath>
 		</Content>
 		<Content Include="..\Native\bin\$(Configuration)\x64\slang.dll" Condition="Exists('..\Native\bin\$(Configuration)\x64\slang.dll')">
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-x64\native\slang.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			<TargetPath>runtimes\win-x64\native\slang.dll</TargetPath>
+			<TargetPath>slang.dll</TargetPath>
 		</Content>
 		<Content Include="..\Native\bin\$(Configuration)\x64\slang-glslang.dll" Condition="Exists('..\Native\bin\$(Configuration)\x64\slang-glslang.dll')">
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-x64\native\slang-glslang.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			<TargetPath>runtimes\win-x64\native\slang-glslang.dll</TargetPath>
+			<TargetPath>slang-glslang.dll</TargetPath>
 		</Content>
 		<Content Include="..\Native\bin\$(Configuration)\x64\slang-glsl-module.dll" Condition="Exists('..\Native\bin\$(Configuration)\x64\slang-glsl-module.dll')">
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-x64\native\slang-glsl-module.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			<TargetPath>runtimes\win-x64\native\slang-glsl-module.dll</TargetPath>
+			<TargetPath>slang-glsl-module.dll</TargetPath>
 		</Content>
 		<Content Include="..\Native\bin\$(Configuration)\x64\slang-llvm.dll" Condition="Exists('..\Native\bin\$(Configuration)\x64\slang-llvm.dll')">
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-x64\native\slang-llvm.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			<TargetPath>runtimes\win-x64\native\slang-llvm.dll</TargetPath>
+			<TargetPath>slang-llvm.dll</TargetPath>
 		</Content>
 		<Content Include="..\Native\bin\$(Configuration)\x64\SlangNative.dll" Condition="Exists('..\Native\bin\$(Configuration)\x64\SlangNative.dll')">
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-x64\native\SlangNative.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			<TargetPath>runtimes\win-x64\native\SlangNative.dll</TargetPath>
+			<TargetPath>SlangNative.dll</TargetPath>
 		</Content>
 		<Content Include="..\Native\bin\$(Configuration)\x64\SlangNative.lib" Condition="Exists('..\Native\bin\$(Configuration)\x64\SlangNative.lib')">
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-x64\native\SlangNative.lib</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			<TargetPath>runtimes\win-x64\native\SlangNative.lib</TargetPath>
+			<TargetPath>SlangNative.lib</TargetPath>
 		</Content>
 		<Content Include="..\Native\bin\$(Configuration)\x64\SlangNative.pdb" Condition="'$(Configuration)' == 'Debug' And Exists('..\Native\bin\$(Configuration)\x64\SlangNative.pdb')">
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-x64\native\SlangNative.pdb</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			<TargetPath>runtimes\win-x64\native\SlangNative.pdb</TargetPath>
+			<TargetPath>SlangNative.pdb</TargetPath>
 		</Content>
 		<Content Include="..\Native\bin\$(Configuration)\x64\slang-rt.dll" Condition="Exists('..\Native\bin\$(Configuration)\x64\slang-rt.dll')">
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-x64\native\slang-rt.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			<TargetPath>runtimes\win-x64\native\slang-rt.dll</TargetPath>
+			<TargetPath>slang-rt.dll</TargetPath>
 		</Content>
 		
 		<!-- slangc dependencies -->
@@ -172,55 +172,55 @@
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-ARM64\native\gfx.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			<TargetPath>runtimes\win-ARM64\native\gfx.dll</TargetPath>
+			<TargetPath>gfx.dll</TargetPath>
 		</Content>
 		<Content Include="..\Native\bin\$(Configuration)\ARM64\slang.dll" Condition="Exists('..\Native\bin\$(Configuration)\ARM64\slang.dll')">
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-ARM64\native\slang.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			<TargetPath>runtimes\win-ARM64\native\slang.dll</TargetPath>
+			<TargetPath>slang.dll</TargetPath>
 		</Content>
 		<Content Include="..\Native\bin\$(Configuration)\ARM64\slang-glslang.dll" Condition="Exists('..\Native\bin\$(Configuration)\ARM64\slang-glslang.dll')">
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-ARM64\native\slang-glslang.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			<TargetPath>runtimes\win-ARM64\native\slang-glslang.dll</TargetPath>
+			<TargetPath>slang-glslang.dll</TargetPath>
 		</Content>
 		<Content Include="..\Native\bin\$(Configuration)\ARM64\slang-glsl-module.dll" Condition="Exists('..\Native\bin\$(Configuration)\ARM64\slang-glsl-module.dll')">
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-ARM64\native\slang-glsl-module.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			<TargetPath>runtimes\win-ARM64\native\slang-glsl-module.dll</TargetPath>
+			<TargetPath>slang-glsl-module.dll</TargetPath>
 		</Content>
 		<Content Include="..\Native\bin\$(Configuration)\ARM64\slang-llvm.dll" Condition="Exists('..\Native\bin\$(Configuration)\ARM64\slang-llvm.dll')">
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-ARM64\native\slang-llvm.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			<TargetPath>runtimes\win-ARM64\native\slang-llvm.dll</TargetPath>
+			<TargetPath>slang-llvm.dll</TargetPath>
 		</Content>
 		<Content Include="..\Native\bin\$(Configuration)\ARM64\SlangNative.dll" Condition="Exists('..\Native\bin\$(Configuration)\ARM64\SlangNative.dll')">
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-ARM64\native\SlangNative.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			<TargetPath>runtimes\win-ARM64\native\SlangNative.dll</TargetPath>
+			<TargetPath>SlangNative.dll</TargetPath>
 		</Content>
 		<Content Include="..\Native\bin\$(Configuration)\ARM64\SlangNative.lib" Condition="Exists('..\Native\bin\$(Configuration)\ARM64\SlangNative.lib')">
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-ARM64\native\SlangNative.lib</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			<TargetPath>runtimes\win-ARM64\native\SlangNative.lib</TargetPath>
+			<TargetPath>SlangNative.lib</TargetPath>
 		</Content>
 		<Content Include="..\Native\bin\$(Configuration)\ARM64\SlangNative.pdb" Condition="'$(Configuration)' == 'Debug' And Exists('..\Native\bin\$(Configuration)\ARM64\SlangNative.pdb')">
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-ARM64\native\SlangNative.pdb</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			<TargetPath>runtimes\win-ARM64\native\SlangNative.pdb</TargetPath>
+			<TargetPath>SlangNative.pdb</TargetPath>
 		</Content>
 		<Content Include="..\Native\bin\$(Configuration)\ARM64\slang-rt.dll" Condition="Exists('..\Native\bin\$(Configuration)\ARM64\slang-rt.dll')">
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-ARM64\native\slang-rt.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			<TargetPath>runtimes\win-ARM64\native\slang-rt.dll</TargetPath>
+			<TargetPath>slang-rt.dll</TargetPath>
 		</Content>
 		
 		<!-- slangc dependencies -->

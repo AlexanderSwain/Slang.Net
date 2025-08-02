@@ -8,9 +8,9 @@ namespace Slang.Sdk.Binding;
 internal class CompilationResult
 {
     /// <summary>
-    /// The compiled source code.
+    /// The compiled byte code.
     /// </summary>
-    internal string Source { get; }
+    internal byte[] Compiled { get; }
 
     /// <summary>
     /// The target compilation format.
@@ -32,9 +32,9 @@ internal class CompilationResult
     /// </summary>
     internal string? Diagnostics { get; }
 
-    internal CompilationResult(string source, uint targetIndex, uint? entryPointIndex, SlangResult result, string? diagnostics = null)
+    internal CompilationResult(byte[] compiled, uint targetIndex, uint? entryPointIndex, SlangResult result, string? diagnostics = null)
     {
-        Source = source;
+        Compiled = compiled;
         TargetIndex = targetIndex;
         EntryPointIndex = entryPointIndex;
         Result = result;

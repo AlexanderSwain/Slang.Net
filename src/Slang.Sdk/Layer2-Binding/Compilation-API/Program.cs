@@ -29,7 +29,7 @@ internal sealed unsafe class Program : CompilationBinding, IEquatable<Program>
 
         Target target = Parent.Parent.Targets.ElementAt((int)targetIndex);
 
-        SlangResult compileResult = StrongInterop.Program.CompileTarget(Handle, targetIndex, out string? compiledSource, out string? error);
+        SlangResult compileResult = StrongInterop.Program.CompileTarget(Handle, targetIndex, out byte[]? compiledSource, out string? error);
 
         return new CompilationResult(compiledSource ?? throw new SlangException(SlangResult.Fail, "Failed to convert compiled source from UTF-8"), targetIndex, null, compileResult, error);
     }
@@ -38,7 +38,7 @@ internal sealed unsafe class Program : CompilationBinding, IEquatable<Program>
     {
         ObjectDisposedException.ThrowIf(Handle.IsInvalid, this);
 
-        SlangResult compileResult = StrongInterop.Program.CompileEntryPoint(Handle, entryPointIndex, targetIndex, out string? compiledSource, out string? error);
+        SlangResult compileResult = StrongInterop.Program.CompileEntryPoint(Handle, entryPointIndex, targetIndex, out byte[]? compiledSource, out string? error);
 
         return new CompilationResult(compiledSource ?? throw new SlangException(SlangResult.Fail, "Failed to convert compiled source from UTF-8"), targetIndex, entryPointIndex, compileResult, error);
     }

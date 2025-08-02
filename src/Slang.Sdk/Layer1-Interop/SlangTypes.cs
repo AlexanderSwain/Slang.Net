@@ -521,6 +521,12 @@ public struct Target : IDisposable, IEquatable<Target>
         HostVm,               ///< Bytecode that can be interpreted by the Slang VM
         TargetCountOf,
     }
+
+    public enum CompileOutputType
+    {
+        ByteCode,
+        SourceCode,
+    }
 }
 
 public enum Stage

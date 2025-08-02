@@ -72,8 +72,8 @@ namespace Slang.Sdk.Binding
             // Use call, for consistency with other properties
             ObjectDisposedException.ThrowIf(Handle.IsInvalid, this);
             var target = Parent.Parent.Targets.ElementAt((int)targetIndex);
-            SlangResult compileResult = StrongInterop.EntryPoint.Compile(Handle, (int)targetIndex, out string? compiledSource, out var error);
-            return new CompilationResult(compiledSource ?? throw new SlangException(SlangResult.Fail, "Failed to convert compiled source from UTF-8"), targetIndex, (uint)Index, compileResult, error);
+            SlangResult compileResult = StrongInterop.EntryPoint.Compile(Handle, (int)targetIndex, out byte[]? compiledSource, out var error);
+            return new CompilationResult(compiledSource ?? throw new SlangException(SlangResult.Fail, "Failed to compile source."), targetIndex, (uint)Index, compileResult, error);
         }
 
         ~EntryPoint()

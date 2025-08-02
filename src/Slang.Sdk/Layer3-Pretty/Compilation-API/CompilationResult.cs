@@ -12,7 +12,12 @@ namespace Slang.Sdk
         /// <summary>
         /// The compiled source code.
         /// </summary>
-        public string Source { get; }
+        public string? SourceCode { get; }
+
+        /// <summary>
+        /// The compiled byte code.
+        /// </summary>
+        public byte[]? ByteCode { get; }
 
         /// <summary>
         /// The target compilation format.
@@ -29,15 +34,29 @@ namespace Slang.Sdk
         /// </summary>
         public SlangResult Result { get; }
 
+        public Target.CompileOutputType CompileOutputType => Target.Value.CompileOutputType();
+
         /// <summary>
         /// Any diagnostics or error messages from compilation.
         /// </summary>
         internal string? Diagnostics { get; }
 
-        public CompilationResult(string source, ProgramTarget target, ProgramEntryPoint? entryPoint, SlangResult result, string? diagnostics)
+        public CompilationResult(byte[] compiled, ProgramTarget target, ProgramEntryPoint? entryPoint, SlangResult result, string? diagnostics)
         {
-            Source = source;
             Target = target;
+
+            // Set the output based on the compile output type
+            if (CompileOutputType == Interop.Target.CompileOutputType.ByteCode)
+            {
+                ByteCode = compiled;
+                SourceCode = null;
+            }
+            else
+            {
+                SourceCode = Encoding.UTF8.GetString(compiled);
+                ByteCode = null;
+            }
+
             EntryPoint = entryPoint;
             Result = result;
             Diagnostics = diagnostics;

@@ -23,6 +23,10 @@ internal static unsafe partial class SlangNativeInterop
 
                 if (File.Exists(libraryPath))
                 {
+                    // Preload dependencies first to ensure they are available
+                    PreloadSlangDependencies(runtimeDirectory);
+                    
+                    // Then load the requested library
                     return NativeLibrary.Load(libraryPath);
                 }
             }
@@ -34,6 +38,38 @@ internal static unsafe partial class SlangNativeInterop
         // Register a custom DLL resolver to look in the runtime-specific directory
         // This is required for testing Slang.Sdk as an executable
         NativeLibrary.SetDllImportResolver(typeof(SlangNativeInterop).Assembly, DllImportResolver);
+    }
+
+    /// <summary>
+    /// Preloads common Slang dependencies to ensure they are available when needed
+    /// </summary>
+    private static void PreloadSlangDependencies(string runtimeDirectory)
+    {
+        var dependencies = new[]
+        {
+            "slang.dll",
+            "slang-glslang.dll", 
+            "slang-glsl-module.dll",
+            "slang-llvm.dll",
+            "slang-rt.dll",
+            "gfx.dll"
+        };
+
+        foreach (var dependency in dependencies)
+        {
+            var dependencyPath = Path.Combine(runtimeDirectory, dependency);
+            if (File.Exists(dependencyPath))
+            {
+                try
+                {
+                    NativeLibrary.Load(dependencyPath);
+                }
+                catch
+                {
+                    // Ignore errors during preloading - not all dependencies may be needed
+                }
+            }
+        }
     }
 
     #region Free char**
@@ -238,7 +274,7 @@ internal static unsafe partial class SlangNativeInterop
     internal static partial char* EntryPoint_GetName(nint entryPoint, char** error);
 
     [LibraryImport(LibraryName)]
-    internal static partial SlangResult EntryPoint_Compile(nint entryPoint, int targetIndex, char** output, char** error);
+    internal static partial SlangResult EntryPoint_Compile(nint entryPoint, int targetIndex, void** output, int* outputSize, char** error);
 
     [LibraryImport(LibraryName)]
     internal static partial nint EntryPoint_GetNative(nint entryPoint, char** error);
@@ -256,7 +292,8 @@ internal static unsafe partial class SlangNativeInterop
     internal static partial SlangResult Program_CompileTarget(
     nint program,
     uint targetIndex,
-    char** output,
+    void** output,
+    int* outputSize,
     char** error);
 
     [LibraryImport(LibraryName)]
@@ -264,7 +301,8 @@ internal static unsafe partial class SlangNativeInterop
         nint program,
         uint entryPointIndex,
         uint targetIndex,
-        char** output, 
+        void** output,
+        int* outputSize,
         char** error);
 
     [LibraryImport(LibraryName)]

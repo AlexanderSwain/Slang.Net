@@ -69,15 +69,15 @@ namespace SlangNative
     extern "C" SLANGNATIVE_API void EntryPoint_Release(void* entryPoint, const char** error);
 	extern "C" SLANGNATIVE_API int EntryPoint_GetIndex(void* entryPoint, const char** error);
     extern "C" SLANGNATIVE_API const char* EntryPoint_GetName(void* entryPoint, const char** error);
-    extern "C" SLANGNATIVE_API int32_t EntryPoint_Compile(void* entryPoint, unsigned int targetIndex, const char** output, const char** error);
+    extern "C" SLANGNATIVE_API int32_t EntryPoint_Compile(void* entryPoint, unsigned int targetIndex, const void** output, int* outputSize, const char** error);
     extern "C" SLANGNATIVE_API void* EntryPoint_GetNative(void* entryPoint, const char** error);
 
 
     // Program API
     extern "C" SLANGNATIVE_API void* Program_Create(void* parentModule, const char** error);
     extern "C" SLANGNATIVE_API void Program_Release(void* program, const char** error);
-    extern "C" SLANGNATIVE_API int32_t Program_CompileTarget(void* program, unsigned int targetIndex, const char** output, const char** error);
-    extern "C" SLANGNATIVE_API int32_t Program_CompileEntryPoint(void* program, unsigned int entryPointIndex, unsigned int targetIndex, const char** output, const char** error);
+    extern "C" SLANGNATIVE_API int32_t Program_CompileTarget(void* program, unsigned int targetIndex, const void** output, int* outputSize, const char** error);
+    extern "C" SLANGNATIVE_API int32_t Program_CompileEntryPoint(void* program, unsigned int entryPointIndex, unsigned int targetIndex, const void** output, int* outputSize, const char** error);
     extern "C" SLANGNATIVE_API void* Program_GetProgramReflection(void* program, unsigned int targetIndex, const char** error);
     extern "C" SLANGNATIVE_API void* Program_GetNative(void* program, const char** error);
 

@@ -47,8 +47,8 @@ namespace Native
 		//Properties
 		slang::IComponentType* getNative();
 		ModuleCLI* getParent();
-		SlangResult GetCompiled(unsigned int entryPointIndex, unsigned int targetIndex, const char** output);
-		SlangResult GetCompiled(unsigned int targetIndex, const char** output);
+		SlangResult GetCompiled(unsigned int entryPointIndex, unsigned int targetIndex, const void** output, int* outputSize);
+		SlangResult GetCompiled(unsigned int targetIndex, const void** output, int* outputSize);
 		void* GetLayout(int targetIndex);
 
 	private:

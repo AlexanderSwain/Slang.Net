@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices.Marshalling;
+﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace Slang.Sdk.Interop
 {
@@ -35,16 +36,27 @@ namespace Slang.Sdk.Interop
             internal static SlangResult CompileTarget(
                 ProgramHandle program,
                 uint targetIndex,
-                out string? output,
+                out byte[]? output,
                 out string? error)
             {
                 char* pError = null;
-                char* pOutput = null;
-                var result = SlangNativeInterop.Program_CompileTarget(program.Handle, targetIndex, &pOutput, &pError);
+                void* pOutput = null;
+                int outputSize = -1;
+
+                var result = SlangNativeInterop.Program_CompileTarget(program.Handle, targetIndex, &pOutput, &outputSize, &pError);
+                
                 error = Utf8StringMarshaller.ConvertToManaged((byte*)pError);
-                output = Utf8StringMarshaller.ConvertToManaged((byte*)pOutput);
+
+                if (outputSize != -1)
+                {
+                    output = new byte[outputSize];
+                    Marshal.Copy((nint)pOutput, output, 0, outputSize);
+                }
+                else
+                    output = null;
+
                 SlangNativeInterop.FreeChar(&pError);
-                SlangNativeInterop.FreeChar(&pOutput);
+                //SlangNativeInterop.FreeChar(&pOutput);
                 return result;
             }
 
@@ -55,19 +67,27 @@ namespace Slang.Sdk.Interop
                 ProgramHandle program,
                 uint entryPointIndex,
                 uint targetIndex,
-                out string? output,
+                out byte[]? output,
                 out string? error)
             {
                 char* pError = null;
-                char* pOutput = null;
+                void* pOutput = null;
+                int outputSize = -1;
 
-                var result = SlangNativeInterop.Program_CompileEntryPoint(program.Handle, entryPointIndex, targetIndex, &pOutput, &pError);
+                var result = SlangNativeInterop.Program_CompileEntryPoint(program.Handle, entryPointIndex, targetIndex, &pOutput, &outputSize, &pError);
 
                 error = Utf8StringMarshaller.ConvertToManaged((byte*)pError);
-                output = Utf8StringMarshaller.ConvertToManaged((byte*)pOutput);
+
+                if (outputSize != -1)
+                {
+                    output = new byte[outputSize];
+                    Marshal.Copy((nint)pOutput, output, 0, outputSize);
+                }
+                else
+                    output = null;
 
                 SlangNativeInterop.FreeChar(&pError);
-                SlangNativeInterop.FreeChar(&pOutput);
+                //SlangNativeInterop.FreeChar(&pOutput);
 
                 return result;
             }

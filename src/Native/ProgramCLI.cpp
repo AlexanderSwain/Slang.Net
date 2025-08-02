@@ -18,7 +18,7 @@ Native::ProgramCLI::ProgramCLI(ModuleCLI* parent)
     m_composedProgram = m_parent->getProgramComponent();
 }
 
-SlangResult Native::ProgramCLI::GetCompiled(unsigned int targetIndex, const char** output)
+SlangResult Native::ProgramCLI::GetCompiled(unsigned int targetIndex, const void** output, int* outputSize)
 {
     Slang::ComPtr<slang::IBlob> targetCode;
     {
@@ -42,15 +42,14 @@ SlangResult Native::ProgramCLI::GetCompiled(unsigned int targetIndex, const char
             throw std::runtime_error("Error when compiling a program. No slang diagnostics were returned. Probably target with the specified index does not exist.");
 
 		// TODO: verify that there is no memory leak here, because it looks like there is
-        const char* slangOutput = (const char*)targetCode->getBufferPointer();
-        *output = (new std::string(slangOutput))->c_str();
+        *output = targetCode->getBufferPointer();
+		*outputSize = targetCode->getBufferSize();
 
-        //*output = (const char*)targetCode->getBufferPointer();
         return result;
     }
 }
 
-SlangResult Native::ProgramCLI::GetCompiled(unsigned int entryPointIndex, unsigned int targetIndex, const char** output)
+SlangResult Native::ProgramCLI::GetCompiled(unsigned int entryPointIndex, unsigned int targetIndex, const void** output, int* outputSize)
 {
     if (!m_composedProgram)
     {
@@ -80,25 +79,10 @@ SlangResult Native::ProgramCLI::GetCompiled(unsigned int entryPointIndex, unsign
         if (!targetCode)
             throw std::runtime_error("Error when compiling a program. No slang diagnostics were returned. Probably target with the specified index does not exist.");
 
-        //// Copy the string data to memory allocated by malloc, which is what the .NET marshaller expects
-        //const char* slangOutput = (const char*)targetCode->getBufferPointer();
-        //size_t outputLength = strlen(slangOutput);
-        //
-        //// Allocate memory using malloc (which is what Utf8StringMarshaller.Free expects)
-        //char* managedOutput = (char*)malloc(outputLength + 1);
-        //if (!managedOutput)
-        //    throw std::runtime_error("Failed to allocate memory for output string");
-        //    
-        //// Copy the string content
-        //strcpy_s(managedOutput, outputLength + 1, slangOutput);
-        //
-        //*output = managedOutput;
-
         // TODO: verify that there is no memory leak here, because it looks like there is
-        const char* slangOutput = (const char*)targetCode->getBufferPointer();
-        *output = (new std::string(slangOutput))->c_str();
+        *output = targetCode->getBufferPointer();
+        *outputSize = targetCode->getBufferSize();
 
-        //*output = (const char*)targetCode->getBufferPointer();
         return result;
     }
 }

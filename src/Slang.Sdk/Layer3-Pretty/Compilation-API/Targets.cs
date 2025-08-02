@@ -816,10 +816,10 @@ namespace Slang.Sdk
                 v1_5 = new Target(Target.CompileTarget.SpirV, "1.5");
                 v1_6 = new Target(Target.CompileTarget.SpirV, "1.6");
 
-                vulkan_1_0 = new Target(Target.CompileTarget.SpirV, "spv1.0");
-                vulkan_1_1 = new Target(Target.CompileTarget.SpirV, "spv1.3");
-                vulkan_1_2 = new Target(Target.CompileTarget.SpirV, "spv1.5");
-                vulkan_1_3 = new Target(Target.CompileTarget.SpirV, "spv1.6");
+                vulkan_1_0 = new Target(Target.CompileTarget.SpirV, "spirv_1_0");
+                vulkan_1_1 = new Target(Target.CompileTarget.SpirV, "spirv_1_3");
+                vulkan_1_2 = new Target(Target.CompileTarget.SpirV, "spirv_1_5");
+                vulkan_1_3 = new Target(Target.CompileTarget.SpirV, "spirv_1_6");
 
                 binary = new Target(Target.CompileTarget.SpirV, "1.6");
                 latest = new Target(Target.CompileTarget.SpirV, "1.6");
@@ -1033,6 +1033,56 @@ namespace Slang.Sdk
         } 
         #endregion
 
+        /// <summary>
+        /// Gets the compilation output type for this target (binary or source code).
+        /// </summary>
+        /// <param name="target">The target to get the output type for</param>
+        /// <returns>The output type indicating whether this target produces binary code or source code</returns>
+        public static Target.CompileOutputType CompileOutputType(this Target target)
+        {
+            return target.target switch
+            {
+                // Binary output formats
+                Target.CompileTarget.Dxbc => Target.CompileOutputType.ByteCode,
+                Target.CompileTarget.DxbcAsm => Target.CompileOutputType.SourceCode, // Assembly is text
+                Target.CompileTarget.Dxil => Target.CompileOutputType.ByteCode,
+                Target.CompileTarget.DxilAsm => Target.CompileOutputType.SourceCode, // Assembly is text
+                Target.CompileTarget.SpirV => Target.CompileOutputType.ByteCode,
+                Target.CompileTarget.SpirVAsm => Target.CompileOutputType.SourceCode, // Assembly is text
+                Target.CompileTarget.WgslSpirv => Target.CompileOutputType.ByteCode,
+                Target.CompileTarget.WgslSpirvAsm => Target.CompileOutputType.SourceCode, // Assembly is text
+                Target.CompileTarget.Ptx => Target.CompileOutputType.ByteCode, // PTX is technically bytecode
+                Target.CompileTarget.CudaObjectCode => Target.CompileOutputType.ByteCode,
+                Target.CompileTarget.ObjectCode => Target.CompileOutputType.ByteCode,
+                Target.CompileTarget.MetalLib => Target.CompileOutputType.ByteCode,
+                Target.CompileTarget.MetalLibAsm => Target.CompileOutputType.SourceCode, // Assembly is text
+                Target.CompileTarget.ShaderSharedLibrary => Target.CompileOutputType.ByteCode,
+                Target.CompileTarget.HostSharedLibrary => Target.CompileOutputType.ByteCode,
+                Target.CompileTarget.HostExecutable => Target.CompileOutputType.ByteCode,
+                Target.CompileTarget.HostVm => Target.CompileOutputType.ByteCode,
 
+                // Source code output formats
+                Target.CompileTarget.Hlsl => Target.CompileOutputType.SourceCode,
+                Target.CompileTarget.Glsl => Target.CompileOutputType.SourceCode,
+                Target.CompileTarget.GlslVulkanDeprecated => Target.CompileOutputType.SourceCode,
+                Target.CompileTarget.GlslVulkanOneDescDeprecated => Target.CompileOutputType.SourceCode,
+                Target.CompileTarget.Metal => Target.CompileOutputType.SourceCode,
+                Target.CompileTarget.Wgsl => Target.CompileOutputType.SourceCode,
+                Target.CompileTarget.CSource => Target.CompileOutputType.SourceCode,
+                Target.CompileTarget.CppSource => Target.CompileOutputType.SourceCode,
+                Target.CompileTarget.HostCppSource => Target.CompileOutputType.SourceCode,
+                Target.CompileTarget.CudaSource => Target.CompileOutputType.SourceCode,
+                Target.CompileTarget.CppPytorchBinding => Target.CompileOutputType.SourceCode,
+                Target.CompileTarget.ShaderHostCallable => Target.CompileOutputType.SourceCode, // Callable interfaces are typically source
+                Target.CompileTarget.HostHostCallable => Target.CompileOutputType.SourceCode, // Callable interfaces are typically source
+
+                // Unknown/None targets default to source code
+                Target.CompileTarget.TargetUnknown => Target.CompileOutputType.SourceCode,
+                Target.CompileTarget.TargetNone => Target.CompileOutputType.SourceCode,
+
+                // Default case for any new targets
+                _ => Target.CompileOutputType.SourceCode
+            };
+        }
     }
 }

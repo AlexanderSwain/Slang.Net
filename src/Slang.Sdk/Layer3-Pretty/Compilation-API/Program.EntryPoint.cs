@@ -31,7 +31,7 @@ namespace Slang.Sdk
             var targetIndex = Parent.Index;
 
             var result = programBinding.CompileEntryPoint(Index, targetIndex);
-            return new CompilationResult(result.Source, Parent, this, result.Result, result.Diagnostics);
+            return new CompilationResult(result.Compiled, Parent, this, result.Result, result.Diagnostics);
         }
 
         public EntryPointReflection GetReflection()
