@@ -1,133 +1,134 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Silk.NET.OpenGL;
 using Slang.Sdk;
 using Slang.Sdk.Interop;
+using System;
+using System.Linq;
 
 namespace Tutorial
 {
+    /// <summary>
+    /// Supported graphics backends for shader compilation
+    /// </summary>
     public enum GraphicsBackend
     {
+        None,
         OpenGL,
         DirectX11
     }
 
-    public class SlangShaderCompiler
+    /// <summary>
+    /// Wrapper class for compiling Slang shaders to different graphics API targets.
+    /// Demonstrates how to use Slang.Sdk for cross-platform shader development.
+    /// </summary>
+    public class SlangShaderCompiler : IDisposable
     {
         private readonly Session _session;
-        private readonly GraphicsBackend _backend;
+        private readonly Module _module;
+        private readonly Slang.Sdk.Program _program;
 
-        public SlangShaderCompiler(GraphicsBackend backend)
+        /// <summary>
+        /// Creates a new Slang shader compiler for the specified graphics backend
+        /// </summary>
+        /// <param name="backend">The graphics backend to target (OpenGL or DirectX11)</param>
+        public SlangShaderCompiler(string slangFilePath)
         {
-            _backend = backend;
-            
-            var builder = new Session.Builder()
-                .AddSearchPath(AppDomain.CurrentDomain.BaseDirectory);
+            // Create the session
+            _session = new Session.Builder()
+                .AddTarget(Targets.Hlsl.vs_5_0)
+                .AddTarget(Targets.Hlsl.ps_5_0)
+                .AddTarget(Targets.Glsl.v330)
+                .Create();
 
-            // Add appropriate target based on backend
-            switch (backend)
+            // Create the module from the specified source file with the given targets
+            _module = new Module.Builder(_session)
+                .AddTranslationUnit(SourceLanguage.Slang, "shaderUnit", out var translationIndex)
+                .AddTranslationUnitSourceFile(translationIndex, slangFilePath)
+                .AddEntryPoint(translationIndex, "vertexMain", Stage.Vertex)
+                .AddEntryPoint(translationIndex, "fragmentMain", Stage.Fragment)
+                .Create();
+
+            // Set the program
+            _program = _module.Program;
+        }
+
+        /// <summary>
+        /// Compiles a Slang shader file to vertex and fragment shader source code for the target backend
+        /// </summary>
+        /// <param name="slangFilePath">Path to the .slang shader file</param>
+        /// <returns>Tuple containing (vertex shader source, fragment shader source)</returns>
+        /// <exception cref="InvalidOperationException">Thrown when shader compilation fails</exception>
+        public (string vertexShader, string fragmentShader) CompileShaders(GraphicsBackend backend)
+        {
+            try
             {
-                case GraphicsBackend.OpenGL:
-                    builder.AddTarget(Targets.Glsl.v330);
-                    break;
-                case GraphicsBackend.DirectX11:
-                    builder.AddTarget(Targets.Hlsl.vs_5_0);
-                    builder.AddTarget(Targets.Hlsl.ps_5_0);
-                    break;
+                var program = _module.Program;
+
+                var compileResults = backend switch
+                {
+                    GraphicsBackend.OpenGL => CompileForOpenGL(program),
+                    GraphicsBackend.DirectX11 => CompileForDirectX11(program),
+                    _ => throw new ArgumentException($"Unsupported backend: {backend}")
+                };
+
+                return (compileResults.vsCompileResult.SourceCode!, compileResults.psCompileResult.SourceCode!);
             }
-
-            _session = builder.Create();
-        }
-
-        public (string vertexShader, string fragmentShader) CompileShaders(string slangFilePath)
-        {
-            var module = _session.LoadModule(slangFilePath);
-            var program = module.Program;
-
-            string vertexShader = "";
-            string fragmentShader = "";
-
-            switch (_backend)
+            catch (Exception ex)
             {
-                case GraphicsBackend.OpenGL:
-                    {
-                        // For OpenGL, we'll provide fallback GLSL due to compatibility issues
-                        vertexShader = @"#version 330 core
-layout (location = 0) in vec3 vPos;
-layout (location = 1) in vec2 vUv;
-
-uniform mat4 uModel;
-uniform mat4 uView;
-uniform mat4 uProjection;
-
-out vec2 fUv;
-
-void main()
-{
-    gl_Position = uProjection * uView * uModel * vec4(vPos, 1.0);
-    fUv = vUv;
-}";
-
-                        fragmentShader = @"#version 330 core
-in vec2 fUv;
-
-uniform sampler2D uTexture0;
-
-out vec4 FragColor;
-
-void main()
-{
-    FragColor = texture(uTexture0, fUv);
-}";
-                    }
-                    break;
-                    
-                case GraphicsBackend.DirectX11:
-                    {
-                        // Compile using Slang for DirectX11
-                        var vsTarget = program.Targets[Targets.Hlsl.vs_5_0];
-                        var psTarget = program.Targets[Targets.Hlsl.ps_5_0];
-                        
-                        var vertexEntry = vsTarget.EntryPoints.FirstOrDefault(ep => ep.Name == "vertexMain");
-                        var fragmentEntry = psTarget.EntryPoints.FirstOrDefault(ep => ep.Name == "fragmentMain");
-                        
-                        if (vertexEntry == null || fragmentEntry == null)
-                        {
-                            throw new InvalidOperationException("Could not find vertex or fragment entry points in Slang shader");
-                        }
-                        
-                        var vertexResult = vertexEntry.Compile();
-                        var fragmentResult = fragmentEntry.Compile();
-                        
-                        vertexShader = vertexResult.SourceCode!;
-                        fragmentShader = fragmentResult.SourceCode!;
-                    }
-                    break;
+                throw new InvalidOperationException($"Failed to compile Slang shader for {backend}: {ex.Message}", ex);
             }
-
-            return (vertexShader, fragmentShader);
         }
 
-        public ShaderReflection GetReflection(string slangFilePath)
+        /// <summary>
+        /// Compiles Slang shader for OpenGL target (GLSL 3.30)
+        /// Note: Currently uses fallback GLSL due to compatibility issues with generated code
+        /// </summary>
+        private (CompilationResult vsCompileResult, CompilationResult psCompileResult) CompileForOpenGL(Slang.Sdk.Program program)
         {
-            var module = _session.LoadModule(slangFilePath);
-            var program = module.Program;
-            
-            var target = _backend switch
-            {
-                GraphicsBackend.OpenGL => program.Targets[Targets.Glsl.v330],
-                GraphicsBackend.DirectX11 => program.Targets[Targets.Hlsl.vs_5_0],
-                _ => throw new NotSupportedException($"Backend {_backend} not supported")
-            };
-            
-            return target.GetReflection();
+            var programTarget = program.Targets[Targets.Glsl.v330];
+
+            var vertexEntry = programTarget.EntryPoints["vertexMain"];
+            var fragmentEntry = programTarget.EntryPoints["fragmentMain"];
+
+            var vertexResult = vertexEntry.Compile();
+            var fragmentResult = fragmentEntry.Compile();
+
+            return (vertexResult, fragmentResult);
         }
 
+        /// <summary>
+        /// Compiles Slang shader for DirectX11 target (HLSL 5.0)
+        /// </summary>
+        private (CompilationResult vsCompileResult, CompilationResult psCompileResult) CompileForDirectX11(Slang.Sdk.Program program)
+        {
+            var vsProgramTarget = program.Targets[Targets.Hlsl.vs_5_0];
+            var psProgramTarget = program.Targets[Targets.Hlsl.ps_5_0];
+            
+            var vertexEntry = vsProgramTarget.EntryPoints["vertexMain"];
+            var fragmentEntry = psProgramTarget.EntryPoints["fragmentMain"];
+            
+            var vertexResult = vertexEntry.Compile();
+            var fragmentResult = fragmentEntry.Compile();
+            
+            return (vertexResult, fragmentResult);
+        }
+
+        /// <summary>
+        /// Gets reflection information for the compiled shader
+        /// </summary>
+        /// <param name="slangFilePath">Path to the .slang shader file</param>
+        /// <returns>Shader reflection data containing entry points and parameters</returns>
+        public ShaderReflection GetReflection(Target target)
+        {
+            return _module.Program.Targets[target].GetReflection();
+        }
+
+        /// <summary>
+        /// Disposes of the Slang session resources
+        /// </summary>
         public void Dispose()
         {
-            // Session doesn't implement IDisposable, no cleanup needed
+            // Slang sessions are automatically managed
+            // No explicit disposal needed for current Slang.Sdk version
         }
     }
 }

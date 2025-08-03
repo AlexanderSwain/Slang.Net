@@ -1,11 +1,13 @@
 using Silk.NET.Input;
 using Silk.NET.OpenGL;
+using Silk.NET.Direct3D11;
 using Silk.NET.Windowing;
 using System;
 using System.IO;
 using System.Linq;
 using System.Numerics;
 using Silk.NET.Maths;
+using Slang.Sdk;
 
 namespace Tutorial
 {
@@ -21,13 +23,14 @@ namespace Tutorial
         private static SlangShaderCompiler slangCompiler;
 
         // Choose the graphics backend - switch between OpenGL and DirectX11
-        private static GraphicsBackend SelectedBackend = GraphicsBackend.OpenGL; // Try DirectX11 first
-        
+        private static GraphicsBackend SelectedBackend = GraphicsBackend.None;
+
         // Backend-specific resources
+        private static D3D11 D3D11;
         private static DirectX11Shader DirectXShader;
         private static DirectX11Texture DirectXTexture;
         private static DirectX11Model DirectXModel;
-        
+
         //Setup the camera's location, directions, and movement speed
         private static Vector3 CameraPosition = new Vector3(0.0f, 0.0f, 3.0f);
         private static Vector3 CameraFront = new Vector3(0.0f, 0.0f, -1.0f);
@@ -42,6 +45,33 @@ namespace Tutorial
 
         private static void Main(string[] args)
         {
+            Console.WriteLine("Welcome to the Slang.Net Demo!");
+            Console.WriteLine("Please select a graphics backend:");
+            Console.WriteLine("1. OpenGL");
+            Console.WriteLine("2. DirectX11");
+
+            while (SelectedBackend == GraphicsBackend.None)
+            {
+                Console.Write("Enter your choice (1 or 2): ");
+                var choice = Console.ReadLine();
+
+                switch (choice)
+                {
+                    case "1":
+                        SelectedBackend = GraphicsBackend.OpenGL;
+                        Console.WriteLine("Selected OpenGL backend.");
+                        break;
+                    case "2":
+                        SelectedBackend = GraphicsBackend.DirectX11;
+                        Console.WriteLine("Selected DirectX11 backend.");
+                        break;
+                    default:
+                        Console.WriteLine("Invalid choice, defaulting to OpenGL.");
+                        SelectedBackend = GraphicsBackend.None;
+                        break;
+                }
+            }
+
             var options = WindowOptions.Default;
             options.Size = new Vector2D<int>(800, 600);
             options.Title = $"Slang.Net Demo - {SelectedBackend} Backend (Press B to switch, R to reload shaders)";
@@ -75,7 +105,7 @@ namespace Tutorial
 
             // Initialize based on selected backend
             Console.WriteLine($"Initializing {SelectedBackend} backend...");
-            
+
             if (SelectedBackend == GraphicsBackend.OpenGL)
             {
                 InitializeOpenGL();
@@ -88,54 +118,44 @@ namespace Tutorial
 
         private static void InitializeOpenGL()
         {
+            Console.WriteLine("OpenGL: Initializing backend (demo mode)");
+
             Gl = GL.GetApi(window);
 
             // Initialize Slang shader compiler for OpenGL
-            slangCompiler = new SlangShaderCompiler(GraphicsBackend.OpenGL);
-            
-            try
+            slangCompiler = new SlangShaderCompiler("Shaders/shader.slang");
+
+            // Compile Slang shaders to OpenGL
+            var (vertexSource, fragmentSource) = slangCompiler.CompileShaders(GraphicsBackend.OpenGL);
+
+            Console.WriteLine("Successfully compiled Slang shaders for OpenGL!");
+            Console.WriteLine($"Vertex shader length: {vertexSource.Length}");
+            Console.WriteLine($"Fragment shader length: {fragmentSource.Length}");
+
+            // Print a preview of the compiled shaders
+            Console.WriteLine("\n--- Compiled OpenGL Vertex Shader Preview ---");
+            Console.WriteLine(vertexSource.Length > 200 ? vertexSource.Substring(0, 200) + "..." : vertexSource);
+            Console.WriteLine("\n--- Compiled OpenGL Fragment Shader Preview ---");
+            Console.WriteLine(fragmentSource.Length > 200 ? fragmentSource.Substring(0, 200) + "..." : fragmentSource);
+
+            // Create shader with compiled sources
+            Shader = new Shader(Gl, vertexSource, fragmentSource);
+
+            // Get reflection information
+            var reflection = slangCompiler.GetReflection(Targets.Glsl.v330);
+
+            Console.WriteLine("\n--- OpenGL Shader Reflection ---");
+            Console.WriteLine($"Parameters: {reflection.Parameters.Count}");
+            foreach (var param in reflection.Parameters)
             {
-                // Compile Slang shaders to OpenGL
-                var (vertexShader, fragmentShader) = slangCompiler.CompileShaders("Shaders/shader.slang");
-                
-                Console.WriteLine("Successfully compiled Slang shaders for OpenGL!");
-                Console.WriteLine($"Vertex shader length: {vertexShader.Length}");
-                Console.WriteLine($"Fragment shader length: {fragmentShader.Length}");
-                
-                // Print a preview of the compiled shaders
-                Console.WriteLine("\n--- Compiled OpenGL Vertex Shader Preview ---");
-                Console.WriteLine(vertexShader.Length > 200 ? vertexShader.Substring(0, 200) + "..." : vertexShader);
-                Console.WriteLine("\n--- Compiled OpenGL Fragment Shader Preview ---");
-                Console.WriteLine(fragmentShader.Length > 200 ? fragmentShader.Substring(0, 200) + "..." : fragmentShader);
-                
-                // Create shader with compiled sources
-                Shader = new Shader(Gl, vertexShader, fragmentShader);
-                
-                // Get reflection information
-                var reflection = slangCompiler.GetReflection("Shaders/shader.slang");
-                Console.WriteLine("\n--- OpenGL Shader Reflection ---");
-                Console.WriteLine($"Parameters: {reflection.Parameters.Count}");
-                foreach (var param in reflection.Parameters)
-                {
-                    Console.WriteLine($"  Parameter: {param.Name} (Kind: {param.Type.Kind})");
-                }
-                Console.WriteLine($"Entry Points: {reflection.EntryPoints.Count}");
-                foreach (var ep in reflection.EntryPoints)
-                {
-                    Console.WriteLine($"  Entry Point: {ep.Name} (Stage: {ep.Stage})");
-                }
+                Console.WriteLine($"  Parameter: {param.Name} (Kind: {param.Type.Kind})");
             }
-            catch (Exception ex)
+            Console.WriteLine($"Entry Points: {reflection.EntryPoints.Count}");
+            foreach (var ep in reflection.EntryPoints)
             {
-                Console.WriteLine($"Error compiling Slang shaders for OpenGL: {ex.Message}");
-                Console.WriteLine("Falling back to hardcoded GLSL shaders");
-                
-                // Fallback to original GLSL shaders
-                string vertexShaderSource = File.ReadAllText("Shaders/shader.vert");
-                string fragmentShaderSource = File.ReadAllText("Shaders/shader.frag");
-                Shader = new Shader(Gl, vertexShaderSource, fragmentShaderSource);
+                Console.WriteLine($"  Entry Point: {ep.Name} (Stage: {ep.Stage})");
             }
-            
+
             Texture = new Texture(Gl, "Resources\\silk.png");
             Model = new Model(Gl, "Resources\\cube.model");
         }
@@ -143,71 +163,65 @@ namespace Tutorial
         private static void InitializeDirectX11()
         {
             Console.WriteLine("DirectX11: Initializing backend (demo mode)");
-            
+
+            D3D11 = D3D11.GetApi(window);
+
             // Initialize Slang shader compiler for DirectX11
-            slangCompiler = new SlangShaderCompiler(GraphicsBackend.DirectX11);
-            
-            try
+            slangCompiler = new SlangShaderCompiler("Shaders/shader.slang");
+
+            // Compile Slang shaders to HLSL
+            var (vertexSource, fragmentSource) = slangCompiler.CompileShaders(GraphicsBackend.DirectX11);
+
+            Console.WriteLine("Successfully compiled Slang shaders for DirectX11!");
+            Console.WriteLine($"Vertex shader length: {vertexSource.Length}");
+            Console.WriteLine($"Fragment shader length: {fragmentSource.Length}");
+
+            // Print a preview of the compiled shaders
+            Console.WriteLine("\n--- Compiled DirectX11 Vertex Shader Preview ---");
+            Console.WriteLine(vertexSource.Length > 300 ? vertexSource.Substring(0, 300) + "..." : vertexSource);
+            Console.WriteLine("\n--- Compiled DirectX11 Fragment Shader Preview ---");
+            Console.WriteLine(fragmentSource.Length > 300 ? fragmentSource.Substring(0, 300) + "..." : fragmentSource);
+
+            // Create DirectX shader with compiled sources
+            DirectXShader = new DirectX11Shader(vertexSource, fragmentSource);
+
+            // Get reflection information
+            var vsReflection = slangCompiler.GetReflection(Targets.Hlsl.vs_5_0);
+            var psReflection = slangCompiler.GetReflection(Targets.Hlsl.ps_5_0);
+
+            // Display reflection information for vs_5_0 target
+            Console.WriteLine("\n--- DirectX11 Shader Reflection ---");
+            Console.WriteLine($"Parameters: {vsReflection.Parameters.Count}");
+            foreach (var param in vsReflection.Parameters)
             {
-                // Compile Slang shaders to HLSL
-                var (vertexShader, fragmentShader) = slangCompiler.CompileShaders("Shaders/shader.slang");
-                
-                Console.WriteLine("Successfully compiled Slang shaders for DirectX11!");
-                Console.WriteLine($"Vertex shader length: {vertexShader.Length}");
-                Console.WriteLine($"Fragment shader length: {fragmentShader.Length}");
-                
-                // Print a preview of the compiled shaders
-                Console.WriteLine("\n--- Compiled DirectX11 Vertex Shader Preview ---");
-                Console.WriteLine(vertexShader.Length > 300 ? vertexShader.Substring(0, 300) + "..." : vertexShader);
-                Console.WriteLine("\n--- Compiled DirectX11 Fragment Shader Preview ---");
-                Console.WriteLine(fragmentShader.Length > 300 ? fragmentShader.Substring(0, 300) + "..." : fragmentShader);
-                
-                // Create DirectX shader with compiled sources
-                DirectXShader = new DirectX11Shader(vertexShader, fragmentShader);
-                
-                // Get reflection information
-                var reflection = slangCompiler.GetReflection("Shaders/shader.slang");
-                Console.WriteLine("\n--- DirectX11 Shader Reflection ---");
-                Console.WriteLine($"Parameters: {reflection.Parameters.Count}");
-                foreach (var param in reflection.Parameters)
-                {
-                    Console.WriteLine($"  Parameter: {param.Name} (Kind: {param.Type.Kind})");
-                }
-                Console.WriteLine($"Entry Points: {reflection.EntryPoints.Count}");
-                foreach (var ep in reflection.EntryPoints)
-                {
-                    Console.WriteLine($"  Entry Point: {ep.Name} (Stage: {ep.Stage})");
-                }
+                Console.WriteLine($"  Parameter: {param.Name} (Kind: {param.Type.Kind})");
             }
-            catch (Exception ex)
+            Console.WriteLine($"Entry Points: {vsReflection.EntryPoints.Count}");
+            foreach (var ep in vsReflection.EntryPoints)
             {
-                Console.WriteLine($"Error compiling Slang shaders for DirectX11: {ex.Message}");
-                Console.WriteLine($"Stack trace: {ex.StackTrace}");
-                
-                // For DirectX demo, we'll fallback to OpenGL
-                Console.WriteLine("Falling back to OpenGL backend due to DirectX compilation error");
-                SelectedBackend = GraphicsBackend.OpenGL;
-                InitializeOpenGL();
-                return;
+                Console.WriteLine($"  Entry Point: {ep.Name} (Stage: {ep.Stage})");
             }
-            
+
+            // Display reflection information for ps_5_0 target
+            Console.WriteLine("\n--- DirectX11 Shader Reflection ---");
+            Console.WriteLine($"Parameters: {psReflection.Parameters.Count}");
+            foreach (var param in psReflection.Parameters)
+            {
+                Console.WriteLine($"  Parameter: {param.Name} (Kind: {param.Type.Kind})");
+            }
+            Console.WriteLine($"Entry Points: {psReflection.EntryPoints.Count}");
+            foreach (var ep in psReflection.EntryPoints)
+            {
+                Console.WriteLine($"  Entry Point: {ep.Name} (Stage: {ep.Stage})");
+            }
+
             DirectXTexture = new DirectX11Texture("Resources\\silk.png");
             DirectXModel = new DirectX11Model("Resources\\cube.model");
-            
-            // Set up a minimal OpenGL context for display (since we're in demo mode)
-            Gl = GL.GetApi(window);
-            
-            // Create fallback OpenGL resources for actual rendering
-            string fallbackVS = File.ReadAllText("Shaders/shader.vert");
-            string fallbackFS = File.ReadAllText("Shaders/shader.frag");
-            Shader = new Shader(Gl, fallbackVS, fallbackFS);
-            Texture = new Texture(Gl, "Resources\\silk.png");
-            Model = new Model(Gl, "Resources\\cube.model");
         }
 
         private static unsafe void OnUpdate(double deltaTime)
         {
-            var moveSpeed = 2.5f * (float) deltaTime;
+            var moveSpeed = 2.5f * (float)deltaTime;
 
             if (primaryKeyboard.IsKeyPressed(Key.W))
             {
@@ -253,7 +267,7 @@ namespace Tutorial
             Shader.SetUniform("uTexture0", 0);
 
             //Use elapsed time to convert to radians to allow our cube to rotate over time
-            var difference = (float) (window.Time * 100);
+            var difference = (float)(window.Time * 100);
 
             var size = window.FramebufferSize;
 
@@ -276,40 +290,41 @@ namespace Tutorial
             }
         }
 
-        private static unsafe void RenderDirectX11(double deltaTime)
-        {
-            // DirectX11 rendering demo
-            Console.WriteLine($"DirectX11: Rendering frame at time {deltaTime:F2}s");
-            
-            // Simulate DirectX rendering calls
-            DirectXTexture?.Bind();
-            DirectXShader?.Use();
-            DirectXShader?.SetUniform("uTexture0", 0);
+        // I believe these methods can be combined into a single Render method 
+        //private static unsafe void RenderDirectX11(double deltaTime)
+        //{
+        //    // DirectX11 rendering demo
+        //    Console.WriteLine($"DirectX11: Rendering frame at time {deltaTime:F2}s");
 
-            //Use elapsed time to convert to radians to allow our cube to rotate over time
-            var difference = (float) (window.Time * 100);
-            var size = window.FramebufferSize;
+        //    // Simulate DirectX rendering calls
+        //    DirectXTexture?.Bind();
+        //    DirectXShader?.Use();
+        //    DirectXShader?.SetUniform("uTexture0", 0);
 
-            var model = Matrix4x4.CreateRotationY(MathHelper.DegreesToRadians(difference)) * Matrix4x4.CreateRotationX(MathHelper.DegreesToRadians(difference));
-            var view = Matrix4x4.CreateLookAt(CameraPosition, CameraPosition + CameraFront, CameraUp);
-            var projection = Matrix4x4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(CameraZoom), (float)size.X / size.Y, 0.1f, 100.0f);
+        //    //Use elapsed time to convert to radians to allow our cube to rotate over time
+        //    var difference = (float)(window.Time * 100);
+        //    var size = window.FramebufferSize;
 
-            foreach (var mesh in DirectXModel?.Meshes ?? new DirectX11Mesh[0])
-            {
-                mesh.Bind();
-                DirectXShader?.Use();
-                DirectXTexture?.Bind();
-                DirectXShader?.SetUniform("uTexture0", 0);
-                DirectXShader?.SetUniform("uModel", model);
-                DirectXShader?.SetUniform("uView", view);
-                DirectXShader?.SetUniform("uProjection", projection);
+        //    var model = Matrix4x4.CreateRotationY(MathHelper.DegreesToRadians(difference)) * Matrix4x4.CreateRotationX(MathHelper.DegreesToRadians(difference));
+        //    var view = Matrix4x4.CreateLookAt(CameraPosition, CameraPosition + CameraFront, CameraUp);
+        //    var projection = Matrix4x4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(CameraZoom), (float)size.X / size.Y, 0.1f, 100.0f);
 
-                Console.WriteLine($"DirectX11: Drawing mesh with {mesh.Vertices.Length} vertices");
-            }
-            
-            // Fall back to OpenGL for actual display since this is a demo
-            RenderOpenGL(deltaTime);
-        }
+        //    foreach (var mesh in DirectXModel?.Meshes ?? new DirectX11Mesh[0])
+        //    {
+        //        mesh.Bind();
+        //        DirectXShader?.Use();
+        //        DirectXTexture?.Bind();
+        //        DirectXShader?.SetUniform("uTexture0", 0);
+        //        DirectXShader?.SetUniform("uModel", model);
+        //        DirectXShader?.SetUniform("uView", view);
+        //        DirectXShader?.SetUniform("uProjection", projection);
+
+        //        Console.WriteLine($"DirectX11: Drawing mesh with {mesh.Vertices.Length} vertices");
+        //    }
+
+        //    // Fall back to OpenGL for actual display since this is a demo
+        //    RenderOpenGL(deltaTime);
+        //}
 
         private static void OnFramebufferResize(Vector2D<int> newSize)
         {
@@ -354,12 +369,12 @@ namespace Tutorial
             Model?.Dispose();
             Shader?.Dispose();
             Texture?.Dispose();
-            
+
             // Dispose DirectX resources
             DirectXModel?.Dispose();
             DirectXShader?.Dispose();
             DirectXTexture?.Dispose();
-            
+
             slangCompiler?.Dispose();
         }
 
@@ -376,7 +391,7 @@ namespace Tutorial
                 try
                 {
                     var (vertexShader, fragmentShader) = slangCompiler.CompileShaders("Shaders/shader.slang");
-                    
+
                     if (SelectedBackend == GraphicsBackend.OpenGL)
                     {
                         Shader?.Dispose();
@@ -401,7 +416,7 @@ namespace Tutorial
                 var oldBackend = SelectedBackend;
                 SelectedBackend = SelectedBackend == GraphicsBackend.OpenGL ? GraphicsBackend.DirectX11 : GraphicsBackend.OpenGL;
                 Console.WriteLine($"Switching from {oldBackend} to {SelectedBackend} backend...");
-                
+
                 // Note: In a real implementation, you'd reinitialize the entire graphics context
                 Console.WriteLine("Backend switching requires restart in this demo");
             }
