@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Slang.Sdk\Slang.Sdk.csproj" />
+    <ProjectReference Include="..\..\src\Slang.Sdk\Slang.Sdk.csproj" />
   </ItemGroup>
 
   <ItemGroup>
