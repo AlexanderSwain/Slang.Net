@@ -17,7 +17,11 @@ namespace Tutorial
         private static Texture Texture;
         private static Shader Shader;
         private static Model Model;
+        private static SlangShaderCompiler slangCompiler;
 
+        // Choose the graphics backend - switch between OpenGL and DirectX11
+        private static GraphicsBackend SelectedBackend = GraphicsBackend.OpenGL;
+        
         //Setup the camera's location, directions, and movement speed
         private static Vector3 CameraPosition = new Vector3(0.0f, 0.0f, 3.0f);
         private static Vector3 CameraFront = new Vector3(0.0f, 0.0f, -1.0f);
@@ -34,7 +38,7 @@ namespace Tutorial
         {
             var options = WindowOptions.Default;
             options.Size = new Vector2D<int>(800, 600);
-            options.Title = "LearnOpenGL with Silk.NET";
+            options.Title = "LearnOpenGL with Silk.NET - Slang Shaders";
             window = Window.Create(options);
 
             window.Load += OnLoad;
@@ -65,7 +69,81 @@ namespace Tutorial
 
             Gl = GL.GetApi(window);
 
-            Shader = new Shader(Gl, /*Compiled slang vertex source here*/, /*Compiled slang fragment source here*/);
+            // Initialize Slang shader compiler
+            slangCompiler = new SlangShaderCompiler(GraphicsBackend.OpenGL);
+            
+            try
+            {
+                // Compile Slang shaders to OpenGL
+                var (vertexShader, fragmentShader) = slangCompiler.CompileShaders("Shaders/shader.slang");
+                
+                Console.WriteLine("Successfully compiled Slang shaders!");
+                Console.WriteLine($"Vertex shader length: {vertexShader.Length}");
+                Console.WriteLine($"Fragment shader length: {fragmentShader.Length}");
+                
+                // Print a preview of the compiled shaders
+                Console.WriteLine("\n--- Compiled Vertex Shader Preview ---");
+                Console.WriteLine(vertexShader.Length > 200 ? vertexShader.Substring(0, 200) + "..." : vertexShader);
+                Console.WriteLine("\n--- Compiled Fragment Shader Preview ---");
+                Console.WriteLine(fragmentShader.Length > 200 ? fragmentShader.Substring(0, 200) + "..." : fragmentShader);
+                
+                // Create shader with compiled sources
+                Shader = new Shader(Gl, vertexShader, fragmentShader);
+                
+                // Get reflection information
+                var reflection = slangCompiler.GetReflection("Shaders/shader.slang");
+                Console.WriteLine("\n--- Shader Reflection ---");
+                Console.WriteLine($"Parameters: {reflection.Parameters.Count}");
+                foreach (var param in reflection.Parameters)
+                {
+                    Console.WriteLine($"  Parameter: {param.Name} (Kind: {param.Type.Kind})");
+                }
+                Console.WriteLine($"Entry Points: {reflection.EntryPoints.Count}");
+                foreach (var ep in reflection.EntryPoints)
+                {
+                    Console.WriteLine($"  Entry Point: {ep.Name} (Stage: {ep.Stage})");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error compiling Slang shaders: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                Console.WriteLine("Falling back to hardcoded GLSL shaders");
+                
+                // Fallback to original GLSL shaders
+                string vertexShaderSource = @"
+#version 330 core
+layout (location = 0) in vec3 vPos;
+layout (location = 1) in vec2 vUv;
+
+uniform mat4 uModel;
+uniform mat4 uView;
+uniform mat4 uProjection;
+
+out vec2 fUv;
+
+void main()
+{
+    gl_Position = uProjection * uView * uModel * vec4(vPos, 1.0);
+    fUv = vUv;
+}";
+
+                string fragmentShaderSource = @"
+#version 330 core
+in vec2 fUv;
+
+uniform sampler2D uTexture0;
+
+out vec4 FragColor;
+
+void main()
+{
+    FragColor = texture(uTexture0, fUv);
+}";
+                
+                Shader = new Shader(Gl, vertexShaderSource, fragmentShaderSource);
+            }
+            
             Texture = new Texture(Gl, "Resources\\silk.png");
             Model = new Model(Gl, "Resources\\cube.model");
         }
@@ -171,6 +249,7 @@ namespace Tutorial
             Model.Dispose();
             Shader.Dispose();
             Texture.Dispose();
+            slangCompiler?.Dispose();
         }
 
         private static void KeyDown(IKeyboard keyboard, Key key, int arg3)
@@ -178,6 +257,21 @@ namespace Tutorial
             if (key == Key.Escape)
             {
                 window.Close();
+            }
+            else if (key == Key.R)
+            {
+                // Reload shaders for testing
+                try
+                {
+                    var (vertexShader, fragmentShader) = slangCompiler.CompileShaders("Shaders/shader.slang");
+                    Shader?.Dispose();
+                    Shader = new Shader(Gl, vertexShader, fragmentShader);
+                    Console.WriteLine("Shaders reloaded successfully!");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error reloading shaders: {ex.Message}");
+                }
             }
         }
     }

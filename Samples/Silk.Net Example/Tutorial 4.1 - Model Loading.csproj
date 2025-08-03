@@ -29,6 +29,9 @@
       <None Update="Shaders\shader.vert">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+      <None Update="Shaders\shader.slang">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
       <None Update="Resources\silk.png">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
