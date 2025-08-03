@@ -73,7 +73,7 @@ namespace Native
         TypeLayoutReflection* getGlobalParamsTypeLayout();
         VariableLayoutReflection* getGlobalParamsVarLayout();
         
-        SlangResult toJson(ISlangBlob** outBlob);
+        SlangResult toJson(const char** outBlob);
 
 	private:
         ProgramCLI* m_parent;
@@ -90,6 +90,5 @@ namespace Native
         std::list<TypeReflection*> m_specialize_type_results_to_delete;
 		TypeLayoutReflection* m_globalParamsTypeLayout;
         VariableLayoutReflection* m_globalParamsVarLayout;
-        ISlangBlob* json_blob;
 	};
 }

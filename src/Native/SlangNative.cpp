@@ -1166,43 +1166,18 @@ namespace SlangNative
 		}
 	}
 
-	// TODO: [Fix] Inconsistency
 	extern "C" SLANGNATIVE_API int ShaderReflection_ToJson(void* shaderReflection, const char** output, const char** error)
 	{
 		if (!shaderReflection || !output) return SLANG_FAIL;
 
-		ISlangBlob* blob = nullptr;
-		SlangResult result = ((Native::ShaderReflection*)shaderReflection)->toJson(&blob);
-		if (SLANG_SUCCEEDED(result))
+		try
 		{
-			/*
-			// Copy the string data to memory allocated by malloc, which is what the .NET marshaller expects
-			const char* jsonData = (const char*)blob->getBufferPointer();
-			size_t jsonLength = strlen(jsonData);
-			
-			// Allocate memory using malloc (which is what Utf8StringMarshaller.Free expects)
-			char* managedOutput = (char*)malloc(jsonLength + 1);
-			if (!managedOutput)
-			{
-				blob->release();
-				*error = (new std::string("Failed to allocate memory for JSON output string"))->c_str();
-				return SLANG_FAIL;
-			}
-				
-			// Copy the string content
-			strcpy_s(managedOutput, jsonLength + 1, jsonData);
-			
-			*output = managedOutput;
-			*/
-			*output = (const char*)blob->getBufferPointer();
-			blob->release();
-			return result;
+			return ((Native::ShaderReflection*)shaderReflection)->toJson(output);
 		}
-		else
+		catch (const std::exception& e)
 		{
-			*output = nullptr;
-			*error = SetError("Failed to retrieve Json.");
-			return result;
+			*error = SetError(e.what());
+			return SLANG_FAIL;
 		}
 	}
 

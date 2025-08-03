@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ReflectionAPI": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

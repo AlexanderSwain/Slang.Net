@@ -23,7 +23,6 @@ Native::ShaderReflection::ShaderReflection(ProgramCLI* parent, void* native)
     m_entryPoints = nullptr;
 	m_globalParamsTypeLayout = nullptr;
     m_globalParamsVarLayout = nullptr;
-    json_blob = nullptr;
 }
 
 Native::ShaderReflection::~ShaderReflection()
@@ -386,15 +385,15 @@ Native::VariableLayoutReflection* Native::ShaderReflection::getGlobalParamsVarLa
     return m_globalParamsVarLayout;
 }
 
-SlangResult Native::ShaderReflection::toJson(ISlangBlob** outBlob)
+SlangResult Native::ShaderReflection::toJson(const char** outBlob)
 {
-    if (!json_blob)
-    {
-        SlangResult result = m_native->toJson(&json_blob);
-        if (SLANG_FAILED(result))
-            return result;
-    }
+    Slang::ComPtr<ISlangBlob> json_blob;
+    SlangResult result = m_native->toJson(json_blob.writeRef());
+    if (SLANG_FAILED(result))
+		throw std::runtime_error("Failed to convert ShaderReflection to JSON");
 
-    (*outBlob) = json_blob;
+    // TODO: verify that there is no memory leak here, because it looks like there is
+    *outBlob = _strdup((const char*)json_blob->getBufferPointer());
+
     return SLANG_OK;
 }
