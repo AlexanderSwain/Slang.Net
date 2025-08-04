@@ -1,3 +1,4 @@
+using SharpDX.WIC;
 using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
@@ -490,7 +491,61 @@ namespace Tutorial
 
         private void CreateTexture(string path)
         {
+            // Load texture from file
             _texture = TextureLoader.Read(_renderer.Device, path);
+            
+            // Test texture code commented out:
+            // CreateTestTexture();
+        }
+
+        private void CreateTestTexture()
+        {
+            // Create a simple 4x4 red texture to test if texture sampling works
+            const uint width = 4;
+            const uint height = 4;
+            const uint pixelSize = 4; // RGBA
+
+            byte[] pixels = new byte[width * height * pixelSize];
+            
+            // Fill with red color (255, 0, 0, 255)
+            for (int i = 0; i < pixels.Length; i += 4)
+            {
+                pixels[i] = 255;     // Red
+                pixels[i + 1] = 0;   // Green
+                pixels[i + 2] = 0;   // Blue
+                pixels[i + 3] = 255; // Alpha
+            }
+
+            var desc = new Texture2DDesc
+            {
+                Width = width,
+                Height = height,
+                MipLevels = 1,
+                ArraySize = 1,
+                Format = Format.FormatR8G8B8A8Unorm,
+                SampleDesc = new SampleDesc(1, 0),
+                Usage = Usage.Default,
+                BindFlags = (uint)BindFlag.ShaderResource,
+                CPUAccessFlags = 0,
+                MiscFlags = 0
+            };
+
+            ID3D11Texture2D* texture = null;
+            fixed (byte* pPixels = pixels)
+            {
+                var subResourceData = new SubresourceData
+                {
+                    PSysMem = pPixels,
+                    SysMemPitch = width * pixelSize,
+                    SysMemSlicePitch = 0
+                };
+                
+                var result = _renderer.Device->CreateTexture2D(&desc, &subResourceData, &texture);
+                Console.WriteLine($"DirectX11Texture: CreateTestTexture result: 0x{result:X}");
+            }
+
+            _texture = texture;
+            Console.WriteLine("DirectX11Texture: Created simple red test texture (4x4)");
         }
 
         private void CreateShaderResourceView()
@@ -876,7 +931,7 @@ namespace Tutorial
         }
         public static ID3D11Texture2D* Read(ID3D11Device* device, string fileName)
         {
-            var texture = CreateTexture2DFromBitmap(device, fileName);
+            var texture = CreateTexture2DFromBitmap(device, LoadBitmap(WIC_Factory, File.OpenRead(fileName)));
             return texture;
         }
 
@@ -908,32 +963,33 @@ namespace Tutorial
             return formatConverter;
         }
 
-        [DllImport("ole32.dll")]
-        static extern int CoInitializeEx(IntPtr pvReserved, uint dwCoInit);
+        // Can be deleted
+        //[DllImport("ole32.dll")]
+        //static extern int CoInitializeEx(IntPtr pvReserved, uint dwCoInit);
 
-        [DllImport("ole32.dll")]
-        static extern int CoCreateInstance(
-            ref Guid clsid,
-            IntPtr pUnkOuter,
-            uint dwClsContext,
-            ref Guid iid,
-            out IntPtr ppv
-        );
+        //[DllImport("ole32.dll")]
+        //static extern int CoCreateInstance(
+        //    ref Guid clsid,
+        //    IntPtr pUnkOuter,
+        //    uint dwClsContext,
+        //    ref Guid iid,
+        //    out IntPtr ppv
+        //);
 
-        // Constants
-        const uint COINIT_APARTMENTTHREADED = 0x2;
-        const uint CLSCTX_INPROC_SERVER = 0x1;
-        static Guid clsidWIC = new("CACAF262-9370-4615-A13B-9F5539DA4C0A");
-        static Guid iidFactory = new("EC5EC8A9-C395-4314-9C77-54D7A935FF70");
+        //// Constants
+        //const uint COINIT_APARTMENTTHREADED = 0x2;
+        //const uint CLSCTX_INPROC_SERVER = 0x1;
+        //static Guid clsidWIC = new("CACAF262-9370-4615-A13B-9F5539DA4C0A");
+        //static Guid iidFactory = new("EC5EC8A9-C395-4314-9C77-54D7A935FF70");
 
-        enum CLSCTX : uint
-        {
-            CLSCTX_INPROC_SERVER = 0x1,
-            CLSCTX_INPROC_HANDLER = 0x2,
-            CLSCTX_LOCAL_SERVER = 0x4,
-            CLSCTX_REMOTE_SERVER = 0x10,
-            CLSCTX_ALL = CLSCTX_INPROC_SERVER | CLSCTX_INPROC_HANDLER | CLSCTX_LOCAL_SERVER | CLSCTX_REMOTE_SERVER
-        }
+        //enum CLSCTX : uint
+        //{
+        //    CLSCTX_INPROC_SERVER = 0x1,
+        //    CLSCTX_INPROC_HANDLER = 0x2,
+        //    CLSCTX_LOCAL_SERVER = 0x4,
+        //    CLSCTX_REMOTE_SERVER = 0x10,
+        //    CLSCTX_ALL = CLSCTX_INPROC_SERVER | CLSCTX_INPROC_HANDLER | CLSCTX_LOCAL_SERVER | CLSCTX_REMOTE_SERVER
+        //}
 
         /// <summary> 
         /// Creates a <see cref="SharpDX.Direct3D11.Texture2D"/> from a WIC <see cref="SharpDX.WIC.BitmapSource"/> 
@@ -941,116 +997,162 @@ namespace Tutorial
         /// <param name="device">The Direct3D11 device</param> 
         /// <param name="bitmapSource">The WIC bitmap source</param> 
         /// <returns>A Texture2D</returns> 
-        public static ID3D11Texture2D* CreateTexture2DFromBitmap(ID3D11Device* device, string fileName)
+        public static ID3D11Texture2D* CreateTexture2DFromBitmap(ID3D11Device* device, BitmapSource bitmapSource)
         {
-            IntPtr factoryPtr;
-
-            // CLSID_WICImagingFactory: {CACAF262-9370-4615-A13B-9F5539DA4C0A}
-            Guid clsid = new Guid("CACAF262-9370-4615-A13B-9F5539DA4C0A");
-
-            // IID_IWICImagingFactory: {EC5EC8A9-C395-4314-9C77-54D7A935FF70}
-            Guid iid = new Guid("EC5EC8A9-C395-4314-9C77-54D7A935FF70");
-
-            // Initialize COM (if not already done)
-            CoInitializeEx(IntPtr.Zero, COINIT_APARTMENTTHREADED);
-
-            // Call CoCreateInstance manually
-            int hr = CoCreateInstance(ref clsidWIC, IntPtr.Zero, CLSCTX_INPROC_SERVER, ref iidFactory, out factoryPtr);
-
-            if (hr != 0)
-                throw new COMException("FormatConverter initialization failed", hr);
-
-            IWICImagingFactory* imagingFactory = (IWICImagingFactory*)factoryPtr;
-
-            // Optional: specify vendor GUID or use null
-            Guid vendorGuid = Guid.Empty;
-
-            // Desired access flags
-            uint desiredAccess = 0x80000000; // GENERIC_READ
-
-            // Metadata caching option
-            Silk.NET.WindowsCodecs.DecodeOptions metadataOptions = DecodeOptions.DecodeMetadataCacheOnLoad;
-
-            // Convert string to unmanaged LPCWSTR
-            char* pathPtr = (char*)Marshal.StringToHGlobalUni(fileName);
-
-            IWICBitmapDecoder* decoder = null;
-            hr = imagingFactory->CreateDecoderFromFilename(
-                pathPtr,
-                null,
-                desiredAccess,
-                metadataOptions,
-                &decoder
-            );
-            if (hr != 0)
-                throw new COMException("FormatConverter initialization failed", hr);
-            Marshal.FreeHGlobal((IntPtr)pathPtr);
-
-            IWICBitmapFrameDecode* frame = null;
-            decoder->GetFrame(0, &frame);
-            IWICFormatConverter* formatConverter = null;
-            hr = imagingFactory->CreateFormatConverter(&formatConverter);
-            if (hr != 0)
-                throw new COMException("FormatConverter initialization failed", hr);
-
-            Guid pixelFormat = new Guid("6fddc324-4e03-4bfe-b185-3d77768dc90f"); // WICPixelFormat32bppRGBA
-
-            hr = formatConverter->Initialize(
-                (IWICBitmapSource*)frame,
-                &pixelFormat,
-                BitmapDitherType.BitmapDitherTypeNone,
-                null, // palette
-                0.0f, // alpha threshold
-                BitmapPaletteType.BitmapPaletteTypeCustom
-            );
-            if (hr != 0)
-                throw new COMException("FormatConverter initialization failed", hr);
-
-            uint width, height;
-            formatConverter->GetSize(&width, &height);
-            Console.WriteLine($"Size: width({width}), height({height})");
-
-            int stride = (int)(width * 4); // 4 bytes per pixel for RGBA
-            int bufferSize = (int)(stride * height);
-            byte[] pixelData = new byte[bufferSize];
-
-            fixed (byte* pPixels = pixelData)
+            // Allocate DataStream to receive the WIC image pixels 
+            int stride = bitmapSource.Size.Width * 4;
+            using (var buffer = new SharpDX.DataStream(bitmapSource.Size.Height * stride, true, true))
             {
-                formatConverter->CopyPixels(
-                    null, // no specific rect
-                    (uint)stride,
-                    (uint)bufferSize,
-                    pPixels
-                );
-            }
+                // Copy the content of the WIC to the buffer 
+                bitmapSource.CopyPixels(stride, buffer);
 
-            Texture2DDesc desc = new Texture2DDesc
-            {
-                Width = width,
-                Height = height,
-                MipLevels = 1,
-                ArraySize = 1,
-                Format = Format.FormatR8G8B8A8Unorm,
-                SampleDesc = new SampleDesc(1, 0),
-                Usage = Usage.Default,
-                BindFlags = (uint)BindFlag.ShaderResource,
-                CPUAccessFlags = 0,
-                MiscFlags = 0
-            };
-
-            ID3D11Texture2D* texture = null;
-            fixed (byte* pPixels = pixelData)
-            {
-                var subResourceData = new SubresourceData
+                ID3D11Texture2D* result;
+                Texture2DDesc desc = new Texture2DDesc
                 {
-                    PSysMem = pPixels,
-                    SysMemPitch = width * 4
+                    Width = (uint)bitmapSource.Size.Width,
+                    Height = (uint)bitmapSource.Size.Height,
+                    MipLevels = 1,
+                    ArraySize = 1,
+                    Format = Format.FormatR8G8B8A8Unorm,
+                    SampleDesc = new SampleDesc(1, 0),
+                    Usage = Usage.Default,
+                    BindFlags = (uint)BindFlag.ShaderResource,
+                    CPUAccessFlags = 0,
+                    MiscFlags = 0
                 };
-                
-                device->CreateTexture2D(&desc, &subResourceData, &texture);
-            }
 
-            return texture;
+                // Create Silk.NET SubresourceData instead of SharpDX.DataRectangle
+                var initialData = new SubresourceData
+                {
+                    PSysMem = (void*)buffer.DataPointer,
+                    SysMemPitch = (uint)stride,
+                    SysMemSlicePitch = (uint)(stride * bitmapSource.Size.Height)
+                };
+
+                var createResult = device->CreateTexture2D(&desc, &initialData, &result);
+
+                if (createResult < 0)
+                {
+                    Console.WriteLine($"TextureLoader: Failed to create texture from bitmap: 0x{createResult:X}");
+                    return null;
+                }
+
+                return result;
+
+                // Can be deleted
+                //IntPtr factoryPtr;
+
+                //// CLSID_WICImagingFactory: {CACAF262-9370-4615-A13B-9F5539DA4C0A}
+                //Guid clsid = new Guid("CACAF262-9370-4615-A13B-9F5539DA4C0A");
+
+                //// IID_IWICImagingFactory: {EC5EC8A9-C395-4314-9C77-54D7A935FF70}
+                //Guid iid = new Guid("EC5EC8A9-C395-4314-9C77-54D7A935FF70");
+
+                //// Initialize COM (if not already done)
+                //CoInitializeEx(IntPtr.Zero, COINIT_APARTMENTTHREADED);
+
+                //// Call CoCreateInstance manually
+                //int hr = CoCreateInstance(ref clsidWIC, IntPtr.Zero, CLSCTX_INPROC_SERVER, ref iidFactory, out factoryPtr);
+
+                //if (hr != 0)
+                //    throw new COMException("FormatConverter initialization failed", hr);
+
+                //IWICImagingFactory* imagingFactory = (IWICImagingFactory*)factoryPtr;
+
+                //// Optional: specify vendor GUID or use null
+                //Guid vendorGuid = Guid.Empty;
+
+                //// Desired access flags
+                //uint desiredAccess = 0x80000000; // GENERIC_READ
+
+                //// Metadata caching option
+                //Silk.NET.WindowsCodecs.DecodeOptions metadataOptions = DecodeOptions.DecodeMetadataCacheOnLoad;
+
+                //// Convert string to unmanaged LPCWSTR
+                //char* pathPtr = (char*)Marshal.StringToHGlobalUni(fileName);
+
+                //IWICBitmapDecoder* decoder = null;
+                //hr = imagingFactory->CreateDecoderFromFilename(
+                //    pathPtr,
+                //    null,
+                //    desiredAccess,
+                //    metadataOptions,
+                //    &decoder
+                //);
+                //if (hr != 0)
+                //    throw new COMException("FormatConverter initialization failed", hr);
+                //Marshal.FreeHGlobal((IntPtr)pathPtr);
+
+                //IWICBitmapFrameDecode* frame = null;
+                //decoder->GetFrame(0, &frame);
+                //IWICFormatConverter* formatConverter = null;
+                //hr = imagingFactory->CreateFormatConverter(&formatConverter);
+                //if (hr != 0)
+                //    throw new COMException("FormatConverter initialization failed", hr);
+
+                //Guid pixelFormat = new Guid("6fddc324-4e03-4bfe-b185-3d77768dc90c"); // WICPixelFormat32bppBGRA
+
+                //hr = formatConverter->Initialize(
+                //    (IWICBitmapSource*)frame,
+                //    &pixelFormat,
+                //    BitmapDitherType.BitmapDitherTypeNone,
+                //    null, // palette
+                //    0.0f, // alpha threshold
+                //    BitmapPaletteType.BitmapPaletteTypeCustom
+                //);
+                //if (hr != 0)
+                //    throw new COMException("FormatConverter initialization failed", hr);
+
+                //uint width, height;
+                //formatConverter->GetSize(&width, &height);
+                //Console.WriteLine($"TextureLoader: Size: width({width}), height({height})");
+
+                //int stride = (int)(width * 4); // 4 bytes per pixel for RGBA
+                //int bufferSize = (int)(stride * height);
+                //byte[] pixelData = new byte[bufferSize];
+
+                //fixed (byte* pPixels = pixelData)
+                //{
+                //    formatConverter->CopyPixels(
+                //        null, // no specific rect
+                //        (uint)stride,
+                //        (uint)bufferSize,
+                //        pPixels
+                //    );
+                //}
+
+                //Console.WriteLine($"TextureLoader: Loaded {bufferSize} bytes of pixel data");
+
+                //Texture2DDesc desc = new Texture2DDesc
+                //{
+                //    Width = width,
+                //    Height = height,
+                //    MipLevels = 1,
+                //    ArraySize = 1,
+                //    Format = Format.FormatB8G8R8A8Unorm,
+                //    SampleDesc = new SampleDesc(1, 0),
+                //    Usage = Usage.Default,
+                //    BindFlags = (uint)BindFlag.ShaderResource,
+                //    CPUAccessFlags = 0,
+                //    MiscFlags = 0
+                //};
+
+                //ID3D11Texture2D* texture = null;
+                //fixed (byte* pPixels = pixelData)
+                //{
+                //    var subResourceData = new SubresourceData
+                //    {
+                //        PSysMem = pPixels,
+                //        SysMemPitch = width * 4,  // Row pitch in bytes
+                //        SysMemSlicePitch = 0      // Not used for 2D textures
+                //    };
+
+                //    var result = device->CreateTexture2D(&desc, &subResourceData, &texture);
+                //    Console.WriteLine($"TextureLoader: CreateTexture2D result: 0x{result:X}");
+                //}
+
+                //return texture;
+            }
         }
     }
 }

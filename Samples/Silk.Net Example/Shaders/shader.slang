@@ -22,13 +22,13 @@ void vertexMain(
 // Fragment shader entry point
 [shader("fragment")]
 float4 fragmentMain(
+    float4 sv_position: SV_Position,
     float2 fUv : TEXCOORD0,
     uniform Texture2D uTexture0,
     uniform SamplerState textureSampler
 ) : SV_Target
 {
     // Sample the texture at the given UV coordinates
-    // float4 texColor = uTexture0.Sample(textureSampler, fUv);
-    float4 texColor = float4(fUv.x, fUv.y, 0.0, 1.0);
+    float4 texColor = uTexture0.Sample(textureSampler, fUv);
     return texColor;
 }
