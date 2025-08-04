@@ -487,50 +487,7 @@ namespace Tutorial
 
         private void CreateTexture(string path)
         {
-            if (_renderer == null) return; // Demo mode
-
-            try
-            {
-                // For simplicity, create a 1x1 white texture as a placeholder
-                // In a real implementation, you'd load the actual image file
-                var textureDesc = new Texture2DDesc
-                {
-                    Width = 1,
-                    Height = 1,
-                    MipLevels = 1,
-                    ArraySize = 1,
-                    Format = Format.FormatR8G8B8A8Unorm,
-                    SampleDesc = new SampleDesc(1, 0),
-                    Usage = Usage.Default,
-                    BindFlags = (uint)BindFlag.ShaderResource,
-                    CPUAccessFlags = 0,
-                    MiscFlags = 0
-                };
-
-                // Create a 1x1 white pixel
-                var whitePixel = stackalloc byte[] { 255, 255, 255, 255 }; // RGBA
-                var initialData = new SubresourceData
-                {
-                    PSysMem = whitePixel,
-                    SysMemPitch = 4, // 4 bytes per pixel
-                    SysMemSlicePitch = 4
-                };
-
-                ID3D11Texture2D* texture = null;
-                var result = _renderer.Device->CreateTexture2D(&textureDesc, &initialData, ref texture);
-                if (result < 0)
-                {
-                    Console.WriteLine($"DirectX11Texture: Failed to create texture: 0x{result:X}");
-                    return;
-                }
-
-                _texture = texture;
-                Console.WriteLine("DirectX11Texture: Created 1x1 white texture (placeholder)");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"DirectX11Texture: Error creating texture: {ex.Message}");
-            }
+            _texture = TextureLoader.Read(_renderer.Device, File.OpenRead(path));
         }
 
         private void CreateShaderResourceView()
@@ -884,8 +841,21 @@ namespace Tutorial
         }
     }
 
-    public class FileIO_Handler : Image.IFileIO_Handler
+    public unsafe static class TextureLoader
     {
+        static SharpDX.WIC.ImagingFactory2 WIC_Factory { get; }
+
+        static TextureLoader()
+        {
+            WIC_Factory = new SharpDX.WIC.ImagingFactory2();
+        }
+        public static ID3D11Texture2D* Read(ID3D11Device* device, Stream stream)
+        {
+            var bitmap = LoadBitmap(WIC_Factory, stream);
+            var texture = CreateTexture2DFromBitmap(device, bitmap);
+            return texture;
+        }
+
         /// <summary> 
         /// Loads a bitmap using WIC. 
         /// </summary> 
@@ -921,18 +891,20 @@ namespace Tutorial
         /// <param name="device">The Direct3D11 device</param> 
         /// <param name="bitmapSource">The WIC bitmap source</param> 
         /// <returns>A Texture2D</returns> 
-        public static unsafe ID3D11Texture2D* CreateTexture2DFromBitmap(ID3D11Device* device, SharpDX.WIC.BitmapSource bitmapSource)
+        public static ID3D11Texture2D* CreateTexture2DFromBitmap(ID3D11Device* device, SharpDX.WIC.BitmapSource bitmapSource)
         {
             // Allocate DataStream to receive the WIC image pixels 
             int stride = bitmapSource.Size.Width * 4;
             using (var buffer = new SharpDX.DataStream(bitmapSource.Size.Height * stride, true, true))
             {
                 // Copy the content of the WIC to the buffer 
+                bitmapSource.CopyPixels(stride, buffer);
+                
                 ID3D11Texture2D* result;
                 Texture2DDesc desc = new Texture2DDesc
                 {
-                    Width = 1,
-                    Height = 1,
+                    Width = (uint)bitmapSource.Size.Width,
+                    Height = (uint)bitmapSource.Size.Height,
                     MipLevels = 1,
                     ArraySize = 1,
                     Format = Format.FormatR8G8B8A8Unorm,
@@ -943,8 +915,23 @@ namespace Tutorial
                     MiscFlags = 0
                 };
 
-                bitmapSource.CopyPixels(stride, buffer);
-                var createResult = device->CreateTexture2D(&desc, new SharpDX.DataRectangle(buffer.DataPointer, stride), &result);
+                // Create Silk.NET SubresourceData instead of SharpDX.DataRectangle
+                var initialData = new SubresourceData
+                {
+                    PSysMem = (void*)buffer.DataPointer,
+                    SysMemPitch = (uint)stride,
+                    SysMemSlicePitch = (uint)(stride * bitmapSource.Size.Height)
+                };
+                
+                var createResult = device->CreateTexture2D(&desc, &initialData, &result);
+                
+                if (createResult < 0)
+                {
+                    Console.WriteLine($"TextureLoader: Failed to create texture from bitmap: 0x{createResult:X}");
+                    return null;
+                }
+                
+                return result;
             }
         }
     }
