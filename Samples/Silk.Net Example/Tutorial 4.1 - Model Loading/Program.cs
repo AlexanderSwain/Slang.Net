@@ -315,14 +315,14 @@ namespace Tutorial
 
             // Set shader and texture
             DirectXShader?.Use();
-            // DirectXTexture?.Bind(); // Not needed for simple test
-            // DirectXShader?.SetUniform("uTexture0", 0); // No uniforms in simple test
+            DirectXTexture?.Bind();
+            DirectXShader?.SetUniform("uTexture0", 0);
 
             foreach (var mesh in DirectXModel?.Meshes ?? new DirectX11Mesh[0])
             {
                 mesh.Bind();
                 // Skip uniform setting for simple test - no uniforms in simplified shader
-                // DirectXShader?.SetUniform("uModel", model);
+                DirectXShader?.SetUniform("uModel", model);
                 // DirectXShader?.SetUniform("uView", view);
                 // DirectXShader?.SetUniform("uProjection", projection);
 

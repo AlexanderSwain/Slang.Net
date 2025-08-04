@@ -3,8 +3,10 @@ using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
 using Silk.NET.Windowing;
 using System;
+using System.IO;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace Tutorial
 {
@@ -878,6 +880,71 @@ namespace Tutorial
             foreach (var mesh in Meshes)
             {
                 mesh.Dispose();
+            }
+        }
+    }
+
+    public class FileIO_Handler : Image.IFileIO_Handler
+    {
+        /// <summary> 
+        /// Loads a bitmap using WIC. 
+        /// </summary> 
+        /// <param name="deviceManager"></param> 
+        /// <param name="filename"></param> 
+        /// <returns></returns> 
+        public static SharpDX.WIC.BitmapSource LoadBitmap(SharpDX.WIC.ImagingFactory2 factory, Stream stream)
+        {
+            var bitmapDecoder = new SharpDX.WIC.BitmapDecoder(
+                factory,
+                stream,
+                SharpDX.WIC.DecodeOptions.CacheOnDemand);
+
+
+            var formatConverter = new SharpDX.WIC.FormatConverter(factory);
+
+            //TODO: Implement GIF support using bitmapDecoder.FrameCount and bitmapDecoder.GetFrame
+            formatConverter.Initialize(
+                bitmapDecoder.GetFrame(0),
+                SharpDX.WIC.PixelFormat.Format32bppPRGBA,
+                SharpDX.WIC.BitmapDitherType.None,
+                null,
+                0.0,
+                SharpDX.WIC.BitmapPaletteType.Custom);
+
+            return formatConverter;
+        }
+
+
+        /// <summary> 
+        /// Creates a <see cref="SharpDX.Direct3D11.Texture2D"/> from a WIC <see cref="SharpDX.WIC.BitmapSource"/> 
+        /// </summary> 
+        /// <param name="device">The Direct3D11 device</param> 
+        /// <param name="bitmapSource">The WIC bitmap source</param> 
+        /// <returns>A Texture2D</returns> 
+        public static unsafe ID3D11Texture2D* CreateTexture2DFromBitmap(ID3D11Device* device, SharpDX.WIC.BitmapSource bitmapSource)
+        {
+            // Allocate DataStream to receive the WIC image pixels 
+            int stride = bitmapSource.Size.Width * 4;
+            using (var buffer = new SharpDX.DataStream(bitmapSource.Size.Height * stride, true, true))
+            {
+                // Copy the content of the WIC to the buffer 
+                ID3D11Texture2D* result;
+                Texture2DDesc desc = new Texture2DDesc
+                {
+                    Width = 1,
+                    Height = 1,
+                    MipLevels = 1,
+                    ArraySize = 1,
+                    Format = Format.FormatR8G8B8A8Unorm,
+                    SampleDesc = new SampleDesc(1, 0),
+                    Usage = Usage.Default,
+                    BindFlags = (uint)BindFlag.ShaderResource,
+                    CPUAccessFlags = 0,
+                    MiscFlags = 0
+                };
+
+                bitmapSource.CopyPixels(stride, buffer);
+                var createResult = device->CreateTexture2D(&desc, new SharpDX.DataRectangle(buffer.DataPointer, stride), &result);
             }
         }
     }

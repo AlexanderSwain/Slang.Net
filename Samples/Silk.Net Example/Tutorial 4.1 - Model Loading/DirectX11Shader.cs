@@ -31,7 +31,7 @@ public unsafe class DirectX11Shader : IDisposable
 
         CreateShaders();
         CreateInputLayout();
-        // CreateConstantBuffer(); // Skip for simple test - no uniforms needed
+        CreateConstantBuffer(); // Skip for simple test - no uniforms needed
 
         Console.WriteLine("DirectX11Shader: Created actual DirectX11 shaders");
         Console.WriteLine($"DirectX11Shader: VS length: {vertexSource.Length}");
@@ -204,12 +204,13 @@ public unsafe class DirectX11Shader : IDisposable
         // Free the allocated strings
         SilkMarshal.Free((nint)inputElements[0].SemanticName);
         SilkMarshal.Free((nint)inputElements[1].SemanticName);
-    }    private void CreateConstantBuffer()
+    }    
+    private void CreateConstantBuffer()
     {
         // Create constant buffer for matrices
         var bufferDesc = new BufferDesc
         {
-            ByteWidth = (uint)sizeof(Matrix4x4) * 3, // Model, View, Projection matrices
+            ByteWidth = (uint)sizeof(Matrix4x4), // Model, View, Projection matrices
             Usage = Usage.Dynamic,
             BindFlags = (uint)BindFlag.ConstantBuffer,
             CPUAccessFlags = (uint)CpuAccessFlag.Write,
@@ -259,12 +260,12 @@ public unsafe class DirectX11Shader : IDisposable
         }
 
         // Constant buffer disabled for simplified test
-        /*if (_constantBuffer != null)
+        if (_constantBuffer != null)
         {
             var cb = _constantBuffer;
             _renderer.DeviceContext->VSSetConstantBuffers(0, 1, &cb);
             Console.WriteLine("DirectX11Shader: Set constant buffer");
-        }*/
+        }
     }
 
     public void SetUniform(string name, int value)
@@ -308,20 +309,18 @@ public unsafe class DirectX11Shader : IDisposable
     {
         if (_constantBuffer != null)
         {
-            // Map the constant buffer and update all matrices
+            // Map the constant buffer and update just the model matrix
             MappedSubresource mappedResource;
             var resource = _constantBuffer->QueryInterface<ID3D11Resource>();
             var result = _renderer.DeviceContext->Map(resource, 0, Map.WriteDiscard, 0, &mappedResource);
             if (result >= 0)
             {
-                // Copy all three matrices to the constant buffer
+                // Copy only the model matrix to the constant buffer
                 var matrixPtr = (Matrix4x4*)mappedResource.PData;
                 matrixPtr[0] = _modelMatrix;      // uModel
-                matrixPtr[1] = _viewMatrix;       // uView  
-                matrixPtr[2] = _projectionMatrix; // uProjection
-                
+
                 _renderer.DeviceContext->Unmap(resource, 0);
-                Console.WriteLine("DirectX11Shader: Updated constant buffer with all matrices");
+                Console.WriteLine("DirectX11Shader: Updated constant buffer with model matrix");
             }
             else
             {
