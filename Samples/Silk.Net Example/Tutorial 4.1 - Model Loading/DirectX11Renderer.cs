@@ -2,9 +2,12 @@ using Silk.NET.Core.Native;
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
 using Silk.NET.Windowing;
+using Silk.NET.WindowsCodecs;
+using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.IO;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
@@ -487,7 +490,7 @@ namespace Tutorial
 
         private void CreateTexture(string path)
         {
-            _texture = TextureLoader.Read(_renderer.Device, File.OpenRead(path));
+            _texture = TextureLoader.Read(_renderer.Device, path);
         }
 
         private void CreateShaderResourceView()
@@ -596,29 +599,23 @@ namespace Tutorial
 
         public Vertex[] Vertices { get; }
         public uint[] Indices { get; } = [
-                // Front face (Z+)
-                4, 5, 6,
-                6, 7, 4,
-
-                // Back face (Z-)
-                0, 3, 2,
-                2, 1, 0,
-
-                // Left face (X-)
-                0, 4, 7,
-                7, 3, 0,
-
-                // Right face (X+)
-                1, 2, 6,
-                6, 5, 1,
-
-                // Top face (Y+)
-                3, 7, 6,
-                6, 2, 3,
-
-                // Bottom face (Y-)
-                0, 1, 5,
-                5, 4, 0
+                // Front face (vertices 0-3)
+                0, 1, 2,  2, 3, 0,
+                
+                // Back face (vertices 4-7)
+                4, 5, 6,  6, 7, 4,
+                
+                // Left face (vertices 8-11)
+                8, 9, 10,  10, 11, 8,
+                
+                // Right face (vertices 12-15)
+                12, 13, 14,  14, 15, 12,
+                
+                // Top face (vertices 16-19)
+                16, 17, 18,  18, 19, 16,
+                
+                // Bottom face (vertices 20-23)
+                20, 21, 22,  22, 23, 20
             ];
 
         public DirectX11Mesh(DirectX11Renderer renderer, Vertex[] vertices, uint[] indices = null)
@@ -818,17 +815,45 @@ namespace Tutorial
 
         private Vertex[] CreateCubeVertices()
         {
-            // Create a simple cube with texture coordinates
+            // Create cube with proper UV mapping - 24 vertices (4 per face)
+            // Each face gets its own vertices with UVs from (0,0) to (1,1)
             return new Vertex[]
             {
-                new Vertex { Position = new Vector3(-0.5f, -0.5f, -0.5f), TexCoords = new Vector2(0.0f, 0.0f) }, // 0
-                new Vertex { Position = new Vector3( 0.5f, -0.5f, -0.5f), TexCoords = new Vector2(1.0f, 0.0f) }, // 1
-                new Vertex { Position = new Vector3( 0.5f,  0.5f, -0.5f), TexCoords = new Vector2(1.0f, 1.0f) }, // 2
-                new Vertex { Position = new Vector3(-0.5f,  0.5f, -0.5f), TexCoords = new Vector2(0.0f, 1.0f) }, // 3
-                new Vertex { Position = new Vector3(-0.5f, -0.5f,  0.5f), TexCoords = new Vector2(0.0f, 0.0f) }, // 4
-                new Vertex { Position = new Vector3( 0.5f, -0.5f,  0.5f), TexCoords = new Vector2(1.0f, 0.0f) }, // 5
-                new Vertex { Position = new Vector3( 0.5f,  0.5f,  0.5f), TexCoords = new Vector2(1.0f, 1.0f) }, // 6
-                new Vertex { Position = new Vector3(-0.5f,  0.5f,  0.5f), TexCoords = new Vector2(0.0f, 1.0f) }  // 7
+                // Front face (Z+)
+                new Vertex { Position = new Vector3(-0.5f, -0.5f,  0.5f), TexCoords = new Vector2(0.0f, 0.0f) },
+                new Vertex { Position = new Vector3( 0.5f, -0.5f,  0.5f), TexCoords = new Vector2(1.0f, 0.0f) },
+                new Vertex { Position = new Vector3( 0.5f,  0.5f,  0.5f), TexCoords = new Vector2(1.0f, 1.0f) },
+                new Vertex { Position = new Vector3(-0.5f,  0.5f,  0.5f), TexCoords = new Vector2(0.0f, 1.0f) },
+
+                // Back face (Z-)
+                new Vertex { Position = new Vector3( 0.5f, -0.5f, -0.5f), TexCoords = new Vector2(0.0f, 0.0f) },
+                new Vertex { Position = new Vector3(-0.5f, -0.5f, -0.5f), TexCoords = new Vector2(1.0f, 0.0f) },
+                new Vertex { Position = new Vector3(-0.5f,  0.5f, -0.5f), TexCoords = new Vector2(1.0f, 1.0f) },
+                new Vertex { Position = new Vector3( 0.5f,  0.5f, -0.5f), TexCoords = new Vector2(0.0f, 1.0f) },
+
+                // Left face (X-)
+                new Vertex { Position = new Vector3(-0.5f, -0.5f, -0.5f), TexCoords = new Vector2(0.0f, 0.0f) },
+                new Vertex { Position = new Vector3(-0.5f, -0.5f,  0.5f), TexCoords = new Vector2(1.0f, 0.0f) },
+                new Vertex { Position = new Vector3(-0.5f,  0.5f,  0.5f), TexCoords = new Vector2(1.0f, 1.0f) },
+                new Vertex { Position = new Vector3(-0.5f,  0.5f, -0.5f), TexCoords = new Vector2(0.0f, 1.0f) },
+
+                // Right face (X+)
+                new Vertex { Position = new Vector3( 0.5f, -0.5f,  0.5f), TexCoords = new Vector2(0.0f, 0.0f) },
+                new Vertex { Position = new Vector3( 0.5f, -0.5f, -0.5f), TexCoords = new Vector2(1.0f, 0.0f) },
+                new Vertex { Position = new Vector3( 0.5f,  0.5f, -0.5f), TexCoords = new Vector2(1.0f, 1.0f) },
+                new Vertex { Position = new Vector3( 0.5f,  0.5f,  0.5f), TexCoords = new Vector2(0.0f, 1.0f) },
+
+                // Top face (Y+)
+                new Vertex { Position = new Vector3(-0.5f,  0.5f,  0.5f), TexCoords = new Vector2(0.0f, 0.0f) },
+                new Vertex { Position = new Vector3( 0.5f,  0.5f,  0.5f), TexCoords = new Vector2(1.0f, 0.0f) },
+                new Vertex { Position = new Vector3( 0.5f,  0.5f, -0.5f), TexCoords = new Vector2(1.0f, 1.0f) },
+                new Vertex { Position = new Vector3(-0.5f,  0.5f, -0.5f), TexCoords = new Vector2(0.0f, 1.0f) },
+
+                // Bottom face (Y-)
+                new Vertex { Position = new Vector3(-0.5f, -0.5f, -0.5f), TexCoords = new Vector2(0.0f, 0.0f) },
+                new Vertex { Position = new Vector3( 0.5f, -0.5f, -0.5f), TexCoords = new Vector2(1.0f, 0.0f) },
+                new Vertex { Position = new Vector3( 0.5f, -0.5f,  0.5f), TexCoords = new Vector2(1.0f, 1.0f) },
+                new Vertex { Position = new Vector3(-0.5f, -0.5f,  0.5f), TexCoords = new Vector2(0.0f, 1.0f) }
             };
         }
 
@@ -849,10 +874,9 @@ namespace Tutorial
         {
             WIC_Factory = new SharpDX.WIC.ImagingFactory2();
         }
-        public static ID3D11Texture2D* Read(ID3D11Device* device, Stream stream)
+        public static ID3D11Texture2D* Read(ID3D11Device* device, string fileName)
         {
-            var bitmap = LoadBitmap(WIC_Factory, stream);
-            var texture = CreateTexture2DFromBitmap(device, bitmap);
+            var texture = CreateTexture2DFromBitmap(device, fileName);
             return texture;
         }
 
@@ -884,6 +908,32 @@ namespace Tutorial
             return formatConverter;
         }
 
+        [DllImport("ole32.dll")]
+        static extern int CoInitializeEx(IntPtr pvReserved, uint dwCoInit);
+
+        [DllImport("ole32.dll")]
+        static extern int CoCreateInstance(
+            ref Guid clsid,
+            IntPtr pUnkOuter,
+            uint dwClsContext,
+            ref Guid iid,
+            out IntPtr ppv
+        );
+
+        // Constants
+        const uint COINIT_APARTMENTTHREADED = 0x2;
+        const uint CLSCTX_INPROC_SERVER = 0x1;
+        static Guid clsidWIC = new("CACAF262-9370-4615-A13B-9F5539DA4C0A");
+        static Guid iidFactory = new("EC5EC8A9-C395-4314-9C77-54D7A935FF70");
+
+        enum CLSCTX : uint
+        {
+            CLSCTX_INPROC_SERVER = 0x1,
+            CLSCTX_INPROC_HANDLER = 0x2,
+            CLSCTX_LOCAL_SERVER = 0x4,
+            CLSCTX_REMOTE_SERVER = 0x10,
+            CLSCTX_ALL = CLSCTX_INPROC_SERVER | CLSCTX_INPROC_HANDLER | CLSCTX_LOCAL_SERVER | CLSCTX_REMOTE_SERVER
+        }
 
         /// <summary> 
         /// Creates a <see cref="SharpDX.Direct3D11.Texture2D"/> from a WIC <see cref="SharpDX.WIC.BitmapSource"/> 
@@ -891,49 +941,116 @@ namespace Tutorial
         /// <param name="device">The Direct3D11 device</param> 
         /// <param name="bitmapSource">The WIC bitmap source</param> 
         /// <returns>A Texture2D</returns> 
-        public static ID3D11Texture2D* CreateTexture2DFromBitmap(ID3D11Device* device, SharpDX.WIC.BitmapSource bitmapSource)
+        public static ID3D11Texture2D* CreateTexture2DFromBitmap(ID3D11Device* device, string fileName)
         {
-            // Allocate DataStream to receive the WIC image pixels 
-            int stride = bitmapSource.Size.Width * 4;
-            using (var buffer = new SharpDX.DataStream(bitmapSource.Size.Height * stride, true, true))
-            {
-                // Copy the content of the WIC to the buffer 
-                bitmapSource.CopyPixels(stride, buffer);
-                
-                ID3D11Texture2D* result;
-                Texture2DDesc desc = new Texture2DDesc
-                {
-                    Width = (uint)bitmapSource.Size.Width,
-                    Height = (uint)bitmapSource.Size.Height,
-                    MipLevels = 1,
-                    ArraySize = 1,
-                    Format = Format.FormatR8G8B8A8Unorm,
-                    SampleDesc = new SampleDesc(1, 0),
-                    Usage = Usage.Default,
-                    BindFlags = (uint)BindFlag.ShaderResource,
-                    CPUAccessFlags = 0,
-                    MiscFlags = 0
-                };
+            IntPtr factoryPtr;
 
-                // Create Silk.NET SubresourceData instead of SharpDX.DataRectangle
-                var initialData = new SubresourceData
+            // CLSID_WICImagingFactory: {CACAF262-9370-4615-A13B-9F5539DA4C0A}
+            Guid clsid = new Guid("CACAF262-9370-4615-A13B-9F5539DA4C0A");
+
+            // IID_IWICImagingFactory: {EC5EC8A9-C395-4314-9C77-54D7A935FF70}
+            Guid iid = new Guid("EC5EC8A9-C395-4314-9C77-54D7A935FF70");
+
+            // Initialize COM (if not already done)
+            CoInitializeEx(IntPtr.Zero, COINIT_APARTMENTTHREADED);
+
+            // Call CoCreateInstance manually
+            int hr = CoCreateInstance(ref clsidWIC, IntPtr.Zero, CLSCTX_INPROC_SERVER, ref iidFactory, out factoryPtr);
+
+            if (hr != 0)
+                throw new COMException("FormatConverter initialization failed", hr);
+
+            IWICImagingFactory* imagingFactory = (IWICImagingFactory*)factoryPtr;
+
+            // Optional: specify vendor GUID or use null
+            Guid vendorGuid = Guid.Empty;
+
+            // Desired access flags
+            uint desiredAccess = 0x80000000; // GENERIC_READ
+
+            // Metadata caching option
+            Silk.NET.WindowsCodecs.DecodeOptions metadataOptions = DecodeOptions.DecodeMetadataCacheOnLoad;
+
+            // Convert string to unmanaged LPCWSTR
+            char* pathPtr = (char*)Marshal.StringToHGlobalUni(fileName);
+
+            IWICBitmapDecoder* decoder = null;
+            hr = imagingFactory->CreateDecoderFromFilename(
+                pathPtr,
+                null,
+                desiredAccess,
+                metadataOptions,
+                &decoder
+            );
+            if (hr != 0)
+                throw new COMException("FormatConverter initialization failed", hr);
+            Marshal.FreeHGlobal((IntPtr)pathPtr);
+
+            IWICBitmapFrameDecode* frame = null;
+            decoder->GetFrame(0, &frame);
+            IWICFormatConverter* formatConverter = null;
+            hr = imagingFactory->CreateFormatConverter(&formatConverter);
+            if (hr != 0)
+                throw new COMException("FormatConverter initialization failed", hr);
+
+            Guid pixelFormat = new Guid("6fddc324-4e03-4bfe-b185-3d77768dc90f"); // WICPixelFormat32bppRGBA
+
+            hr = formatConverter->Initialize(
+                (IWICBitmapSource*)frame,
+                &pixelFormat,
+                BitmapDitherType.BitmapDitherTypeNone,
+                null, // palette
+                0.0f, // alpha threshold
+                BitmapPaletteType.BitmapPaletteTypeCustom
+            );
+            if (hr != 0)
+                throw new COMException("FormatConverter initialization failed", hr);
+
+            uint width, height;
+            formatConverter->GetSize(&width, &height);
+            Console.WriteLine($"Size: width({width}), height({height})");
+
+            int stride = (int)(width * 4); // 4 bytes per pixel for RGBA
+            int bufferSize = (int)(stride * height);
+            byte[] pixelData = new byte[bufferSize];
+
+            fixed (byte* pPixels = pixelData)
+            {
+                formatConverter->CopyPixels(
+                    null, // no specific rect
+                    (uint)stride,
+                    (uint)bufferSize,
+                    pPixels
+                );
+            }
+
+            Texture2DDesc desc = new Texture2DDesc
+            {
+                Width = width,
+                Height = height,
+                MipLevels = 1,
+                ArraySize = 1,
+                Format = Format.FormatR8G8B8A8Unorm,
+                SampleDesc = new SampleDesc(1, 0),
+                Usage = Usage.Default,
+                BindFlags = (uint)BindFlag.ShaderResource,
+                CPUAccessFlags = 0,
+                MiscFlags = 0
+            };
+
+            ID3D11Texture2D* texture = null;
+            fixed (byte* pPixels = pixelData)
+            {
+                var subResourceData = new SubresourceData
                 {
-                    PSysMem = (void*)buffer.DataPointer,
-                    SysMemPitch = (uint)stride,
-                    SysMemSlicePitch = (uint)(stride * bitmapSource.Size.Height)
+                    PSysMem = pPixels,
+                    SysMemPitch = width * 4
                 };
                 
-                var createResult = device->CreateTexture2D(&desc, &initialData, &result);
-                
-                if (createResult < 0)
-                {
-                    Console.WriteLine($"TextureLoader: Failed to create texture from bitmap: 0x{createResult:X}");
-                    return null;
-                }
-                
-                return result;
+                device->CreateTexture2D(&desc, &subResourceData, &texture);
             }
+
+            return texture;
         }
     }
-
 }

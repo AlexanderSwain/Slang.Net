@@ -29,9 +29,17 @@ public unsafe class DirectX11Shader : IDisposable
         VertexShader = vertexSource ?? throw new ArgumentNullException(nameof(vertexSource));
         PixelShader = fragmentSource ?? throw new ArgumentNullException(nameof(fragmentSource));
 
+        // Initialize matrices to identity
+        _modelMatrix = Matrix4x4.Identity;
+        _viewMatrix = Matrix4x4.Identity;
+        _projectionMatrix = Matrix4x4.Identity;
+
         CreateShaders();
         CreateInputLayout();
         CreateConstantBuffer(); // Skip for simple test - no uniforms needed
+
+        // Initialize the constant buffer with identity matrices
+        UpdateConstantBuffer();
 
         Console.WriteLine("DirectX11Shader: Created actual DirectX11 shaders");
         Console.WriteLine($"DirectX11Shader: VS length: {vertexSource.Length}");
@@ -210,7 +218,7 @@ public unsafe class DirectX11Shader : IDisposable
         // Create constant buffer for matrices
         var bufferDesc = new BufferDesc
         {
-            ByteWidth = (uint)sizeof(Matrix4x4), // Model, View, Projection matrices
+            ByteWidth = (uint)(sizeof(Matrix4x4) * 3), // Model, View, Projection matrices
             Usage = Usage.Dynamic,
             BindFlags = (uint)BindFlag.ConstantBuffer,
             CPUAccessFlags = (uint)CpuAccessFlag.Write,
@@ -309,18 +317,20 @@ public unsafe class DirectX11Shader : IDisposable
     {
         if (_constantBuffer != null)
         {
-            // Map the constant buffer and update just the model matrix
+            // Map the constant buffer and update all three matrices
             MappedSubresource mappedResource;
             var resource = _constantBuffer->QueryInterface<ID3D11Resource>();
             var result = _renderer.DeviceContext->Map(resource, 0, Map.WriteDiscard, 0, &mappedResource);
             if (result >= 0)
             {
-                // Copy only the model matrix to the constant buffer
+                // Copy all three matrices to the constant buffer
                 var matrixPtr = (Matrix4x4*)mappedResource.PData;
                 matrixPtr[0] = _modelMatrix;      // uModel
+                matrixPtr[1] = _viewMatrix;       // uView
+                matrixPtr[2] = _projectionMatrix; // uProjection
 
                 _renderer.DeviceContext->Unmap(resource, 0);
-                Console.WriteLine("DirectX11Shader: Updated constant buffer with model matrix");
+                Console.WriteLine("DirectX11Shader: Updated constant buffer with all three matrices");
             }
             else
             {

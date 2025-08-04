@@ -321,10 +321,10 @@ namespace Tutorial
             foreach (var mesh in DirectXModel?.Meshes ?? new DirectX11Mesh[0])
             {
                 mesh.Bind();
-                // Skip uniform setting for simple test - no uniforms in simplified shader
+                // Set all three matrices for proper 3D transformation
                 DirectXShader?.SetUniform("uModel", model);
-                // DirectXShader?.SetUniform("uView", view);
-                // DirectXShader?.SetUniform("uProjection", projection);
+                DirectXShader?.SetUniform("uView", view);
+                DirectXShader?.SetUniform("uProjection", projection);
 
                 mesh.Draw(); // Actually draw the mesh
                 Console.WriteLine($"DirectX11: Drawing mesh with {mesh.Vertices.Length} vertices");
