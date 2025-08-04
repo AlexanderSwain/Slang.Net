@@ -144,7 +144,7 @@ namespace Tutorial
             Shader = new Shader(Gl, vertexSource, fragmentSource);
 
             // Get reflection information
-            var reflection = slangCompiler.GetReflection(Targets.Glsl.es_320);
+            var reflection = slangCompiler.GetVSReflection(Targets.Glsl.es_320);
 
             Console.WriteLine("\n--- OpenGL Shader Reflection ---");
             Console.WriteLine($"Parameters: {reflection.Parameters.Count}");
@@ -189,21 +189,24 @@ namespace Tutorial
             DirectXShader = new DirectX11Shader(DirectXRenderer, vertexSource, fragmentSource);
 
             // Get reflection information
-            var vsReflection = slangCompiler.GetReflection(Targets.Hlsl.vs_5_0);
+            //var vsReflection = slangCompiler.GetVSReflection(Targets.Hlsl.vs_5_0);
+            var psReflection = slangCompiler.GetPSReflection(Targets.Hlsl.ps_5_0);
+            //Console.WriteLine(vsReflection.ToJson());
+            Console.WriteLine(psReflection.ToJson());
             //var psReflection = slangCompiler.GetReflection(Targets.Hlsl.ps_5_0);
 
-            // Display reflection information for vs_5_0 target
-            Console.WriteLine("\n--- DirectX11 Shader Reflection ---");
-            Console.WriteLine($"Parameters: {vsReflection.Parameters.Count}");
-            foreach (var param in vsReflection.Parameters)
-            {
-                Console.WriteLine($"  Parameter: {param.Name} (Kind: {param.Type.Kind})");
-            }
-            Console.WriteLine($"Entry Points: {vsReflection.EntryPoints.Count}");
-            foreach (var ep in vsReflection.EntryPoints)
-            {
-                Console.WriteLine($"  Entry Point: {ep.Name} (Stage: {ep.Stage})");
-            }
+            //// Display reflection information for vs_5_0 target
+            //Console.WriteLine("\n--- DirectX11 Shader Reflection ---");
+            //Console.WriteLine($"Parameters: {vsReflection.Parameters.Count}");
+            //foreach (var param in vsReflection.Parameters)
+            //{
+            //    Console.WriteLine($"  Parameter: {param.Name} (Kind: {param.Type.Kind})");
+            //}
+            //Console.WriteLine($"Entry Points: {vsReflection.EntryPoints.Count}");
+            //foreach (var ep in vsReflection.EntryPoints)
+            //{
+            //    Console.WriteLine($"  Entry Point: {ep.Name} (Stage: {ep.Stage})");
+            //}
 
             //// Display reflection information for ps_5_0 target
             //Console.WriteLine("\n--- DirectX11 Shader Reflection ---");

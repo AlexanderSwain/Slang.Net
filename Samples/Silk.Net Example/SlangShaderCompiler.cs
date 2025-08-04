@@ -123,9 +123,19 @@ namespace Tutorial
         /// </summary>
         /// <param name="slangFilePath">Path to the .slang shader file</param>
         /// <returns>Shader reflection data containing entry points and parameters</returns>
-        public ShaderReflection GetReflection(Target target)
+        public ShaderReflection GetVSReflection(Target target)
         {
             return _vsProgram.Targets[target].GetReflection();
+        }
+
+        /// <summary>
+        /// Gets reflection information for the compiled shader
+        /// </summary>
+        /// <param name="slangFilePath">Path to the .slang shader file</param>
+        /// <returns>Shader reflection data containing entry points and parameters</returns>
+        public ShaderReflection GetPSReflection(Target target)
+        {
+            return _psProgram.Targets[target].GetReflection();
         }
 
         /// <summary>

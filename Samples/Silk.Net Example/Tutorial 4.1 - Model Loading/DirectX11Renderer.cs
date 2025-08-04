@@ -203,7 +203,7 @@ namespace Tutorial
     //        VertexShader = vertexSource ?? throw new ArgumentNullException(nameof(vertexSource));
     //        PixelShader = fragmentSource ?? throw new ArgumentNullException(nameof(fragmentSource));
     //        _renderer = null; // No renderer - demo mode
-            
+
     //        Console.WriteLine("DirectX11Shader: Created in demo mode (no actual DirectX objects)");
     //        Console.WriteLine($"DirectX11Shader: VS length: {vertexSource.Length}");
     //        Console.WriteLine($"DirectX11Shader: PS length: {fragmentSource.Length}");
@@ -219,7 +219,7 @@ namespace Tutorial
     //        CreateShaders();
     //        CreateInputLayout();
     //        CreateConstantBuffer();
-            
+
     //        Console.WriteLine("DirectX11Shader: Created actual DirectX11 shaders");
     //        Console.WriteLine($"DirectX11Shader: VS length: {vertexSource.Length}");
     //        Console.WriteLine($"DirectX11Shader: PS length: {fragmentSource.Length}");
@@ -228,7 +228,7 @@ namespace Tutorial
     //    private void CreateShaders()
     //    {
     //        if (_renderer == null) return; // Demo mode - no actual DirectX objects
-            
+
     //        var d3d11 = _renderer._d3d11;
 
     //        // Compile vertex shader
@@ -263,7 +263,7 @@ namespace Tutorial
     //    private void CreateInputLayout()
     //    {
     //        if (_renderer == null) return; // Demo mode - no actual DirectX objects
-            
+
     //        // Define input layout for our vertex structure
     //        var inputElements = stackalloc InputElementDesc[]
     //        {
@@ -307,7 +307,7 @@ namespace Tutorial
     //    private void CreateConstantBuffer()
     //    {
     //        if (_renderer == null) return; // Demo mode - no actual DirectX objects
-            
+
     //        // Create constant buffer for matrices
     //        var bufferDesc = new BufferDesc
     //        {
@@ -335,19 +335,19 @@ namespace Tutorial
     //            Console.WriteLine("DirectX11Shader: Using shader (demo mode)");
     //            return;
     //        }
-            
+
     //        if (_vertexShader != null)
     //        {
     //            _renderer.DeviceContext->VSSetShader(_vertexShader, null, 0);
     //            Console.WriteLine("DirectX11Shader: Set vertex shader");
     //        }
-            
+
     //        if (_pixelShader != null)
     //        {
     //            _renderer.DeviceContext->PSSetShader(_pixelShader, null, 0);
     //            Console.WriteLine("DirectX11Shader: Set pixel shader");
     //        }
-            
+
     //        if (_inputLayout != null)
     //        {
     //            _renderer.DeviceContext->IASetInputLayout(_inputLayout);
@@ -377,9 +377,9 @@ namespace Tutorial
     //    public void SetUniform(string name, Matrix4x4 value)
     //    {
     //        Console.WriteLine($"DirectX11Shader: Setting uniform {name} = Matrix4x4");
-            
+
     //        if (_renderer == null || _constantBuffer == null) return; // Demo mode or no constant buffer
-            
+
     //        // Map the constant buffer and update the matrix
     //        MappedSubresource mappedResource;
     //        var result = _renderer.DeviceContext->Map((ID3D11Resource*)_constantBuffer, 0, Map.WriteDiscard, 0, &mappedResource);
@@ -405,25 +405,25 @@ namespace Tutorial
     //            _constantBuffer->Release();
     //            _constantBuffer = null;
     //        }
-            
+
     //        if (_inputLayout != null)
     //        {
     //            _inputLayout->Release();
     //            _inputLayout = null;
     //        }
-            
+
     //        if (_pixelShader != null)
     //        {
     //            _pixelShader->Release();
     //            _pixelShader = null;
     //        }
-            
+
     //        if (_vertexShader != null)
     //        {
     //            _vertexShader->Release();
     //            _vertexShader = null;
     //        }
-            
+
     //        Console.WriteLine("DirectX11Shader: Disposed actual DirectX11 resources");
     //    }
     //}
@@ -439,7 +439,7 @@ namespace Tutorial
         {
             _renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
             Console.WriteLine($"DirectX11Texture: Loading texture from '{path}'");
-            
+
             CreateTexture(path);
             CreateShaderResourceView();
             CreateSamplerState();
@@ -455,7 +455,7 @@ namespace Tutorial
         private void CreateTexture(string path)
         {
             if (_renderer == null) return; // Demo mode
-            
+
             try
             {
                 // For simplicity, create a 1x1 white texture as a placeholder
@@ -490,7 +490,7 @@ namespace Tutorial
                     Console.WriteLine($"DirectX11Texture: Failed to create texture: 0x{result:X}");
                     return;
                 }
-                
+
                 _texture = texture;
                 Console.WriteLine("DirectX11Texture: Created 1x1 white texture (placeholder)");
             }
@@ -503,7 +503,7 @@ namespace Tutorial
         private void CreateShaderResourceView()
         {
             if (_renderer == null || _texture == null) return; // Demo mode or no texture
-            
+
             var srvDesc = new ShaderResourceViewDesc
             {
                 Format = Format.FormatR8G8B8A8Unorm,
@@ -518,7 +518,7 @@ namespace Tutorial
                 Console.WriteLine($"DirectX11Texture: Failed to create shader resource view: 0x{result:X}");
                 return;
             }
-            
+
             _shaderResourceView = srv;
             Console.WriteLine("DirectX11Texture: Created shader resource view");
         }
@@ -526,7 +526,7 @@ namespace Tutorial
         private void CreateSamplerState()
         {
             if (_renderer == null) return; // Demo mode
-            
+
             var samplerDesc = new SamplerDesc
             {
                 Filter = Filter.MinMagMipLinear,
@@ -545,7 +545,7 @@ namespace Tutorial
                 Console.WriteLine($"DirectX11Texture: Failed to create sampler state: 0x{result:X}");
                 return;
             }
-            
+
             _samplerState = sampler;
             Console.WriteLine("DirectX11Texture: Created sampler state");
         }
@@ -557,14 +557,14 @@ namespace Tutorial
                 Console.WriteLine($"DirectX11Texture: Binding to slot {slot} (demo mode)");
                 return;
             }
-            
+
             if (_shaderResourceView != null)
             {
                 var srv = _shaderResourceView;
                 _renderer.DeviceContext->PSSetShaderResources(slot, 1, &srv);
                 Console.WriteLine($"DirectX11Texture: Bound shader resource view to slot {slot}");
             }
-            
+
             if (_samplerState != null)
             {
                 var sampler = _samplerState;
@@ -580,19 +580,19 @@ namespace Tutorial
                 _samplerState->Release();
                 _samplerState = null;
             }
-            
+
             if (_shaderResourceView != null)
             {
                 _shaderResourceView->Release();
                 _shaderResourceView = null;
             }
-            
+
             if (_texture != null)
             {
                 _texture->Release();
                 _texture = null;
             }
-            
+
             Console.WriteLine("DirectX11Texture: Disposed DirectX11 texture resources");
         }
     }
@@ -605,17 +605,40 @@ namespace Tutorial
         private uint _indexCount;
 
         public Vertex[] Vertices { get; }
-        public uint[] Indices { get; }
+        public uint[] Indices { get; } = [
+                // Front face (Z+)
+                4, 5, 6,
+                6, 7, 4,
+
+                // Back face (Z-)
+                0, 3, 2,
+                2, 1, 0,
+
+                // Left face (X-)
+                0, 4, 7,
+                7, 3, 0,
+
+                // Right face (X+)
+                1, 2, 6,
+                6, 5, 1,
+
+                // Top face (Y+)
+                3, 7, 6,
+                6, 2, 3,
+
+                // Bottom face (Y-)
+                0, 1, 5,
+                5, 4, 0
+            ];
 
         public DirectX11Mesh(DirectX11Renderer renderer, Vertex[] vertices, uint[] indices = null)
         {
             _renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
             Vertices = vertices ?? throw new ArgumentNullException(nameof(vertices));
-            Indices = indices ?? GenerateIndices(vertices.Length);
 
             CreateVertexBuffer();
             CreateIndexBuffer();
-            
+
             Console.WriteLine($"DirectX11Mesh: Created mesh with {vertices.Length} vertices, {Indices.Length} indices");
         }
 
@@ -624,20 +647,7 @@ namespace Tutorial
         {
             _renderer = null;
             Vertices = vertices ?? throw new ArgumentNullException(nameof(vertices));
-            Indices = GenerateIndices(vertices.Length);
             Console.WriteLine($"DirectX11Mesh: Creating mesh with {vertices.Length} vertices (demo mode)");
-        }
-
-        private uint[] GenerateIndices(int vertexCount)
-        {
-            // For demo purposes, create triangle list indices
-            // Assumes vertices are already in triangle order
-            var indices = new uint[vertexCount];
-            for (int i = 0; i < vertexCount; i++)
-            {
-                indices[i] = (uint)i;
-            }
-            return indices;
         }
 
         private void CreateVertexBuffer()
@@ -801,7 +811,7 @@ namespace Tutorial
         {
             _renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
             Console.WriteLine($"DirectX11Model: Loading model from '{path}'");
-            
+
             // Create some demo cube vertices
             var cubeVertices = CreateCubeVertices();
             Meshes = new DirectX11Mesh[] { new DirectX11Mesh(renderer, cubeVertices) };
@@ -821,24 +831,14 @@ namespace Tutorial
             // Create a simple cube with texture coordinates
             return new Vertex[]
             {
-                // Front face
-                new Vertex { Position = new Vector3(-0.5f, -0.5f, 0.5f), TexCoords = new Vector2(0.0f, 0.0f) },
-                new Vertex { Position = new Vector3(0.5f, -0.5f, 0.5f), TexCoords = new Vector2(1.0f, 0.0f) },
-                new Vertex { Position = new Vector3(0.5f, 0.5f, 0.5f), TexCoords = new Vector2(1.0f, 1.0f) },
-                new Vertex { Position = new Vector3(0.5f, 0.5f, 0.5f), TexCoords = new Vector2(1.0f, 1.0f) },
-                new Vertex { Position = new Vector3(-0.5f, 0.5f, 0.5f), TexCoords = new Vector2(0.0f, 1.0f) },
-                new Vertex { Position = new Vector3(-0.5f, -0.5f, 0.5f), TexCoords = new Vector2(0.0f, 0.0f) },
-
-                // Back face
-                new Vertex { Position = new Vector3(-0.5f, -0.5f, -0.5f), TexCoords = new Vector2(0.0f, 0.0f) },
-                new Vertex { Position = new Vector3(0.5f, -0.5f, -0.5f), TexCoords = new Vector2(1.0f, 0.0f) },
-                new Vertex { Position = new Vector3(0.5f, 0.5f, -0.5f), TexCoords = new Vector2(1.0f, 1.0f) },
-                new Vertex { Position = new Vector3(0.5f, 0.5f, -0.5f), TexCoords = new Vector2(1.0f, 1.0f) },
-                new Vertex { Position = new Vector3(-0.5f, 0.5f, -0.5f), TexCoords = new Vector2(0.0f, 1.0f) },
-                new Vertex { Position = new Vector3(-0.5f, -0.5f, -0.5f), TexCoords = new Vector2(0.0f, 0.0f) },
-
-                // Additional faces would be here in a complete implementation...
-                // For demo, we'll just use the front and back faces (12 vertices)
+                new Vertex { Position = new Vector3(-0.5f, -0.5f, -0.5f), TexCoords = new Vector2(0.0f, 0.0f) }, // 0
+                new Vertex { Position = new Vector3( 0.5f, -0.5f, -0.5f), TexCoords = new Vector2(1.0f, 0.0f) }, // 1
+                new Vertex { Position = new Vector3( 0.5f,  0.5f, -0.5f), TexCoords = new Vector2(1.0f, 1.0f) }, // 2
+                new Vertex { Position = new Vector3(-0.5f,  0.5f, -0.5f), TexCoords = new Vector2(0.0f, 1.0f) }, // 3
+                new Vertex { Position = new Vector3(-0.5f, -0.5f,  0.5f), TexCoords = new Vector2(0.0f, 0.0f) }, // 4
+                new Vertex { Position = new Vector3( 0.5f, -0.5f,  0.5f), TexCoords = new Vector2(1.0f, 0.0f) }, // 5
+                new Vertex { Position = new Vector3( 0.5f,  0.5f,  0.5f), TexCoords = new Vector2(1.0f, 1.0f) }, // 6
+                new Vertex { Position = new Vector3(-0.5f,  0.5f,  0.5f), TexCoords = new Vector2(0.0f, 1.0f) }  // 7
             };
         }
 

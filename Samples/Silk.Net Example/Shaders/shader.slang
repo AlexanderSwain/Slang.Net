@@ -26,5 +26,6 @@ float4 fragmentMain(
     uniform SamplerState textureSampler
 ) : SV_Target
 {
-    return uTexture0.Sample(textureSampler, fUv);
+    return float4(1.0, 1.0, 1.0, 1.0); // Return a solid red color for testing1
+    //return uTexture0.Sample(textureSampler, fUv);
 }
