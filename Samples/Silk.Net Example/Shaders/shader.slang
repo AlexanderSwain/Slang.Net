@@ -3,16 +3,12 @@
 void vertexMain(
     float3 vPos : POSITION,
     float2 vUv : TEXCOORD0,
-    uniform float4x4 uModel,
-    uniform float4x4 uView,
-    uniform float4x4 uProjection,
     out float4 position : SV_Position,
     out float2 fUv : TEXCOORD0)
 {
-    // Transform vertex position
-    float4 worldPos = mul(uModel, float4(vPos, 1.0));
-    float4 viewPos = mul(uView, worldPos);
-    position = mul(uProjection, viewPos);
+    // For testing: render vertices directly in clip space without any transformations
+    // This should show geometry if the basic pipeline works
+    position = float4(vPos * 0.5, 1.0); // Scale down to fit in clip space
     
     // Pass through texture coordinates
     fUv = vUv;
@@ -21,11 +17,8 @@ void vertexMain(
 // Fragment shader entry point
 [shader("fragment")]
 float4 fragmentMain(
-    float2 fUv : TEXCOORD0,
-    uniform Texture2D uTexture0,
-    uniform SamplerState textureSampler
+    float2 fUv : TEXCOORD0
 ) : SV_Target
 {
-    return float4(1.0, 1.0, 1.0, 1.0); // Return a solid red color for testing1
-    //return uTexture0.Sample(textureSampler, fUv);
+    return float4(1.0, 0.0, 0.0, 1.0); // Return solid red color for testing
 }

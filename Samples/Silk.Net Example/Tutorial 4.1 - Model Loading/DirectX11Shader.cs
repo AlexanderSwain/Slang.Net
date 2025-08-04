@@ -31,7 +31,7 @@ public unsafe class DirectX11Shader : IDisposable
 
         CreateShaders();
         CreateInputLayout();
-        CreateConstantBuffer();
+        // CreateConstantBuffer(); // Skip for simple test - no uniforms needed
 
         Console.WriteLine("DirectX11Shader: Created actual DirectX11 shaders");
         Console.WriteLine($"DirectX11Shader: VS length: {vertexSource.Length}");
@@ -258,12 +258,13 @@ public unsafe class DirectX11Shader : IDisposable
             Console.WriteLine("DirectX11Shader: No input layout available");
         }
 
-        if (_constantBuffer != null)
+        // Constant buffer disabled for simplified test
+        /*if (_constantBuffer != null)
         {
             var cb = _constantBuffer;
             _renderer.DeviceContext->VSSetConstantBuffers(0, 1, &cb);
             Console.WriteLine("DirectX11Shader: Set constant buffer");
-        }
+        }*/
     }
 
     public void SetUniform(string name, int value)

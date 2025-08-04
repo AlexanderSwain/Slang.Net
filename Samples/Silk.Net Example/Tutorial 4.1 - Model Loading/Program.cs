@@ -315,15 +315,16 @@ namespace Tutorial
 
             // Set shader and texture
             DirectXShader?.Use();
-            DirectXTexture?.Bind();
-            DirectXShader?.SetUniform("uTexture0", 0);
+            // DirectXTexture?.Bind(); // Not needed for simple test
+            // DirectXShader?.SetUniform("uTexture0", 0); // No uniforms in simple test
 
             foreach (var mesh in DirectXModel?.Meshes ?? new DirectX11Mesh[0])
             {
                 mesh.Bind();
-                DirectXShader?.SetUniform("uModel", model);
-                DirectXShader?.SetUniform("uView", view);
-                DirectXShader?.SetUniform("uProjection", projection);
+                // Skip uniform setting for simple test - no uniforms in simplified shader
+                // DirectXShader?.SetUniform("uModel", model);
+                // DirectXShader?.SetUniform("uView", view);
+                // DirectXShader?.SetUniform("uProjection", projection);
 
                 mesh.Draw(); // Actually draw the mesh
                 Console.WriteLine($"DirectX11: Drawing mesh with {mesh.Vertices.Length} vertices");

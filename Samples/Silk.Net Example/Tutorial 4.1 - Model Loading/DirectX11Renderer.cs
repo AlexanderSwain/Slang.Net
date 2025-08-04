@@ -35,6 +35,7 @@ namespace Tutorial
             CreateRenderTargetView();
             CreateDepthStencilView(window);
             SetupViewport(window);
+            SetupRasterizerState();
         }
 
         private void CreateDeviceAndSwapChain(IWindow window)
@@ -146,6 +147,36 @@ namespace Tutorial
             };
 
             DeviceContext->RSSetViewports(1, &viewport);
+        }
+
+        private void SetupRasterizerState()
+        {
+            Console.WriteLine("DirectX11: Setting up rasterizer state");
+            
+            var rasterizerDesc = new RasterizerDesc
+            {
+                FillMode = FillMode.Solid,
+                CullMode = CullMode.None, // Disable culling to see all triangles
+                FrontCounterClockwise = false,
+                DepthBias = 0,
+                DepthBiasClamp = 0.0f,
+                SlopeScaledDepthBias = 0.0f,
+                DepthClipEnable = true,
+                ScissorEnable = false,
+                MultisampleEnable = false,
+                AntialiasedLineEnable = false
+            };
+
+            ID3D11RasterizerState* rasterizerState;
+            var result = Device->CreateRasterizerState(&rasterizerDesc, &rasterizerState);
+            if (result < 0)
+            {
+                Console.WriteLine($"DirectX11: Failed to create rasterizer state: {result:X}");
+                return;
+            }
+
+            DeviceContext->RSSetState(rasterizerState);
+            Console.WriteLine("DirectX11: Rasterizer state set (no culling)");
         }
 
         public void Clear(Vector4 clearColor)
