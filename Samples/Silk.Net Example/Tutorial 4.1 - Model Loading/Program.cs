@@ -27,6 +27,7 @@ namespace Tutorial
 
         // Backend-specific resources
         private static D3D11 D3D11;
+        private static DirectX11Renderer DirectXRenderer;
         private static DirectX11Shader DirectXShader;
         private static DirectX11Texture DirectXTexture;
         private static DirectX11Model DirectXModel;
@@ -75,6 +76,7 @@ namespace Tutorial
             var options = WindowOptions.Default;
             options.Size = new Vector2D<int>(800, 600);
             options.Title = $"Slang.Net Demo - {SelectedBackend} Backend (Press B to switch, R to reload shaders)";
+            options.API = GraphicsAPI.None;
             window = Window.Create(options);
 
             window.Load += OnLoad;
@@ -142,7 +144,7 @@ namespace Tutorial
             Shader = new Shader(Gl, vertexSource, fragmentSource);
 
             // Get reflection information
-            var reflection = slangCompiler.GetReflection(Targets.Glsl.v330);
+            var reflection = slangCompiler.GetReflection(Targets.Glsl.es_320);
 
             Console.WriteLine("\n--- OpenGL Shader Reflection ---");
             Console.WriteLine($"Parameters: {reflection.Parameters.Count}");
@@ -162,9 +164,10 @@ namespace Tutorial
 
         private static void InitializeDirectX11()
         {
-            Console.WriteLine("DirectX11: Initializing backend (demo mode)");
+            Console.WriteLine("DirectX11: Initializing backend");
 
-            D3D11 = D3D11.GetApi(window);
+            // Create DirectX11 renderer
+            DirectXRenderer = new DirectX11Renderer(window);
 
             // Initialize Slang shader compiler for DirectX11
             slangCompiler = new SlangShaderCompiler("Shaders/shader.slang");
@@ -182,12 +185,12 @@ namespace Tutorial
             Console.WriteLine("\n--- Compiled DirectX11 Fragment Shader Preview ---");
             Console.WriteLine(fragmentSource.Length > 300 ? fragmentSource.Substring(0, 300) + "..." : fragmentSource);
 
-            // Create DirectX shader with compiled sources
-            DirectXShader = new DirectX11Shader(vertexSource, fragmentSource);
+            // Create DirectX shader with compiled sources and renderer
+            DirectXShader = new DirectX11Shader(DirectXRenderer, vertexSource, fragmentSource);
 
             // Get reflection information
             var vsReflection = slangCompiler.GetReflection(Targets.Hlsl.vs_5_0);
-            var psReflection = slangCompiler.GetReflection(Targets.Hlsl.ps_5_0);
+            //var psReflection = slangCompiler.GetReflection(Targets.Hlsl.ps_5_0);
 
             // Display reflection information for vs_5_0 target
             Console.WriteLine("\n--- DirectX11 Shader Reflection ---");
@@ -202,21 +205,22 @@ namespace Tutorial
                 Console.WriteLine($"  Entry Point: {ep.Name} (Stage: {ep.Stage})");
             }
 
-            // Display reflection information for ps_5_0 target
-            Console.WriteLine("\n--- DirectX11 Shader Reflection ---");
-            Console.WriteLine($"Parameters: {psReflection.Parameters.Count}");
-            foreach (var param in psReflection.Parameters)
-            {
-                Console.WriteLine($"  Parameter: {param.Name} (Kind: {param.Type.Kind})");
-            }
-            Console.WriteLine($"Entry Points: {psReflection.EntryPoints.Count}");
-            foreach (var ep in psReflection.EntryPoints)
-            {
-                Console.WriteLine($"  Entry Point: {ep.Name} (Stage: {ep.Stage})");
-            }
-
-            DirectXTexture = new DirectX11Texture("Resources\\silk.png");
-            DirectXModel = new DirectX11Model("Resources\\cube.model");
+            //// Display reflection information for ps_5_0 target
+            //Console.WriteLine("\n--- DirectX11 Shader Reflection ---");
+            //Console.WriteLine($"Parameters: {psReflection.Parameters.Count}");
+            //foreach (var param in psReflection.Parameters)
+            //{
+            //    Console.WriteLine($"  Parameter: {param.Name} (Kind: {param.Type.Kind})");
+            //}
+            //Console.WriteLine($"Entry Points: {psReflection.EntryPoints.Count}");
+            //foreach (var ep in psReflection.EntryPoints)
+            //{
+            //    Console.WriteLine($"  Entry Point: {ep.Name} (Stage: {ep.Stage})");
+            //}
+            //
+            // Create DirectX11 texture and model
+            DirectXTexture = new DirectX11Texture(DirectXRenderer, "Resources\\silk.png");
+            DirectXModel = new DirectX11Model(DirectXRenderer, "Resources\\cube.model");
         }
 
         private static unsafe void OnUpdate(double deltaTime)
@@ -290,41 +294,41 @@ namespace Tutorial
             }
         }
 
-        // I believe these methods can be combined into a single Render method 
-        //private static unsafe void RenderDirectX11(double deltaTime)
-        //{
-        //    // DirectX11 rendering demo
-        //    Console.WriteLine($"DirectX11: Rendering frame at time {deltaTime:F2}s");
+        private static unsafe void RenderDirectX11(double deltaTime)
+        {
+            Console.WriteLine($"DirectX11: Rendering frame at time {deltaTime:F2}s");
 
-        //    // Simulate DirectX rendering calls
-        //    DirectXTexture?.Bind();
-        //    DirectXShader?.Use();
-        //    DirectXShader?.SetUniform("uTexture0", 0);
+            // Set render targets first, then clear
+            DirectXRenderer?.SetRenderTargets();
+            DirectXRenderer?.Clear(new Vector4(0.2f, 0.3f, 1.0f, 1.0f)); // Blue background
 
-        //    //Use elapsed time to convert to radians to allow our cube to rotate over time
-        //    var difference = (float)(window.Time * 100);
-        //    var size = window.FramebufferSize;
+            // Use elapsed time to convert to radians to allow our cube to rotate over time
+            var difference = (float)(window.Time * 100);
+            var size = window.FramebufferSize;
 
-        //    var model = Matrix4x4.CreateRotationY(MathHelper.DegreesToRadians(difference)) * Matrix4x4.CreateRotationX(MathHelper.DegreesToRadians(difference));
-        //    var view = Matrix4x4.CreateLookAt(CameraPosition, CameraPosition + CameraFront, CameraUp);
-        //    var projection = Matrix4x4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(CameraZoom), (float)size.X / size.Y, 0.1f, 100.0f);
+            var model = Matrix4x4.CreateRotationY(MathHelper.DegreesToRadians(difference)) * Matrix4x4.CreateRotationX(MathHelper.DegreesToRadians(difference));
+            var view = Matrix4x4.CreateLookAt(CameraPosition, CameraPosition + CameraFront, CameraUp);
+            var projection = Matrix4x4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(CameraZoom), (float)size.X / size.Y, 0.1f, 100.0f);
 
-        //    foreach (var mesh in DirectXModel?.Meshes ?? new DirectX11Mesh[0])
-        //    {
-        //        mesh.Bind();
-        //        DirectXShader?.Use();
-        //        DirectXTexture?.Bind();
-        //        DirectXShader?.SetUniform("uTexture0", 0);
-        //        DirectXShader?.SetUniform("uModel", model);
-        //        DirectXShader?.SetUniform("uView", view);
-        //        DirectXShader?.SetUniform("uProjection", projection);
+            // Set shader and texture
+            DirectXShader?.Use();
+            DirectXTexture?.Bind();
+            DirectXShader?.SetUniform("uTexture0", 0);
 
-        //        Console.WriteLine($"DirectX11: Drawing mesh with {mesh.Vertices.Length} vertices");
-        //    }
+            foreach (var mesh in DirectXModel?.Meshes ?? new DirectX11Mesh[0])
+            {
+                mesh.Bind();
+                DirectXShader?.SetUniform("uModel", model);
+                DirectXShader?.SetUniform("uView", view);
+                DirectXShader?.SetUniform("uProjection", projection);
 
-        //    // Fall back to OpenGL for actual display since this is a demo
-        //    RenderOpenGL(deltaTime);
-        //}
+                mesh.Draw(); // Actually draw the mesh
+                Console.WriteLine($"DirectX11: Drawing mesh with {mesh.Vertices.Length} vertices");
+            }
+
+            // Present the frame
+            DirectXRenderer?.Present();
+        }
 
         private static void OnFramebufferResize(Vector2D<int> newSize)
         {
@@ -374,6 +378,7 @@ namespace Tutorial
             DirectXModel?.Dispose();
             DirectXShader?.Dispose();
             DirectXTexture?.Dispose();
+            DirectXRenderer?.Dispose();
 
             slangCompiler?.Dispose();
         }
@@ -390,7 +395,7 @@ namespace Tutorial
                 Console.WriteLine($"Reloading shaders for {SelectedBackend} backend...");
                 try
                 {
-                    var (vertexShader, fragmentShader) = slangCompiler.CompileShaders("Shaders/shader.slang");
+                    var (vertexShader, fragmentShader) = slangCompiler.CompileShaders(SelectedBackend);
 
                     if (SelectedBackend == GraphicsBackend.OpenGL)
                     {
@@ -401,7 +406,7 @@ namespace Tutorial
                     else if (SelectedBackend == GraphicsBackend.DirectX11)
                     {
                         DirectXShader?.Dispose();
-                        DirectXShader = new DirectX11Shader(vertexShader, fragmentShader);
+                        DirectXShader = new DirectX11Shader(DirectXRenderer, vertexShader, fragmentShader);
                         Console.WriteLine("DirectX11 shaders reloaded successfully!");
                     }
                 }

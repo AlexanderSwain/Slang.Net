@@ -22,9 +22,12 @@ namespace Tutorial
     /// </summary>
     public class SlangShaderCompiler : IDisposable
     {
-        private readonly Session _session;
-        private readonly Module _module;
-        private readonly Slang.Sdk.Program _program;
+        private readonly Session _vsSession;
+        private readonly Session _psSession;
+        private readonly Module _vsModule;
+        private readonly Module _psModule;
+        private readonly Slang.Sdk.Program _vsProgram;
+        private readonly Slang.Sdk.Program _psProgram;
 
         /// <summary>
         /// Creates a new Slang shader compiler for the specified graphics backend
@@ -32,23 +35,31 @@ namespace Tutorial
         /// <param name="backend">The graphics backend to target (OpenGL or DirectX11)</param>
         public SlangShaderCompiler(string slangFilePath)
         {
-            // Create the session
-            _session = new Session.Builder()
+            // Create the sessions
+            _vsSession = new Session.Builder()
                 .AddTarget(Targets.Hlsl.vs_5_0)
+                .AddTarget(Targets.Glsl.v330)
+                .Create();
+            _psSession = new Session.Builder()
                 .AddTarget(Targets.Hlsl.ps_5_0)
                 .AddTarget(Targets.Glsl.v330)
                 .Create();
 
-            // Create the module from the specified source file with the given targets
-            _module = new Module.Builder(_session)
-                .AddTranslationUnit(SourceLanguage.Slang, "shaderUnit", out var translationIndex)
-                .AddTranslationUnitSourceFile(translationIndex, slangFilePath)
-                .AddEntryPoint(translationIndex, "vertexMain", Stage.Vertex)
-                .AddEntryPoint(translationIndex, "fragmentMain", Stage.Fragment)
+            // Create the modules
+            _vsModule = new Module.Builder(_vsSession)
+                .AddTranslationUnit(SourceLanguage.Slang, "vsUnit", out var vsUnitIndex)
+                .AddTranslationUnitSourceFile(vsUnitIndex, slangFilePath)
+                .AddEntryPoint(vsUnitIndex, "vertexMain", Stage.Vertex)
+                .Create();
+            _psModule = new Module.Builder(_psSession)
+                .AddTranslationUnit(SourceLanguage.Slang, "psUnit", out var psUnitIndex)
+                .AddTranslationUnitSourceFile(psUnitIndex, slangFilePath)
+                .AddEntryPoint(psUnitIndex, "fragmentMain", Stage.Pixel)
                 .Create();
 
-            // Set the program
-            _program = _module.Program;
+            // Get the programs
+            _vsProgram = _vsModule.Program;
+            _psProgram = _psModule.Program;
         }
 
         /// <summary>
@@ -61,12 +72,10 @@ namespace Tutorial
         {
             try
             {
-                var program = _module.Program;
-
                 var compileResults = backend switch
                 {
-                    GraphicsBackend.OpenGL => CompileForOpenGL(program),
-                    GraphicsBackend.DirectX11 => CompileForDirectX11(program),
+                    GraphicsBackend.OpenGL => CompileForOpenGL(),
+                    GraphicsBackend.DirectX11 => CompileForDirectX11(),
                     _ => throw new ArgumentException($"Unsupported backend: {backend}")
                 };
 
@@ -78,16 +87,13 @@ namespace Tutorial
             }
         }
 
-        /// <summary>
-        /// Compiles Slang shader for OpenGL target (GLSL 3.30)
-        /// Note: Currently uses fallback GLSL due to compatibility issues with generated code
-        /// </summary>
-        private (CompilationResult vsCompileResult, CompilationResult psCompileResult) CompileForOpenGL(Slang.Sdk.Program program)
+        private (CompilationResult vsCompileResult, CompilationResult psCompileResult) CompileForOpenGL()
         {
-            var programTarget = program.Targets[Targets.Glsl.v330];
+            var vsProgramTarget = _vsProgram.Targets[Targets.Glsl.es_320];
+            var psProgramTarget = _psProgram.Targets[Targets.Glsl.es_320];
 
-            var vertexEntry = programTarget.EntryPoints["vertexMain"];
-            var fragmentEntry = programTarget.EntryPoints["fragmentMain"];
+            var vertexEntry = vsProgramTarget.EntryPoints["vertexMain"];
+            var fragmentEntry = psProgramTarget.EntryPoints["fragmentMain"];
 
             var vertexResult = vertexEntry.Compile();
             var fragmentResult = fragmentEntry.Compile();
@@ -98,10 +104,10 @@ namespace Tutorial
         /// <summary>
         /// Compiles Slang shader for DirectX11 target (HLSL 5.0)
         /// </summary>
-        private (CompilationResult vsCompileResult, CompilationResult psCompileResult) CompileForDirectX11(Slang.Sdk.Program program)
+        private (CompilationResult vsCompileResult, CompilationResult psCompileResult) CompileForDirectX11()
         {
-            var vsProgramTarget = program.Targets[Targets.Hlsl.vs_5_0];
-            var psProgramTarget = program.Targets[Targets.Hlsl.ps_5_0];
+            var vsProgramTarget = _vsProgram.Targets[Targets.Hlsl.vs_5_0];
+            var psProgramTarget = _psProgram.Targets[Targets.Hlsl.ps_5_0];
             
             var vertexEntry = vsProgramTarget.EntryPoints["vertexMain"];
             var fragmentEntry = psProgramTarget.EntryPoints["fragmentMain"];
@@ -119,7 +125,7 @@ namespace Tutorial
         /// <returns>Shader reflection data containing entry points and parameters</returns>
         public ShaderReflection GetReflection(Target target)
         {
-            return _module.Program.Targets[target].GetReflection();
+            return _vsProgram.Targets[target].GetReflection();
         }
 
         /// <summary>

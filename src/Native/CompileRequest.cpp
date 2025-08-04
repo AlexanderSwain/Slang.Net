@@ -32,7 +32,7 @@ void Native::CompileRequestCLI::addCodeGenTarget(SlangCompileTarget target)
 
 SlangResult Native::CompileRequestCLI::addEntryPoint(int translationUnitIndex, char const* name, SlangStage stage)
 {
-	return m_compileRequest->addEntryPoint(translationUnitIndex, name, stage);
+	return m_compileRequest->addEntryPoint(translationUnitIndex, name, stage); m_compileRequest->
 }
 
 SlangResult Native::CompileRequestCLI::addEntryPointEx(int translationUnitIndex, char const* name, SlangStage stage, int genericArgCount, char const** genericArgs)
