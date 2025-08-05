@@ -20,7 +20,7 @@ namespace Tutorial
     /// Wrapper class for compiling Slang shaders to different graphics API targets.
     /// Demonstrates how to use Slang.Sdk for cross-platform shader development.
     /// </summary>
-    public class SlangShaderCompiler : IDisposable
+    public class SlangShader : IDisposable
     {
         private readonly Session _vsSession;
         private readonly Session _psSession;
@@ -33,7 +33,7 @@ namespace Tutorial
         /// Creates a new Slang shader compiler for the specified graphics backend
         /// </summary>
         /// <param name="backend">The graphics backend to target (OpenGL or DirectX11)</param>
-        public SlangShaderCompiler(string slangFilePath)
+        public SlangShader(string slangFilePath)
         {
             // This is required to enable Slang's GLSL support, since it defaults to Vulkan
             Session.GlslEnabled = true;
@@ -75,7 +75,7 @@ namespace Tutorial
         /// <param name="slangFilePath">Path to the .slang shader file</param>
         /// <returns>Tuple containing (vertex shader source, fragment shader source)</returns>
         /// <exception cref="InvalidOperationException">Thrown when shader compilation fails</exception>
-        public (string vertexShader, string fragmentShader) CompileShaders(GraphicsBackend backend)
+        public (string vertexShaderSource, string fragmentShaderSource) CompileShaders(GraphicsBackend backend)
         {
             var compileResults = backend switch
             {

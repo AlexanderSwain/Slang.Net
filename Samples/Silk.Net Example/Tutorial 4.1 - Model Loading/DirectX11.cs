@@ -1,5 +1,6 @@
 using SharpDX.WIC;
 using Silk.NET.Core.Native;
+using Silk.NET.Direct3D.Compilers;
 using Silk.NET.Direct3D11;
 using Silk.NET.DXGI;
 using Silk.NET.Windowing;
@@ -20,7 +21,7 @@ namespace Tutorial
     /// while showing the compiled HLSL shader output from Slang.
     /// </summary>
 
-    public unsafe class DirectX11Renderer : IDisposable
+    public unsafe class DirectX11Renderer : IRenderer, IDisposable
     {
         public readonly D3D11 _d3d11;
         private readonly DXGI _dxgi;
@@ -40,8 +41,17 @@ namespace Tutorial
             CreateDeviceAndSwapChain(window);
             CreateRenderTargetView();
             CreateDepthStencilView(window);
-            SetupViewport(window);
+            SetViewport(window.Size.X, window.Size.Y);
             SetupRasterizerState();
+        }
+
+        public override IMesh CreateCubeMesh(string vertexSource, string fragmentSource, string texturePath, string modelPath)
+        {
+            var shader = new DirectX11Shader(this, vertexSource, fragmentSource);
+            var texture = new DirectX11Texture(this, texturePath);
+            var model = new DirectX11Model(this, modelPath);
+
+            return new DirectX11Mesh(this, shader, texture, model);
         }
 
         private void CreateDeviceAndSwapChain(IWindow window)
@@ -140,14 +150,14 @@ namespace Tutorial
             DepthStencilView = depthStencilView;
         }
 
-        private void SetupViewport(IWindow window)
+        public override void SetViewport(int width, int height)
         {
             var viewport = new Viewport
             {
                 TopLeftX = 0,
                 TopLeftY = 0,
-                Width = window.Size.X,
-                Height = window.Size.Y,
+                Width = width,
+                Height = height,
                 MinDepth = 0.0f,
                 MaxDepth = 1.0f
             };
@@ -158,7 +168,7 @@ namespace Tutorial
         private void SetupRasterizerState()
         {
             Console.WriteLine("DirectX11: Setting up rasterizer state");
-            
+
             var rasterizerDesc = new RasterizerDesc
             {
                 FillMode = FillMode.Solid,
@@ -185,7 +195,7 @@ namespace Tutorial
             Console.WriteLine("DirectX11: Rasterizer state set (no culling)");
         }
 
-        public void Clear(Vector4 clearColor)
+        public override void Clear(Vector4 clearColor)
         {
             Console.WriteLine($"DirectX11: Clearing with color ({clearColor.X:F2}, {clearColor.Y:F2}, {clearColor.Z:F2}, {clearColor.W:F2})");
             var color = stackalloc float[] { clearColor.X, clearColor.Y, clearColor.Z, clearColor.W };
@@ -194,13 +204,13 @@ namespace Tutorial
             Console.WriteLine("DirectX11: Clear completed");
         }
 
-        public void SetRenderTargets()
+        public override void SetRenderTargets()
         {
             var rtv = RenderTargetView;
             DeviceContext->OMSetRenderTargets(1, &rtv, DepthStencilView);
         }
 
-        public void Present()
+        public override void Present()
         {
             var result = SwapChain->Present(1, 0);
             if (result < 0)
@@ -213,7 +223,17 @@ namespace Tutorial
             }
         }
 
-        public void Dispose()
+        public override void EnableDepth()
+        {
+            // Do nothing for DirectX11
+        }
+
+        public override void DisableCulling()
+        {
+            // Do nothing for DirectX11
+        }
+
+        public override void Dispose()
         {
             DepthStencilView->Release();
             DepthStencilBuffer->Release();
@@ -223,247 +243,356 @@ namespace Tutorial
             Device->Release();
         }
     }
-    //public unsafe class DirectX11Shader : IDisposable
-    //{
-    //    private readonly DirectX11Renderer _renderer;
-    //    private ID3D11VertexShader* _vertexShader;
-    //    private ID3D11PixelShader* _pixelShader;
-    //    private ID3D11InputLayout* _inputLayout;
-    //    private ID3D11Buffer* _constantBuffer;
 
-    //    public string VertexShader { get; }
-    //    public string PixelShader { get; }
+    public unsafe class DirectX11Shader : IDisposable
+    {
+        private readonly DirectX11Renderer _renderer;
+        private ID3D11VertexShader* _vertexShader;
+        private ID3D11PixelShader* _pixelShader;
+        private ID3D11InputLayout* _inputLayout;
+        private ID3D11Buffer* _constantBuffer;
+        private ComPtr<ID3D10Blob> _vertexShaderBytecode;
 
-    //    // Constructor for simple demo usage (no actual DirectX implementation)
-    //    public DirectX11Shader(string vertexSource, string fragmentSource)
-    //    {
-    //        VertexShader = vertexSource ?? throw new ArgumentNullException(nameof(vertexSource));
-    //        PixelShader = fragmentSource ?? throw new ArgumentNullException(nameof(fragmentSource));
-    //        _renderer = null; // No renderer - demo mode
+        // Track matrices for proper constant buffer updates
+        private Matrix4x4 _modelMatrix;
+        private Matrix4x4 _viewMatrix;
+        private Matrix4x4 _projectionMatrix;
 
-    //        Console.WriteLine("DirectX11Shader: Created in demo mode (no actual DirectX objects)");
-    //        Console.WriteLine($"DirectX11Shader: VS length: {vertexSource.Length}");
-    //        Console.WriteLine($"DirectX11Shader: PS length: {fragmentSource.Length}");
-    //    }
+        public string VertexShader { get; }
+        public string PixelShader { get; }
 
-    //    // Constructor for full DirectX implementation
-    //    public DirectX11Shader(DirectX11Renderer renderer, string vertexSource, string fragmentSource)
-    //    {
-    //        _renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
-    //        VertexShader = vertexSource ?? throw new ArgumentNullException(nameof(vertexSource));
-    //        PixelShader = fragmentSource ?? throw new ArgumentNullException(nameof(fragmentSource));
+        public DirectX11Shader(DirectX11Renderer renderer, string vertexSource, string fragmentSource)
+        {
+            _renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
+            VertexShader = vertexSource ?? throw new ArgumentNullException(nameof(vertexSource));
+            PixelShader = fragmentSource ?? throw new ArgumentNullException(nameof(fragmentSource));
 
-    //        CreateShaders();
-    //        CreateInputLayout();
-    //        CreateConstantBuffer();
+            // Initialize matrices to identity
+            _modelMatrix = Matrix4x4.Identity;
+            _viewMatrix = Matrix4x4.Identity;
+            _projectionMatrix = Matrix4x4.Identity;
 
-    //        Console.WriteLine("DirectX11Shader: Created actual DirectX11 shaders");
-    //        Console.WriteLine($"DirectX11Shader: VS length: {vertexSource.Length}");
-    //        Console.WriteLine($"DirectX11Shader: PS length: {fragmentSource.Length}");
-    //    }
+            CreateShaders();
+            CreateInputLayout();
+            CreateConstantBuffer(); // Skip for simple test - no uniforms needed
 
-    //    private void CreateShaders()
-    //    {
-    //        if (_renderer == null) return; // Demo mode - no actual DirectX objects
+            // Initialize the constant buffer with identity matrices
+            UpdateConstantBuffer();
 
-    //        var d3d11 = _renderer._d3d11;
+            Console.WriteLine("DirectX11Shader: Created actual DirectX11 shaders");
+            Console.WriteLine($"DirectX11Shader: VS length: {vertexSource.Length}");
+            Console.WriteLine($"DirectX11Shader: PS length: {fragmentSource.Length}");
+        }
 
-    //        // Compile vertex shader
-    //        var vertexShaderBytes = System.Text.Encoding.UTF8.GetBytes(VertexShader);
-    //        fixed (byte* vsPtr = vertexShaderBytes)
-    //        {
-    //            ID3D11VertexShader* vs = null;
-    //            var result = _renderer.Device->CreateVertexShader(vsPtr, (nuint)vertexShaderBytes.Length, null, ref vs);
-    //            if (result < 0)
-    //            {
-    //                Console.WriteLine($"DirectX11Shader: Failed to create vertex shader: 0x{result:X}");
-    //                // For demo purposes, we'll continue without throwing
-    //            }
-    //            _vertexShader = vs;
-    //        }
+        private void CreateShaders()
+        {
+            try
+            {
+                var d3dCompiler = D3DCompiler.GetApi();
 
-    //        // Compile pixel shader  
-    //        var pixelShaderBytes = System.Text.Encoding.UTF8.GetBytes(PixelShader);
-    //        fixed (byte* psPtr = pixelShaderBytes)
-    //        {
-    //            ID3D11PixelShader* ps = null;
-    //            var result = _renderer.Device->CreatePixelShader(psPtr, (nuint)pixelShaderBytes.Length, null, ref ps);
-    //            if (result < 0)
-    //            {
-    //                Console.WriteLine($"DirectX11Shader: Failed to create pixel shader: 0x{result:X}");
-    //                // For demo purposes, we'll continue without throwing
-    //            }
-    //            _pixelShader = ps;
-    //        }
-    //    }
+                // Compile vertex shader from HLSL source
+                ComPtr<ID3D10Blob> vertexBlob = default;
+                ComPtr<ID3D10Blob> errorBlob = default;
 
-    //    private void CreateInputLayout()
-    //    {
-    //        if (_renderer == null) return; // Demo mode - no actual DirectX objects
+                var vertexSource = SilkMarshal.StringToPtr(VertexShader);
+                var result = d3dCompiler.Compile(
+                    (void*)vertexSource,
+                    (nuint)VertexShader.Length,
+                    (byte*)SilkMarshal.StringToPtr("vertex_shader"),
+                    null,
+                    null,
+                    (byte*)SilkMarshal.StringToPtr("vertexMain"),
+                    (byte*)SilkMarshal.StringToPtr("vs_5_0"),
+                    0,
+                    0,
+                    vertexBlob.GetAddressOf(),
+                    errorBlob.GetAddressOf());
 
-    //        // Define input layout for our vertex structure
-    //        var inputElements = stackalloc InputElementDesc[]
-    //        {
-    //            new InputElementDesc
-    //            {
-    //                SemanticName = (byte*)SilkMarshal.StringToPtr("POSITION"),
-    //                SemanticIndex = 0,
-    //                Format = Format.FormatR32G32B32Float,
-    //                InputSlot = 0,
-    //                AlignedByteOffset = 0,
-    //                InputSlotClass = InputClassification.PerVertexData,
-    //                InstanceDataStepRate = 0
-    //            },
-    //            new InputElementDesc
-    //            {
-    //                SemanticName = (byte*)SilkMarshal.StringToPtr("TEXCOORD"),
-    //                SemanticIndex = 0,
-    //                Format = Format.FormatR32G32Float,
-    //                InputSlot = 0,
-    //                AlignedByteOffset = 12, // 3 floats for position
-    //                InputSlotClass = InputClassification.PerVertexData,
-    //                InstanceDataStepRate = 0
-    //            }
-    //        };
+                if (result < 0)
+                {
+                    if (errorBlob.Handle != null)
+                    {
+                        var errorString = SilkMarshal.PtrToString((nint)errorBlob.GetBufferPointer());
+                        Console.WriteLine($"DirectX11Shader: Vertex shader compilation error: {errorString}");
+                    }
+                    Console.WriteLine($"DirectX11Shader: Failed to compile vertex shader: 0x{result:X}");
+                }
+                else
+                {
+                    // Create vertex shader from compiled bytecode
+                    ID3D11VertexShader* vs = null;
+                    result = _renderer.Device->CreateVertexShader(
+                        vertexBlob.GetBufferPointer(),
+                        vertexBlob.GetBufferSize(),
+                        null,
+                        ref vs);
+                    if (result < 0)
+                    {
+                        Console.WriteLine($"DirectX11Shader: Failed to create vertex shader: 0x{result:X}");
+                    }
+                    else
+                    {
+                        _vertexShader = vs;
+                        _vertexShaderBytecode = vertexBlob; // Store for input layout creation
+                        Console.WriteLine("DirectX11Shader: Successfully created vertex shader");
+                    }
+                }
 
-    //        // Note: In a real implementation, you'd need the compiled vertex shader bytecode here
-    //        // For demo purposes, we'll create a simple layout
-    //        var vertexShaderBytes = System.Text.Encoding.UTF8.GetBytes(VertexShader);
-    //        fixed (byte* vsPtr = vertexShaderBytes)
-    //        {
-    //            ID3D11InputLayout* layout = null;
-    //            var result = _renderer.Device->CreateInputLayout(inputElements, 2, vsPtr, (nuint)vertexShaderBytes.Length, ref layout);
-    //            if (result < 0)
-    //            {
-    //                Console.WriteLine($"DirectX11Shader: Failed to create input layout: 0x{result:X}");
-    //            }
-    //            _inputLayout = layout;
-    //        }
-    //    }
+                // Compile pixel shader from HLSL source
+                ComPtr<ID3D10Blob> pixelBlob = default;
+                errorBlob = default;
 
-    //    private void CreateConstantBuffer()
-    //    {
-    //        if (_renderer == null) return; // Demo mode - no actual DirectX objects
+                var pixelSource = SilkMarshal.StringToPtr(PixelShader);
+                result = d3dCompiler.Compile(
+                    (void*)pixelSource,
+                    (nuint)PixelShader.Length,
+                    (byte*)SilkMarshal.StringToPtr("pixel_shader"),
+                    null,
+                    null,
+                    (byte*)SilkMarshal.StringToPtr("fragmentMain"),
+                    (byte*)SilkMarshal.StringToPtr("ps_5_0"),
+                    0,
+                    0,
+                    pixelBlob.GetAddressOf(),
+                    errorBlob.GetAddressOf());
 
-    //        // Create constant buffer for matrices
-    //        var bufferDesc = new BufferDesc
-    //        {
-    //            ByteWidth = (uint)sizeof(Matrix4x4) * 3, // Model, View, Projection matrices
-    //            Usage = Usage.Dynamic,
-    //            BindFlags = (uint)BindFlag.ConstantBuffer,
-    //            CPUAccessFlags = (uint)CpuAccessFlag.Write,
-    //            MiscFlags = 0,
-    //            StructureByteStride = 0
-    //        };
+                if (result < 0)
+                {
+                    if (errorBlob.Handle != null)
+                    {
+                        var errorString = SilkMarshal.PtrToString((nint)errorBlob.GetBufferPointer());
+                        Console.WriteLine($"DirectX11Shader: Pixel shader compilation error: {errorString}");
+                    }
+                    Console.WriteLine($"DirectX11Shader: Failed to compile pixel shader: 0x{result:X}");
+                }
+                else
+                {
+                    // Create pixel shader from compiled bytecode
+                    ID3D11PixelShader* ps = null;
+                    result = _renderer.Device->CreatePixelShader(
+                        pixelBlob.GetBufferPointer(),
+                        pixelBlob.GetBufferSize(),
+                        null,
+                        ref ps);
+                    if (result < 0)
+                    {
+                        Console.WriteLine($"DirectX11Shader: Failed to create pixel shader: 0x{result:X}");
+                    }
+                    else
+                    {
+                        _pixelShader = ps;
+                        Console.WriteLine("DirectX11Shader: Successfully created pixel shader");
+                    }
+                }
 
-    //        ID3D11Buffer* buffer = null;
-    //        var result = _renderer.Device->CreateBuffer(&bufferDesc, null, ref buffer);
-    //        if (result < 0)
-    //        {
-    //            Console.WriteLine($"DirectX11Shader: Failed to create constant buffer: 0x{result:X}");
-    //        }
-    //        _constantBuffer = buffer;
-    //    }
+                // Free allocated strings
+                SilkMarshal.Free(vertexSource);
+                SilkMarshal.Free(pixelSource);
+                pixelBlob.Dispose();
+                errorBlob.Dispose();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"DirectX11Shader: Exception during shader compilation: {ex.Message}");
+            }
+        }
 
-    //    public void Use()
-    //    {
-    //        if (_renderer == null)
-    //        {
-    //            Console.WriteLine("DirectX11Shader: Using shader (demo mode)");
-    //            return;
-    //        }
+        private void CreateInputLayout()
+        {
+            if (_vertexShaderBytecode.Handle == null)
+            {
+                Console.WriteLine("DirectX11Shader: No vertex shader bytecode available for input layout");
+                return;
+            }
 
-    //        if (_vertexShader != null)
-    //        {
-    //            _renderer.DeviceContext->VSSetShader(_vertexShader, null, 0);
-    //            Console.WriteLine("DirectX11Shader: Set vertex shader");
-    //        }
+            var inputElements = stackalloc InputElementDesc[]
+            {
+            new InputElementDesc
+            {
+                SemanticName = (byte*)SilkMarshal.StringToPtr("POSITION"),
+                SemanticIndex = 0,
+                Format = Format.FormatR32G32B32Float,
+                InputSlot = 0,
+                AlignedByteOffset = 0,
+                InputSlotClass = InputClassification.PerVertexData,
+                InstanceDataStepRate = 0
+            },
+            new InputElementDesc
+            {
+                SemanticName = (byte*)SilkMarshal.StringToPtr("TEXCOORD"),
+                SemanticIndex = 0,
+                Format = Format.FormatR32G32Float,
+                InputSlot = 0,
+                AlignedByteOffset = 12, // 3 floats for position
+                InputSlotClass = InputClassification.PerVertexData,
+                InstanceDataStepRate = 0
+            }
+        };
 
-    //        if (_pixelShader != null)
-    //        {
-    //            _renderer.DeviceContext->PSSetShader(_pixelShader, null, 0);
-    //            Console.WriteLine("DirectX11Shader: Set pixel shader");
-    //        }
+            ID3D11InputLayout* layout = null;
+            var result = _renderer.Device->CreateInputLayout(
+                inputElements,
+                2,
+                _vertexShaderBytecode.GetBufferPointer(),
+                _vertexShaderBytecode.GetBufferSize(),
+                ref layout);
 
-    //        if (_inputLayout != null)
-    //        {
-    //            _renderer.DeviceContext->IASetInputLayout(_inputLayout);
-    //            Console.WriteLine("DirectX11Shader: Set input layout");
-    //        }
+            if (result < 0)
+            {
+                Console.WriteLine($"DirectX11Shader: Failed to create input layout: 0x{result:X}");
+            }
+            else
+            {
+                _inputLayout = layout;
+                Console.WriteLine("DirectX11Shader: Successfully created input layout");
+            }
 
-    //        if (_constantBuffer != null)
-    //        {
-    //            var cb = _constantBuffer;
-    //            _renderer.DeviceContext->VSSetConstantBuffers(0, 1, &cb);
-    //            Console.WriteLine("DirectX11Shader: Set constant buffer");
-    //        }
-    //    }
+            // Free the allocated strings
+            SilkMarshal.Free((nint)inputElements[0].SemanticName);
+            SilkMarshal.Free((nint)inputElements[1].SemanticName);
+        }
+        private void CreateConstantBuffer()
+        {
+            // Create constant buffer for matrices
+            var bufferDesc = new BufferDesc
+            {
+                ByteWidth = (uint)(sizeof(Matrix4x4) * 3), // Model, View, Projection matrices
+                Usage = Usage.Dynamic,
+                BindFlags = (uint)BindFlag.ConstantBuffer,
+                CPUAccessFlags = (uint)CpuAccessFlag.Write,
+                MiscFlags = 0,
+                StructureByteStride = 0
+            };
 
-    //    public void SetUniform(string name, int value)
-    //    {
-    //        Console.WriteLine($"DirectX11Shader: Setting uniform {name} = {value}");
-    //        // In a real implementation, you'd update the constant buffer here
-    //    }
+            ID3D11Buffer* buffer = null;
+            var result = _renderer.Device->CreateBuffer(&bufferDesc, null, ref buffer);
+            if (result < 0)
+            {
+                Console.WriteLine($"DirectX11Shader: Failed to create constant buffer: 0x{result:X}");
+            }
+            _constantBuffer = buffer;
+        }
 
-    //    public void SetUniform(string name, float value)
-    //    {
-    //        Console.WriteLine($"DirectX11Shader: Setting uniform {name} = {value}");
-    //        // In a real implementation, you'd update the constant buffer here
-    //    }
+        public void Use()
+        {
+            if (_vertexShader != null)
+            {
+                _renderer.DeviceContext->VSSetShader(_vertexShader, null, 0);
+                Console.WriteLine("DirectX11Shader: Set vertex shader");
+            }
+            else
+            {
+                Console.WriteLine("DirectX11Shader: No vertex shader available");
+            }
 
-    //    public void SetUniform(string name, Matrix4x4 value)
-    //    {
-    //        Console.WriteLine($"DirectX11Shader: Setting uniform {name} = Matrix4x4");
+            if (_pixelShader != null)
+            {
+                _renderer.DeviceContext->PSSetShader(_pixelShader, null, 0);
+                Console.WriteLine("DirectX11Shader: Set pixel shader");
+            }
+            else
+            {
+                Console.WriteLine("DirectX11Shader: No pixel shader available");
+            }
 
-    //        if (_renderer == null || _constantBuffer == null) return; // Demo mode or no constant buffer
+            if (_inputLayout != null)
+            {
+                _renderer.DeviceContext->IASetInputLayout(_inputLayout);
+                Console.WriteLine("DirectX11Shader: Set input layout");
+            }
+            else
+            {
+                Console.WriteLine("DirectX11Shader: No input layout available");
+            }
 
-    //        // Map the constant buffer and update the matrix
-    //        MappedSubresource mappedResource;
-    //        var result = _renderer.DeviceContext->Map((ID3D11Resource*)_constantBuffer, 0, Map.WriteDiscard, 0, &mappedResource);
-    //        if (result >= 0)
-    //        {
-    //            // In a real implementation, you'd copy the matrix data here based on the uniform name
-    //            // For now, just copy the first matrix slot
-    //            var matrixPtr = (Matrix4x4*)mappedResource.PData;
-    //            *matrixPtr = value;
-    //            _renderer.DeviceContext->Unmap((ID3D11Resource*)_constantBuffer, 0);
-    //            Console.WriteLine($"DirectX11Shader: Updated constant buffer for {name}");
-    //        }
-    //        else
-    //        {
-    //            Console.WriteLine($"DirectX11Shader: Failed to map constant buffer: 0x{result:X}");
-    //        }
-    //    }
+            // Constant buffer disabled for simplified test
+            if (_constantBuffer != null)
+            {
+                var cb = _constantBuffer;
+                _renderer.DeviceContext->VSSetConstantBuffers(0, 1, &cb);
+                Console.WriteLine("DirectX11Shader: Set constant buffer");
+            }
+        }
 
-    //    public void Dispose()
-    //    {
-    //        if (_constantBuffer != null)
-    //        {
-    //            _constantBuffer->Release();
-    //            _constantBuffer = null;
-    //        }
+        public void SetUniform(string name, int value)
+        {
+            Console.WriteLine($"DirectX11Shader: Setting uniform {name} = {value}");
+            // In a real implementation, you'd update the constant buffer here
+        }
 
-    //        if (_inputLayout != null)
-    //        {
-    //            _inputLayout->Release();
-    //            _inputLayout = null;
-    //        }
+        public void SetUniform(string name, float value)
+        {
+            Console.WriteLine($"DirectX11Shader: Setting uniform {name} = {value}");
+            // In a real implementation, you'd update the constant buffer here
+        }
 
-    //        if (_pixelShader != null)
-    //        {
-    //            _pixelShader->Release();
-    //            _pixelShader = null;
-    //        }
+        public void SetUniform(string name, TransformBuffer value)
+        {
+            Console.WriteLine($"DirectX11Shader: Setting uniform {name} = Matrix4x4");
 
-    //        if (_vertexShader != null)
-    //        {
-    //            _vertexShader->Release();
-    //            _vertexShader = null;
-    //        }
+            _modelMatrix = value.uModel;
+            _viewMatrix = value.uView;
+            _projectionMatrix = value.uProjection;
 
-    //        Console.WriteLine("DirectX11Shader: Disposed actual DirectX11 resources");
-    //    }
-    //}
+            // Update the constant buffer with all three matrices
+            UpdateConstantBuffer();
+        }
+
+        private void UpdateConstantBuffer()
+        {
+            if (_constantBuffer != null)
+            {
+                // Map the constant buffer and update all three matrices
+                MappedSubresource mappedResource;
+                var resource = _constantBuffer->QueryInterface<ID3D11Resource>();
+                var result = _renderer.DeviceContext->Map(resource, 0, Map.WriteDiscard, 0, &mappedResource);
+                if (result >= 0)
+                {
+                    // Copy all three matrices to the constant buffer
+                    var matrixPtr = (Matrix4x4*)mappedResource.PData;
+                    matrixPtr[0] = _modelMatrix;      // uModel
+                    matrixPtr[1] = _viewMatrix;       // uView
+                    matrixPtr[2] = _projectionMatrix; // uProjection
+
+                    _renderer.DeviceContext->Unmap(resource, 0);
+                    Console.WriteLine("DirectX11Shader: Updated constant buffer with all three matrices");
+                }
+                else
+                {
+                    Console.WriteLine($"DirectX11Shader: Failed to map constant buffer: {result}");
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            if (_constantBuffer != null)
+            {
+                _constantBuffer->Release();
+                _constantBuffer = null;
+            }
+
+            if (_inputLayout != null)
+            {
+                _inputLayout->Release();
+                _inputLayout = null;
+            }
+
+            if (_pixelShader != null)
+            {
+                _pixelShader->Release();
+                _pixelShader = null;
+            }
+
+            if (_vertexShader != null)
+            {
+                _vertexShader->Release();
+                _vertexShader = null;
+            }
+
+            Console.WriteLine("DirectX11Shader: Disposed actual DirectX11 resources");
+        }
+    }
 
     public unsafe class DirectX11Texture : IDisposable
     {
@@ -493,7 +622,7 @@ namespace Tutorial
         {
             // Load texture from file
             _texture = TextureLoader.Read(_renderer.Device, path);
-            
+
             // Test texture code commented out:
             // CreateTestTexture();
         }
@@ -506,7 +635,7 @@ namespace Tutorial
             const uint pixelSize = 4; // RGBA
 
             byte[] pixels = new byte[width * height * pixelSize];
-            
+
             // Fill with red color (255, 0, 0, 255)
             for (int i = 0; i < pixels.Length; i += 4)
             {
@@ -539,7 +668,7 @@ namespace Tutorial
                     SysMemPitch = width * pixelSize,
                     SysMemSlicePitch = 0
                 };
-                
+
                 var result = _renderer.Device->CreateTexture2D(&desc, &subResourceData, &texture);
                 Console.WriteLine($"DirectX11Texture: CreateTestTexture result: 0x{result:X}");
             }
@@ -645,12 +774,16 @@ namespace Tutorial
         }
     }
 
-    public unsafe class DirectX11Mesh : IDisposable
+    public unsafe class DirectX11Mesh : IMesh, IDisposable
     {
-        private readonly DirectX11Renderer _renderer;
+        private DirectX11Renderer _renderer;
         private ID3D11Buffer* _vertexBuffer;
         private ID3D11Buffer* _indexBuffer;
         private uint _indexCount;
+
+        public DirectX11Shader DirectXShader { get; private set; }
+        public DirectX11Texture DirectXTexture { get; private set; }
+        public DirectX11Model DirectXModel { get; private set; }
 
         public Vertex[] Vertices { get; }
         public uint[] Indices { get; } = [
@@ -673,23 +806,18 @@ namespace Tutorial
                 20, 21, 22,  22, 23, 20
             ];
 
-        public DirectX11Mesh(DirectX11Renderer renderer, Vertex[] vertices, uint[] indices = null)
+        public DirectX11Mesh(DirectX11Renderer renderer, DirectX11Shader directXShader, DirectX11Texture directXTexture, DirectX11Model directXModel)
         {
-            _renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
-            Vertices = vertices ?? throw new ArgumentNullException(nameof(vertices));
+            _renderer = renderer ?? throw new ArgumentNullException(nameof(directXShader), "DirectX11Shader must be provided");
+            DirectXShader = directXShader ?? throw new ArgumentNullException(nameof(directXShader));
+            DirectXTexture = directXTexture ?? throw new ArgumentNullException(nameof(directXTexture));
+            DirectXModel = directXModel ?? throw new ArgumentNullException(nameof(directXModel));
+            Vertices = DirectXModel.GetVertices();
 
             CreateVertexBuffer();
             CreateIndexBuffer();
 
-            Console.WriteLine($"DirectX11Mesh: Created mesh with {vertices.Length} vertices, {Indices.Length} indices");
-        }
-
-        // Constructor for compatibility with existing code (demo mode)
-        public DirectX11Mesh(Vertex[] vertices)
-        {
-            _renderer = null;
-            Vertices = vertices ?? throw new ArgumentNullException(nameof(vertices));
-            Console.WriteLine($"DirectX11Mesh: Creating mesh with {vertices.Length} vertices (demo mode)");
+            Console.WriteLine($"DirectX11Mesh: Created mesh with {Vertices.Length} vertices, {Indices.Length} indices");
         }
 
         private void CreateVertexBuffer()
@@ -806,24 +934,23 @@ namespace Tutorial
             _renderer.DeviceContext->IASetPrimitiveTopology(D3DPrimitiveTopology.D3D11PrimitiveTopologyTrianglelist);
         }
 
-        public void Draw()
+        public void Draw(IRenderer renderer, TransformBuffer transformBuffer)
         {
             if (_renderer == null)
-            {
-                Console.WriteLine("DirectX11Mesh: Drawing mesh (demo mode)");
-                return;
-            }
+                throw new ArgumentException("Renderer is null", nameof(renderer));
 
-            if (_indexBuffer != null && _indexCount > 0)
+            if (renderer is DirectX11Renderer dxRenderer)
             {
-                _renderer.DeviceContext->DrawIndexed(_indexCount, 0, 0);
-                Console.WriteLine($"DirectX11Mesh: Drew {_indexCount} indices");
+                Bind();
+                DirectXShader?.Use();
+                DirectXTexture?.Bind();
+                DirectXShader?.SetUniform("uTexture0", 0);
+                DirectXShader?.SetUniform("uTransformBuffer", transformBuffer);
+
+                dxRenderer.DeviceContext->DrawIndexed(_indexCount, 0, 0);
             }
-            else if (_vertexBuffer != null)
-            {
-                _renderer.DeviceContext->Draw((uint)Vertices.Length, 0);
-                Console.WriteLine($"DirectX11Mesh: Drew {Vertices.Length} vertices");
-            }
+            else
+                throw new InvalidOperationException("Renderer must be a DirectX11Renderer to draw DirectX11Mesh");
         }
 
         public void Dispose()
@@ -847,16 +974,11 @@ namespace Tutorial
     public class DirectX11Model : IDisposable
     {
         private readonly DirectX11Renderer _renderer;
-        public DirectX11Mesh[] Meshes { get; }
 
         public DirectX11Model(DirectX11Renderer renderer, string path)
         {
             _renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
             Console.WriteLine($"DirectX11Model: Loading model from '{path}'");
-
-            // Create some demo cube vertices
-            var cubeVertices = CreateCubeVertices();
-            Meshes = new DirectX11Mesh[] { new DirectX11Mesh(renderer, cubeVertices) };
         }
 
         // Constructor for compatibility with existing code (demo mode)
@@ -864,11 +986,9 @@ namespace Tutorial
         {
             _renderer = null;
             Console.WriteLine($"DirectX11Model: Loading model from '{path}' (demo mode)");
-            // For demo, create a dummy mesh array
-            Meshes = new DirectX11Mesh[] { new DirectX11Mesh(new Vertex[36]) }; // Cube vertices
         }
 
-        private Vertex[] CreateCubeVertices()
+        public Vertex[] GetVertices()
         {
             // Create cube with proper UV mapping - 24 vertices (4 per face)
             // Each face gets its own vertices with UVs from (0,0) to (1,1)
@@ -914,10 +1034,6 @@ namespace Tutorial
 
         public void Dispose()
         {
-            foreach (var mesh in Meshes)
-            {
-                mesh.Dispose();
-            }
         }
     }
 
@@ -962,34 +1078,6 @@ namespace Tutorial
 
             return formatConverter;
         }
-
-        // Can be deleted
-        //[DllImport("ole32.dll")]
-        //static extern int CoInitializeEx(IntPtr pvReserved, uint dwCoInit);
-
-        //[DllImport("ole32.dll")]
-        //static extern int CoCreateInstance(
-        //    ref Guid clsid,
-        //    IntPtr pUnkOuter,
-        //    uint dwClsContext,
-        //    ref Guid iid,
-        //    out IntPtr ppv
-        //);
-
-        //// Constants
-        //const uint COINIT_APARTMENTTHREADED = 0x2;
-        //const uint CLSCTX_INPROC_SERVER = 0x1;
-        //static Guid clsidWIC = new("CACAF262-9370-4615-A13B-9F5539DA4C0A");
-        //static Guid iidFactory = new("EC5EC8A9-C395-4314-9C77-54D7A935FF70");
-
-        //enum CLSCTX : uint
-        //{
-        //    CLSCTX_INPROC_SERVER = 0x1,
-        //    CLSCTX_INPROC_HANDLER = 0x2,
-        //    CLSCTX_LOCAL_SERVER = 0x4,
-        //    CLSCTX_REMOTE_SERVER = 0x10,
-        //    CLSCTX_ALL = CLSCTX_INPROC_SERVER | CLSCTX_INPROC_HANDLER | CLSCTX_LOCAL_SERVER | CLSCTX_REMOTE_SERVER
-        //}
 
         /// <summary> 
         /// Creates a <see cref="SharpDX.Direct3D11.Texture2D"/> from a WIC <see cref="SharpDX.WIC.BitmapSource"/> 
@@ -1038,120 +1126,6 @@ namespace Tutorial
                 }
 
                 return result;
-
-                // Can be deleted
-                //IntPtr factoryPtr;
-
-                //// CLSID_WICImagingFactory: {CACAF262-9370-4615-A13B-9F5539DA4C0A}
-                //Guid clsid = new Guid("CACAF262-9370-4615-A13B-9F5539DA4C0A");
-
-                //// IID_IWICImagingFactory: {EC5EC8A9-C395-4314-9C77-54D7A935FF70}
-                //Guid iid = new Guid("EC5EC8A9-C395-4314-9C77-54D7A935FF70");
-
-                //// Initialize COM (if not already done)
-                //CoInitializeEx(IntPtr.Zero, COINIT_APARTMENTTHREADED);
-
-                //// Call CoCreateInstance manually
-                //int hr = CoCreateInstance(ref clsidWIC, IntPtr.Zero, CLSCTX_INPROC_SERVER, ref iidFactory, out factoryPtr);
-
-                //if (hr != 0)
-                //    throw new COMException("FormatConverter initialization failed", hr);
-
-                //IWICImagingFactory* imagingFactory = (IWICImagingFactory*)factoryPtr;
-
-                //// Optional: specify vendor GUID or use null
-                //Guid vendorGuid = Guid.Empty;
-
-                //// Desired access flags
-                //uint desiredAccess = 0x80000000; // GENERIC_READ
-
-                //// Metadata caching option
-                //Silk.NET.WindowsCodecs.DecodeOptions metadataOptions = DecodeOptions.DecodeMetadataCacheOnLoad;
-
-                //// Convert string to unmanaged LPCWSTR
-                //char* pathPtr = (char*)Marshal.StringToHGlobalUni(fileName);
-
-                //IWICBitmapDecoder* decoder = null;
-                //hr = imagingFactory->CreateDecoderFromFilename(
-                //    pathPtr,
-                //    null,
-                //    desiredAccess,
-                //    metadataOptions,
-                //    &decoder
-                //);
-                //if (hr != 0)
-                //    throw new COMException("FormatConverter initialization failed", hr);
-                //Marshal.FreeHGlobal((IntPtr)pathPtr);
-
-                //IWICBitmapFrameDecode* frame = null;
-                //decoder->GetFrame(0, &frame);
-                //IWICFormatConverter* formatConverter = null;
-                //hr = imagingFactory->CreateFormatConverter(&formatConverter);
-                //if (hr != 0)
-                //    throw new COMException("FormatConverter initialization failed", hr);
-
-                //Guid pixelFormat = new Guid("6fddc324-4e03-4bfe-b185-3d77768dc90c"); // WICPixelFormat32bppBGRA
-
-                //hr = formatConverter->Initialize(
-                //    (IWICBitmapSource*)frame,
-                //    &pixelFormat,
-                //    BitmapDitherType.BitmapDitherTypeNone,
-                //    null, // palette
-                //    0.0f, // alpha threshold
-                //    BitmapPaletteType.BitmapPaletteTypeCustom
-                //);
-                //if (hr != 0)
-                //    throw new COMException("FormatConverter initialization failed", hr);
-
-                //uint width, height;
-                //formatConverter->GetSize(&width, &height);
-                //Console.WriteLine($"TextureLoader: Size: width({width}), height({height})");
-
-                //int stride = (int)(width * 4); // 4 bytes per pixel for RGBA
-                //int bufferSize = (int)(stride * height);
-                //byte[] pixelData = new byte[bufferSize];
-
-                //fixed (byte* pPixels = pixelData)
-                //{
-                //    formatConverter->CopyPixels(
-                //        null, // no specific rect
-                //        (uint)stride,
-                //        (uint)bufferSize,
-                //        pPixels
-                //    );
-                //}
-
-                //Console.WriteLine($"TextureLoader: Loaded {bufferSize} bytes of pixel data");
-
-                //Texture2DDesc desc = new Texture2DDesc
-                //{
-                //    Width = width,
-                //    Height = height,
-                //    MipLevels = 1,
-                //    ArraySize = 1,
-                //    Format = Format.FormatB8G8R8A8Unorm,
-                //    SampleDesc = new SampleDesc(1, 0),
-                //    Usage = Usage.Default,
-                //    BindFlags = (uint)BindFlag.ShaderResource,
-                //    CPUAccessFlags = 0,
-                //    MiscFlags = 0
-                //};
-
-                //ID3D11Texture2D* texture = null;
-                //fixed (byte* pPixels = pixelData)
-                //{
-                //    var subResourceData = new SubresourceData
-                //    {
-                //        PSysMem = pPixels,
-                //        SysMemPitch = width * 4,  // Row pitch in bytes
-                //        SysMemSlicePitch = 0      // Not used for 2D textures
-                //    };
-
-                //    var result = device->CreateTexture2D(&desc, &subResourceData, &texture);
-                //    Console.WriteLine($"TextureLoader: CreateTexture2D result: 0x{result:X}");
-                //}
-
-                //return texture;
             }
         }
     }
