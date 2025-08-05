@@ -8,6 +8,7 @@ using System.Linq;
 using System.Numerics;
 using Silk.NET.Maths;
 using Slang.Sdk;
+using static Tutorial.Shader;
 
 namespace Tutorial
 {
@@ -44,12 +45,18 @@ namespace Tutorial
         //Used to track change in mouse movement to allow for moving of the Camera
         private static Vector2 LastMousePosition;
 
+
         private static void Main(string[] args)
         {
             Console.WriteLine("Welcome to the Slang.Net Demo!");
             Console.WriteLine("Please select a graphics backend:");
             Console.WriteLine("1. OpenGL");
             Console.WriteLine("2. DirectX11");
+
+            var options = WindowOptions.Default;
+            options.Size = new Vector2D<int>(800, 600);
+            options.Title = $"Slang.Net Demo - {SelectedBackend} Backend (Press B to switch, R to reload shaders)";
+
 
             while (SelectedBackend == GraphicsBackend.None)
             {
@@ -60,10 +67,12 @@ namespace Tutorial
                 {
                     case "1":
                         SelectedBackend = GraphicsBackend.OpenGL;
+                        options.API = GraphicsAPI.Default;
                         Console.WriteLine("Selected OpenGL backend.");
                         break;
                     case "2":
                         SelectedBackend = GraphicsBackend.DirectX11;
+                        options.API = GraphicsAPI.None;
                         Console.WriteLine("Selected DirectX11 backend.");
                         break;
                     default:
@@ -73,10 +82,7 @@ namespace Tutorial
                 }
             }
 
-            var options = WindowOptions.Default;
-            options.Size = new Vector2D<int>(800, 600);
-            options.Title = $"Slang.Net Demo - {SelectedBackend} Backend (Press B to switch, R to reload shaders)";
-            options.API = GraphicsAPI.None;
+
             window = Window.Create(options);
 
             window.Load += OnLoad;
@@ -141,22 +147,41 @@ namespace Tutorial
             Console.WriteLine(fragmentSource.Length > 200 ? fragmentSource.Substring(0, 200) + "..." : fragmentSource);
 
             // Create shader with compiled sources
+//            vertexSource = vertexSource.Replace(
+//    "#version 450\nlayout(column_major) uniform;\nlayout(column_major) buffer;\n", ""
+//    /*"#version 450\nlayout(std140, column_major) uniform TransformBuffer_0\n{\n" +
+//    "    _MatrixStorage_float4x4std140_0 uModel_0;\n" +
+//    "    _MatrixStorage_float4x4std140_0 uView_0;\n" +
+//    "    _MatrixStorage_float4x4std140_0 uProjection_0;\n" +
+//    "};\n"*/
+//);
+
+            //ragmentSource = fragmentSource.Replace(
+            //   "#version 450\nlayout(column_major) uniform;\nlayout(column_major) buffer;\n", ""
+            //   /*"#version 450\nlayout(std140, column_major) uniform TransformBuffer_0\n{\n" +
+            //   "    _MatrixStorage_float4x4std140_0 uModel_0;\n" +
+            //   "    _MatrixStorage_float4x4std140_0 uView_0;\n" +
+            //   "    _MatrixStorage_float4x4std140_0 uProjection_0;\n" +
+            //   "};\n"*/
+            //;
+            //fragmentSource = "#version 450\r\n//layout(column_major) uniform;\r\n//layout(column_major) buffer;\r\n\r\n#line 10 0\r\nuniform sampler2D uTexture0_0;\r\n\r\n\r\n#line 11\r\nuniform sampler2D textureSampler_0;\r\n\r\n\r\n#line 1875 1\r\nlayout(location = 0)\r\nout vec4 entryPointParam_fragmentMain_0;\r\n\r\n\r\n#line 1875\r\nlayout(location = 0)\r\nin vec2 fUv_0;\r\n\r\n\r\n#line 30 0\r\nvoid main()\r\n{\r\n\r\n#line 30\r\n    entryPointParam_fragmentMain_0 = (texture(uTexture0_0,textureSampler_0, (fUv_0)));\r\n\r\n#line 30\r\n    return;\r\n}\r\n\r\n";
             Shader = new Shader(Gl, vertexSource, fragmentSource);
 
             // Get reflection information
-            var reflection = slangCompiler.GetVSReflection(Targets.Glsl.es_320);
-
-            Console.WriteLine("\n--- OpenGL Shader Reflection ---");
-            Console.WriteLine($"Parameters: {reflection.Parameters.Count}");
-            foreach (var param in reflection.Parameters)
-            {
-                Console.WriteLine($"  Parameter: {param.Name} (Kind: {param.Type.Kind})");
-            }
-            Console.WriteLine($"Entry Points: {reflection.EntryPoints.Count}");
-            foreach (var ep in reflection.EntryPoints)
-            {
-                Console.WriteLine($"  Entry Point: {ep.Name} (Stage: {ep.Stage})");
-            }
+            //var reflectionVS = slangCompiler.GetVSReflection(Targets.Glsl.v450);
+            //var reflectionPS = slangCompiler.GetPSReflection(Targets.Glsl.v450);
+            //
+            //Console.WriteLine("\n--- OpenGL Shader Reflection ---");
+            //Console.WriteLine($"Parameters: {reflection.Parameters.Count}");
+            //foreach (var param in reflection.Parameters)
+            //{
+            //    Console.WriteLine($"  Parameter: {param.Name} (Kind: {param.Type.Kind})");
+            //}
+            //Console.WriteLine($"Entry Points: {reflection.EntryPoints.Count}");
+            //foreach (var ep in reflection.EntryPoints)
+            //{
+            //    Console.WriteLine($"  Entry Point: {ep.Name} (Stage: {ep.Stage})");
+            //}
 
             Texture = new Texture(Gl, "Resources\\silk.png");
             Model = new Model(Gl, "Resources\\cube.model");
@@ -190,9 +215,9 @@ namespace Tutorial
 
             // Get reflection information
             //var vsReflection = slangCompiler.GetVSReflection(Targets.Hlsl.vs_5_0);
-            var psReflection = slangCompiler.GetPSReflection(Targets.Hlsl.ps_5_0);
+            //var psReflection = slangCompiler.GetPSReflection(Targets.Hlsl.ps_5_0);
             //Console.WriteLine(vsReflection.ToJson());
-            Console.WriteLine(psReflection.ToJson());
+            //Console.WriteLine(psReflection.ToJson());
             //var psReflection = slangCompiler.GetReflection(Targets.Hlsl.ps_5_0);
 
             //// Display reflection information for vs_5_0 target
@@ -271,7 +296,7 @@ namespace Tutorial
 
             Texture.Bind();
             Shader.Use();
-            Shader.SetUniform("uTexture0", 0);
+            Shader.SetUniform("uTexture0_0", 0);
 
             //Use elapsed time to convert to radians to allow our cube to rotate over time
             var difference = (float)(window.Time * 100);
@@ -288,10 +313,14 @@ namespace Tutorial
                 mesh.Bind();
                 Shader.Use();
                 Texture.Bind();
-                Shader.SetUniform("uTexture0", 0);
-                Shader.SetUniform("uModel", model);
-                Shader.SetUniform("uView", view);
-                Shader.SetUniform("uProjection", projection);
+                Shader.SetUniform("uTexture0_0", 0);
+                TransformBuffer transformBuffer = new TransformBuffer
+                {
+                    uModel_0 = model,
+                    uView_0 = view,
+                    uProjection_0 = projection
+                };
+                Shader.SetUniform("block_SLANG_ParameterGroup_TransformBuffer_std140_0", transformBuffer);
 
                 Gl.DrawArrays(PrimitiveType.Triangles, 0, (uint)mesh.Vertices.Length);
             }

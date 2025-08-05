@@ -53,7 +53,7 @@ namespace Tutorial
             _currentShader?.SetUniform(name, value);
         }
 
-        public override void SetUniform(string name, Matrix4x4 value)
+        public override void SetUniform(string name, TransformBuffer value)
         {
             _currentShader?.SetUniform(name, value);
         }

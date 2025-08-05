@@ -109,7 +109,10 @@ slang::IGlobalSession* Native::SessionCLI::GetGlobalSession()
     if (!s_context)
     {
         // Call the C API entry point directly
-        slang_createGlobalSession(0, &s_context);
+        //slang_createGlobalSession(0, &s_context);
+        SlangGlobalSessionDesc desc = {};
+        desc.enableGLSL = true;
+        slang_createGlobalSession2(&desc, &s_context);
     }
 
     return s_context;

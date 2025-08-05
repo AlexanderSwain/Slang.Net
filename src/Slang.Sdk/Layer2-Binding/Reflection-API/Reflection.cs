@@ -12,7 +12,7 @@ namespace Slang.Sdk.Binding
 
         ~Reflection()
         {
-            Handle?.Dispose();
+            //Handle?.Dispose();
         }
 
         internal T Call<T>(Func<T> function, Func<string?> error)

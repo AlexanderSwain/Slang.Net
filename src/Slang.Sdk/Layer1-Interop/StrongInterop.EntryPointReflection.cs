@@ -11,10 +11,10 @@ namespace Slang.Sdk.Interop
             /// </summary>
             internal static void Release(EntryPointReflectionHandle entryPointReflection, out string? error)
             {
-                char* pError = null;
-                SlangNativeInterop.EntryPointReflection_Release(entryPointReflection, &pError);
-                error = Utf8StringMarshaller.ConvertToManaged((byte*)pError);
-                SlangNativeInterop.FreeChar(&pError);
+                //char* pError = null;
+                //SlangNativeInterop.EntryPointReflection_Release(entryPointReflection, &pError);
+                error = null;// Utf8StringMarshaller.ConvertToManaged((byte*)pError);
+                //SlangNativeInterop.FreeChar(&pError);
             }
 
             /// <summary>

@@ -38,22 +38,26 @@ namespace Tutorial
             // Create the sessions
             _vsSession = new Session.Builder()
                 .AddTarget(Targets.Hlsl.vs_5_0)
-                .AddTarget(Targets.Glsl.v330)
+                .AddTarget(Targets.Glsl.v450)
+                .AddCompilerOption(CompilerOption.Name.AllowGLSL, new(CompilerOption.Value.Kind.Int, 1, 0, null, null))
                 .Create();
             _psSession = new Session.Builder()
                 .AddTarget(Targets.Hlsl.ps_5_0)
-                .AddTarget(Targets.Glsl.v330)
+                .AddTarget(Targets.Glsl.v450)
+                .AddCompilerOption(CompilerOption.Name.AllowGLSL, new(CompilerOption.Value.Kind.Int, 1, 0, null, null))
                 .Create();
 
             // Create the modules
             _vsModule = new Module.Builder(_vsSession)
                 .AddTranslationUnit(SourceLanguage.Slang, "vsUnit", out var vsUnitIndex)
                 .AddTranslationUnitSourceFile(vsUnitIndex, slangFilePath)
+                .AddCodeGenTarget(Target.CompileTarget.Glsl)
                 .AddEntryPoint(vsUnitIndex, "vertexMain", Stage.Vertex)
                 .Create();
             _psModule = new Module.Builder(_psSession)
                 .AddTranslationUnit(SourceLanguage.Slang, "psUnit", out var psUnitIndex)
                 .AddTranslationUnitSourceFile(psUnitIndex, slangFilePath)
+                .AddCodeGenTarget(Target.CompileTarget.Glsl)
                 .AddEntryPoint(psUnitIndex, "fragmentMain", Stage.Pixel)
                 .Create();
 
@@ -70,27 +74,20 @@ namespace Tutorial
         /// <exception cref="InvalidOperationException">Thrown when shader compilation fails</exception>
         public (string vertexShader, string fragmentShader) CompileShaders(GraphicsBackend backend)
         {
-            try
+            var compileResults = backend switch
             {
-                var compileResults = backend switch
-                {
-                    GraphicsBackend.OpenGL => CompileForOpenGL(),
-                    GraphicsBackend.DirectX11 => CompileForDirectX11(),
-                    _ => throw new ArgumentException($"Unsupported backend: {backend}")
-                };
+                GraphicsBackend.OpenGL => CompileForOpenGL(),
+                GraphicsBackend.DirectX11 => CompileForDirectX11(),
+                _ => throw new ArgumentException($"Unsupported backend: {backend}")
+            };
 
-                return (compileResults.vsCompileResult.SourceCode!, compileResults.psCompileResult.SourceCode!);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException($"Failed to compile Slang shader for {backend}: {ex.Message}", ex);
-            }
+            return (compileResults.vsCompileResult.SourceCode!, compileResults.psCompileResult.SourceCode!);
         }
 
         private (CompilationResult vsCompileResult, CompilationResult psCompileResult) CompileForOpenGL()
         {
-            var vsProgramTarget = _vsProgram.Targets[Targets.Glsl.es_320];
-            var psProgramTarget = _psProgram.Targets[Targets.Glsl.es_320];
+            var vsProgramTarget = _vsProgram.Targets[Targets.Glsl.v450];
+            var psProgramTarget = _psProgram.Targets[Targets.Glsl.v450];
 
             var vertexEntry = vsProgramTarget.EntryPoints["vertexMain"];
             var fragmentEntry = psProgramTarget.EntryPoints["fragmentMain"];
