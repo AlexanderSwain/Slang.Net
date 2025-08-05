@@ -77,6 +77,11 @@ internal static unsafe partial class SlangNativeInterop
     internal static partial void FreeChar(char** c);
     #endregion
 
+    #region Global Session API
+    [LibraryImport(LibraryName)]
+    internal static partial void GlobalSession_SetEnableGlsl([MarshalAs(UnmanagedType.U1)] bool value, char** error);
+    #endregion
+
     #region Session API
 
     [LibraryImport(LibraryName)]

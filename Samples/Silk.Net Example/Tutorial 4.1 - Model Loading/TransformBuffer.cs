@@ -8,12 +8,11 @@ using System.Threading.Tasks;
 
 namespace Tutorial
 {
-
     [StructLayout(LayoutKind.Sequential)]
     public struct TransformBuffer
     {
-        public Matrix4x4 uModel_0;
-        public Matrix4x4 uView_0;
-        public Matrix4x4 uProjection_0;
+        public Matrix4x4 uModel;
+        public Matrix4x4 uView;
+        public Matrix4x4 uProjection;
     }
 }

@@ -42,6 +42,21 @@ namespace SlangNative
 		*c = nullptr;
 	}
 
+	// Global Session
+	extern "C" SLANGNATIVE_API void GlobalSession_SetEnableGlsl(bool value, const char** error)
+	{
+		if (Native::SessionCLI::s_context == nullptr)
+		{
+			Native::SessionCLI::s_isEnableGlsl = value;
+		}
+		else
+		{
+			// If the global session already exists, we cannot change the setting
+			// This is because the global session is natively a singleton
+			*error = SetError("Cannot change GLSL setting after any sessions have been created.");
+		}
+	}
+
 	// Session API
 	extern "C" SLANGNATIVE_API void* Session_Create(
 		void* options, int optionsLength,

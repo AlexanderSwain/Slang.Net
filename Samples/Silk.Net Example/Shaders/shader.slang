@@ -1,3 +1,5 @@
+// This can probably be improved using: https://shader-slang.org/docs/coming-from-glsl/
+
 // Global constant buffer for transforms
 cbuffer TransformBuffer : register(b0)
 {

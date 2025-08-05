@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 
 slang::IGlobalSession* Native::SessionCLI::s_context = nullptr;
+bool Native::SessionCLI::s_isEnableGlsl = false;
 
 // Constructor with parameters implementation
 Native::SessionCLI::SessionCLI(
@@ -104,15 +105,22 @@ Native::SessionCLI::~SessionCLI()
     // Does nothing, kept for consistency and in case a future update requires something to be disposed (such as children).
 }
 
+// This is only called when a session is created, Glsl has to be enabled before the first session is created.
 slang::IGlobalSession* Native::SessionCLI::GetGlobalSession()
 {
     if (!s_context)
     {
-        // Call the C API entry point directly
-        //slang_createGlobalSession(0, &s_context);
-        SlangGlobalSessionDesc desc = {};
-        desc.enableGLSL = true;
-        slang_createGlobalSession2(&desc, &s_context);
+        if (s_isEnableGlsl)
+        {
+            SlangGlobalSessionDesc desc = {};
+            desc.enableGLSL = true;
+            desc.apiVersion = 0;
+            slang_createGlobalSession2(&desc, &s_context);
+		}
+        else
+        {
+            slang_createGlobalSession(0, &s_context);
+		}
     }
 
     return s_context;

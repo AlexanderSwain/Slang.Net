@@ -35,6 +35,9 @@ namespace Tutorial
         /// <param name="backend">The graphics backend to target (OpenGL or DirectX11)</param>
         public SlangShaderCompiler(string slangFilePath)
         {
+            // This is required to enable Slang's GLSL support, since it defaults to Vulkan
+            Session.GlslEnabled = true;
+
             // Create the sessions
             _vsSession = new Session.Builder()
                 .AddTarget(Targets.Hlsl.vs_5_0)

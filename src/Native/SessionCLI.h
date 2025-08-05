@@ -18,6 +18,7 @@ namespace Native
 	class SessionCLI
 	{
 	public:
+
 		// Constructor with parameters (example)
 		SessionCLI(
 			CompilerOptionCLI* options, int optionsLength,
@@ -34,10 +35,12 @@ namespace Native
 		unsigned int getModuleCount();
 		ModuleCLI* getModuleByIndex(unsigned index);
 
+		static slang::IGlobalSession* s_context;
+		static bool s_isEnableGlsl;
+
 
 	private:
 		Slang::ComPtr<slang::ISession> m_session;
-		static slang::IGlobalSession* s_context;
 		std::map<unsigned int, ModuleCLI*> m_modules;
 	};
 }

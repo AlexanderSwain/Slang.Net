@@ -17,6 +17,20 @@ namespace Slang.Sdk
         }
         #endregion
 
+        // Maybe make this its own class (temp)
+        #region Global
+        public static bool GlslEnabled
+        {
+            set
+            {
+                if (value)
+                    global::Slang.Sdk.Binding.Session.EnableGlsl();
+                else
+                    throw new NotImplementedException("Disabling GLSL is not currently supported.");
+            }
+        }
+        #endregion
+
         #region Pretty
         public Module ImportModule(string moduleName)
         {

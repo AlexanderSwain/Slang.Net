@@ -54,6 +54,14 @@ internal unsafe sealed class Session : CompilationBinding
         return new Module(this, Call(() => StrongInterop.Session.GetModuleByIndex(Handle, index, out error), () => error));
     }
 
+    internal static void EnableGlsl()
+    {
+        string? error = null;
+        StrongInterop.GlobalSession.EnableGlsl(out error);
+        if (error != null)
+            throw new SlangException(SlangResult.Fail, $"Failed to enable GLSL support: {error}");
+    }
+
     ~Session()
     {
         Handle?.Dispose();

@@ -15,11 +15,15 @@ using namespace Native;
 
 namespace SlangNative
 {
+
     //Diagnostics
     extern "C" SLANGNATIVE_API const char* SlangNative_GetLastError();
 
     //Free char**
     extern "C" SLANGNATIVE_API void FreeChar(char** c);
+
+    // Global Session
+    extern "C" SLANGNATIVE_API void GlobalSession_SetEnableGlsl(bool value, const char** error);
 
     // Session API
     extern "C" SLANGNATIVE_API void* Session_Create(

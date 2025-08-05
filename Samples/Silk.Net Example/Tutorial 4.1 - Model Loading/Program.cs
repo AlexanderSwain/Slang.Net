@@ -142,9 +142,15 @@ namespace Tutorial
 
             // Print a preview of the compiled shaders
             Console.WriteLine("\n--- Compiled OpenGL Vertex Shader Preview ---");
-            Console.WriteLine(vertexSource.Length > 200 ? vertexSource.Substring(0, 200) + "..." : vertexSource);
+            Console.WriteLine(vertexSource.Length > 500 ? vertexSource.Substring(0, 500) + "..." : vertexSource);
             Console.WriteLine("\n--- Compiled OpenGL Fragment Shader Preview ---");
-            Console.WriteLine(fragmentSource.Length > 200 ? fragmentSource.Substring(0, 200) + "..." : fragmentSource);
+            Console.WriteLine(fragmentSource.Length > 500 ? fragmentSource.Substring(0, 500) + "..." : fragmentSource);
+
+            // Print the FULL vertex shader to see all uniforms
+            Console.WriteLine("\n--- FULL Compiled OpenGL Vertex Shader ---");
+            Console.WriteLine(vertexSource);
+            Console.WriteLine("\n--- FULL Compiled OpenGL Fragment Shader ---");
+            Console.WriteLine(fragmentSource);
 
             // Create shader with compiled sources
 //            vertexSource = vertexSource.Replace(
@@ -292,6 +298,7 @@ namespace Tutorial
         private static unsafe void RenderOpenGL(double deltaTime)
         {
             Gl.Enable(EnableCap.DepthTest);
+            Gl.Disable(EnableCap.CullFace);
             Gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             Texture.Bind();
@@ -316,11 +323,11 @@ namespace Tutorial
                 Shader.SetUniform("uTexture0_0", 0);
                 TransformBuffer transformBuffer = new TransformBuffer
                 {
-                    uModel_0 = model,
-                    uView_0 = view,
-                    uProjection_0 = projection
+                    uModel = model,
+                    uView = view,
+                    uProjection = projection
                 };
-                Shader.SetUniform("block_SLANG_ParameterGroup_TransformBuffer_std140_0", transformBuffer);
+                Shader.SetUniform("TransformBuffer", transformBuffer);
 
                 Gl.DrawArrays(PrimitiveType.Triangles, 0, (uint)mesh.Vertices.Length);
             }
@@ -332,7 +339,7 @@ namespace Tutorial
 
             // Set render targets first, then clear
             DirectXRenderer?.SetRenderTargets();
-            DirectXRenderer?.Clear(new Vector4(0.2f, 0.3f, 1.0f, 1.0f)); // Blue background
+            DirectXRenderer?.Clear(new Vector4(0.0f, 0.0f, 0.0f, 1.0f)); // Blue background
 
             // Use elapsed time to convert to radians to allow our cube to rotate over time
             var difference = (float)(window.Time * 100);
