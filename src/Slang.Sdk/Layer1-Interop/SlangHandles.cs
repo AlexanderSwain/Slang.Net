@@ -207,7 +207,7 @@ public sealed class EntryPointReflectionHandle : SlangHandle
     {
         // Currently does nothing since it only contain fields that are managed by Slang
         // In a future update, maybe cascade delete the children
-        //StrongInterop.EntryPointReflection.Release(this, out var _);
+        StrongInterop.EntryPointReflection.Release(this, out var _);
         return true;
     }
 }

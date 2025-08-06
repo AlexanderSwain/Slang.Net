@@ -4,7 +4,7 @@ using Slang.Sdk.Interop;
 using System;
 using System.Linq;
 
-namespace Tutorial
+namespace SlangCube
 {
     /// <summary>
     /// Supported graphics backends for shader compilation
@@ -125,6 +125,7 @@ namespace Tutorial
         /// <returns>Shader reflection data containing entry points and parameters</returns>
         public ShaderReflection GetVSReflection(Target target)
         {
+            // Will use this in the v0.9.0 updated sample
             return _vsProgram.Targets[target].GetReflection();
         }
 
@@ -135,6 +136,7 @@ namespace Tutorial
         /// <returns>Shader reflection data containing entry points and parameters</returns>
         public ShaderReflection GetPSReflection(Target target)
         {
+            // Will use this in the v0.9.0 updated sample
             return _psProgram.Targets[target].GetReflection();
         }
 

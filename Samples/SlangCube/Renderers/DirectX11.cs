@@ -13,7 +13,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
-namespace Tutorial
+namespace SlangCube
 {
     /// <summary>
     /// Demo wrapper classes for DirectX11 rendering.

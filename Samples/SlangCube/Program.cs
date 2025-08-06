@@ -4,7 +4,7 @@ using Silk.NET.Windowing;
 using System;
 using System.Numerics;
 
-namespace Tutorial
+namespace SlangCube
 {
     class Program
     {
@@ -75,6 +75,8 @@ namespace Tutorial
 
                 window.Dispose();
             }
+
+            // Show the window based on the selected backend
             ShowWindow(SelectedBackend);
         }
 
@@ -87,7 +89,10 @@ namespace Tutorial
             // Initialize based on selected backend
             Console.WriteLine($"Initializing {SelectedBackend} backend...");
 
+            // Load the Slang shader from file
             var slangShader = new SlangShader("Shaders/shader.slang");
+
+            // Shader target agnostic compilation
             var source = slangShader.CompileShaders(SelectedBackend);
 
             Renderer = SelectedBackend switch
@@ -128,6 +133,7 @@ namespace Tutorial
 
         private static unsafe void Render(double deltaTime)
         {
+            // Graphics backend agnostic render call
             Renderer.Render(window, Mesh, camera);
         }
 

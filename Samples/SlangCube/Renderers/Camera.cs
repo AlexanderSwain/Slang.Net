@@ -5,7 +5,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Tutorial
+namespace SlangCube
 {
     public struct Camera()
     {

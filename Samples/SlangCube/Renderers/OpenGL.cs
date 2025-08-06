@@ -12,7 +12,7 @@ using AssimpMesh = Silk.NET.Assimp.Mesh;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
-namespace Tutorial
+namespace SlangCube
 {
     public class BufferObject<TDataType> : IDisposable
             where TDataType : unmanaged

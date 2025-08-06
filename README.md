@@ -1,8 +1,15 @@
 # Slang.Sdk
 
-A comprehensive .NET wrapper for the Slang Shader Language compiler, providing seamless integration of shader compilation and reflection capabilities into .NET applications.
+A comprehensive .NET wrapper for the Slang Shader Language Sdk, providing seamless integration of shader compilation and reflection capabilities into .NET applications.
 
-> **Note:** Slang.Sdk is currently in early development. While functional, expect APIs to evolve and additional features to be added in future releases. 
+Slang.Sdk Includes the following:
+-**Compilation API**
+-**Reflection API**
+-**NEW: 'slangc' CLI API**
+
+> **Update:** Release roadmap is now live (please see below). This provides info on releases until v1.0.0.
+
+> **Note:** Slang.Sdk is currently in early development and will remain in alpha until v1.0.0. For experimental use only. Do not include this package for production builds.
 
 > **Disclaimer:** We are the developers and maintainers of this C# wrapper library only, not of the Slang shader language itself. Slang is developed and maintained by NVIDIA. This project provides .NET bindings to make Slang accessible to C# developers.
 
@@ -15,12 +22,15 @@ A comprehensive .NET wrapper for the Slang Shader Language compiler, providing s
 - **macOS** - Planned for future release. Sponsorships can make this a priority.
 
 ## Release Roadmap:
-We will use `Slang api version: 2025.10.3` as the underlying native version until after v1.0.0 release. Expect at least one release at the end of every month:
+We will use the latest `Slang api version: 2025.13.2` as the underlying native version until after v1.0.0 release. Expect at least one release at the end of every month after v0.5.0:
 
 - **Slang.Sdk v0.0.1** (6/27/2025 Release): Proof of Concept. Limited testing. Has basic functionality but came with many known issues such as bugs and memory leaks. Windows (x64, ARM64).
-- **Slang.Sdk v0.5.0** (7/27/2025 Release): Most features are implemented. Most bugs and memory leaks fixed. Basic testing. Windows (x64, ARM64).
-- **Slang.Sdk v1.0.0** (late August Release): All native slang features implemented and abstracted. No known bugs or memory leaks. Intensive testing. We're aiming for Linux, macOS compatitbility for this release. Please help us reach this goal.
-- **Slang.Sdk v1.X.X** (late September Release): Update to latest slang version. Fix reported issues.
+- **Slang.Sdk v0.5.0** (8/06/2025 Release): [Massive Update] Most features are implemented. Most bugs and memory leaks fixed. Basic testing. Windows (x64, ARM64).
+- **Slang.Sdk v0.9.0** (9/06/2025 Release): All features are implemented. This release may not exist if testing goes according to plan. Windows (x64, ARM64).
+- **Slang.Sdk v1.0.0** (early October Release): All native slang features implemented and elegantly abstracted. No known bugs or memory leaks. Intensive testing. We're aiming for Linux, macOS compatibility for this release. Please help us reach this goal.
+- **Slang.Sdk v1.X.X** (November Beyond Release): Updates to latest slang version. Fix breaking changes. Fix reported issues.
+
+> **Note:** The release roadmap may change in the future.
 
 **Sponsoring Development:**
 
@@ -36,6 +46,8 @@ If Slang.Sdk adds value to your project or organization, please consider sponsor
 
 [Become a Sponsor](#) <!-- Replace with your sponsorship link -->
 
+❤️Make sure to also support the slang team directly so that they can continue to improve the underlying api: https://github.com/shader-slang/slang
+
 ## Why Slang.Sdk?
 
 Slang is purpose-built to bring **modularity**, **scalability**, and **developer-friendliness** to modern GPU programming. Whether you're building apps, games, or ML pipelines, here's why it stands out:
@@ -47,7 +59,7 @@ Slang is purpose-built to bring **modularity**, **scalability**, and **developer
 - Strongly-typed C# interfaces for all Slang functionality
 
 ### 🌐 Multi-Platform: 
-- Works on Windows x64, x86, and ARM64 architectures
+- Works on Windows x64, and ARM64 architectures
 
 ### ✨ Modular Shader Development
 - Write reusable shader libraries with clean interfaces
@@ -122,7 +134,7 @@ If you just want to call slangc CLI tooling directly from C#, we got you covered
 ```csharp
 using Slang.Sdk;
 
-// AverageColor.slang has to be in the WorkingDirectory
+// Call slangc from C#
 var result = CLI.slangc(
     target: "hlsl",
     profile: "cs_5_0",

@@ -1,6 +1,6 @@
 using System;
 
-namespace Tutorial
+namespace SlangCube
 {
     public static class MathHelper
     {

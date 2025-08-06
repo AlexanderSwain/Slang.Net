@@ -2,9 +2,8 @@ using Silk.NET.Assimp;
 using Silk.NET.Windowing;
 using System;
 using System.Numerics;
-using static Tutorial.Shader;
 
-namespace Tutorial
+namespace SlangCube
 {
     public abstract class IRenderer : IDisposable
     {
