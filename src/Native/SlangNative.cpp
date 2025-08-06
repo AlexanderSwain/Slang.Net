@@ -121,7 +121,8 @@ namespace SlangNative
 
 		try
 		{
-			return ((SessionCLI*)session)->getModuleByIndex(index);
+			auto result = ((SessionCLI*)session)->getModuleByIndex(index);
+			return result.release();
 		}
 		catch (const std::exception& e)
 		{

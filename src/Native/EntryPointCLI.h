@@ -2,9 +2,8 @@
 #include "slang.h"
 #include "slang-com-ptr.h"
 #include "slang-com-helper.h"
-#include "ParameterInfoCLI.h"
-#include <map>
 #include <string>
+#include <stdexcept>
 
 #ifdef SLANGNATIVE_EXPORTS
 #define SLANGNATIVE_API __declspec(dllexport)
@@ -23,9 +22,14 @@ namespace Native
 	class SLANGNATIVE_API EntryPointCLI
 	{
 	public:
-		// Constructor with parameters (example)
+		// Constructor with index
 		EntryPointCLI(ModuleCLI* parent, unsigned index);
+		
+		// Constructor with name
 		EntryPointCLI(ModuleCLI* parent, const char* entryPointName);
+
+		// Copy constructor for caching
+		EntryPointCLI(const EntryPointCLI& other);
 
 		// Destructor
 		~EntryPointCLI();
@@ -36,13 +40,14 @@ namespace Native
 		int getIndex();
 		const char* getName();
 
+		// Compilation
 		SlangResult Compile(int targetIndex, const char** outCode);
 
 	private:
-		ModuleCLI* m_parent = nullptr;
-		Slang::ComPtr<slang::IEntryPoint> m_native = nullptr;
-		int m_index = -1;
-		std::string m_name = "";
+		ModuleCLI* m_parent;
+		Slang::ComPtr<slang::IEntryPoint> m_native;
+		int m_index;
+		std::string m_name;
 	};
 }
 

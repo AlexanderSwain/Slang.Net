@@ -7,6 +7,7 @@
 #include "TargetCLI.h"
 #include <map>
 #include <memory>
+#include <stdexcept>
 
 // Forward declaration to avoid circular dependency
 namespace Native
@@ -19,8 +20,7 @@ namespace Native
 	class SessionCLI
 	{
 	public:
-
-		// Constructor with parameters (example)
+		// Constructor with parameters
 		SessionCLI(
 			CompilerOptionCLI* options, int optionsLength,
 			PreprocessorMacroDescCLI* macros, int macrosLength,
@@ -30,15 +30,17 @@ namespace Native
 		// Destructor
 		~SessionCLI();
 
-		slang::ISession* getNative();
-		static slang::IGlobalSession* GetGlobalSession();
+		// Properties
+		Slang::ComPtr<slang::ISession> getNative();
+		static Slang::ComPtr<slang::IGlobalSession> GetGlobalSession();
 
+		// Module management
 		unsigned int getModuleCount();
-		ModuleCLI* getModuleByIndex(unsigned index);
+		std::unique_ptr<ModuleCLI> getModuleByIndex(unsigned index);
 
+		// Static members
 		static Slang::ComPtr<slang::IGlobalSession> s_context;
 		static bool s_isEnableGlsl;
-
 
 	private:
 		Slang::ComPtr<slang::ISession> m_session;

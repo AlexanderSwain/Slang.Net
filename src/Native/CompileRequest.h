@@ -2,14 +2,20 @@
 #include "slang.h"
 #include "slang-com-ptr.h"
 #include "slang-com-helper.h"
-#include "SessionCLI.h"
 #include <string>
+#include <stdexcept>
 
 #ifdef SLANGNATIVE_EXPORTS
 #define SLANGNATIVE_API __declspec(dllexport)
 #else
 #define SLANGNATIVE_API __declspec(dllimport)
 #endif
+
+// Forward declaration to avoid circular dependency
+namespace Native
+{
+	class SessionCLI;
+}
 
 namespace Native
 {
@@ -24,7 +30,7 @@ namespace Native
 
 		// Native getter
 		SlangCompileRequest* getNative();
-		slang::ISession* getParent();
+		Slang::ComPtr<slang::ISession> getParent();
 
 		// Add methods from SlangCompileRequest
 		void addCodeGenTarget(SlangCompileTarget target);

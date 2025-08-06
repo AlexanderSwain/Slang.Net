@@ -2,11 +2,8 @@
 #include "slang.h"
 #include "slang-com-ptr.h"
 #include "slang-com-helper.h"
-#include "ModuleCLI.h"
-#include "EntryPointCLI.h"
-#include <array>
-#include <iostream>
-#include <string>
+#include <memory>
+#include <stdexcept>
 
 // Reflection Includes
 #include "LayoutRules.h"
@@ -25,6 +22,7 @@ namespace Native
     struct VariableReflection;
     struct EntryPointReflection;
     struct GenericReflection;
+    class ModuleCLI;
 }
 
 #ifdef SLANGNATIVE_EXPORTS
@@ -38,22 +36,31 @@ namespace Native
 	class SLANGNATIVE_API ProgramCLI
 	{
 	public:
-		// Constructor with parameters (example)
+		// Constructor
 		ProgramCLI(ModuleCLI* parent);
+
+		// Copy constructor for caching
+		ProgramCLI(const ProgramCLI& other);
 
 		// Destructor
 		~ProgramCLI();
 
-		//Properties
+		// Properties
 		slang::IComponentType* getNative();
 		ModuleCLI* getParent();
-		SlangResult GetCompiled(unsigned int entryPointIndex, unsigned int targetIndex, const void** output, int* outputSize);
+		
+		// Compilation methods
 		SlangResult GetCompiled(unsigned int targetIndex, const void** output, int* outputSize);
+		SlangResult GetCompiled(unsigned int entryPointIndex, unsigned int targetIndex, const void** output, int* outputSize);
+		
+		// Layout
 		void* GetLayout(int targetIndex);
 
 	private:
-		ModuleCLI* m_parent = nullptr;
-		Slang::ComPtr<slang::IComponentType> m_composedProgram = nullptr;
+		ModuleCLI* m_parent;
+		Slang::ComPtr<slang::IComponentType> m_composedProgram;
+		
+		// Helper method for getting program components (deprecated)
 		slang::IComponentType** getProgramComponents();
 	};
 }

@@ -2,8 +2,9 @@
 #include "ModuleCLI.h"
 #include <vector>
 #include <iostream>
-#include <sys/stat.h>
+#include <stdexcept>
 
+// Static member definitions
 Slang::ComPtr<slang::IGlobalSession> Native::SessionCLI::s_context = nullptr;
 bool Native::SessionCLI::s_isEnableGlsl = false;
 
@@ -91,38 +92,42 @@ Native::SessionCLI::SessionCLI(
         sessionDesc.searchPathCount = searchPathsLength;
     }
 
-    Slang::ComPtr<slang::ISession> session;
-    SlangResult createResult = GetGlobalSession()->createSession(sessionDesc, session.writeRef());
-    m_session = session;
+    SlangResult createResult = GetGlobalSession()->createSession(sessionDesc, m_session.writeRef());
     
     if (SLANG_FAILED(createResult))
-        throw std::runtime_error("Failed to create session: ErrorCode = " + std::to_string(createResult));
+        throw std::runtime_error("Failed to create Slang session. Error code: " + std::to_string(createResult) + 
+                                ". Check compiler options, targets, and search paths.");
 }
 
 // Destructor implementation
 Native::SessionCLI::~SessionCLI()
 {
-    // Clear the modules map - unique_ptr will automatically delete the objects
+    // Clear modules first (they may hold references to the session)
     m_modules.clear();
+    
     // ComPtr will automatically release the session
 }
 
-// This is only called when a session is created, Glsl has to be enabled before the first session is created.
-slang::IGlobalSession* Native::SessionCLI::GetGlobalSession()
+// This is only called when a session is created, GLSL has to be enabled before the first session is created.
+Slang::ComPtr<slang::IGlobalSession> Native::SessionCLI::GetGlobalSession()
 {
     if (s_context == nullptr)
     {
+        SlangResult result;
         if (s_isEnableGlsl)
         {
             SlangGlobalSessionDesc desc = {};
             desc.enableGLSL = true;
-            desc.apiVersion = 0;
-            slang_createGlobalSession2(&desc, s_context.writeRef());
+            desc.apiVersion = SLANG_API_VERSION;
+            result = slang_createGlobalSession2(&desc, s_context.writeRef());
 		}
         else
         {
-            slang_createGlobalSession(SLANG_API_VERSION, s_context.writeRef());
+            result = slang_createGlobalSession(SLANG_API_VERSION, s_context.writeRef());
 		}
+        
+        if (SLANG_FAILED(result))
+            throw std::runtime_error("Failed to create Slang global session. Error code: " + std::to_string(result));
     }
 
     return s_context;
@@ -130,37 +135,41 @@ slang::IGlobalSession* Native::SessionCLI::GetGlobalSession()
 
 unsigned int Native::SessionCLI::getModuleCount()
 {
+    if (!m_session)
+        return 0;
     return m_session->getLoadedModuleCount();
 }
 
-Native::ModuleCLI* Native::SessionCLI::getModuleByIndex(unsigned index)
+std::unique_ptr<Native::ModuleCLI> Native::SessionCLI::getModuleByIndex(unsigned index)
 {
 	unsigned int moduleCount = getModuleCount();
     if (index >= moduleCount)
     {
-        throw std::out_of_range("Entry point index is out of range");
+        throw std::out_of_range("Module index " + std::to_string(index) + " is out of range. Count: " + std::to_string(moduleCount));
     }
 
-    // Check if the modifier is already cached
+    // Check if the module is already cached
     auto it = m_modules.find(index);
-
-    // If the modifier is already cached, return it
     if (it != m_modules.end())
-        return it->second.get();
-
-    // If not cached, create a new Module and cache it
-    slang::IModule* nativeModule = m_session->getLoadedModule(index);
-    if (nativeModule)
     {
-        auto result = std::make_unique<ModuleCLI>(this, nativeModule);
-        ModuleCLI* resultPtr = result.get();
-        m_modules[index] = std::move(result);
-        return resultPtr;
+        // Return a copy of the cached module
+        return std::make_unique<ModuleCLI>(*(it->second));
     }
-    return nullptr;
+
+    // Create new module and cache it
+    slang::IModule* nativeModule = m_session->getLoadedModule(index);
+    if (!nativeModule)
+    {
+        throw std::runtime_error("Failed to get module at index " + std::to_string(index) + " from session");
+    }
+
+    auto module = std::make_unique<ModuleCLI>(this, nativeModule);
+    auto result = std::make_unique<ModuleCLI>(*module); // Copy for return
+    m_modules[index] = std::move(module);               // Cache the original
+    return result;
 }
 
-slang::ISession* Native::SessionCLI::getNative()
+Slang::ComPtr<slang::ISession> Native::SessionCLI::getNative()
 {
     return m_session;
 }

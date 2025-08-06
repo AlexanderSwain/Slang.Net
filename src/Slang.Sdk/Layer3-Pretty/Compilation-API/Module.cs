@@ -75,5 +75,36 @@ namespace Slang.Sdk
             return Binding.GetHashCode();
         }
         #endregion
+
+        #region Disposable
+        private bool _disposed = false; // To detect redundant calls
+
+        ~Module()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this); // Prevent Finalize from being called
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    // Release managed resources here
+                }
+
+                // Release unmanaged resources here
+                Binding?.Dispose();
+
+                _disposed = true;
+            }
+        }
+        #endregion
     }
 }

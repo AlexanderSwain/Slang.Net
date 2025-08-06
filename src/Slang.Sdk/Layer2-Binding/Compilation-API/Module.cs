@@ -3,7 +3,7 @@ using static Slang.Sdk.Interop.StringMarshaling;
 
 namespace Slang.Sdk.Binding;
 
-internal unsafe sealed class Module : CompilationBinding, IEquatable<Module>
+internal unsafe sealed class Module : CompilationBinding, IEquatable<Module>, IDisposable
 {
     internal Session Parent { get; }
     internal override Interop.ModuleHandle Handle { get; }
@@ -62,10 +62,36 @@ internal unsafe sealed class Module : CompilationBinding, IEquatable<Module>
         }
     }
 
+    #region Disposable
+    private bool _disposed = false; // To detect redundant calls
+
     ~Module()
     {
-        Handle?.Dispose();
+        Dispose(false);
     }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this); // Prevent Finalize from being called
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                // Release managed resources here
+            }
+
+            // Release unmanaged resources here
+            Handle?.Dispose();
+
+            _disposed = true;
+        }
+    }
+    #endregion
 
     #region Equality
     public static bool operator ==(Module? left, Module? right)

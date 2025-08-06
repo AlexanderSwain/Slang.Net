@@ -7,7 +7,7 @@ namespace Slang.Sdk.Binding;
 /// <summary>
 /// Represents a Slang compilation session that manages modules and compilation.
 /// </summary>
-internal unsafe sealed class Session : CompilationBinding
+internal unsafe sealed class Session : CompilationBinding, IDisposable
 {
     internal override SessionHandle Handle { get; }
     internal override SessionHandle NativeHandle => new(StrongInterop.Session.GetNative(Handle, out var _));
@@ -62,8 +62,34 @@ internal unsafe sealed class Session : CompilationBinding
             throw new SlangException(SlangResult.Fail, $"Failed to enable GLSL support: {error}");
     }
 
+    #region Disposable
+    private bool _disposed = false; // To detect redundant calls
+
     ~Session()
     {
-        Handle?.Dispose();
+        Dispose(false);
     }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this); // Prevent Finalize from being called
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                // Release managed resources here
+            }
+
+            // Release unmanaged resources here
+            Handle?.Dispose();
+
+            _disposed = true;
+        }
+    }
+    #endregion
 }

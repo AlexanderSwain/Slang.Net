@@ -2,18 +2,26 @@
 #include "slang.h"
 #include "slang-com-ptr.h"
 #include "slang-com-helper.h"
-#include "SessionCLI.h"
 #include "CompileRequest.h"
-#include "EntryPointCLI.h"
 #include <string>
 #include <vector>
 #include <memory>
+#include <map>
 
 #ifdef SLANGNATIVE_EXPORTS
 #define SLANGNATIVE_API __declspec(dllexport)
 #else
 #define SLANGNATIVE_API __declspec(dllimport)
 #endif
+
+// Forward declarations to avoid circular dependency
+namespace Native
+{
+	class SessionCLI;
+	class CompileRequestCLI;
+	class EntryPointCLI;
+	class ProgramCLI;
+}
 
 namespace Native
 {
@@ -29,27 +37,38 @@ namespace Native
 		// Module import constructor
 		ModuleCLI(SessionCLI* parent, const char* moduleName);
 
-		// Module import constructor
+		// Module import constructor (from native IModule)
 		ModuleCLI(SessionCLI* parent, slang::IModule* nativeModule);
+
+		// Copy constructor for caching
+		ModuleCLI(const ModuleCLI& other);
 
 		// Destructor
 		~ModuleCLI();
 
-		slang::ISession* getParent();
+		// Properties
+		Slang::ComPtr<slang::ISession> getParent();
 		slang::IModule* getNative();
 		const char* getName();
 		slang::IComponentType* getProgramComponent();
+		
+		// Entry points
 		unsigned int getEntryPointCount();
-		Native::EntryPointCLI* getEntryPointByIndex(unsigned index);
-		Native::EntryPointCLI* findEntryPointByName(const char* name);
+		EntryPointCLI* getEntryPointByIndex(unsigned index);
+		EntryPointCLI* findEntryPointByName(const char* name);
+
+		// Program access
+		std::unique_ptr<ProgramCLI> getProgram();
 
 	private:
+		void initializeFromCompileRequest(SessionCLI* parent, std::unique_ptr<CompileRequestCLI> compileRequest, unsigned int moduleIndex);
 
 		Slang::ComPtr<slang::ISession> m_parent;
 		Slang::ComPtr<slang::IModule> m_slangModule;
-		std::unique_ptr<Native::CompileRequestCLI> m_compileRequest;
-		std::vector<std::unique_ptr<Native::EntryPointCLI>> m_entryPoints;
-		mutable std::unique_ptr<Native::EntryPointCLI> m_tempEntryPointForSearch;
+		std::unique_ptr<CompileRequestCLI> m_compileRequest;
+		std::map<unsigned int, std::unique_ptr<EntryPointCLI>> m_entryPoints;
+		mutable std::unique_ptr<EntryPointCLI> m_tempEntryPointForSearch;
+		mutable std::unique_ptr<ProgramCLI> m_program;
 	};
 }
 

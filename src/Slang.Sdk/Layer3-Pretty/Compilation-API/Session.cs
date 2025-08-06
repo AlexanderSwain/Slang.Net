@@ -1,12 +1,14 @@
 ﻿using Slang.Sdk.Collections;
 using Slang.Sdk.Interop;
+using System.Reflection.Metadata;
 
 namespace Slang.Sdk
 {
     public partial class Session
         : IComposition<Target>,
         IComposition<Module>,
-        INamedComposition<Module>
+        INamedComposition<Module>,
+        IDisposable
     {
         #region Definition
         internal Binding.Session Binding { get; }
@@ -140,6 +142,39 @@ namespace Slang.Sdk
         {
             return FindModule(name);
         }
+
         #endregion
+
+        #region Disposable
+        private bool _disposed = false; // To detect redundant calls
+
+        ~Session()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this); // Prevent Finalize from being called
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    // Release managed resources here
+                }
+
+                // Release unmanaged resources here
+                Binding?.Dispose();
+
+                _disposed = true;
+            }
+        }
+        #endregion
+
     }
 }

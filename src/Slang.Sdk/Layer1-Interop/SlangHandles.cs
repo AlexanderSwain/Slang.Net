@@ -71,10 +71,16 @@ public abstract class SlangHandle : SafeHandle, IEquatable<SlangHandle>
     }
     #endregion
 
+    #region ToString
     public override string ToString()
     {
         return $"{GetType().Name}{{ Handle = 0x{Handle:X} }}";
     }
+    #endregion
+
+    #region Disposable
+
+    #endregion
 }
 
 #region Compilation API

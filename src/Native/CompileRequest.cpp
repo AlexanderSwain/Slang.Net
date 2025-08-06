@@ -1,15 +1,22 @@
 #include "CompileRequest.h"
+#include "SessionCLI.h"
 #include <iostream>
 
 Native::CompileRequestCLI::CompileRequestCLI(SessionCLI* parent)
 {
+	if (!parent)
+		throw std::invalid_argument("Parent session cannot be null");
+
 	m_parent = parent->getNative();
-	m_parent->createCompileRequest(m_compileRequest.writeRef());
+	SlangResult result = m_parent->createCompileRequest(m_compileRequest.writeRef());
+	
+	if (SLANG_FAILED(result))
+		throw std::runtime_error("Failed to create compile request. Error code: " + std::to_string(result));
 }
 
 Native::CompileRequestCLI::~CompileRequestCLI()
 {
-	// ComPtr will automatically release the compile request
+	// ComPtr will automatically release the compile request and parent
 }
 
 SlangCompileRequest* Native::CompileRequestCLI::getNative()
@@ -17,7 +24,7 @@ SlangCompileRequest* Native::CompileRequestCLI::getNative()
 	return m_compileRequest;
 }
 
-slang::ISession* Native::CompileRequestCLI::getParent()
+Slang::ComPtr<slang::ISession> Native::CompileRequestCLI::getParent()
 {
 	return m_parent;
 }
