@@ -1,12 +1,14 @@
 #include "ModuleCLI.h"
 #include <iostream>
+#include <memory>
+#include <vector>
 
 Native::ModuleCLI::ModuleCLI(SessionCLI* parent, CompileRequestCLI* compileRequest)
 {
 	m_parent = parent->getNative();
 	unsigned int index = parent->getModuleCount();
 
-	m_compileRequest = compileRequest;
+	m_compileRequest = std::unique_ptr<CompileRequestCLI>(compileRequest);
 
 	// Compile it
 	if (m_compileRequest->getNative()->compile() != SLANG_OK)
@@ -22,9 +24,6 @@ Native::ModuleCLI::ModuleCLI(SessionCLI* parent, CompileRequestCLI* compileReque
 		Slang::ComPtr<slang::IBlob> sourceBlob;
 		std::string diagnosticsBlob = std::string(m_compileRequest->getNative()->getDiagnosticOutput());
 
-		//slangModule = m_parent->loadModule(moduleName, diagnosticsBlob.writeRef());
-		//slangModule = m_parent->loadModuleFromSource(moduleName, modulePath, sourceBlob, diagnosticsBlob.writeRef());
-		//slangModule = m_parent->loadModuleFromSourceString(moduleName, modulePath, shaderSource, diagnosticsBlob.writeRef());
 		m_compileRequest->getNative()->getModule(index, slangModule.writeRef());
 
 		// Improved diagnostics output
@@ -44,7 +43,6 @@ Native::ModuleCLI::ModuleCLI(SessionCLI* parent, CompileRequestCLI* compileReque
 	}
 
 	m_slangModule = slangModule;
-	m_entryPoints = nullptr; // Initialize to nullptr, will be allocated on demand
 }
 
 Native::ModuleCLI::ModuleCLI(SessionCLI* parent, const char* moduleName, const char* modulePath, const char* shaderSource)
@@ -53,7 +51,7 @@ Native::ModuleCLI::ModuleCLI(SessionCLI* parent, const char* moduleName, const c
 	unsigned int index = parent->getModuleCount();
 
 	Slang::ComPtr<ISlangBlob> diagnosticsBlob;
-	m_compileRequest = new CompileRequestCLI(parent);
+	m_compileRequest = std::make_unique<CompileRequestCLI>(parent);
 
 	// Add the shader file
 	m_compileRequest->addTranslationUnit(SLANG_SOURCE_LANGUAGE_SLANG, moduleName);
@@ -71,9 +69,6 @@ Native::ModuleCLI::ModuleCLI(SessionCLI* parent, const char* moduleName, const c
 		Slang::ComPtr<slang::IBlob> sourceBlob;
 		Slang::ComPtr<slang::IBlob> diagnosticsBlob;
 
-		//slangModule = m_parent->loadModule(moduleName, diagnosticsBlob.writeRef());
-		//slangModule = m_parent->loadModuleFromSource(moduleName, modulePath, sourceBlob, diagnosticsBlob.writeRef());
-		//slangModule = m_parent->loadModuleFromSourceString(moduleName, modulePath, shaderSource, diagnosticsBlob.writeRef());
 		m_compileRequest->getNative()->getModule(index, slangModule.writeRef());
 
 		// Improved diagnostics output
@@ -94,7 +89,6 @@ Native::ModuleCLI::ModuleCLI(SessionCLI* parent, const char* moduleName, const c
 	}
 
 	m_slangModule = slangModule;
-	m_entryPoints = nullptr; // Initialize to nullptr, will be allocated on demand
 }
 
 Native::ModuleCLI::ModuleCLI(SessionCLI* parent, const char* moduleName)
@@ -124,28 +118,20 @@ Native::ModuleCLI::ModuleCLI(SessionCLI* parent, const char* moduleName)
 	}
 
 	m_slangModule = slangModule;
-	m_entryPoints = nullptr; // Initialize to nullptr, will be allocated on demand
 }
 
 Native::ModuleCLI::ModuleCLI(SessionCLI* parent, slang::IModule* nativeModule)
 {
 	m_parent = parent->getNative();
 	m_slangModule = nativeModule;
-	m_entryPoints = nullptr; // Initialize to nullptr, will be allocated on demand
 }
 
 Native::ModuleCLI::~ModuleCLI()
 {
-	// Clean up entry points array if allocated
-	if (m_entryPoints)
-	{
-		unsigned int entryPointCount = getEntryPointCount();
-		for (unsigned int i = 0; i < entryPointCount; i++)
-		{
-			delete m_entryPoints[i];
-		}
-		delete[] m_entryPoints;
-	}
+	// Smart pointers will automatically clean up the objects
+	// ComPtr will automatically release Slang interfaces
+	// unique_ptr will automatically delete owned objects
+	// vector will automatically destroy all elements
 }
 
 const char* Native::ModuleCLI::getName()
@@ -197,25 +183,29 @@ Native::EntryPointCLI* Native::ModuleCLI::getEntryPointByIndex(unsigned index)
 		throw std::out_of_range("Entry point index is out of range");
 	}
 
-	if (!m_entryPoints)
+	// Resize vector if needed
+	if (m_entryPoints.size() < entryPointCount)
 	{
-		// Allocate and initialize the entry points array on first access
-		m_entryPoints = new Native::EntryPointCLI * [entryPointCount];
-
+		m_entryPoints.resize(entryPointCount);
 		for (unsigned int i = 0; i < entryPointCount; i++)
 		{
-			m_entryPoints[i] = new Native::EntryPointCLI(this, i);
+			if (!m_entryPoints[i])
+			{
+				m_entryPoints[i] = std::make_unique<Native::EntryPointCLI>(this, i);
+			}
 		}
 	}
 
-	return m_entryPoints[index];
+	return m_entryPoints[index].get();
 }
 
 Native::EntryPointCLI* Native::ModuleCLI::findEntryPointByName(const char* name)
 {
-	// Memory leak here, but this method is unused anyways.
-	// Decided to keep it for consistency with slang api.
-	return new Native::EntryPointCLI(this, name);
+	// Create a temporary entry point for the search
+	// Note: This approach maintains API compatibility but should be redesigned
+	// to avoid temporary object creation in a production environment
+	m_tempEntryPointForSearch = std::make_unique<Native::EntryPointCLI>(this, name);
+	return m_tempEntryPointForSearch.get();
 }
 
 slang::ISession* Native::ModuleCLI::getParent()

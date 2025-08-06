@@ -43,7 +43,7 @@ namespace Native
 		void addTranslationUnitSourceStringSpan(int translationUnitIndex, char const* path, char const* sourceBegin, char const* sourceEnd);
 
 	private:
-		slang::ISession* m_parent;
-		SlangCompileRequest* m_compileRequest;
+		Slang::ComPtr<slang::ISession> m_parent;
+		Slang::ComPtr<SlangCompileRequest> m_compileRequest;
 	};
 }

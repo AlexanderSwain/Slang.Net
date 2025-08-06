@@ -4,7 +4,7 @@
 #include <iostream>
 #include <sys/stat.h>
 
-slang::IGlobalSession* Native::SessionCLI::s_context = nullptr;
+Slang::ComPtr<slang::IGlobalSession> Native::SessionCLI::s_context = nullptr;
 bool Native::SessionCLI::s_isEnableGlsl = false;
 
 // Constructor with parameters implementation
@@ -102,24 +102,26 @@ Native::SessionCLI::SessionCLI(
 // Destructor implementation
 Native::SessionCLI::~SessionCLI()
 {
-    // Does nothing, kept for consistency and in case a future update requires something to be disposed (such as children).
+    // Clear the modules map - unique_ptr will automatically delete the objects
+    m_modules.clear();
+    // ComPtr will automatically release the session
 }
 
 // This is only called when a session is created, Glsl has to be enabled before the first session is created.
 slang::IGlobalSession* Native::SessionCLI::GetGlobalSession()
 {
-    if (!s_context)
+    if (s_context == nullptr)
     {
         if (s_isEnableGlsl)
         {
             SlangGlobalSessionDesc desc = {};
             desc.enableGLSL = true;
             desc.apiVersion = 0;
-            slang_createGlobalSession2(&desc, &s_context);
+            slang_createGlobalSession2(&desc, s_context.writeRef());
 		}
         else
         {
-            slang_createGlobalSession(0, &s_context);
+            slang_createGlobalSession(SLANG_API_VERSION, s_context.writeRef());
 		}
     }
 
@@ -144,15 +146,16 @@ Native::ModuleCLI* Native::SessionCLI::getModuleByIndex(unsigned index)
 
     // If the modifier is already cached, return it
     if (it != m_modules.end())
-        return it->second;
+        return it->second.get();
 
-    // If not cached, create a new Modifier and cache it
+    // If not cached, create a new Module and cache it
     slang::IModule* nativeModule = m_session->getLoadedModule(index);
     if (nativeModule)
     {
-        Native::ModuleCLI* result = new Native::ModuleCLI(this, nativeModule);
-        m_modules[index] = result;
-        return result;
+        auto result = std::make_unique<ModuleCLI>(this, nativeModule);
+        ModuleCLI* resultPtr = result.get();
+        m_modules[index] = std::move(result);
+        return resultPtr;
     }
     return nullptr;
 }

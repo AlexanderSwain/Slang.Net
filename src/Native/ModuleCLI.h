@@ -6,6 +6,8 @@
 #include "CompileRequest.h"
 #include "EntryPointCLI.h"
 #include <string>
+#include <vector>
+#include <memory>
 
 #ifdef SLANGNATIVE_EXPORTS
 #define SLANGNATIVE_API __declspec(dllexport)
@@ -43,10 +45,11 @@ namespace Native
 
 	private:
 
-		slang::ISession* m_parent;
-		slang::IModule* m_slangModule;
-		Native::CompileRequestCLI* m_compileRequest;
-		Native::EntryPointCLI** m_entryPoints;
+		Slang::ComPtr<slang::ISession> m_parent;
+		Slang::ComPtr<slang::IModule> m_slangModule;
+		std::unique_ptr<Native::CompileRequestCLI> m_compileRequest;
+		std::vector<std::unique_ptr<Native::EntryPointCLI>> m_entryPoints;
+		mutable std::unique_ptr<Native::EntryPointCLI> m_tempEntryPointForSearch;
 	};
 }
 

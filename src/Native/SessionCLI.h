@@ -6,6 +6,7 @@
 #include "PreprocessorMacroDescCLI.h"
 #include "TargetCLI.h"
 #include <map>
+#include <memory>
 
 // Forward declaration to avoid circular dependency
 namespace Native
@@ -35,12 +36,12 @@ namespace Native
 		unsigned int getModuleCount();
 		ModuleCLI* getModuleByIndex(unsigned index);
 
-		static slang::IGlobalSession* s_context;
+		static Slang::ComPtr<slang::IGlobalSession> s_context;
 		static bool s_isEnableGlsl;
 
 
 	private:
 		Slang::ComPtr<slang::ISession> m_session;
-		std::map<unsigned int, ModuleCLI*> m_modules;
+		std::map<unsigned int, std::unique_ptr<ModuleCLI>> m_modules;
 	};
 }

@@ -53,7 +53,7 @@ namespace Native
 
 	private:
 		ModuleCLI* m_parent = nullptr;
-		slang::IComponentType* m_composedProgram = nullptr;
+		Slang::ComPtr<slang::IComponentType> m_composedProgram = nullptr;
 		slang::IComponentType** getProgramComponents();
 	};
 }

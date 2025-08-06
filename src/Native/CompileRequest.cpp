@@ -4,15 +4,12 @@
 Native::CompileRequestCLI::CompileRequestCLI(SessionCLI* parent)
 {
 	m_parent = parent->getNative();
-	m_parent->createCompileRequest(&m_compileRequest);
+	m_parent->createCompileRequest(m_compileRequest.writeRef());
 }
 
 Native::CompileRequestCLI::~CompileRequestCLI()
 {
-	if (m_compileRequest)
-	{
-		m_compileRequest->release();
-	}
+	// ComPtr will automatically release the compile request
 }
 
 SlangCompileRequest* Native::CompileRequestCLI::getNative()

@@ -18,7 +18,7 @@ Native::EntryPointCLI::EntryPointCLI (ModuleCLI* parent, unsigned index)
 
     m_parent = parent;
 	// set m_native to the native entry point at the given index
-    if (SLANG_FAILED(parent->getNative()->getDefinedEntryPoint(m_index, &m_native)))
+    if (SLANG_FAILED(parent->getNative()->getDefinedEntryPoint(m_index, m_native.writeRef())))
     {
         throw std::runtime_error("Failed to get native entry point.");
     }
@@ -36,7 +36,7 @@ Native::EntryPointCLI::EntryPointCLI(ModuleCLI* parent, const char* entryPointNa
     m_index = -1;
 
     m_parent = parent;
-    if (SLANG_FAILED(parent->getNative()->findEntryPointByName(m_name.c_str(), &m_native)))
+    if (SLANG_FAILED(parent->getNative()->findEntryPointByName(m_name.c_str(), m_native.writeRef())))
     {
 		throw std::runtime_error("Failed to find entry point named: " + std::string(entryPointName));
     }
@@ -56,7 +56,7 @@ Native::EntryPointCLI::EntryPointCLI(ModuleCLI* parent, const char* entryPointNa
 }
 Native::EntryPointCLI::~EntryPointCLI()
 {
-    // Nothing to release for now
+    // ComPtr will automatically release the entry point
 }
 
 
