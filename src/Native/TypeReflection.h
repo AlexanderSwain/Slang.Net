@@ -121,14 +121,5 @@ namespace Native
 
 	private:
 		slang::TypeReflection* m_native;
-
-        // Cache
-        Native::VariableReflection** m_fields;
-        Native::TypeReflection* m_unwrappedArray;
-        Native::TypeReflection* m_elementType;
-        Native::TypeReflection* m_resourceResultType;
-        Native::Attribute** m_userAttributes;
-        std::list< Native::TypeReflection*> m_applySpecializationsResultsToDelete;
-        Native::GenericReflection* m_genericContainer;
 	};
 }

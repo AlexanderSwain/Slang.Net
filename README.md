@@ -26,7 +26,7 @@ We will use the latest `Slang api version: 2025.13.2` as the underlying native v
 
 - **Slang.Sdk v0.0.1** (6/27/2025 Release): Proof of Concept. Limited testing. Has basic functionality but came with many known issues such as bugs and memory leaks. Windows (x64, ARM64).
 - **Slang.Sdk v0.5.0** (8/06/2025 Release): [Massive Update] Most features are implemented. Most bugs and memory leaks fixed. Basic testing. Windows (x64, ARM64).
-- **Slang.Sdk v0.9.0** (9/06/2025 Release): All features are implemented. Thread safety mostly implemented. This release may not exist if all test cases are already passing. Windows (x64, ARM64).
+- **Slang.Sdk v0.9.0** (9/06/2025 Release): All features are implemented with better samples. Thread safety mostly implemented. This release may not exist if all test cases are already passing. Windows (x64, ARM64).
 - **Slang.Sdk v1.0.0** (early October Release): All native slang features implemented and elegantly abstracted. No known bugs or memory leaks. Intensively tested. We're aiming for Linux, macOS compatibility for this release. Please help us reach this goal.
 - **Slang.Sdk v1.X.X** (November Beyond Release): Updates to latest slang version. Fix breaking changes. Fix reported issues. Improving Abstractions.
 

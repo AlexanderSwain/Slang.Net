@@ -32,9 +32,6 @@ namespace Native
 
 	private:
 		slang::Attribute* m_native;
-
-		// Cache
-		TypeReflection** m_argumentTypes;
 	};
 }
 

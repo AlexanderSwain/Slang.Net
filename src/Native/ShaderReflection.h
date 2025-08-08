@@ -42,26 +42,26 @@ namespace Native
 		unsigned getParameterCount();
 		unsigned getTypeParameterCount();
 
-		std::unique_ptr<TypeParameterReflection> getTypeParameterByIndex(unsigned index);
-		std::unique_ptr<TypeParameterReflection> findTypeParameter(char const* name);
-		std::unique_ptr<VariableLayoutReflection> getParameterByIndex(unsigned index);
+		TypeParameterReflection* getTypeParameterByIndex(unsigned index);
+		TypeParameterReflection* findTypeParameter(char const* name);
+		VariableLayoutReflection* getParameterByIndex(unsigned index);
 
 		SlangUInt getEntryPointCount();
-		std::unique_ptr<EntryPointReflection> getEntryPointByIndex(SlangUInt index);
-		std::unique_ptr<EntryPointReflection> findEntryPointByName(const char* name);
+		EntryPointReflection* getEntryPointByIndex(SlangUInt index);
+		EntryPointReflection* findEntryPointByName(const char* name);
 
 		SlangUInt getGlobalConstantBufferBinding();
 		size_t getGlobalConstantBufferSize();
 
-		std::unique_ptr<TypeReflection> findTypeByName(const char* name);
-		std::unique_ptr<FunctionReflection> findFunctionByName(const char* name);
-		std::unique_ptr<FunctionReflection> findFunctionByNameInType(TypeReflection* type, const char* name);
-		std::unique_ptr<VariableReflection> findVarByNameInType(TypeReflection* type, const char* name);
+		TypeReflection* findTypeByName(const char* name);
+		FunctionReflection* findFunctionByName(const char* name);
+		FunctionReflection* findFunctionByNameInType(TypeReflection* type, const char* name);
+		VariableReflection* findVarByNameInType(TypeReflection* type, const char* name);
 
-		std::unique_ptr<TypeLayoutReflection> getTypeLayout(TypeReflection* type, LayoutRules rules);
+		TypeLayoutReflection* getTypeLayout(TypeReflection* type, LayoutRules rules);
 
 		// Fix: ISlangBlob**
-		std::unique_ptr<TypeReflection> specializeType(
+		TypeReflection* specializeType(
 			TypeReflection* type,
 			SlangInt specializationArgCount,
 			TypeReflection* const* specializationArgs,
@@ -72,8 +72,8 @@ namespace Native
 		SlangUInt getHashedStringCount();
 		const char* getHashedString(SlangUInt index, size_t* outCount);
 
-		std::unique_ptr<TypeLayoutReflection> getGlobalParamsTypeLayout();
-		std::unique_ptr<VariableLayoutReflection> getGlobalParamsVarLayout();
+		TypeLayoutReflection* getGlobalParamsTypeLayout();
+		VariableLayoutReflection* getGlobalParamsVarLayout();
 
 		SlangResult toJson(const char** outBlob);
 

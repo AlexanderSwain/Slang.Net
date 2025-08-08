@@ -31,9 +31,6 @@ namespace Native
 
 	private:
 		slang::TypeParameterReflection* m_native;
-
-		// Cache
-		TypeReflection** m_constraints;
 	};
 }
 

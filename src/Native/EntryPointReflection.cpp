@@ -11,62 +11,11 @@ Native::EntryPointReflection::EntryPointReflection(Native::ShaderReflection* par
     
     m_parent = parent;
 	m_native = (slang::EntryPointReflection*)native;
-
-    // Use lazy initialization - only initialize when accessed
-    m_function = nullptr;
-    m_parameters = nullptr;
-	m_varLayout = nullptr;
-    m_typeLayout = nullptr;
-	m_resultVarLayout = nullptr;
 }
 
 Native::EntryPointReflection::~EntryPointReflection()
 {
-    // Clean up the function reflection
-    if (m_function)
-    {
-        delete m_function;
-        m_function = nullptr;
-    }
-
-    // Clean up the parameters array
-    if (m_parameters)
-    {
-        for (uint32_t index = 0; index < m_native->getParameterCount(); index++)
-        {
-            delete m_parameters[index];
-        }
-        delete[] m_parameters;
-        m_parameters = nullptr;
-    }
-
-    // Clean up variable layout
-    if (m_varLayout)
-    {
-        delete m_varLayout;
-        m_varLayout = nullptr;
-    }
-
-	// Clean up type layout
-    if (m_typeLayout)
-    {
-        delete m_typeLayout;
-        m_typeLayout = nullptr;
-    }
-
-	// Clean up result variable layout
-    if (m_resultVarLayout)
-    {
-        delete m_resultVarLayout;
-        m_resultVarLayout = nullptr;
-    }
-
-	// No need to delete m_native here, as it is managed by Slang
-    //if (m_native)
-    //{
-    //    delete m_native;
-    //    m_native = nullptr;
-    //}
+    // No cached state to clean up
 }
 
 Native::ShaderReflection*  Native::EntryPointReflection::getParent()
@@ -96,33 +45,14 @@ unsigned Native::EntryPointReflection::getParameterCount()
 
 Native::FunctionReflection* Native::EntryPointReflection::getFunction()
 {
-    if (!m_function)
-    {
-        slang::FunctionReflection* functionPtr = m_native->getFunction();
-        if (functionPtr) 
-            m_function = new Native::FunctionReflection(functionPtr);
-        else
-            m_function = nullptr;
-    }
-    return m_function;
+    slang::FunctionReflection* functionPtr = m_native->getFunction();
+    return functionPtr ? new Native::FunctionReflection(functionPtr) : nullptr;
 }
 
 Native::VariableLayoutReflection* Native::EntryPointReflection::getParameterByIndex(unsigned index)
 {
-    if (!m_parameters)
-    {
-        uint32_t parameterCount = m_native->getParameterCount();
-        m_parameters = new Native::VariableLayoutReflection*[parameterCount];
-        for (uint32_t i = 0; i < parameterCount; i++)
-        {
-            slang::VariableLayoutReflection* nativeParameter = m_native->getParameterByIndex(i);
-            if (nativeParameter)
-                m_parameters[i] = new Native::VariableLayoutReflection(nativeParameter);
-            else
-                m_parameters[i] = nullptr;
-        }
-    }
-    return m_parameters[index];
+    slang::VariableLayoutReflection* nativeParameter = m_native->getParameterByIndex(index);
+    return nativeParameter ? new Native::VariableLayoutReflection(nativeParameter) : nullptr;
 }
 
 SlangStage Native::EntryPointReflection::getStage()
@@ -147,41 +77,20 @@ bool Native::EntryPointReflection::usesAnySampleRateInput()
 
 Native::VariableLayoutReflection* Native::EntryPointReflection::getVarLayout()
 {
-    if (!m_varLayout)
-    {
-        slang::VariableLayoutReflection* varLayoutPtr = m_native->getVarLayout();
-        if (varLayoutPtr) 
-            m_varLayout = new Native::VariableLayoutReflection(varLayoutPtr);
-        else
-            m_varLayout = nullptr;
-    }
-    return m_varLayout;
+    slang::VariableLayoutReflection* varLayoutPtr = m_native->getVarLayout();
+    return varLayoutPtr ? new Native::VariableLayoutReflection(varLayoutPtr) : nullptr;
 }
 
 Native::TypeLayoutReflection* Native::EntryPointReflection::getTypeLayout() 
 { 
-    if (!m_typeLayout)
-    {
-        slang::TypeLayoutReflection* typeLayoutPtr = m_native->getTypeLayout();
-        if (typeLayoutPtr) 
-            m_typeLayout = new Native::TypeLayoutReflection(typeLayoutPtr);
-        else
-            m_typeLayout = nullptr;
-    }
-    return m_typeLayout;
+    slang::TypeLayoutReflection* typeLayoutPtr = m_native->getTypeLayout();
+    return typeLayoutPtr ? new Native::TypeLayoutReflection(typeLayoutPtr) : nullptr;
 }
 
 Native::VariableLayoutReflection* Native::EntryPointReflection::getResultVarLayout()
 {
-    if (!m_resultVarLayout)
-    {
-        slang::VariableLayoutReflection* resultVarLayoutPtr = m_native->getResultVarLayout();
-        if (resultVarLayoutPtr) 
-            m_resultVarLayout = new Native::VariableLayoutReflection(resultVarLayoutPtr);
-        else
-            m_resultVarLayout = nullptr;
-    }
-    return m_resultVarLayout;
+    slang::VariableLayoutReflection* resultVarLayoutPtr = m_native->getResultVarLayout();
+    return resultVarLayoutPtr ? new Native::VariableLayoutReflection(resultVarLayoutPtr) : nullptr;
 }
 
 bool Native::EntryPointReflection::hasDefaultConstantBuffer()

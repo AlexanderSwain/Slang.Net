@@ -54,13 +54,6 @@ namespace Native
 
 	private:
 		slang::VariableLayoutReflection* m_native;
-
-        // Cache
-        Native::VariableReflection* m_variable;
-        std::map<Modifier::ID, Modifier*> m_modifiers;
-        Native::TypeLayoutReflection* m_typeLayout;
-        Native::TypeReflection* m_type;
-        Native::VariableLayoutReflection* m_pendingDataLayout;
 	};
 }
 

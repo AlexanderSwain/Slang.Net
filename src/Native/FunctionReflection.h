@@ -52,16 +52,6 @@ namespace Native
 
 	private:
 		slang::FunctionReflection* m_native;
-
-		// Cache
-		TypeReflection* m_returnType;
-		VariableReflection** m_parameters;
-		Attribute** m_userAttributes;
-		std::map<Modifier::ID, Modifier*> m_modifiers;
-		GenericReflection* m_genericContainer;
-        std::list<FunctionReflection*> m_applySpecializationsResultsToDelete;
-        std::list<FunctionReflection*> m_specializeWithArgTypesResultsToDelete;
-		Native::FunctionReflection** m_overloads;
 	};
 }
 
