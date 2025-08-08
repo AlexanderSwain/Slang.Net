@@ -48,14 +48,14 @@ namespace Native
 
 		// Properties
 		Slang::ComPtr<slang::ISession> getParent();
-		slang::IModule* getNative();
+		Slang::ComPtr<slang::IModule> getNative();
 		const char* getName();
 		slang::IComponentType* getProgramComponent();
 		
 		// Entry points
 		unsigned int getEntryPointCount();
-		EntryPointCLI* getEntryPointByIndex(unsigned index);
-		EntryPointCLI* findEntryPointByName(const char* name);
+		std::unique_ptr<EntryPointCLI> getEntryPointByIndex(unsigned index);
+		std::unique_ptr<EntryPointCLI> findEntryPointByName(const char* name);
 
 		// Program access
 		std::unique_ptr<ProgramCLI> getProgram();
@@ -63,12 +63,10 @@ namespace Native
 	private:
 		void initializeFromCompileRequest(SessionCLI* parent, std::unique_ptr<CompileRequestCLI> compileRequest, unsigned int moduleIndex);
 
+		// parent should not be a ComPtr here, should be SessionCLI* instead
 		Slang::ComPtr<slang::ISession> m_parent;
 		Slang::ComPtr<slang::IModule> m_slangModule;
 		std::unique_ptr<CompileRequestCLI> m_compileRequest;
-		std::map<unsigned int, std::unique_ptr<EntryPointCLI>> m_entryPoints;
-		mutable std::unique_ptr<EntryPointCLI> m_tempEntryPointForSearch;
-		mutable std::unique_ptr<ProgramCLI> m_program;
 	};
 }
 

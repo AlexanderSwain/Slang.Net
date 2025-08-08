@@ -2,7 +2,6 @@
 #include "slang.h"
 #include "slang-com-ptr.h"
 #include "slang-com-helper.h"
-#include <memory>
 #include <stdexcept>
 
 // Reflection Includes
@@ -54,7 +53,7 @@ namespace Native
 		SlangResult GetCompiled(unsigned int entryPointIndex, unsigned int targetIndex, const void** output, int* outputSize);
 		
 		// Layout
-		void* GetLayout(int targetIndex);
+		slang::ProgramLayout* GetLayout(int targetIndex);
 
 	private:
 		ModuleCLI* m_parent;

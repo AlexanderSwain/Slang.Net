@@ -101,10 +101,7 @@ Native::SessionCLI::SessionCLI(
 
 // Destructor implementation
 Native::SessionCLI::~SessionCLI()
-{
-    // Clear modules first (they may hold references to the session)
-    m_modules.clear();
-    
+{   
     // ComPtr will automatically release the session
 }
 
@@ -142,31 +139,7 @@ unsigned int Native::SessionCLI::getModuleCount()
 
 std::unique_ptr<Native::ModuleCLI> Native::SessionCLI::getModuleByIndex(unsigned index)
 {
-	unsigned int moduleCount = getModuleCount();
-    if (index >= moduleCount)
-    {
-        throw std::out_of_range("Module index " + std::to_string(index) + " is out of range. Count: " + std::to_string(moduleCount));
-    }
-
-    // Check if the module is already cached
-    auto it = m_modules.find(index);
-    if (it != m_modules.end())
-    {
-        // Return a copy of the cached module
-        return std::make_unique<ModuleCLI>(*(it->second));
-    }
-
-    // Create new module and cache it
-    slang::IModule* nativeModule = m_session->getLoadedModule(index);
-    if (!nativeModule)
-    {
-        throw std::runtime_error("Failed to get module at index " + std::to_string(index) + " from session");
-    }
-
-    auto module = std::make_unique<ModuleCLI>(this, nativeModule);
-    auto result = std::make_unique<ModuleCLI>(*module); // Copy for return
-    m_modules[index] = std::move(module);               // Cache the original
-    return result;
+    return std::unique_ptr<Native::ModuleCLI>(new Native::ModuleCLI(this, m_session->getLoadedModule(index)));
 }
 
 Slang::ComPtr<slang::ISession> Native::SessionCLI::getNative()

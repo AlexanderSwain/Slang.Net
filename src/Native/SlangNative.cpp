@@ -569,7 +569,8 @@ namespace SlangNative
 
 		try
 		{
-			return ((ModuleCLI*)parent_module)->getEntryPointByIndex(index);
+			auto result = ((ModuleCLI*)parent_module)->getEntryPointByIndex(index);
+			return result.release();
 		}
 		catch (const std::exception& e)
 		{
@@ -594,7 +595,8 @@ namespace SlangNative
 
 		try
 		{
-			return ((ModuleCLI*)parent_module)->findEntryPointByName(entryPointName);
+			auto result = ((ModuleCLI*)parent_module)->findEntryPointByName(entryPointName);
+			return result.release();
 		}
 		catch (const std::exception& e)
 		{
@@ -804,12 +806,7 @@ namespace SlangNative
 		if (!program) return nullptr;
 		try
 		{
-			ProgramCLI* programCLI = (ProgramCLI*)program;
-
-			// Get the native slang reflection from the program
-			void* slangProgramLayout = programCLI->GetLayout(targetIndex);
-
-			return new Native::ShaderReflection(programCLI, slangProgramLayout);
+			return new Native::ShaderReflection((ProgramCLI*)program, targetIndex);
 		}
 		catch (const std::exception& e)
 		{
@@ -904,7 +901,8 @@ namespace SlangNative
 
 		try
 		{
-			return ((Native::ShaderReflection*)shaderReflection)->getTypeParameterByIndex(index);
+			auto result = ((Native::ShaderReflection*)shaderReflection)->getTypeParameterByIndex(index);
+			return result.release();
 		}
 		catch (const std::exception& e)
 		{
@@ -919,7 +917,8 @@ namespace SlangNative
 
 		try
 		{
-			return ((Native::ShaderReflection*)shaderReflection)->findTypeParameter(name);
+			auto result = ((Native::ShaderReflection*)shaderReflection)->findTypeParameter(name);
+			return result.release();
 		}
 		catch (const std::exception& e)
 		{
@@ -934,7 +933,8 @@ namespace SlangNative
 
 		try
 		{
-			return ((Native::ShaderReflection*)shaderReflection)->getParameterByIndex(index);
+			auto result = ((Native::ShaderReflection*)shaderReflection)->getParameterByIndex(index);
+			return result.release();
 		}
 		catch (const std::exception& e)
 		{
@@ -963,7 +963,8 @@ namespace SlangNative
 
 		try
 		{
-			return ((Native::ShaderReflection*)shaderReflection)->getEntryPointByIndex(index);
+			auto result = ((Native::ShaderReflection*)shaderReflection)->getEntryPointByIndex(index);
+			return result.release();
 		}
 		catch (const std::exception& e)
 		{
@@ -977,7 +978,8 @@ namespace SlangNative
 		if (!shaderReflection) return nullptr;
 		try
 		{
-			return ((Native::ShaderReflection*)shaderReflection)->findEntryPointByName(name);
+			auto result = ((Native::ShaderReflection*)shaderReflection)->findEntryPointByName(name);
+			return result.release();
 		}
 		catch (const std::exception& e)
 		{
@@ -1022,7 +1024,8 @@ namespace SlangNative
 
 		try
 		{
-			return ((Native::ShaderReflection*)shaderReflection)->findTypeByName(name);
+			auto result = ((Native::ShaderReflection*)shaderReflection)->findTypeByName(name);
+			return result.release();
 		}
 		catch (const std::exception& e)
 		{
@@ -1037,7 +1040,8 @@ namespace SlangNative
 
 		try
 		{
-			return ((Native::ShaderReflection*)shaderReflection)->findFunctionByName(name);
+			auto result = ((Native::ShaderReflection*)shaderReflection)->findFunctionByName(name);
+			return result.release();
 		}
 		catch (const std::exception& e)
 		{
@@ -1052,7 +1056,8 @@ namespace SlangNative
 
 		try
 		{
-			return ((Native::ShaderReflection*)shaderReflection)->findFunctionByNameInType((Native::TypeReflection*)type, name);
+			auto result = ((Native::ShaderReflection*)shaderReflection)->findFunctionByNameInType((Native::TypeReflection*)type, name);
+			return result.release();
 		}
 		catch (const std::exception& e)
 		{
@@ -1067,7 +1072,8 @@ namespace SlangNative
 
 		try
 		{
-			return ((Native::ShaderReflection*)shaderReflection)->findVarByNameInType((Native::TypeReflection*)type, name);
+			auto result = ((Native::ShaderReflection*)shaderReflection)->findVarByNameInType((Native::TypeReflection*)type, name);
+			return result.release();
 		}
 		catch (const std::exception& e)
 		{
@@ -1082,7 +1088,8 @@ namespace SlangNative
 
 		try
 		{
-			return ((Native::ShaderReflection*)shaderReflection)->getTypeLayout((Native::TypeReflection*)type, (Native::LayoutRules)layoutRules);
+			auto result = ((Native::ShaderReflection*)shaderReflection)->getTypeLayout((Native::TypeReflection*)type, (Native::LayoutRules)layoutRules);
+			return result.release();
 		}
 		catch (const std::exception& e)
 		{
@@ -1097,7 +1104,8 @@ namespace SlangNative
 
 		try
 		{
-			return ((Native::ShaderReflection*)shaderReflection)->specializeType((Native::TypeReflection*)type, argCount, (Native::TypeReflection**)args, nullptr);
+			auto result = ((Native::ShaderReflection*)shaderReflection)->specializeType((Native::TypeReflection*)type, argCount, (Native::TypeReflection**)args, nullptr);
+			return result.release();
 		}
 		catch (const std::exception& e)
 		{
@@ -1158,7 +1166,8 @@ namespace SlangNative
 
 		try
 		{
-			return ((Native::ShaderReflection*)shaderReflection)->getGlobalParamsTypeLayout();
+			auto result = ((Native::ShaderReflection*)shaderReflection)->getGlobalParamsTypeLayout();
+			return result.release();
 		}
 		catch (const std::exception& e)
 		{
@@ -1173,7 +1182,8 @@ namespace SlangNative
 
 		try
 		{
-			return ((Native::ShaderReflection*)shaderReflection)->getGlobalParamsVarLayout();
+			auto result = ((Native::ShaderReflection*)shaderReflection)->getGlobalParamsVarLayout();
+			return result.release();
 		}
 		catch (const std::exception& e)
 		{

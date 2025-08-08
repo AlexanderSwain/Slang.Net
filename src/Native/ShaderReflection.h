@@ -5,20 +5,21 @@
 #include <map>
 #include <list>
 #include <string>
+#include <memory>
 
 namespace Native
 {
-    // Forward declarations
-    struct TypeReflection;
-    struct TypeLayoutReflection;
-    struct VariableLayoutReflection;
-    struct VariableReflection;
-    struct FunctionReflection;
-    struct EntryPointReflection;
-    struct GenericReflection;
-    struct TypeParameterReflection;
-    struct ProgramCLI;
-    enum class LayoutRules;
+	// Forward declarations
+	struct TypeReflection;
+	struct TypeLayoutReflection;
+	struct VariableLayoutReflection;
+	struct VariableReflection;
+	struct FunctionReflection;
+	struct EntryPointReflection;
+	struct GenericReflection;
+	struct TypeParameterReflection;
+	struct ProgramCLI;
+	enum class LayoutRules;
 }
 
 #ifdef SLANGNATIVE_EXPORTS
@@ -32,63 +33,52 @@ namespace Native
 	struct SLANGNATIVE_API ShaderReflection
 	{
 	public:
-		ShaderReflection(ProgramCLI* parent, void* native);
+		ShaderReflection(ProgramCLI* parent, unsigned int targetIndex);
 		~ShaderReflection();
 
-        ProgramCLI* getParent();
-        slang::ShaderReflection* getNative();
+		ProgramCLI* getParent();
+		slang::ShaderReflection* getNative();
 
-        unsigned getParameterCount();
-        unsigned getTypeParameterCount();
-        
-        TypeParameterReflection* getTypeParameterByIndex(unsigned index);
-        TypeParameterReflection* findTypeParameter(char const* name);
-        VariableLayoutReflection* getParameterByIndex(unsigned index);
-        
-        SlangUInt getEntryPointCount();
-        EntryPointReflection* getEntryPointByIndex(SlangUInt index);
-        EntryPointReflection* findEntryPointByName(const char* name);
-        
-        SlangUInt getGlobalConstantBufferBinding();
-        size_t getGlobalConstantBufferSize();
-        
-        TypeReflection* findTypeByName(const char* name);
-        FunctionReflection* findFunctionByName(const char* name);
-        FunctionReflection* findFunctionByNameInType(TypeReflection* type, const char* name);
-        VariableReflection* findVarByNameInType(TypeReflection* type, const char* name);
-        
-        TypeLayoutReflection* getTypeLayout(TypeReflection* type, LayoutRules rules);
-        
-        TypeReflection* specializeType(
-            TypeReflection* type,
-            SlangInt specializationArgCount,
-            TypeReflection* const* specializationArgs,
-            ISlangBlob** outDiagnostics);
-            
-        bool isSubType(TypeReflection* subType, TypeReflection* superType);
-        
-        SlangUInt getHashedStringCount();
-        const char* getHashedString(SlangUInt index, size_t* outCount);
-        
-        TypeLayoutReflection* getGlobalParamsTypeLayout();
-        VariableLayoutReflection* getGlobalParamsVarLayout();
-        
-        SlangResult toJson(const char** outBlob);
+		unsigned getParameterCount();
+		unsigned getTypeParameterCount();
+
+		std::unique_ptr<TypeParameterReflection> getTypeParameterByIndex(unsigned index);
+		std::unique_ptr<TypeParameterReflection> findTypeParameter(char const* name);
+		std::unique_ptr<VariableLayoutReflection> getParameterByIndex(unsigned index);
+
+		SlangUInt getEntryPointCount();
+		std::unique_ptr<EntryPointReflection> getEntryPointByIndex(SlangUInt index);
+		std::unique_ptr<EntryPointReflection> findEntryPointByName(const char* name);
+
+		SlangUInt getGlobalConstantBufferBinding();
+		size_t getGlobalConstantBufferSize();
+
+		std::unique_ptr<TypeReflection> findTypeByName(const char* name);
+		std::unique_ptr<FunctionReflection> findFunctionByName(const char* name);
+		std::unique_ptr<FunctionReflection> findFunctionByNameInType(TypeReflection* type, const char* name);
+		std::unique_ptr<VariableReflection> findVarByNameInType(TypeReflection* type, const char* name);
+
+		std::unique_ptr<TypeLayoutReflection> getTypeLayout(TypeReflection* type, LayoutRules rules);
+
+		// Fix: ISlangBlob**
+		std::unique_ptr<TypeReflection> specializeType(
+			TypeReflection* type,
+			SlangInt specializationArgCount,
+			TypeReflection* const* specializationArgs,
+			ISlangBlob** outDiagnostics);
+
+		bool isSubType(TypeReflection* subType, TypeReflection* superType);
+
+		SlangUInt getHashedStringCount();
+		const char* getHashedString(SlangUInt index, size_t* outCount);
+
+		std::unique_ptr<TypeLayoutReflection> getGlobalParamsTypeLayout();
+		std::unique_ptr<VariableLayoutReflection> getGlobalParamsVarLayout();
+
+		SlangResult toJson(const char** outBlob);
 
 	private:
-        ProgramCLI* m_parent;
+		ProgramCLI* m_parent;
 		slang::ShaderReflection* m_native;
-
-        TypeParameterReflection** m_typeParameters;
-        VariableLayoutReflection** m_parameters;
-        EntryPointReflection** m_entryPoints;
-        std::map<std::string, TypeReflection*> m_types;
-        std::map<std::string, FunctionReflection*> m_functions;
-		std::list<FunctionReflection*> m_function_by_name_in_type_results_to_delete;
-        std::list<VariableReflection*> m_var_by_name_in_type_results_to_delete;
-        std::list<TypeLayoutReflection*> m_type_layouts_results_to_delete;
-        std::list<TypeReflection*> m_specialize_type_results_to_delete;
-		TypeLayoutReflection* m_globalParamsTypeLayout;
-        VariableLayoutReflection* m_globalParamsVarLayout;
 	};
 }

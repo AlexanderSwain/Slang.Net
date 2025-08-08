@@ -44,6 +44,5 @@ namespace Native
 
 	private:
 		Slang::ComPtr<slang::ISession> m_session;
-		std::map<unsigned int, std::unique_ptr<ModuleCLI>> m_modules;
 	};
 }

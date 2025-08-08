@@ -98,9 +98,6 @@ Native::ModuleCLI::ModuleCLI(const ModuleCLI& other)
 Native::ModuleCLI::~ModuleCLI()
 {
 	// Clear all cached objects first
-	m_entryPoints.clear();
-	m_tempEntryPointForSearch.reset();
-	m_program.reset();
 	m_compileRequest.reset();
 	
 	// ComPtr will automatically release Slang interfaces
@@ -167,38 +164,16 @@ unsigned int Native::ModuleCLI::getEntryPointCount()
 	return m_slangModule->getDefinedEntryPointCount();
 }
 
-Native::EntryPointCLI* Native::ModuleCLI::getEntryPointByIndex(unsigned index)
+std::unique_ptr<Native::EntryPointCLI> Native::ModuleCLI::getEntryPointByIndex(unsigned index)
 {
-	unsigned int entryPointCount = getEntryPointCount();
-	if (index >= entryPointCount)
-	{
-		throw std::out_of_range("Entry point index " + std::to_string(index) + " is out of range. Count: " + std::to_string(entryPointCount));
-	}
-
-	// Check if already cached
-	auto it = m_entryPoints.find(index);
-	if (it != m_entryPoints.end())
-	{
-		return it->second.get();
-	}
-
-	// Create and cache new entry point
-	auto entryPoint = std::make_unique<EntryPointCLI>(this, index);
-	auto* result = entryPoint.get();
-	m_entryPoints[index] = std::move(entryPoint);
-	
+	std::unique_ptr<EntryPointCLI> result = std::unique_ptr<EntryPointCLI>(new EntryPointCLI(this, index));
 	return result;
 }
 
-Native::EntryPointCLI* Native::ModuleCLI::findEntryPointByName(const char* name)
+std::unique_ptr<Native::EntryPointCLI> Native::ModuleCLI::findEntryPointByName(const char* name)
 {
-	if (!name)
-		throw std::invalid_argument("Entry point name cannot be null");
-
-	// Create a temporary entry point for the search
-	// Note: This maintains API compatibility but creates a temporary object
-	m_tempEntryPointForSearch = std::make_unique<EntryPointCLI>(this, name);
-	return m_tempEntryPointForSearch.get();
+	std::unique_ptr<EntryPointCLI> result = std::unique_ptr<EntryPointCLI>(new EntryPointCLI(this, name));
+	return result;
 }
 
 Slang::ComPtr<slang::ISession> Native::ModuleCLI::getParent()
@@ -206,16 +181,12 @@ Slang::ComPtr<slang::ISession> Native::ModuleCLI::getParent()
 	return m_parent;
 }
 
-slang::IModule* Native::ModuleCLI::getNative()
+Slang::ComPtr<slang::IModule> Native::ModuleCLI::getNative()
 {
 	return m_slangModule;
 }
 
 std::unique_ptr<Native::ProgramCLI> Native::ModuleCLI::getProgram()
 {
-	if (!m_program)
-	{
-		m_program = std::make_unique<ProgramCLI>(this);
-	}
-	return std::make_unique<ProgramCLI>(*m_program); // Return a copy
+	return std::unique_ptr<ProgramCLI>(new ProgramCLI(this)); // Return a copy
 }

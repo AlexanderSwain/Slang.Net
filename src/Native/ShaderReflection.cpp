@@ -10,108 +10,20 @@
 #include "LayoutRules.h"
 #include "ProgramCLI.h"
 
-Native::ShaderReflection::ShaderReflection(ProgramCLI* parent, void* native)
+Native::ShaderReflection::ShaderReflection(ProgramCLI* parent, unsigned int targetIndex)
 {
-    if (!native) throw std::invalid_argument("Native pointer cannot be null");
+    if (!parent) throw std::invalid_argument("Parent cannot be null");
     
     m_parent = parent;
-    m_native = (slang::ShaderReflection*)native;
 
-    // Use lazy initialization - only initialize when accessed
-    m_typeParameters = nullptr;
-	m_parameters = nullptr;
-    m_entryPoints = nullptr;
-	m_globalParamsTypeLayout = nullptr;
-    m_globalParamsVarLayout = nullptr;
+    // Get the native slang reflection from the program
+    slang::ProgramLayout* slangProgramLayout = m_parent->GetLayout(targetIndex);
+
+    m_native = (slang::ShaderReflection*)slangProgramLayout;
 }
 
 Native::ShaderReflection::~ShaderReflection()
 {
-    // Clean up the type parameters array
-    if (m_typeParameters)
-    {
-        for (uint32_t index = 0; index < m_native->getTypeParameterCount(); index++)
-        {
-            delete m_typeParameters[index];
-        }
-        delete[] m_typeParameters;
-        m_typeParameters = nullptr;
-    }
-
-    // Clean up the parameters array
-    if (m_parameters)
-    {
-        for (uint32_t index = 0; index < m_native->getParameterCount(); index++)
-        {
-            delete m_parameters[index];
-        }
-        delete[] m_parameters;
-        m_parameters = nullptr;
-    }
-
-    // Clean up the entry points array
-    if (m_entryPoints)
-    {
-        for (SlangUInt index = 0; index < m_native->getEntryPointCount(); index++)
-        {
-            delete m_entryPoints[index];
-        }
-        delete[] m_entryPoints;
-        m_entryPoints = nullptr;
-    }
-
-	// Clean up types map
-    for (auto& pair : m_types)
-    {
-        delete pair.second; // Delete the TypeReflection object
-	}
-	m_types.clear(); // Clear the map
-
-	// Clean up functions map
-    for (auto& pair : m_functions)
-    {
-        delete pair.second; // Delete the FunctionReflection object
-    }
-	m_functions.clear(); // Clear the map
-
-	// Clean up FunctionByName Results list
-    for (auto& result : m_function_by_name_in_type_results_to_delete) {
-        delete result;
-    }
-    m_function_by_name_in_type_results_to_delete.clear();
-
-    // Clean up VariableByNameInType Results list
-    for (auto& result : m_var_by_name_in_type_results_to_delete) {
-        delete result;
-    }
-    m_var_by_name_in_type_results_to_delete.clear();
-
-    // Clean up TypeLayout Results list
-    for (auto& result : m_type_layouts_results_to_delete) {
-        delete result;
-    }
-    m_type_layouts_results_to_delete.clear();
-
-    // Clean up SpecializeType Results list
-    for (auto& result : m_specialize_type_results_to_delete) {
-        delete result;
-    }
-    m_specialize_type_results_to_delete.clear();
-
-    // Clean up global params type layout
-    if (m_globalParamsTypeLayout)
-    {
-        delete m_globalParamsTypeLayout;
-        m_globalParamsTypeLayout = nullptr;
-    }
-
-    // Clean up global params variable layout
-    if (m_globalParamsVarLayout)
-    {
-        delete m_globalParamsVarLayout;
-        m_globalParamsVarLayout = nullptr;
-    }
-
     // m_parent is managed by ProgramCLI, so we don't delete it here
     //if (m_parent)
     //{
@@ -147,50 +59,25 @@ unsigned Native::ShaderReflection::getTypeParameterCount()
     return m_native->getTypeParameterCount();
 }
 
-Native::TypeParameterReflection* Native::ShaderReflection::getTypeParameterByIndex(unsigned index)
+std::unique_ptr<Native::TypeParameterReflection> Native::ShaderReflection::getTypeParameterByIndex(unsigned index)
 {
-    if (!m_typeParameters)
-    {
-        uint32_t typeParameterCount = m_native->getTypeParameterCount();
-        m_typeParameters = new TypeParameterReflection*[typeParameterCount];
-        for (uint32_t i = 0; i < typeParameterCount; i++)
-        {
-            slang::TypeParameterReflection* nativeTypeParameter = m_native->getTypeParameterByIndex(i);
-            if (nativeTypeParameter)
-                m_typeParameters[i] = new TypeParameterReflection(nativeTypeParameter);
-            else
-                m_typeParameters[i] = nullptr;
-        }
-    }
-	return m_typeParameters[index];
+    auto callResult = new Native::TypeParameterReflection(m_native->getTypeParameterByIndex(index));
+	auto result = std::unique_ptr<Native::TypeParameterReflection>(callResult);
+	return result;
 }
 
-Native::TypeParameterReflection* Native::ShaderReflection::findTypeParameter(char const* name)
+std::unique_ptr<Native::TypeParameterReflection> Native::ShaderReflection::findTypeParameter(char const* name)
 {
-    // Memory leak here, but this method is unused anyways.
-    // Decided to keep it for consistency with slang api.
-    slang::TypeParameterReflection* nativeResult = m_native->findTypeParameter(name);
-    if (nativeResult)
-        return new TypeParameterReflection(nativeResult);
-    return nullptr;
+    auto callResult = new Native::TypeParameterReflection(m_native->findTypeParameter(name));
+    auto result = std::unique_ptr<Native::TypeParameterReflection>(callResult);
+    return result;
 }
 
-Native::VariableLayoutReflection* Native::ShaderReflection::getParameterByIndex(unsigned index)
+std::unique_ptr<Native::VariableLayoutReflection> Native::ShaderReflection::getParameterByIndex(unsigned index)
 {
-    if (!m_parameters)
-    {
-        uint32_t parameterCount = m_native->getParameterCount();
-        m_parameters = new VariableLayoutReflection*[parameterCount];
-        for (uint32_t i = 0; i < parameterCount; i++)
-        {
-            slang::VariableLayoutReflection* nativeParameter = m_native->getParameterByIndex(i);
-            if (nativeParameter)
-                m_parameters[i] = new VariableLayoutReflection(nativeParameter);
-            else
-                m_parameters[i] = nullptr;
-        }
-    }
-	return m_parameters[index];
+    auto callResult = new Native::VariableLayoutReflection(m_native->getParameterByIndex(index));
+    auto result = std::unique_ptr<Native::VariableLayoutReflection>(callResult);
+    return result;
 }
 
 SlangUInt Native::ShaderReflection::getEntryPointCount()
@@ -198,32 +85,18 @@ SlangUInt Native::ShaderReflection::getEntryPointCount()
     return m_native->getEntryPointCount();
 }
 
-Native::EntryPointReflection* Native::ShaderReflection::getEntryPointByIndex(SlangUInt index)
+std::unique_ptr<Native::EntryPointReflection> Native::ShaderReflection::getEntryPointByIndex(SlangUInt index)
 {
-    if (!m_entryPoints)
-    {
-        SlangUInt entryPointCount = m_native->getEntryPointCount();
-        m_entryPoints = new EntryPointReflection*[entryPointCount];
-        for (SlangUInt i = 0; i < entryPointCount; i++)
-        {
-            slang::EntryPointReflection* nativeEntryPoint = m_native->getEntryPointByIndex(i);
-            if (nativeEntryPoint)
-                m_entryPoints[i] = new EntryPointReflection(this, nativeEntryPoint);
-            else
-                m_entryPoints[i] = nullptr;
-        }
-    }
-	return m_entryPoints[index];
+    auto callResult = new Native::EntryPointReflection(this, m_native->getEntryPointByIndex(index));
+    auto result = std::unique_ptr<Native::EntryPointReflection>(callResult);
+    return result;
 }
 
-Native::EntryPointReflection* Native::ShaderReflection::findEntryPointByName(const char* name)
+std::unique_ptr<Native::EntryPointReflection> Native::ShaderReflection::findEntryPointByName(const char* name)
 {
-    // Memory leak here, but this method is unused anyways.
-    // Decided to keep it for consistency with slang api.
-    slang::EntryPointReflection* nativeResult = m_native->findEntryPointByName(name);
-    if (nativeResult)
-        return new EntryPointReflection(this, nativeResult);
-    return nullptr;
+    auto callResult = new Native::EntryPointReflection(this, m_native->findEntryPointByName(name));
+    auto result = std::unique_ptr<Native::EntryPointReflection>(callResult);
+    return result;
 }
 
 SlangUInt Native::ShaderReflection::getGlobalConstantBufferBinding()
@@ -236,110 +109,63 @@ size_t Native::ShaderReflection::getGlobalConstantBufferSize()
     return m_native->getGlobalConstantBufferSize();
 }
 
-Native::TypeReflection* Native::ShaderReflection::findTypeByName(const char* name)
+std::unique_ptr<Native::TypeReflection> Native::ShaderReflection::findTypeByName(const char* name)
 {
-    // Check if the modifier is already cached
-    auto it = m_types.find(name);
-
-    // If the modifier is already cached, return it
-    if (it != m_types.end())
-        return it->second;
-
-    // If not cached, create a new Modifier and cache it
-    slang::TypeReflection* nativeResult = m_native->findTypeByName(name);
-    if (nativeResult)
-    {
-        Native::TypeReflection* result = new TypeReflection(nativeResult);
-        m_types[std::string(name)] = result;
-        return result;
-    }
-    return nullptr;
+    auto callResult = new Native::TypeReflection(m_native->findTypeByName(name));
+    auto result = std::unique_ptr<Native::TypeReflection>(callResult);
+    return result;
 }
 
-Native::FunctionReflection* Native::ShaderReflection::findFunctionByName(const char* name)
+std::unique_ptr<Native::FunctionReflection> Native::ShaderReflection::findFunctionByName(const char* name)
 {
-    // Check if the modifier is already cached
-    auto it = m_functions.find(name);
-
-    // If the modifier is already cached, return it
-    if (it != m_functions.end())
-        return it->second;
-
-    // If not cached, create a new Modifier and cache it
-    slang::FunctionReflection* nativeResult = m_native->findFunctionByName(name);
-    if (nativeResult)
-    {
-        Native::FunctionReflection* result = new FunctionReflection(nativeResult);
-        m_functions[std::string(name)] = result;
-        return result;
-    }
-    return nullptr;
+    auto callResult = new Native::FunctionReflection(m_native->findFunctionByName(name));
+    auto result = std::unique_ptr<Native::FunctionReflection>(callResult);
+    return result;
 }
 
-Native::FunctionReflection* Native::ShaderReflection::findFunctionByNameInType(TypeReflection* type, const char* name)
+std::unique_ptr<Native::FunctionReflection> Native::ShaderReflection::findFunctionByNameInType(TypeReflection* type, const char* name)
 {
-    slang::FunctionReflection* nativeResult = m_native->findFunctionByNameInType((slang::TypeReflection*)type->getNative(), name);
-    if (nativeResult)
-    {
-        Native::FunctionReflection* result = new Native::FunctionReflection(nativeResult);
-        m_function_by_name_in_type_results_to_delete.push_back(result);
-        return result;
-    }
-    return nullptr;
+    auto callResult = new Native::FunctionReflection(m_native->findFunctionByNameInType(type->getNative(), name));
+    auto result = std::unique_ptr<Native::FunctionReflection>(callResult);
+    return result;
 }
 
-Native::VariableReflection* Native::ShaderReflection::findVarByNameInType(TypeReflection* type, const char* name)
+std::unique_ptr<Native::VariableReflection> Native::ShaderReflection::findVarByNameInType(TypeReflection* type, const char* name)
 {
-    slang::VariableReflection* nativeResult = m_native->findVarByNameInType((slang::TypeReflection*)type->getNative(), name);
-    if (nativeResult)
-    {
-        Native::VariableReflection* result = new Native::VariableReflection(nativeResult);
-        m_var_by_name_in_type_results_to_delete.push_back(result);
-        return result;
-    }
-    return nullptr;
+    auto callResult = new Native::VariableReflection(m_native->findVarByNameInType(type->getNative(), name));
+    auto result = std::unique_ptr<Native::VariableReflection>(callResult);
+    return result;
 }
 
-Native::TypeLayoutReflection* Native::ShaderReflection::getTypeLayout(TypeReflection* type, LayoutRules rules)
+std::unique_ptr<Native::TypeLayoutReflection> Native::ShaderReflection::getTypeLayout(TypeReflection* type, LayoutRules rules)
 {
-    slang::TypeLayoutReflection* nativeResult = m_native->getTypeLayout((slang::TypeReflection*)type->getNative(), (slang::LayoutRules)rules);
-    if (nativeResult)
-    {
-        Native::TypeLayoutReflection* result = new Native::TypeLayoutReflection(nativeResult);
-        m_type_layouts_results_to_delete.push_back(result);
-        return result;
-    }
-    return nullptr;
+    auto callResult = new Native::TypeLayoutReflection(m_native->getTypeLayout(type->getNative(), (slang::LayoutRules)rules));
+    auto result = std::unique_ptr<Native::TypeLayoutReflection>(callResult);
+    return result;
 }
 
-Native::TypeReflection* Native::ShaderReflection::specializeType(
+std::unique_ptr<Native::TypeReflection> Native::ShaderReflection::specializeType(
     TypeReflection* type,
     SlangInt specializationArgCount,
     TypeReflection* const* specializationArgs,
     ISlangBlob** outDiagnostics)
 {
+
     // Convert Native::TypeReflection array to slang::TypeReflection array
     slang::TypeReflection** nativeArgs = new slang::TypeReflection*[specializationArgCount];
     for (SlangInt i = 0; i < specializationArgCount; i++)
     {
         nativeArgs[i] = (slang::TypeReflection*)specializationArgs[i]->getNative();
     }
-    
-    slang::TypeReflection* result = m_native->specializeType(
+
+    auto callResult = new Native::TypeReflection(m_native->specializeType(
         (slang::TypeReflection*)type->getNative(),
         specializationArgCount,
         nativeArgs,
-        outDiagnostics);
-    
-    delete[] nativeArgs;
+        outDiagnostics));
 
-    if (result)
-    {
-        TypeReflection* resToRet = new TypeReflection(result);
-        m_specialize_type_results_to_delete.push_back(resToRet);
-        return resToRet;
-    }
-    return nullptr;
+    delete[] nativeArgs;
+    return std::unique_ptr<Native::TypeReflection>(callResult);
 }
 
 bool Native::ShaderReflection::isSubType(TypeReflection* subType, TypeReflection* superType)
@@ -359,30 +185,18 @@ const char* Native::ShaderReflection::getHashedString(SlangUInt index, size_t* o
     return m_native->getHashedString(index, outCount);
 }
 
-Native::TypeLayoutReflection* Native::ShaderReflection::getGlobalParamsTypeLayout()
+std::unique_ptr<Native::TypeLayoutReflection> Native::ShaderReflection::getGlobalParamsTypeLayout()
 {
-    if (!m_globalParamsTypeLayout)
-    {
-        slang::TypeLayoutReflection* globalParamsTypeLayoutPtr = m_native->getGlobalParamsTypeLayout();
-        if (globalParamsTypeLayoutPtr) 
-            m_globalParamsTypeLayout = new TypeLayoutReflection(globalParamsTypeLayoutPtr);
-        else
-            m_globalParamsTypeLayout = nullptr;
-    }
-    return m_globalParamsTypeLayout;
+    auto callResult = new Native::TypeLayoutReflection(m_native->getGlobalParamsTypeLayout());
+    auto result = std::unique_ptr<Native::TypeLayoutReflection>(callResult);
+    return result;
 }
 
-Native::VariableLayoutReflection* Native::ShaderReflection::getGlobalParamsVarLayout()
+std::unique_ptr<Native::VariableLayoutReflection> Native::ShaderReflection::getGlobalParamsVarLayout()
 {
-    if (!m_globalParamsVarLayout)
-    {
-        slang::VariableLayoutReflection* globalParamsVarLayoutPtr = m_native->getGlobalParamsVarLayout();
-        if (globalParamsVarLayoutPtr) 
-            m_globalParamsVarLayout = new VariableLayoutReflection(globalParamsVarLayoutPtr);
-        else
-            m_globalParamsVarLayout = nullptr;
-    }
-    return m_globalParamsVarLayout;
+    auto callResult = new Native::VariableLayoutReflection(m_native->getGlobalParamsVarLayout());
+    auto result = std::unique_ptr<Native::VariableLayoutReflection>(callResult);
+    return result;
 }
 
 SlangResult Native::ShaderReflection::toJson(const char** outBlob)

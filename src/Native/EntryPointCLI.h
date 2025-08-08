@@ -46,6 +46,8 @@ namespace Native
 	private:
 		ModuleCLI* m_parent;
 		Slang::ComPtr<slang::IEntryPoint> m_native;
+
+		// From constructors
 		int m_index;
 		std::string m_name;
 	};

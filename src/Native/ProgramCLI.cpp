@@ -28,10 +28,10 @@ Native::ProgramCLI::ProgramCLI(ModuleCLI* parent)
 }
 
 Native::ProgramCLI::ProgramCLI(const ProgramCLI& other)
-	: m_parent(other.m_parent)
-	, m_composedProgram(other.m_composedProgram)
 {
 	// Copy constructor for caching support
+	m_parent = other.m_parent;
+	m_composedProgram = other.m_composedProgram;
 }
 
 Native::ProgramCLI::~ProgramCLI()
@@ -143,7 +143,7 @@ SlangResult Native::ProgramCLI::GetCompiled(unsigned int entryPointIndex, unsign
 	return result;
 }
 
-void* Native::ProgramCLI::GetLayout(int targetIndex)
+slang::ProgramLayout* Native::ProgramCLI::GetLayout(int targetIndex)
 {
 	if (!m_composedProgram)
 		throw std::runtime_error("Program is not initialized");
