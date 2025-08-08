@@ -5,7 +5,12 @@ namespace Slang.Sdk
 {
     public static class CLI
     {
-        public static string WorkingDirectory { get; set; } = AppDomain.CurrentDomain.BaseDirectory;
+        private static string _WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory;
+        public static string WorkingDirectory 
+        {
+            get => _WorkingDirectory;
+            set => _WorkingDirectory = Directory.Exists(value) ? value : throw new DirectoryNotFoundException($"Working directory does not exist: {value}");
+        }
 
         public static CLI_Results slangc(
             string? target = null,

@@ -21,17 +21,17 @@ public class WorkingDirectoryTest : ISlangTest
             var directXSampleDir = Path.GetFullPath(Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory, 
                 "..", "..", "..", "..", 
-                "Slang.Net.Samples.DirectXSilkNet"));
+                "CompilationAPI"));
 
             CLI.WorkingDirectory = directXSampleDir;
 
             // Compile a shader from the DirectX sample directory
             var workingDirResult = CLI.slangc(
                 target: "hlsl",
-                profile: "vs_5_0",
-                entry: "VS",
-                stage: "vertex",
-                inputFiles: ["SimpleVertex.slang"]);
+                profile: "cs_5_0",
+                entry: "CS",
+                stage: "compute",
+                inputFiles: ["SimpleCompute.slang"]);
 
             var result = TestHelpers.CheckCompilation("Working directory compilation", workingDirResult);
             

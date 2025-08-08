@@ -95,6 +95,8 @@
 			<PackagePath>runtimes\win-x64\native\slang-glslang.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 			<TargetPath>slang-glslang.dll</TargetPath>
+			<!-- Work around: FIX for CLI spirV compile (Actually fix this in v0.9.0)-->
+			<TargetPath>runtimes\win-x64\native\slang-glslang.dll</TargetPath>
 		</Content>
 		<Content Include="..\Native\bin\$(Configuration)\x64\slang-glsl-module.dll" Condition="Exists('..\Native\bin\$(Configuration)\x64\slang-glsl-module.dll')">
 			<Pack>true</Pack>
@@ -185,6 +187,8 @@
 			<PackagePath>runtimes\win-ARM64\native\slang-glslang.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 			<TargetPath>slang-glslang.dll</TargetPath>
+			<!-- Work around: FIX for CLI spirV compile (Actually fix this in v0.9.0)-->
+			<TargetPath>runtimes\win-ARM64\native\slang-glslang.dll</TargetPath>
 		</Content>
 		<Content Include="..\Native\bin\$(Configuration)\ARM64\slang-glsl-module.dll" Condition="Exists('..\Native\bin\$(Configuration)\ARM64\slang-glsl-module.dll')">
 			<Pack>true</Pack>
