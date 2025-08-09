@@ -1,4 +1,5 @@
 # Slang.Sdk
+**New** Updated to recent slang version: **2025.13.2**
 
 A comprehensive .NET wrapper for the Slang Shader Language Sdk, providing seamless integration of shader compilation and reflection capabilities into .NET applications.
 
@@ -44,9 +45,9 @@ Slang.Sdk is an open-source project maintained by volunteers. Your sponsorships 
 
 If Slang.Sdk adds value to your project or organization, please consider sponsoring our work. Even small contributions make a significant difference.
 
-[Become a Sponsor](#) <!-- Replace with your sponsorship link -->
+[Become an Aqqorn Sponsor](https://www.patreon.com/c/Aqqorn)
 
-❤️Make sure to also support the slang team directly so that they can continue to improve the underlying api: https://github.com/shader-slang/slang
+❤️Make sure to also support the slang team directly so that they can continue to improve the underlying api: [Slang Team](https://github.com/shader-slang/slang)
 
 ## Why Slang.Sdk?
 
@@ -180,32 +181,108 @@ var cliResult = CLI.slangc(paramsBuilder.Build());
 
 ## Compilation API
 
-### Finding EntryPoints and compiling them
+### Basic Compilation
+Compilation in Slang.Net is quick and easy.
 ```csharp
 using Slang.Sdk;
 using Slang.Sdk.Interop;
 
-// Create a session - the main entry point for Slang operations also supports macros and compile options
+// Create the session
 Session session = new Session.Builder()
     .AddTarget(Targets.Hlsl.cs_5_0)
-    .AddSearchPath($@"{AppDomain.CurrentDomain.BaseDirectory}\Shaders\")
     .Create();
 
-// Load the module from the specified file, other overloads exists to expose most features from the native slang api
-Module module = session.LoadModule("AverageColor.slang");
+// Load the module from the specified file
+Module module = session.LoadModule("AverageColor", $@"{ AppDomain.CurrentDomain.BaseDirectory }Shaders\AverageColor.slang");
 
-// Find an entry point by name
-EntryPoint entryPoint = module.EntryPoints["CS"];
+// Get the shader program from the module
+Program program = module.Program;
 
-// Compiles that entry point for the specified target
-var result = entryPoint.Compile(Targets.Hlsl.cs_5_0);
+// Compile the shader program
+var compileResult = program.Targets[Targets.Hlsl.cs_5_0].Compile();
 
-// Gets the source code from the compilation result
-Console.WriteLine(result.Source);
+// Alternatively compile from an entrypoint
+var entryPoint = program.Targets[Targets.Hlsl.cs_5_0].EntryPoints["CS"];
+entryPoint.Compile();
+
+// Print the generated source code length
+Console.WriteLine(compileResult.SourceCode);
 ```
+
+Multiple graphics backends. You can easily compile them all.
 ```csharp
-// Or you can also compile with the module's program object
-var result2 = module.Program.Compile(entryPoint, Targets.Hlsl.cs_5_0);
+// Compile all targets
+var allTargets = program.Targets;
+foreach (var target in allTargets)
+{
+    var targetCompileResult = target.Compile();
+}
+```
+
+Multiple pipline stages? Use multiple sessions.
+```csharp
+// This is required to enable Slang's GLSL support, since it defaults to Vulkan
+Session.GlslEnabled = true;
+
+// Vertex Stage Session targeting both DirectX 11 and OpenGL 450
+_vsSession = new Session.Builder()
+    .AddTarget(Targets.Hlsl.vs_5_0)
+    .AddTarget(Targets.Glsl.v450)
+    .AddCompilerOption(CompilerOption.Name.AllowGLSL, new(CompilerOption.Value.Kind.Int, 1, 0, null, null))
+    .Create();
+
+// Pixel Stage Session targeting both DirectX 11 and OpenGL 450
+_psSession = new Session.Builder()
+    .AddTarget(Targets.Hlsl.ps_5_0)
+    .AddTarget(Targets.Glsl.v450)
+    .AddCompilerOption(CompilerOption.Name.AllowGLSL, new(CompilerOption.Value.Kind.Int, 1, 0, null, null))
+    .Create();
+```
+
+### Advanced Compilation
+If you are a power user, Slang.Sdk is constantly including feature from the underlying API
+
+**Using Compile Options**
+
+```csharp
+var session = new Session.Builder()
+    .AddCompilerOption(CompilerOption.Name.WarningsAsErrors, new CompilerOption.Value(CompilerOption.Value.Kind.Int, 0, 0, "all", null))
+    .AddCompilerOption(CompilerOption.Name.Obfuscate, new CompilerOption.Value(CompilerOption.Value.Kind.Int, 1, 0, null, null))
+    .AddTarget(Targets.Hlsl.cs_5_0)
+    .Create();
+```
+
+**Using Preprocessor Macros**
+
+```csharp
+var session = new Session.Builder()
+    .AddPreprocessorMacro("ENABLE_LIGHTING", "1")
+    .AddPreprocessorMacro("MAX_LIGHTS", "16")
+    .AddPreprocessorMacro("QUALITY_LEVEL", "HIGH")
+    .AddTarget(Targets.Hlsl.cs_5_0)
+    .Create();
+```
+
+**Module Builders: Beautifully Abstracting CompileRequest**
+```csharp
+// Create session
+var session = new Session.Builder()
+    .AddTarget(Targets.Hlsl.cs_6_0)
+    .Create();
+
+// Using the new Module Builder
+var fileBuilder = new Module.Builder(session)
+    .AddCodeGenTarget(Target.CompileTarget.Hlsl)
+    .AddPreprocessorDefine("MULTI_COMPUTE", "1")
+    .AddTranslationUnit(SourceLanguage.Slang, "MultiComputeShader", out int unitIndex)
+    .AddTranslationUnitSourceFile(unitIndex, Path.Combine(_workingDirectory, "MultiComputeShader.slang"));
+    
+// Add some compute entry points
+fileBuilder.AddEntryPoint(0, "GaussianBlur", Stage.Compute);
+fileBuilder.AddEntryPoint(0, "GenerateNoise", Stage.Compute);
+
+// Create a Module from a Builder
+var module = fileBuilder.Create();
 ```
 
 ### Slang Collections
@@ -243,7 +320,7 @@ var result2 = module.Program.Compile(entryPoint, Targets.Hlsl.cs_5_0);
 
 - Need to programmatically bind shader parameters? No problem, just use the Reflection API.
 
-> **Note** As of v0.5.0, all slang reflection types (with the exception of DeclReflection and a few other minor things) has been completed and elegantly abstracted
+> **Note** As of v0.5.0, all slang reflection types (with the exception of DeclReflection and a few other minor things) has been elegantly abstracted
 
 - Reflection Example
 
@@ -251,51 +328,27 @@ var result2 = module.Program.Compile(entryPoint, Targets.Hlsl.cs_5_0);
     using Slang.Sdk;
     using Slang.Sdk.Interop;
 
-    // Same as above to load the module
-
     // Get the shader reflection for the specified target
-    ShaderReflection reflection = module.Program.GetReflection(Targets.Hlsl.cs_5_0);
+    ShaderReflection reflection = module.Program.Targets[Targets.Hlsl.cs_5_0]GetReflection();
 
     // Get the shader reflection for the specified target
     var parameters = reflection.Parameters;
 
-    // Access the shader reflection parameters
-    var shaderInputParameters = reflection.Parameters;
-    foreach (var parameter in shaderInputParameters)
+    foreach (var parameter in parameters)
     {
         Console.WriteLine($"Parameter Name: {parameter.Name}");
         Console.WriteLine($"Type: {parameter.Type.Name}");
+
+        // This can be used for programmatic binding
         Console.WriteLine($"BindingIndex: {parameter.BindingIndex}, BindingSpace: {parameter.BindingSpace}");
     }
     ```
 
-### Using Compiler Options
-
-Control compiler options:
-
-```csharp
-var session = new Session.Builder()
-    .AddCompilerOption(CompilerOption.Name.WarningsAsErrors, new CompilerOption.Value(CompilerOption.Value.Kind.Int, 0, 0, "all", null))
-    .AddCompilerOption(CompilerOption.Name.Obfuscate, new CompilerOption.Value(CompilerOption.Value.Kind.Int, 1, 0, null, null))
-    .AddTarget(Targets.Hlsl.cs_5_0)
-    .Create();
-```
-
-### Using Preprocessor Macros
-
-Control preprocessor definitions:
-
-```csharp
-var session = new Session.Builder()
-    .AddPreprocessorMacro("ENABLE_LIGHTING", "1")
-    .AddPreprocessorMacro("MAX_LIGHTS", "16")
-    .AddPreprocessorMacro("QUALITY_LEVEL", "HIGH")
-    .AddTarget(Targets.Hlsl.cs_5_0)
-    .Create();
-```
-
-### Complete Examples
-// Samples links and descriptions here
+### Samples
+[CLI API Sample](https://github.com/Aqqorn/Slang.Sdk/tree/production/Samples/CLInvoke)
+[Compilation API Sample](https://github.com/Aqqorn/Slang.Sdk/tree/production/Samples/CompilationAPI)
+[Reflection API Sample](https://github.com/Aqqorn/Slang.Sdk/tree/production/Samples/ReflectionAPI)
+[Complete Silk.NET Example](https://github.com/Aqqorn/Slang.Sdk/tree/production/Samples/SlangCube)
 
 ## Contributing
 
@@ -321,4 +374,4 @@ This project is licensed under the same liscense as the project it is wrapping: 
 
 - **Slang Documentation**: [https://shader-slang.org/](https://shader-slang.org/)
 - **Slang GitHub**: [https://github.com/shader-slang/slang](https://github.com/shader-slang/slang)
-- **Sample Projects**: [Available in the GitHub repository](https://github.com/Aqqorn/Slang.Sdk/tree/main/Samples)
+- **Sample Projects**: [Available in the GitHub repository](https://github.com/Aqqorn/Slang.Sdk/tree/production/Samples)
