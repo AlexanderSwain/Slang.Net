@@ -39,37 +39,30 @@ jobs:
         Write-Host "Building Native Dependencies..." -ForegroundColor Cyan
         .\all-platforms.ps1 -Script Native\build.ps1
       
-    - name: Build C++/CLI Wrapper
-      shell: pwsh
-      working-directory: src
-      run: |
-        Write-Host "Building C++/CLI Wrapper..." -ForegroundColor Cyan
-        .\all-platforms.ps1 -Script Slang.Net.CPP\build.ps1
-      
     - name: Build C# Wrapper
       shell: pwsh
       working-directory: src
       run: |
         Write-Host "Building C# Wrapper..." -ForegroundColor Cyan
-        .\all-platforms.ps1 -Script Slang.Net\build.ps1
+        dotnet build .\Slang.Sdk
     
     - name: Create NuGet Package (Release)
       shell: pwsh
       working-directory: src
       run: |
         Write-Host "Creating NuGet Package (Release)..." -ForegroundColor Cyan
-        dotnet pack .\Slang.Net --configuration Release --verbosity normal --no-build
+        dotnet pack .\Slang.Sdk --configuration Release --verbosity normal --no-build
     
     - name: List generated packages
       shell: pwsh
-      working-directory: src/Slang.Net/Builds/Release
+      working-directory: src/Slang.Sdk/Builds/Release
       run: |
         Write-Host "Generated packages:" -ForegroundColor Cyan
         Get-ChildItem -Filter "*.nupkg" | ForEach-Object { Write-Host "  - $($_.Name)" }
     
     - name: Publish to NuGet.org
       shell: pwsh
-      working-directory: src/Slang.Net/Builds/Release
+      working-directory: src/Slang.Sdk/Builds/Release
       run: |
         $packages = Get-ChildItem -Filter "*.nupkg"
         foreach ($package in $packages) {
@@ -83,5 +76,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: nuget-packages
-        path: src/Slang.Net/Builds/Release/*.nupkg
+        path: src/Slang.Sdk/Builds/Release/*.nupkg
         retention-days: 30
