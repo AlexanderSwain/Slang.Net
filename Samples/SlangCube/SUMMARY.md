@@ -49,7 +49,6 @@ Silk.Net Example/
 
 ## Technical Highlights
 
-- **Slang.Sdk Version**: 0.0.1 (latest)
 - **Target APIs**: OpenGL 3.30 Core, DirectX 11 HLSL 5.0
 - **Silk.NET**: Multi-platform graphics framework integration
 - **Architecture**: Clean separation between rendering backends and Slang compilation
