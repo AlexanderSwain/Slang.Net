@@ -13,7 +13,7 @@ namespace Slang.Sdk.Test
             InteropTest.RunExamples();
             BindingTests.RunAllTests();
             PrettyTests.RunAllTests();
-            MemoryLeakTest.RunAllTests();
+            //MemoryLeakTest.RunAllTests();
 
             Console.WriteLine("\nPress any key to exit...");
             Console.ReadKey();

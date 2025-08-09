@@ -23,7 +23,7 @@ internal class PrettyTests
         Session session = builder.Create();
 
         // Load the module from the specified file
-        Module module = session.LoadModule("AverageColor", $@"{ AppDomain.CurrentDomain.BaseDirectory }Tests\Shaders\AverageColor.slang");
+        Module module = session.LoadModule("AverageColor", $@"{AppDomain.CurrentDomain.BaseDirectory}Tests\Shaders\AverageColor.slang");
 
         // Get the shader program from the module
         Program program = module.Program;
@@ -36,6 +36,5 @@ internal class PrettyTests
 
         // Print the generated source code length
         Console.WriteLine(compileResult.SourceCode);
-        } // TODO: Fix later, Release issue here
     }
 }

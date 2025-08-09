@@ -14,7 +14,7 @@
 		<PackageLicenseExpression>Apache-2.0 WITH LLVM-exception</PackageLicenseExpression>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryType>git</RepositoryType>
-		<PackageTags>slang;slangc;slang.sdk;shader;shading;language;graphics;hlsl;glsl;vulkan;cross-platform</PackageTags>
+		<PackageTags>slang;slangc;slang.net;slang.sdk;dotnet;shader;shading;bindings;game-development;graphics-programminglanguage;shader-compiler;graphics;hlsl;glsl;spirv;vulkan;metal;wgsl;cuda;cross-platform;</PackageTags>
 		<PackageIcon>icon.png</PackageIcon>
 		<RepositoryUrl>https://github.com/AlexanderSwain/Slang.Net.git</RepositoryUrl>
 		<PackageOutputPath>$(ProjectDir)Builds\$(Configuration)\</PackageOutputPath>
@@ -90,14 +90,22 @@
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 			<TargetPath>slang.dll</TargetPath>
 		</Content>
+		
+		<!-- Work around: FIX for CLI spirV compile (Actually fix this in v0.9.0)-->
 		<Content Include="..\Native\bin\$(Configuration)\x64\slang-glslang.dll" Condition="Exists('..\Native\bin\$(Configuration)\x64\slang-glslang.dll')">
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-x64\native\slang-glslang.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 			<TargetPath>slang-glslang.dll</TargetPath>
-			<!-- Work around: FIX for CLI spirV compile (Actually fix this in v0.9.0)-->
+		</Content>
+		<Content Include="..\Native\bin\$(Configuration)\x64\slang-glslang.dll" Condition="Exists('..\Native\bin\$(Configuration)\x64\slang-glslang.dll')">
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-x64\native\slang-glslang.dll</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 			<TargetPath>runtimes\win-x64\native\slang-glslang.dll</TargetPath>
 		</Content>
+		<!-- Work around: FIX for CLI spirV compile (Actually fix this in v0.9.0)-->
+
 		<Content Include="..\Native\bin\$(Configuration)\x64\slang-glsl-module.dll" Condition="Exists('..\Native\bin\$(Configuration)\x64\slang-glsl-module.dll')">
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-x64\native\slang-glsl-module.dll</PackagePath>
@@ -182,14 +190,22 @@
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 			<TargetPath>slang.dll</TargetPath>
 		</Content>
+
+		<!-- Work around: FIX for CLI spirV compile (Actually fix this in v0.9.0)-->
 		<Content Include="..\Native\bin\$(Configuration)\ARM64\slang-glslang.dll" Condition="Exists('..\Native\bin\$(Configuration)\ARM64\slang-glslang.dll')">
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-ARM64\native\slang-glslang.dll</PackagePath>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 			<TargetPath>slang-glslang.dll</TargetPath>
-			<!-- Work around: FIX for CLI spirV compile (Actually fix this in v0.9.0)-->
+		</Content>
+		<Content Include="..\Native\bin\$(Configuration)\ARM64\slang-glslang.dll" Condition="Exists('..\Native\bin\$(Configuration)\ARM64\slang-glslang.dll')">
+			<Pack>true</Pack>
+			<PackagePath>runtimes\win-ARM64\native\slang-glslang.dll</PackagePath>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 			<TargetPath>runtimes\win-ARM64\native\slang-glslang.dll</TargetPath>
 		</Content>
+		<!-- Work around: FIX for CLI spirV compile (Actually fix this in v0.9.0)-->
+
 		<Content Include="..\Native\bin\$(Configuration)\ARM64\slang-glsl-module.dll" Condition="Exists('..\Native\bin\$(Configuration)\ARM64\slang-glsl-module.dll')">
 			<Pack>true</Pack>
 			<PackagePath>runtimes\win-ARM64\native\slang-glsl-module.dll</PackagePath>
