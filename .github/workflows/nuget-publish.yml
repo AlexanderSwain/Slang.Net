@@ -39,19 +39,19 @@ jobs:
         Write-Host "Building Native Dependencies..." -ForegroundColor Cyan
         .\all-platforms.ps1 -Script Native\build.ps1
       
-    - name: Build C# Wrapper
+    - name: Build C# Wrapper (Release)
       shell: pwsh
       working-directory: src
       run: |
-        Write-Host "Building C# Wrapper..." -ForegroundColor Cyan
-        dotnet build .\Slang.Sdk
+        Write-Host "Building C# Wrapper (Release)..." -ForegroundColor Cyan
+        dotnet build .\Slang.Sdk -c Release
     
     - name: Create NuGet Package (Release)
       shell: pwsh
       working-directory: src
       run: |
         Write-Host "Creating NuGet Package (Release)..." -ForegroundColor Cyan
-        dotnet pack .\Slang.Sdk --configuration Release --verbosity normal --no-build
+        dotnet pack .\Slang.Sdk -c Release --verbosity normal --no-build
     
     - name: List generated packages
       shell: pwsh
