@@ -6,7 +6,7 @@
 		<Nullable>enable</Nullable>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<PackageId>Slang.Sdk</PackageId>
-		<PackageVersion>0.5.0</PackageVersion>
+		<PackageVersion>0.5.1</PackageVersion>
 		<Title>Slang.Sdk - .NET Bindings for the Slang Shader Language</Title>
 		<Description>A comprehensive .NET wrapper for the Slang Shader Language compiler, providing seamless integration of shader compilation and reflection capabilities into .NET applications.</Description>
 		<Authors>Aqqorn</Authors>
@@ -55,7 +55,8 @@
 
 	<!-- Include README.md and icon.png in package -->
 	<ItemGroup>
-		<None Include="README.md" Pack="true" PackagePath="\" />
+		<!-- Use solution root README.md -->
+		<None Include="..\..\README.md" Pack="true" PackagePath="\" />
 		<None Update="icon.png">
 			<PackagePath>\</PackagePath>
 			<Pack>True</Pack>

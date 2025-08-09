@@ -23,11 +23,11 @@ Slang.Sdk Includes the following:
 - **macOS** - Planned for future release. Sponsorships can make this a priority.
 
 ## Release Roadmap:
-We will use the latest `Slang api version: 2025.13.2` as the underlying native version until after v1.0.0 release. Expect at least one release at the end of every month after v0.5.0:
+We will use the latest `Slang api version: 2025.13.2` as the underlying native version until after v1.0.0 release. Expect at least one release at the end of every month after v0.5.1:
 
 - **Slang.Sdk v0.0.1** (6/27/2025 Release): Proof of Concept. Limited testing. Has basic functionality but came with many known issues such as bugs and memory leaks. Windows (x64, ARM64).
-- **Slang.Sdk v0.5.0** (8/06/2025 Release): [Massive Update] Most features are implemented. Most bugs and memory leaks fixed. Basic testing. Windows (x64, ARM64).
-- **Slang.Sdk v0.9.0** (9/06/2025 Release): All features are implemented with better samples. Thread safety mostly implemented. This release may not exist if all test cases are already passing. Windows (x64, ARM64).
+- **Slang.Sdk v0.5.1** (8/09/2025 Release): [Massive Update] Most features are implemented. Most bugs and memory leaks fixed. Basic testing. Windows (x64, ARM64).
+- **Slang.Sdk v0.9.0** (9/09/2025 Release): All features are implemented with better samples. Thread safety mostly implemented. This release may not exist if all test cases are already passing. Windows (x64, ARM64).
 - **Slang.Sdk v1.0.0** (early October Release): All native slang features implemented and elegantly abstracted. No known bugs or memory leaks. Intensively tested. We're aiming for Linux, macOS compatibility for this release. Please help us reach this goal.
 - **Slang.Sdk v1.X.X** (November Beyond Release): Updates to latest slang version. Fix breaking changes. Fix reported issues. Improving Abstractions.
 
@@ -114,7 +114,7 @@ dotnet add package Slang.Sdk
 Or add to your project file:
 
 ```xml
-<PackageReference Include="Slang.Sdk" Version="0.5.0" />
+<PackageReference Include="Slang.Sdk" Version="0.5.1" />
 ```
 
 ## slangc CLI Invocation
@@ -320,7 +320,7 @@ var module = fileBuilder.Create();
 
 - Need to programmatically bind shader parameters? No problem, just use the Reflection API.
 
-> **Note** As of v0.5.0, all slang reflection types (with the exception of DeclReflection and a few other minor things) has been elegantly abstracted
+> **Note** As of v0.5.1, all slang reflection types (with the exception of DeclReflection and a few other minor things) has been elegantly abstracted
 
 - Reflection Example
 
